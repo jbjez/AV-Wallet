@@ -1,52 +1,112 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AV Wallet - Votre portefeuille numérique</title>
-    <link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8">
+  <title>AV Wallet - Accueil</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', sans-serif;
+      background: url('assets/background.jpg') no-repeat center center fixed;
+      background-size: cover;
+      color: white;
+    }
+
+    .overlay {
+      background-color: rgba(10, 17, 40, 0.75);
+      position: absolute;
+      top: 0; left: 0; right: 0; bottom: 0;
+      z-index: 0;
+    }
+
+    .container {
+      position: relative;
+      z-index: 1;
+      max-width: 1200px;
+      margin: auto;
+      padding: 40px 20px;
+      text-align: center;
+    }
+
+    .logo {
+      max-width: 200px;
+      margin: 0 auto 30px;
+    }
+
+    h1 {
+      font-size: 36px;
+      font-weight: 700;
+      margin-bottom: 10px;
+    }
+
+    p.subtitle {
+      font-size: 18px;
+      color: #ddd;
+      margin-bottom: 40px;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+      gap: 20px;
+    }
+
+    .menu-card {
+      background-color: rgba(255, 255, 255, 0.08);
+      border: 2px solid rgba(255, 255, 255, 0.2);
+      border-radius: 16px;
+      padding: 20px;
+      transition: transform 0.3s ease, background-color 0.3s ease;
+      cursor: pointer;
+    }
+
+    .menu-card:hover {
+      transform: scale(1.05);
+      background-color: rgba(255, 255, 255, 0.15);
+    }
+
+    .menu-card i {
+      font-size: 32px;
+      margin-bottom: 10px;
+    }
+
+    .menu-card span {
+      display: block;
+      font-size: 16px;
+      font-weight: bold;
+    }
+
+    footer {
+      text-align: center;
+      margin-top: 50px;
+      font-size: 12px;
+      color: #aaa;
+    }
+  </style>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 </head>
 <body>
-    <header>
-        <nav>
-            <div class="logo">AV Wallet</div>
-            <div class="nav-links">
-                <a href="index.html">Accueil</a>
-                <a href="privacy.html">Politique de confidentialité</a>
-            </div>
-        </nav>
-    </header>
+  <div class="overlay"></div>
+  <div class="container">
+    <img src="assets/logo.png" alt="Logo AV Wallet" class="logo">
+    <h1>Bienvenue sur AV Wallet</h1>
+    <p class="subtitle">L'outil tout-en-un pour vos projets audiovisuels</p>
 
-    <main>
-        <section class="hero">
-            <h1>Bienvenue sur AV Wallet</h1>
-            <p>Gérez vos actifs numériques en toute sécurité</p>
-        </section>
-
-        <section class="features">
-            <h2>Caractéristiques principales</h2>
-            <div class="feature-grid">
-                <div class="feature">
-                    <h3>Sécurité maximale</h3>
-                    <p>Protection de vos données avec les dernières technologies de cryptographie</p>
-                </div>
-                <div class="feature">
-                    <h3>Interface intuitive</h3>
-                    <p>Une expérience utilisateur fluide et simple</p>
-                </div>
-                <div class="feature">
-                    <h3>Multi-plateformes</h3>
-                    <p>Disponible sur iOS et Android</p>
-                </div>
-            </div>
-        </section>
-    </main>
+    <div class="grid">
+      <div class="menu-card"><i class="fas fa-lightbulb"></i><span>Lumière</span></div>
+      <div class="menu-card"><i class="fas fa-hard-hat"></i><span>Structure</span></div>
+      <div class="menu-card"><i class="fas fa-volume-up"></i><span>Son</span></div>
+      <div class="menu-card"><i class="fas fa-video"></i><span>Vidéo</span></div>
+      <div class="menu-card"><i class="fas fa-bolt"></i><span>Électricité</span></div>
+      <div class="menu-card"><i class="fas fa-network-wired"></i><span>Réseau</span></div>
+    </div>
 
     <footer>
-        <p>&copy; 2024 AV Wallet. Tous droits réservés.</p>
-        <div class="footer-links">
-            <a href="privacy.html">Politique de confidentialité</a>
-        </div>
+      © 2025 AV Wallet — Tous droits réservés
+      <br>
+      <a href="privacy.html" style="color: #aaa; text-decoration: none;">Mentions légales</a>
     </footer>
+  </div>
 </body>
-</html> 
+</html>
