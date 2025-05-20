@@ -95,25 +95,36 @@
   </nav>
   <div class="overlay"></div>
   <div class="container" style="margin-top: 80px;">
-    <!-- Logo encadré -->
-    <div style="display: flex; justify-content: center;">
-      <div style="background: rgba(200,200,200,0.5); border: 2px solid #fff; border-radius: 24px; padding: 32px 40px; display: inline-block; margin-bottom: 30px;">
-        <img src="assets/logo.png" alt="Logo AV Wallet" class="logo" style="display: block; margin: 0 auto;">
+    <!-- Contenu principal en flexbox -->
+    <div style="display: flex; justify-content: center; align-items: center; gap: 40px; flex-wrap: wrap; min-height: 60vh;">
+      <!-- Screenshot à gauche -->
+      <div style="flex: 1; display: flex; justify-content: center; align-items: center; min-width: 220px;">
+        <img src="assets/screenshot.png" alt="Capture d'écran AV Wallet" style="max-width: 220px; width: 100%; border-radius: 16px; box-shadow: 0 4px 24px rgba(0,0,0,0.15);">
       </div>
-    </div>
-    <h1>Bienvenue sur AV Wallet</h1>
-    <p class="subtitle">L'outil tout-en-un pour vos projets audiovisuels</p>
-
-    <!-- Boutons de téléchargement -->
-    <div style="display: flex; justify-content: center; gap: 40px; margin: 40px 0;">
-      <a href="#" style="display: flex; flex-direction: column; align-items: center; justify-content: center; width: 160px; height: 160px; background: #000; border: 2px solid #fff; border-radius: 20px; text-decoration: none; color: #fff; transition: background 0.3s, transform 0.3s; font-weight: bold; font-size: 18px;">
-        <i class="fab fa-apple" style="font-size: 48px; margin-bottom: 16px; color: #fff;"></i>
-        Télécharger iOS
-      </a>
-      <a href="#" style="display: flex; flex-direction: column; align-items: center; justify-content: center; width: 160px; height: 160px; background: #3ddc84; border: 2px solid #fff; border-radius: 20px; text-decoration: none; color: #fff; transition: background 0.3s, transform 0.3s; font-weight: bold; font-size: 18px;">
-        <i class="fab fa-android" style="font-size: 48px; margin-bottom: 16px; color: #fff;"></i>
-        Télécharger Android
-      </a>
+      <!-- Contenu principal (logo + boutons) -->
+      <div style="flex: 2; min-width: 300px; max-width: 420px; display: flex; flex-direction: column; align-items: center;">
+        <!-- Logo encadré -->
+        <div style="background: rgba(200,200,200,0.5); border: 2px solid #fff; border-radius: 24px; padding: 32px 40px; display: inline-block; margin-bottom: 30px;">
+          <img src="assets/logo.png" alt="Logo AV Wallet" class="logo" style="display: block; margin: 0 auto;">
+        </div>
+        <h1>Bienvenue sur AV Wallet</h1>
+        <p class="subtitle">L'outil tout-en-un pour vos projets audiovisuels</p>
+        <!-- Boutons de téléchargement -->
+        <div style="display: flex; justify-content: center; gap: 40px; margin: 40px 0;">
+          <a href="#" style="display: flex; flex-direction: column; align-items: center; justify-content: center; width: 160px; height: 160px; background: #000; border: 2px solid #fff; border-radius: 20px; text-decoration: none; color: #fff; transition: background 0.3s, transform 0.3s; font-weight: bold; font-size: 18px;">
+            <i class="fab fa-apple" style="font-size: 48px; margin-bottom: 16px; color: #fff;"></i>
+            Télécharger iOS
+          </a>
+          <a href="#" style="display: flex; flex-direction: column; align-items: center; justify-content: center; width: 160px; height: 160px; background: #3ddc84; border: 2px solid #fff; border-radius: 20px; text-decoration: none; color: #fff; transition: background 0.3s, transform 0.3s; font-weight: bold; font-size: 18px;">
+            <i class="fab fa-android" style="font-size: 48px; margin-bottom: 16px; color: #fff;"></i>
+            Télécharger Android
+          </a>
+        </div>
+      </div>
+      <!-- Vidéo à droite -->
+      <div style="flex: 1; display: flex; justify-content: center; align-items: center; min-width: 220px;">
+        <video src="assets/movieshot.mov" controls style="max-width: 220px; width: 100%; border-radius: 16px; box-shadow: 0 4px 24px rgba(0,0,0,0.15);"></video>
+      </div>
     </div>
 
     <!-- Footer -->
