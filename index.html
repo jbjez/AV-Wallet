@@ -85,7 +85,7 @@
   <nav style="position: absolute; top: 20px; right: 30px; z-index: 10; display: flex; gap: 24px;">
     <a href="#" style="color: #fff; text-decoration: none; font-weight: bold; font-size: 16px;">Tutoriels</a>
     <a href="#" style="color: #fff; text-decoration: none; font-weight: bold; font-size: 16px;">Mon compte</a>
-    <a href="privacy.html" style="color: #fff; text-decoration: none; font-weight: bold; font-size: 16px;">Privacy</a>
+    <a id="privacy-link" href="privacy_fr.html" style="color: #fff; text-decoration: none; font-weight: bold; font-size: 16px;">Privacy</a>
   </nav>
 
   <div class="language-menu">
@@ -157,6 +157,15 @@
   window.addEventListener('DOMContentLoaded', () => {
     const lang = localStorage.getItem('lang') || 'fr';
     updateLanguage(lang);
+    // Lien privacy dynamique
+    const privacyMap = {
+      fr: 'privacy_fr.html',
+      en: 'privacy_en.html',
+      de: 'privacy_de.html',
+      it: 'privacy_it.html',
+      es: 'privacy_es.html'
+    };
+    document.getElementById('privacy-link').href = privacyMap[lang] || 'privacy_fr.html';
   });
 </script>
   <script>
