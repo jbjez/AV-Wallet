@@ -81,30 +81,43 @@
 <body>
   <div class="overlay"></div>
 
+  <!-- Barre de navigation en haut à droite -->
+  <nav style="position: absolute; top: 20px; right: 30px; z-index: 10; display: flex; gap: 24px;">
+    <a href="#" style="color: #fff; text-decoration: none; font-weight: bold; font-size: 16px;">Tutoriels</a>
+    <a href="#" style="color: #fff; text-decoration: none; font-weight: bold; font-size: 16px;">Mon compte</a>
+    <a href="privacy.html" style="color: #fff; text-decoration: none; font-weight: bold; font-size: 16px;">Privacy</a>
+  </nav>
+
   <div class="language-menu">
-  <div class="custom-select" onclick="toggleDropdown()">
-    <img id="current-flag" src="assets/flag_fr.png" alt="Langue" style="width:32px;height:32px;border-radius:50%;cursor:pointer;border:2px solid white;">
-    <div id="dropdown-lang" style="display:none;position:absolute;top:40px;left:0;background:#1c1c1c;border:1px solid white;border-radius:8px;padding:6px 0;z-index:10;">
-      <img src="assets/flag_fr.png" alt="Français" style="width:32px;height:32px;margin:5px;cursor:pointer;" onclick="setLanguage('fr')">
-      <img src="assets/flag_en.png" alt="English" style="width:32px;height:32px;margin:5px;cursor:pointer;" onclick="setLanguage('en')">
-      <img src="assets/flag_de.png" alt="Deutsch" style="width:32px;height:32px;margin:5px;cursor:pointer;" onclick="setLanguage('de')">
-      <img src="assets/flag_it.png" alt="Italiano" style="width:32px;height:32px;margin:5px;cursor:pointer;" onclick="setLanguage('it')">
-      <img src="assets/flag_es.png" alt="Español" style="width:32px;height:32px;margin:5px;cursor:pointer;" onclick="setLanguage('es')">
+    <div class="custom-select" onclick="toggleDropdown()">
+      <img id="current-flag" src="assets/flag_fr.png" alt="Langue" style="width:32px;height:32px;border-radius:50%;cursor:pointer;border:2px solid white;">
+      <div id="dropdown-lang" style="display:none;position:absolute;top:40px;left:0;background:#1c1c1c;border:1px solid white;border-radius:8px;padding:6px 0;z-index:10;">
+        <img src="assets/flag_fr.png" alt="Français" style="width:32px;height:32px;margin:5px;cursor:pointer;" onclick="setLanguage('fr')">
+        <img src="assets/flag_en.png" alt="English" style="width:32px;height:32px;margin:5px;cursor:pointer;" onclick="setLanguage('en')">
+        <img src="assets/flag_de.png" alt="Deutsch" style="width:32px;height:32px;margin:5px;cursor:pointer;" onclick="setLanguage('de')">
+        <img src="assets/flag_it.png" alt="Italiano" style="width:32px;height:32px;margin:5px;cursor:pointer;" onclick="setLanguage('it')">
+        <img src="assets/flag_es.png" alt="Español" style="width:32px;height:32px;margin:5px;cursor:pointer;" onclick="setLanguage('es')">
+      </div>
     </div>
   </div>
-</div>
 
   <div class="container">
-    <img src="assets/logo.png" alt="Logo AV Wallet" class="logo">
+    <!-- Logo encadré -->
+    <div style="background: rgba(240,240,240,0.95); border: 3px solid #fff; border-radius: 24px; display: inline-block; padding: 28px 36px 18px 36px; margin-bottom: 20px; margin-top: 10px;">
+      <img src="assets/logo.png" alt="Logo AV Wallet" class="logo" style="display: block; margin: 0 auto;">
+    </div>
     <h1>AV Wallet</h1>
     <p class="subtitle">Votre expertise dans la poche.</p>
-    <div style="margin-top: 30px;">
-      <button id="downloadBtn" style="margin: 10px; padding: 12px 24px; font-size: 16px; border: none; border-radius: 8px; background-color: #93AEDD; color: #0A1128; cursor: pointer;">
-        Télécharger l’application
-      </button>
-      <button id="accountBtn" style="margin: 10px; padding: 12px 24px; font-size: 16px; border: none; border-radius: 8px; background-color: transparent; border: 2px solid #93AEDD; color: #93AEDD; cursor: pointer;">
-        Mon compte
-      </button>
+    <!-- Boutons de téléchargement -->
+    <div style="display: flex; justify-content: center; gap: 32px; margin: 40px 0;">
+      <a href="#" style="display: flex; flex-direction: column; align-items: center; justify-content: center; width: 120px; height: 120px; background: #000; border: 2px solid #fff; border-radius: 20px; text-decoration: none; color: #fff; transition: background 0.3s, transform 0.3s; font-weight: bold; font-size: 16px;">
+        <i class="fab fa-apple" style="font-size: 40px; margin-bottom: 12px; color: #fff;"></i>
+        iOS
+      </a>
+      <a href="#" style="display: flex; flex-direction: column; align-items: center; justify-content: center; width: 120px; height: 120px; background: #3ddc84; border: 2px solid #fff; border-radius: 20px; text-decoration: none; color: #fff; transition: background 0.3s, transform 0.3s; font-weight: bold; font-size: 16px;">
+        <i class="fab fa-android" style="font-size: 40px; margin-bottom: 12px; color: #fff;"></i>
+        Android
+      </a>
     </div>
     <footer>© 2025 AV Wallet — Tous droits réservés</footer>
   </div>
@@ -178,7 +191,7 @@
       fr: {
         slogan: "Votre expertise dans la poche.",
         footer: "© 2025 AV Wallet — Tous droits réservés",
-        download: "Télécharger l’application",
+        download: "Télécharger l'application",
         account: "Mon compte"
       },
       en: {
