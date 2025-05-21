@@ -37,26 +37,20 @@
       text-align: center;
     }
 
-    .language-switcher {
+    .language-menu {
       position: absolute;
       top: 20px;
       left: 20px;
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
       z-index: 2;
     }
 
-    .language-switcher img {
-      width: 32px;
-      height: 32px;
-      cursor: pointer;
-      border: 2px solid transparent;
-      border-radius: 50%;
-    }
-
-    .language-switcher img:hover {
-      border-color: white;
+    .language-select {
+      background-color: rgba(255,255,255,0.1);
+      color: white;
+      border: 1px solid white;
+      border-radius: 8px;
+      padding: 6px;
+      font-size: 14px;
     }
 
     .logo {
@@ -87,22 +81,45 @@
 <body>
   <div class="overlay"></div>
 
-  <div class="language-switcher">
-    <img src="assets/flag_fr_48.png" alt="Français" onclick="setLanguage('fr')">
-    <img src="assets/flag_en_48.png" alt="English" onclick="setLanguage('en')">
-    <img src="assets/flag_de_48.png" alt="Deutsch" onclick="setLanguage('de')">
-    <img src="assets/flag_it_48.png" alt="Italiano" onclick="setLanguage('it')">
-    <img src="assets/flag_es_48.png" alt="Español" onclick="setLanguage('es')">
+  <div class="language-menu">
+  <div class="custom-select" onclick="toggleDropdown()">
+    <img id="current-flag" src="assets/flag_fr.png" alt="Langue" style="width:32px;height:32px;border-radius:50%;cursor:pointer;border:2px solid white;">
+    <div id="dropdown-lang" style="display:none;position:absolute;top:40px;left:0;background:#1c1c1c;border:1px solid white;border-radius:8px;padding:6px 0;z-index:10;">
+      <img src="assets/flag_fr.png" alt="Français" style="width:32px;height:32px;margin:5px;cursor:pointer;" onclick="setLanguage('fr')">
+      <img src="assets/flag_en.png" alt="English" style="width:32px;height:32px;margin:5px;cursor:pointer;" onclick="setLanguage('en')">
+      <img src="assets/flag_de.png" alt="Deutsch" style="width:32px;height:32px;margin:5px;cursor:pointer;" onclick="setLanguage('de')">
+      <img src="assets/flag_it.png" alt="Italiano" style="width:32px;height:32px;margin:5px;cursor:pointer;" onclick="setLanguage('it')">
+      <img src="assets/flag_es.png" alt="Español" style="width:32px;height:32px;margin:5px;cursor:pointer;" onclick="setLanguage('es')">
+    </div>
   </div>
+</div>
 
-  <div class="container">
-    <img src="assets/logo.png" alt="Logo AV Wallet" class="logo">
-    <h1>AV Wallet</h1>
-    <p class="subtitle">Votre expertise dans la poche.</p>
+  $1
+    <div style="margin-top: 30px;">
+      <button id="downloadBtn" style="margin: 10px; padding: 12px 24px; font-size: 16px; border: none; border-radius: 8px; background-color: #93AEDD; color: #0A1128; cursor: pointer;">
+        Télécharger l’application
+      </button>
+      <button id="accountBtn" style="margin: 10px; padding: 12px 24px; font-size: 16px; border: none; border-radius: 8px; background-color: transparent; border: 2px solid #93AEDD; color: #93AEDD; cursor: pointer;">
+        Mon compte
+      </button>
+    </div>
     <footer>© 2025 AV Wallet — Tous droits réservés</footer>
   </div>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+  function toggleDropdown() {
+    const menu = document.getElementById('dropdown-lang');
+    menu.style.display = menu.style.display === 'block' ? 'none' : 'block';
+  }
+
+  function setLanguage(lang) {
+    localStorage.setItem('lang', lang);
+    document.getElementById('current-flag').src = `assets/flag_${lang}.png`;
+    document.getElementById('dropdown-lang').style.display = 'none';
+    location.reload();
+  }
+</script>
   <script>
     function setLanguage(lang) {
       localStorage.setItem('lang', lang);
@@ -150,6 +167,49 @@
           });
         }
       });
+    });
+  </script>
+  <script>
+    const lang = localStorage.getItem('lang') || 'fr';
+    const translations = {
+      fr: {
+        slogan: "Votre expertise dans la poche.",
+        footer: "© 2025 AV Wallet — Tous droits réservés",
+        download: "Télécharger l’application",
+        account: "Mon compte"
+      },
+      en: {
+        slogan: "Your expertise, in your pocket.",
+        footer: "© 2025 AV Wallet — All rights reserved",
+        download: "Download the app",
+        account: "My account"
+      },
+      de: {
+        slogan: "Ihre Expertise in der Tasche.",
+        footer: "© 2025 AV Wallet — Alle Rechte vorbehalten",
+        download: "App herunterladen",
+        account: "Mein Konto"
+      },
+      it: {
+        slogan: "La tua competenza, sempre con te.",
+        footer: "© 2025 AV Wallet — Tutti i diritti riservati",
+        download: "Scarica l'app",
+        account: "Il mio account"
+      },
+      es: {
+        slogan: "Tu experiencia en el bolsillo.",
+        footer: "© 2025 AV Wallet — Todos los derechos reservados",
+        download: "Descargar la app",
+        account: "Mi cuenta"
+      }
+    };
+
+    window.addEventListener('DOMContentLoaded', () => {
+      const t = translations[lang] || translations['fr'];
+      document.querySelector('.subtitle').textContent = t.slogan;
+      document.querySelector('footer').textContent = t.footer;
+      document.getElementById('downloadBtn').textContent = t.download;
+      document.getElementById('accountBtn').textContent = t.account;
     });
   </script>
 </body>
