@@ -90,13 +90,13 @@
 
   <div class="language-menu">
     <div class="custom-select" onclick="toggleDropdown()">
-      <img id="current-flag" src="assets/flag_fr_48.png" alt="Langue" style="width:32px;height:32px;border-radius:50%;cursor:pointer;border:2px solid white;">
-      <div id="dropdown-lang" style="display:none;position:absolute;top:40px;left:0;background:#1c1c1c;border:1px solid white;border-radius:8px;padding:6px 0;z-index:10;">
-        <img src="assets/flag_fr_48.png" alt="Français" style="width:32px;height:32px;margin:5px;cursor:pointer;" onclick="setLanguage('fr')">
-        <img src="assets/flag_en_48.png" alt="English" style="width:32px;height:32px;margin:5px;cursor:pointer;" onclick="setLanguage('en')">
-        <img src="assets/flag_de_48.png" alt="Deutsch" style="width:32px;height:32px;margin:5px;cursor:pointer;" onclick="setLanguage('de')">
-        <img src="assets/flag_it_48.png" alt="Italiano" style="width:32px;height:32px;margin:5px;cursor:pointer;" onclick="setLanguage('it')">
-        <img src="assets/flag_es_48.png" alt="Español" style="width:32px;height:32px;margin:5px;cursor:pointer;" onclick="setLanguage('es')">
+      <img id="current-flag" src="assets/flag_fr_48.png" alt="Langue" style="width:24px;height:24px;border-radius:50%;cursor:pointer;border:2px solid white;object-fit:cover;">
+      <div id="dropdown-lang" style="display:none;position:absolute;top:32px;left:0;background:#1c1c1c;border:1px solid white;border-radius:8px;padding:6px 0;z-index:10;">
+        <img src="assets/flag_fr_48.png" alt="Français" style="width:24px;height:24px;margin:4px;cursor:pointer;border-radius:50%;object-fit:cover;" onclick="setLanguage('fr')">
+        <img src="assets/flag_en_48.png" alt="English" style="width:24px;height:24px;margin:4px;cursor:pointer;border-radius:50%;object-fit:cover;" onclick="setLanguage('en')">
+        <img src="assets/flag_de_48.png" alt="Deutsch" style="width:24px;height:24px;margin:4px;cursor:pointer;border-radius:50%;object-fit:cover;" onclick="setLanguage('de')">
+        <img src="assets/flag_it_48.png" alt="Italiano" style="width:24px;height:24px;margin:4px;cursor:pointer;border-radius:50%;object-fit:cover;" onclick="setLanguage('it')">
+        <img src="assets/flag_es_48.png" alt="Español" style="width:24px;height:24px;margin:4px;cursor:pointer;border-radius:50%;object-fit:cover;" onclick="setLanguage('es')">
       </div>
     </div>
   </div>
@@ -118,13 +118,11 @@
         <!-- Boutons de téléchargement -->
         <div style="display: flex; justify-content: center; gap: 40px; margin: 40px 0;">
           <a href="#" style="display: flex; flex-direction: column; align-items: center; justify-content: center; width: 150px; height: 150px; background: #000; border: 2px solid #fff; border-radius: 20px; text-decoration: none; color: #fff; transition: background 0.3s, transform 0.3s; font-weight: bold; font-size: 18px;">
-            <img src="assets/apple_logo.png" alt="Apple" style="width:40px; height:40px; margin-bottom: 8px;">
-            <i class="fab fa-apple" style="font-size: 40px; margin-bottom: 8px; color: #fff;"></i>
+            <i class="fab fa-apple" style="font-size: 60px; margin-bottom: 12px; color: #fff;"></i>
             iOS
           </a>
           <a href="#" style="display: flex; flex-direction: column; align-items: center; justify-content: center; width: 150px; height: 150px; background: #3ddc84; border: 2px solid #fff; border-radius: 20px; text-decoration: none; color: #fff; transition: background 0.3s, transform 0.3s; font-weight: bold; font-size: 18px;">
-            <img src="assets/google_play.png" alt="Google Play" style="width:40px; height:40px; margin-bottom: 8px;">
-            <i class="fab fa-android" style="font-size: 40px; margin-bottom: 8px; color: #fff;"></i>
+            <i class="fab fa-android" style="font-size: 60px; margin-bottom: 12px; color: #fff;"></i>
             Android
           </a>
         </div>
@@ -241,6 +239,8 @@
       document.querySelector('footer').textContent = t.footer;
       document.getElementById('downloadBtn').textContent = t.download;
       document.getElementById('accountBtn').textContent = t.account;
+      const lang = localStorage.getItem('lang') || 'fr';
+      document.getElementById('current-flag').src = `assets/flag_${lang}_48.png`;
     });
   </script>
 </body>
