@@ -90,34 +90,49 @@
 
   <div class="language-menu">
     <div class="custom-select" onclick="toggleDropdown()">
-      <img id="current-flag" src="assets/flag_fr.png" alt="Langue" style="width:32px;height:32px;border-radius:50%;cursor:pointer;border:2px solid white;">
+      <img id="current-flag" src="assets/flag_fr_48.png" alt="Langue" style="width:32px;height:32px;border-radius:50%;cursor:pointer;border:2px solid white;">
       <div id="dropdown-lang" style="display:none;position:absolute;top:40px;left:0;background:#1c1c1c;border:1px solid white;border-radius:8px;padding:6px 0;z-index:10;">
-        <img src="assets/flag_fr.png" alt="Français" style="width:32px;height:32px;margin:5px;cursor:pointer;" onclick="setLanguage('fr')">
-        <img src="assets/flag_en.png" alt="English" style="width:32px;height:32px;margin:5px;cursor:pointer;" onclick="setLanguage('en')">
-        <img src="assets/flag_de.png" alt="Deutsch" style="width:32px;height:32px;margin:5px;cursor:pointer;" onclick="setLanguage('de')">
-        <img src="assets/flag_it.png" alt="Italiano" style="width:32px;height:32px;margin:5px;cursor:pointer;" onclick="setLanguage('it')">
-        <img src="assets/flag_es.png" alt="Español" style="width:32px;height:32px;margin:5px;cursor:pointer;" onclick="setLanguage('es')">
+        <img src="assets/flag_fr_48.png" alt="Français" style="width:32px;height:32px;margin:5px;cursor:pointer;" onclick="setLanguage('fr')">
+        <img src="assets/flag_en_48.png" alt="English" style="width:32px;height:32px;margin:5px;cursor:pointer;" onclick="setLanguage('en')">
+        <img src="assets/flag_de_48.png" alt="Deutsch" style="width:32px;height:32px;margin:5px;cursor:pointer;" onclick="setLanguage('de')">
+        <img src="assets/flag_it_48.png" alt="Italiano" style="width:32px;height:32px;margin:5px;cursor:pointer;" onclick="setLanguage('it')">
+        <img src="assets/flag_es_48.png" alt="Español" style="width:32px;height:32px;margin:5px;cursor:pointer;" onclick="setLanguage('es')">
       </div>
     </div>
   </div>
 
   <div class="container">
-    <!-- Logo encadré -->
-    <div style="background: rgba(240,240,240,0.95); border: 3px solid #fff; border-radius: 24px; display: inline-block; padding: 28px 36px 18px 36px; margin-bottom: 20px; margin-top: 10px;">
-      <img src="assets/logo.png" alt="Logo AV Wallet" class="logo" style="display: block; margin: 0 auto;">
-    </div>
-    <h1>AV Wallet</h1>
-    <p class="subtitle">Votre expertise dans la poche.</p>
-    <!-- Boutons de téléchargement -->
-    <div style="display: flex; justify-content: center; gap: 32px; margin: 40px 0;">
-      <a href="#" style="display: flex; flex-direction: column; align-items: center; justify-content: center; width: 120px; height: 120px; background: #000; border: 2px solid #fff; border-radius: 20px; text-decoration: none; color: #fff; transition: background 0.3s, transform 0.3s; font-weight: bold; font-size: 16px;">
-        <i class="fab fa-apple" style="font-size: 40px; margin-bottom: 12px; color: #fff;"></i>
-        iOS
-      </a>
-      <a href="#" style="display: flex; flex-direction: column; align-items: center; justify-content: center; width: 120px; height: 120px; background: #3ddc84; border: 2px solid #fff; border-radius: 20px; text-decoration: none; color: #fff; transition: background 0.3s, transform 0.3s; font-weight: bold; font-size: 16px;">
-        <i class="fab fa-android" style="font-size: 40px; margin-bottom: 12px; color: #fff;"></i>
-        Android
-      </a>
+    <div style="display: flex; justify-content: center; align-items: center; gap: 40px; flex-wrap: wrap; min-height: 60vh;">
+      <!-- Screenshot à gauche -->
+      <div style="flex: 1; display: flex; justify-content: center; align-items: center; min-width: 220px;">
+        <img src="assets/screenshot.PNG" alt="Capture d'écran AV Wallet" style="max-width: 220px; width: 100%; border-radius: 16px; box-shadow: 0 4px 24px rgba(0,0,0,0.15);">
+      </div>
+      <!-- Contenu principal (logo + boutons) -->
+      <div style="flex: 2; min-width: 300px; max-width: 420px; display: flex; flex-direction: column; align-items: center;">
+        <!-- Logo encadré -->
+        <div style="background: rgba(120,120,120,0.95); border: 3px solid #fff; border-radius: 24px; display: inline-block; padding: 18px 24px 8px 24px; margin-bottom: 20px; margin-top: 10px;">
+          <img src="assets/logo.png" alt="Logo AV Wallet" class="logo" style="display: block; margin: 0 auto; max-width: 100px;">
+        </div>
+        <h1>AV Wallet</h1>
+        <p class="subtitle">Votre expertise dans la poche.</p>
+        <!-- Boutons de téléchargement -->
+        <div style="display: flex; justify-content: center; gap: 40px; margin: 40px 0;">
+          <a href="#" style="display: flex; flex-direction: column; align-items: center; justify-content: center; width: 150px; height: 150px; background: #000; border: 2px solid #fff; border-radius: 20px; text-decoration: none; color: #fff; transition: background 0.3s, transform 0.3s; font-weight: bold; font-size: 18px;">
+            <img src="assets/apple_logo.png" alt="Apple" style="width:40px; height:40px; margin-bottom: 8px;">
+            <i class="fab fa-apple" style="font-size: 40px; margin-bottom: 8px; color: #fff;"></i>
+            iOS
+          </a>
+          <a href="#" style="display: flex; flex-direction: column; align-items: center; justify-content: center; width: 150px; height: 150px; background: #3ddc84; border: 2px solid #fff; border-radius: 20px; text-decoration: none; color: #fff; transition: background 0.3s, transform 0.3s; font-weight: bold; font-size: 18px;">
+            <img src="assets/google_play.png" alt="Google Play" style="width:40px; height:40px; margin-bottom: 8px;">
+            <i class="fab fa-android" style="font-size: 40px; margin-bottom: 8px; color: #fff;"></i>
+            Android
+          </a>
+        </div>
+      </div>
+      <!-- Vidéo à droite -->
+      <div style="flex: 1; display: flex; justify-content: center; align-items: center; min-width: 220px;">
+        <video src="assets/movieshot.mov" controls loop style="width: 220px; height: 440px; max-width: 220px; max-height: 440px; border-radius: 16px; box-shadow: 0 4px 24px rgba(0,0,0,0.15); object-fit: contain; background: #222;"></video>
+      </div>
     </div>
     <footer>© 2025 AV Wallet — Tous droits réservés</footer>
   </div>
@@ -131,7 +146,7 @@
 
   function setLanguage(lang) {
     localStorage.setItem('lang', lang);
-    document.getElementById('current-flag').src = `assets/flag_${lang}.png`;
+    document.getElementById('current-flag').src = `assets/flag_${lang}_48.png`;
     document.getElementById('dropdown-lang').style.display = 'none';
     location.reload();
   }
