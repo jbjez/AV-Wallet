@@ -144,10 +144,21 @@
 
   function setLanguage(lang) {
     localStorage.setItem('lang', lang);
-    document.getElementById('current-flag').src = `assets/flag_${lang}_48.png`;
+    updateLanguage(lang);
     document.getElementById('dropdown-lang').style.display = 'none';
-    location.reload();
   }
+
+  function updateLanguage(lang) {
+    const t = translations[lang] || translations['fr'];
+    document.querySelector('.subtitle').textContent = t.slogan;
+    document.querySelector('footer').textContent = t.footer;
+    document.getElementById('current-flag').src = `assets/flag_${lang}_48.png`;
+  }
+
+  window.addEventListener('DOMContentLoaded', () => {
+    const lang = localStorage.getItem('lang') || 'fr';
+    updateLanguage(lang);
+  });
 </script>
   <script>
     function setLanguage(lang) {
@@ -199,7 +210,6 @@
     });
   </script>
   <script>
-    const lang = localStorage.getItem('lang') || 'fr';
     const translations = {
       fr: {
         slogan: "Votre expertise dans la poche.",
@@ -234,13 +244,8 @@
     };
 
     window.addEventListener('DOMContentLoaded', () => {
-      const t = translations[lang] || translations['fr'];
-      document.querySelector('.subtitle').textContent = t.slogan;
-      document.querySelector('footer').textContent = t.footer;
-      document.getElementById('downloadBtn').textContent = t.download;
-      document.getElementById('accountBtn').textContent = t.account;
       const lang = localStorage.getItem('lang') || 'fr';
-      document.getElementById('current-flag').src = `assets/flag_${lang}_48.png`;
+      updateLanguage(lang);
     });
   </script>
 </body>
