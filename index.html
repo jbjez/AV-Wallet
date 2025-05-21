@@ -2,8 +2,16 @@
 <html lang="fr">
 <head>
   <meta charset="UTF-8">
-  <title>AV Wallet - Accueil</title>
+  <meta content="IE=Edge" http-equiv="X-UA-Compatible">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="AV Wallet">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+  <meta name="apple-mobile-web-app-title" content="AV Wallet">
+  <link rel="apple-touch-icon" href="icons/Icon-192.png">
+  <link rel="icon" type="image/png" href="favicon.png"/>
+  <title>AV Wallet</title>
+  <link rel="manifest" href="manifest.json">
   <style>
     body {
       margin: 0;
@@ -14,7 +22,7 @@
     }
 
     .overlay {
-      background-color: rgba(10, 17, 40, 0.75);
+      background-color: rgba(10, 17, 40, 0.85);
       position: absolute;
       top: 0; left: 0; right: 0; bottom: 0;
       z-index: 0;
@@ -25,114 +33,124 @@
       z-index: 1;
       max-width: 1200px;
       margin: auto;
-      padding: 40px 20px;
+      padding: 60px 20px;
       text-align: center;
+    }
+
+    .language-switcher {
+      position: absolute;
+      top: 20px;
+      left: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      z-index: 2;
+    }
+
+    .language-switcher img {
+      width: 32px;
+      height: 32px;
+      cursor: pointer;
+      border: 2px solid transparent;
+      border-radius: 50%;
+    }
+
+    .language-switcher img:hover {
+      border-color: white;
     }
 
     .logo {
       max-width: 200px;
-      margin: 0 auto 30px;
+      margin: 0 auto 20px;
     }
 
     h1 {
-      font-size: 36px;
-      font-weight: 700;
+      font-size: 40px;
+      font-weight: 800;
       margin-bottom: 10px;
     }
 
     p.subtitle {
-      font-size: 18px;
-      color: #ddd;
+      font-size: 20px;
+      color: #93AEDD;
       margin-bottom: 40px;
-    }
-
-    .grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
-      gap: 20px;
-    }
-
-    .menu-card {
-      background-color: rgba(255, 255, 255, 0.08);
-      border: 2px solid rgba(255, 255, 255, 0.2);
-      border-radius: 16px;
-      padding: 20px;
-      transition: transform 0.3s ease, background-color 0.3s ease;
-      cursor: pointer;
-    }
-
-    .menu-card:hover {
-      transform: scale(1.05);
-      background-color: rgba(255, 255, 255, 0.15);
-    }
-
-    .menu-card i {
-      font-size: 32px;
-      margin-bottom: 10px;
-    }
-
-    .menu-card span {
-      display: block;
-      font-size: 16px;
-      font-weight: bold;
     }
 
     footer {
       text-align: center;
-      margin-top: 50px;
-      font-size: 12px;
-      color: #aaa;
+      margin-top: 60px;
+      font-size: 13px;
+      color: #ccc;
     }
   </style>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 </head>
 <body>
-  <!-- Barre de navigation -->
-  <nav style="width: 100%; display: flex; justify-content: center; align-items: center; background: rgba(10,17,40,0.85); position: fixed; top: 0; left: 0; z-index: 10; height: 60px;">
-    <a href="#" style="color: #fff; text-decoration: none; margin: 0 24px; font-weight: bold; font-size: 16px; transition: color 0.2s;">Tutoriel</a>
-    <a href="#" style="color: #fff; text-decoration: none; margin: 0 24px; font-weight: bold; font-size: 16px; transition: color 0.2s;">Mon compte</a>
-    <a href="privacy.html" style="color: #fff; text-decoration: none; margin: 0 24px; font-weight: bold; font-size: 16px; transition: color 0.2s;">Privacy</a>
-  </nav>
   <div class="overlay"></div>
-  <div class="container" style="margin-top: 80px;">
-    <!-- Contenu principal en flexbox -->
-    <div style="display: flex; justify-content: center; align-items: center; gap: 40px; flex-wrap: wrap; min-height: 60vh;">
-      <!-- Screenshot à gauche -->
-      <div style="flex: 1; display: flex; justify-content: center; align-items: center; min-width: 220px;">
-        <img src="assets/screenshot.PNG" alt="Capture d'écran AV Wallet" style="max-width: 220px; width: 100%; border-radius: 16px; box-shadow: 0 4px 24px rgba(0,0,0,0.15);">
-      </div>
-      <!-- Contenu principal (logo + boutons) -->
-      <div style="flex: 2; min-width: 300px; max-width: 420px; display: flex; flex-direction: column; align-items: center;">
-        <!-- Logo encadré -->
-        <div style="background: rgba(200,200,200,0.5); border: 2px solid #fff; border-radius: 24px; padding: 32px 40px; display: inline-block; margin-bottom: 30px;">
-          <img src="assets/logo.png" alt="Logo AV Wallet" class="logo" style="display: block; margin: 0 auto;">
-        </div>
-        <h1>Bienvenue sur AV Wallet</h1>
-        <p class="subtitle">L'outil tout-en-un pour vos projets audiovisuels</p>
-        <!-- Boutons de téléchargement -->
-        <div style="display: flex; justify-content: center; gap: 40px; margin: 40px 0;">
-          <a href="#" style="display: flex; flex-direction: column; align-items: center; justify-content: center; width: 160px; height: 160px; background: #000; border: 2px solid #fff; border-radius: 20px; text-decoration: none; color: #fff; transition: background 0.3s, transform 0.3s; font-weight: bold; font-size: 18px;">
-            <i class="fab fa-apple" style="font-size: 48px; margin-bottom: 16px; color: #fff;"></i>
-            Télécharger iOS
-          </a>
-          <a href="#" style="display: flex; flex-direction: column; align-items: center; justify-content: center; width: 160px; height: 160px; background: #3ddc84; border: 2px solid #fff; border-radius: 20px; text-decoration: none; color: #fff; transition: background 0.3s, transform 0.3s; font-weight: bold; font-size: 18px;">
-            <i class="fab fa-android" style="font-size: 48px; margin-bottom: 16px; color: #fff;"></i>
-            Télécharger Android
-          </a>
-        </div>
-      </div>
-      <!-- Vidéo à droite -->
-      <div style="flex: 1; display: flex; justify-content: center; align-items: center; min-width: 220px;">
-        <video src="assets/movieshot.mov" controls loop style="width: 220px; height: 440px; max-width: 220px; max-height: 440px; border-radius: 16px; box-shadow: 0 4px 24px rgba(0,0,0,0.15); object-fit: contain; background: #222;"></video>
-      </div>
-    </div>
 
-    <!-- Footer -->
-    <footer>
-      © 2025 AV Wallet — Tous droits réservés
-      <br>
-      <a href="privacy.html" style="color: #aaa; text-decoration: none;">Mentions légales</a>
-    </footer>
+  <div class="language-switcher">
+    <img src="assets/flag_fr_48.png" alt="Français" onclick="setLanguage('fr')">
+    <img src="assets/flag_en_48.png" alt="English" onclick="setLanguage('en')">
+    <img src="assets/flag_de_48.png" alt="Deutsch" onclick="setLanguage('de')">
+    <img src="assets/flag_it_48.png" alt="Italiano" onclick="setLanguage('it')">
+    <img src="assets/flag_es_48.png" alt="Español" onclick="setLanguage('es')">
   </div>
+
+  <div class="container">
+    <img src="assets/logo.png" alt="Logo AV Wallet" class="logo">
+    <h1>AV Wallet</h1>
+    <p class="subtitle">Votre expertise dans la poche.</p>
+    <footer>© 2025 AV Wallet — Tous droits réservés</footer>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script>
+    function setLanguage(lang) {
+      localStorage.setItem('lang', lang);
+      location.reload();
+    }
+
+    window.addEventListener('load', function() {
+      const errorCode = new URLSearchParams(window.location.search).get('error');
+      const errorDescription = new URLSearchParams(window.location.search).get('error_description');
+      if (errorCode) {
+        console.error('OAuth Error:', errorCode, errorDescription);
+        window.opener?.postMessage({ type: 'oauth_error', error: errorCode, description: errorDescription }, '*');
+        window.close();
+        return;
+      }
+
+      const authCode = new URLSearchParams(window.location.search).get('code');
+      if (authCode) {
+        console.log('Auth code received, sending to parent');
+        window.opener?.postMessage({ type: 'oauth_success', code: authCode }, '*');
+        window.close();
+      }
+    });
+  </script>
+
+  <script>
+    const serviceWorkerVersion = null;
+  </script>
+  <script src="flutter.js" defer></script>
+  <div id="loading">Chargement...</div>
+  <script>
+    window.addEventListener('error', function(e) {
+      console.error('Global error:', e.error);
+      document.getElementById('loading').textContent = 'Erreur : ' + e.error;
+    });
+
+    window.addEventListener('load', function(ev) {
+      console.log('Window loaded, initializing Flutter...');
+      var loading = document.getElementById('loading');
+      _flutter.loader.loadEntrypoint({
+        serviceWorker: { serviceWorkerVersion: serviceWorkerVersion },
+        onEntrypointLoaded: function(engineInitializer) {
+          engineInitializer.initializeEngine().then(function(appRunner) {
+            appRunner.runApp();
+          });
+        }
+      });
+    });
+  </script>
 </body>
 </html>
