@@ -76,6 +76,29 @@
       font-size: 13px;
       color: #ccc;
     }
+
+    .page-flex {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 40px;
+      flex-wrap: wrap;
+      min-height: 60vh;
+    }
+    @media (max-width: 900px) {
+      .page-flex {
+        flex-direction: column;
+        gap: 0;
+      }
+      .main-block, .screenshot-block, .video-block {
+        width: 100% !important;
+        max-width: 100% !important;
+        min-width: 0 !important;
+      }
+      .main-block { order: 1; }
+      .screenshot-block { order: 2; }
+      .video-block { order: 3; }
+    }
   </style>
 </head>
 <body>
@@ -102,13 +125,11 @@
   </div>
 
   <div class="container">
-    <div style="display: flex; justify-content: center; align-items: center; gap: 40px; flex-wrap: wrap; min-height: 60vh;">
-      <!-- Screenshot à gauche -->
-      <div style="flex: 1; display: flex; justify-content: center; align-items: center; min-width: 220px;">
+    <div class="page-flex">
+      <div class="screenshot-block" style="background: transparent; display: flex; justify-content: center; align-items: center; min-width: 220px;">
         <img src="assets/screenshot.PNG" alt="Capture d'écran AV Wallet" style="max-width: 220px; width: 100%; border-radius: 16px; box-shadow: 0 4px 24px rgba(0,0,0,0.15);">
       </div>
-      <!-- Contenu principal (logo + boutons) -->
-      <div style="flex: 2; min-width: 300px; max-width: 420px; display: flex; flex-direction: column; align-items: center;">
+      <div class="main-block" style="background: transparent; flex: 2; min-width: 300px; max-width: 420px; display: flex; flex-direction: column; align-items: center;">
         <!-- Logo encadré -->
         <div style="background: rgba(120,120,120,0.95); border: 3px solid #fff; border-radius: 24px; display: inline-block; padding: 18px 24px 8px 24px; margin-bottom: 20px; margin-top: 10px;">
           <img src="assets/logo.png" alt="Logo AV Wallet" class="logo" style="display: block; margin: 0 auto; max-width: 100px;">
@@ -130,8 +151,7 @@
           </a>
         </div>
       </div>
-      <!-- Vidéo à droite -->
-      <div style="flex: 1; display: flex; justify-content: center; align-items: center; min-width: 220px;">
+      <div class="video-block" style="background: transparent; display: flex; justify-content: center; align-items: center; min-width: 220px;">
         <video src="assets/movieshot.mov" controls loop style="width: 220px; height: 440px; max-width: 220px; max-height: 440px; border-radius: 16px; box-shadow: 0 4px 24px rgba(0,0,0,0.15); object-fit: contain; background: #222;"></video>
       </div>
     </div>
