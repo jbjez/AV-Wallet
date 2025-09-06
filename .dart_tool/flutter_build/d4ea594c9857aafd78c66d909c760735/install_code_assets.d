@@ -1,0 +1,1 @@
+ /Users/jbjezequel/Desktop/AV_Wallet_Hive/.dart_tool/flutter_build/d4ea594c9857aafd78c66d909c760735/native_assets.json: 

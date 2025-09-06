@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Test Supabase Direct</title>
+    <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+</head>
+<body>
+    <h2>Test de connexion directe Supabase</h2>
+    <div id="status">Vérification de la connexion...</div>
+    <button onclick="testConnection()">Tester la connexion</button>
+    <div id="debug"></div>
+
+    <script>
+        async function testConnection() {
+            const debugDiv = document.getElementById('debug');
+            const statusDiv = document.getElementById('status');
+            
+            try {
+                statusDiv.innerHTML = 'Tentative de connexion...';
+                debugDiv.innerHTML = 'Initialisation du client Supabase...';
+                
+                const supabaseUrl = 'https://sjwaoemczpzwlijljozk.supabase.co';
+                const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNqd2FvZW1jenB6d2xpamxqb3prIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTY5MjYxMjksImV4cCI6MjA3MjUwMjEyOX0.xWAwKbAcsKQviBz31HmcCRY5XhT1WPy9tIAliyqqMlg';
+
+                // Test de la connexion de base
+                debugDiv.innerHTML += '<br>Test de la connexion de base...';
+                const response = await fetch(supabaseUrl + '/auth/v1/health', {
+                    headers: {
+                        'apikey': supabaseKey
+                    }
+                });
+                
+                const healthData = await response.json();
+                debugDiv.innerHTML += '<br>Réponse du health check: ' + JSON.stringify(healthData);
+
+                // Initialisation du client Supabase
+                debugDiv.innerHTML += '<br>Création du client Supabase...';
+                const supabaseClient = supabase.createClient(supabaseUrl, supabaseKey);
+
+                // Test d'une requête simple
+                debugDiv.innerHTML += '<br>Test d\'une requête simple...';
+                const { data, error } = await supabaseClient
+                    .from('_test')
+                    .select('*')
+                    .limit(1);
+
+                if (error) throw error;
+
+                statusDiv.innerHTML = 'Connexion réussie!';
+                debugDiv.innerHTML += '<br>Données reçues: ' + JSON.stringify(data, null, 2);
+            } catch (error) {
+                statusDiv.innerHTML = 'Erreur de connexion';
+                debugDiv.innerHTML += '<br>ERREUR: ' + error.message;
+                console.error('Erreur détaillée:', error);
+            }
+        }
+
+        // Attendre que la page soit chargée
+        document.addEventListener('DOMContentLoaded', function() {
+            // Vérifier que supabase est bien chargé
+            if (typeof supabase === 'undefined') {
+                document.getElementById('debug').innerHTML = 'Erreur: La bibliothèque Supabase n\'est pas chargée correctement';
+                return;
+            }
+            testConnection();
+        });
+    </script>
+</body>
+</html> 

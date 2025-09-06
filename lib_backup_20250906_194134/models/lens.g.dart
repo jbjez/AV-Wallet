@@ -1,0 +1,47 @@
+// GENERATED CODE - DO NOT MODIFY BY HAND
+
+part of 'lens.dart';
+
+// **************************************************************************
+// TypeAdapterGenerator
+// **************************************************************************
+
+class LensAdapter extends TypeAdapter<Lens> {
+  @override
+  final int typeId = 2;
+
+  @override
+  Lens read(BinaryReader reader) {
+    final numOfFields = reader.readByte();
+    final fields = <int, dynamic>{
+      for (int i = 0; i < numOfFields; i++) reader.readByte(): reader.read(),
+    };
+    return Lens(
+      reference: fields[0] as String,
+      ratio: fields[1] as String,
+      notes: fields[2] as String?,
+    );
+  }
+
+  @override
+  void write(BinaryWriter writer, Lens obj) {
+    writer
+      ..writeByte(3)
+      ..writeByte(0)
+      ..write(obj.reference)
+      ..writeByte(1)
+      ..write(obj.ratio)
+      ..writeByte(2)
+      ..write(obj.notes);
+  }
+
+  @override
+  int get hashCode => typeId.hashCode;
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is LensAdapter &&
+          runtimeType == other.runtimeType &&
+          typeId == other.typeId;
+}

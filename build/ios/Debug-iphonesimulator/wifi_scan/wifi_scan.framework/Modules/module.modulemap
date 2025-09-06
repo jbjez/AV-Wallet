@@ -1,0 +1,11 @@
+framework module wifi_scan {
+  umbrella header "wifi_scan-umbrella.h"
+
+  export *
+  module * { export * }
+}
+
+module wifi_scan.Swift {
+  header "wifi_scan-Swift.h"
+  requires objc
+}

@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Test Auth Supabase</title>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body>
+    <h2>Test Authentification Supabase</h2>
+    <button onclick="signInWithGoogle()">Se connecter avec Google</button>
+    <div id="status"></div>
+
+    <script>
+        const SUPABASE_URL = 'https://sjwaoemczpzwlijljozk.supabase.co';
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNqd2FvZW1jenB6d2xpamxqb3prIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTY5MjYxMjksImV4cCI6MjA3MjUwMjEyOX0.xWAwKbAcsKQviBz31HmcCRY5XhT1WPy9tIAliyqqMlg';
+
+        const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+        async function signInWithGoogle() {
+            try {
+                document.getElementById('status').textContent = 'Tentative de connexion...';
+                
+                const { data, error } = await supabase.auth.signInWithOAuth({
+                    provider: 'google',
+                    options: {
+                        redirectTo: 'io.supabase.avwallet://login-callback/'
+                    }
+                });
+
+                if (error) {
+                    document.getElementById('status').textContent = 'Erreur: ' + error.message;
+                    console.error('Erreur:', error);
+                } else {
+                    document.getElementById('status').textContent = 'Redirection vers Google...';
+                    console.log('Success:', data);
+                }
+            } catch (err) {
+                document.getElementById('status').textContent = 'Erreur: ' + err.message;
+                console.error('Erreur:', err);
+            }
+        }
+
+        // Écouter les changements d'état d'authentification
+        supabase.auth.onAuthStateChange((event, session) => {
+            console.log('Auth event:', event);
+            console.log('Session:', session);
+            document.getElementById('status').textContent = 'État: ' + event + (session ? ' (Connecté)' : ' (Déconnecté)');
+        });
+    </script>
+</body>
+</html> 

@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Test Supabase Connection</title>
+</head>
+<body>
+    <h2>Test de connexion Supabase</h2>
+    <div id="status">Vérification de la connexion...</div>
+
+    <script>
+        async function testConnection() {
+            try {
+                const response = await fetch('https://sjwaoemczpzwlijljozk.supabase.co/auth/v1/health', {
+                    headers: {
+                        'apikey': 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNqd2FvZW1jenB6d2xpamxqb3prIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTY5MjYxMjksImV4cCI6MjA3MjUwMjEyOX0.xWAwKbAcsKQviBz31HmcCRY5XhT1WPy9tIAliyqqMlg'
+                    }
+                });
+                
+                const result = await response.json();
+                document.getElementById('status').innerHTML = 'Connexion réussie!<br>Résultat: ' + JSON.stringify(result, null, 2);
+            } catch (error) {
+                document.getElementById('status').innerHTML = 'Erreur de connexion:<br>' + error.message;
+            }
+        }
+
+        testConnection();
+    </script>
+</body>
+</html> 
