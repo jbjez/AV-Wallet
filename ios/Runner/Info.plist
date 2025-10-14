@@ -45,10 +45,12 @@
 	<true/>
 	<key>UIApplicationSupportsIndirectInputEvents</key>
 	<true/>
-	<key>NSMicrophoneUsageDescription</key>
-	<string>Cette application utilise le microphone pour mesurer le niveau sonore.</string>
 	<key>NSCameraUsageDescription</key>
-	<string>Cette application utilise la caméra pour l'AR.</string>
+	<string>This app uses the camera for scanning / photos</string>
+	<key>NSMicrophoneUsageDescription</key>
+	<string>This app uses the microphone for measuring sound</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>This app needs photo library access for export/import</string>
 	<key>CFBundleURLTypes</key>
 	<array>
 		<dict>
