@@ -1,7 +1,7 @@
 #!/bin/sh
 # This is a generated file; do not edit or check into version control.
-export "FLUTTER_ROOT=/Users/jbjezequel/Documents/flutter"
-export "FLUTTER_APPLICATION_PATH=/Users/jbjezequel/Desktop/AV_Wallet_Hive"
+export "FLUTTER_ROOT=/opt/homebrew/share/flutter"
+export "FLUTTER_APPLICATION_PATH=/Users/jbjezequel/Desktop/AV_Wallet_RECOVERY_CURSOR_FIX"
 export "COCOAPODS_PARALLEL_CODE_SIGN=true"
 export "FLUTTER_BUILD_DIR=build"
 export "FLUTTER_BUILD_NAME=0.1.0"

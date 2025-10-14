@@ -1,9 +1,13 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:av_wallet_hive/l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../theme/theme_extension.dart';
 import '../providers/project_provider.dart';
 import '../widgets/export_widget.dart';
+import '../widgets/uniform_dropdown.dart';
+import '../widgets/action_button.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'dart:convert';
 import 'dart:math' as math;
 
 // Modèle pour une entrée de patch
@@ -143,6 +147,10 @@ class PatchScenePage extends ConsumerStatefulWidget {
 class _PatchScenePageState extends ConsumerState<PatchScenePage> {
   final GlobalKey _repaintKey = GlobalKey();
   List<PatchEntry> _inputs = [];
+  
+  // Gestion des commentaires
+  Map<String, String> _comments = {};
+  String _currentRiderResult = ''; // Clé unique pour le résultat rider actuel
   List<PatchEntry> _outputs = [];
   
   // Contrôleurs pour les champs de texte
@@ -179,6 +187,8 @@ class _PatchScenePageState extends ConsumerState<PatchScenePage> {
     // Ajouter une piste par défaut dans chaque cadre
     _addDefaultInputTrack();
     _addDefaultOutputTrack();
+    // Charger les commentaires
+    _loadComments();
   }
 
   void _addDefaultInputTrack() {
@@ -438,17 +448,10 @@ class _PatchScenePageState extends ConsumerState<PatchScenePage> {
                           children: [
                             if (!renameOnly) ...[
                               // Dropdown pour la source/destination
-                              UniformDropdown<String>(
+                              UniformDropdown(
                                 value: (isInput ? (entry.source.isNotEmpty ? entry.source : null) : (entry.destination?.isNotEmpty == true ? entry.destination : null)),
-                                items: (isInput ? inputSources : outputDestinations)
-                                    .map((item) => DropdownMenuItem(
-                                          value: item,
-                                          child: Text(
-                                            item,
-                                            style: const TextStyle(fontSize: 12),
-                                          ),
-                                        ))
-                                    .toList(),
+                                items: isInput ? inputSources : outputDestinations,
+                                labelText: isInput ? AppLocalizations.of(context)!.source : AppLocalizations.of(context)!.destination,
                                 onChanged: (value) {
                                   if (value != null) {
                                     setDialogState(() {
@@ -476,9 +479,6 @@ class _PatchScenePageState extends ConsumerState<PatchScenePage> {
                                     });
                                   }
                                 },
-                                labelText: isInput 
-                                    ? AppLocalizations.of(context)!.patch_instrument
-                                    : AppLocalizations.of(context)!.patch_destination,
                               ),
                               const SizedBox(height: 16),
                             ],
@@ -497,7 +497,6 @@ class _PatchScenePageState extends ConsumerState<PatchScenePage> {
                                 }
                               },
                               decoration: InputDecoration(
-                                labelText: 'Renommer piste',
                                 labelStyle: TextStyle(
                                   fontSize: 12,
                                   color: Theme.of(context).brightness == Brightness.dark 
@@ -546,7 +545,6 @@ class _PatchScenePageState extends ConsumerState<PatchScenePage> {
                                   }
                                 },
                                 decoration: InputDecoration(
-                                  labelText: AppLocalizations.of(context)!.patch_microphone,
                                   labelStyle: TextStyle(
                                     fontSize: 12,
                                     color: Theme.of(context).brightness == Brightness.dark 
@@ -582,7 +580,6 @@ class _PatchScenePageState extends ConsumerState<PatchScenePage> {
                               TextField(
                                 controller: _typeController,
                                 decoration: InputDecoration(
-                                  labelText: AppLocalizations.of(context)!.patch_type,
                                   labelStyle: TextStyle(
                                     fontSize: 12,
                                     color: Theme.of(context).brightness == Brightness.dark 
@@ -618,29 +615,15 @@ class _PatchScenePageState extends ConsumerState<PatchScenePage> {
                             
                             // Champ pied de micro (uniquement pour INPUT)
                             if (isInput) ...[
-                              UniformDropdown<String?>(
+                              UniformDropdown(
                                 value: _microphoneStandController.text.isNotEmpty ? _microphoneStandController.text : null,
-                                items: [
-                                  const DropdownMenuItem<String?>(
-                                    value: null,
-                                    child: Text('Sélectionner un pied', style: TextStyle(fontSize: 12, color: Colors.grey)),
-                                  ),
-                                  ...microphoneStandTypes
-                                      .map((item) => DropdownMenuItem<String?>(
-                                            value: item,
-                                            child: Text(
-                                              item,
-                                              style: const TextStyle(fontSize: 12),
-                                            ),
-                                          ))
-                                      .toList(),
-                                ],
+                                items: microphoneStandTypes,
+                                labelText: AppLocalizations.of(context)!.stand,
                                 onChanged: (value) {
                                   setDialogState(() {
                                     _microphoneStandController.text = value ?? '';
                                   });
                                 },
-                                labelText: 'Pied de micro',
                               ),
                               const SizedBox(height: 16),
                             ],
@@ -1135,12 +1118,10 @@ class _PatchScenePageState extends ConsumerState<PatchScenePage> {
               },
             ),
             const SizedBox(height: 16),
-            // Widget Export intégré dans le cadre
+            // Widget Export (flèche vers le haut)
             Center(
-              child: Container(
-                width: MediaQuery.of(context).size.width * 0.6,
-                child: ExportWidget(
-                  title: '${AppLocalizations.of(context)!.patch_title} \'${ref.read(projectProvider).projects.isNotEmpty ? ref.read(projectProvider).getTranslatedProjectName(ref.read(projectProvider).selectedProject, AppLocalizations.of(context)!) : AppLocalizations.of(context)!.defaultProjectName}\'',
+              child: ExportWidget(
+                  title: '${AppLocalizations.of(context)!.rider_technical_title} \'${ref.read(projectProvider).projects.isNotEmpty ? ref.read(projectProvider).getTranslatedProjectName(ref.read(projectProvider).selectedProject, AppLocalizations.of(context)!) : AppLocalizations.of(context)!.defaultProjectName}\'',
                   content: _generatePatchTableContent(),
                   presetName: ref.read(projectProvider).projects.isNotEmpty ? ref.read(projectProvider).getTranslatedProjectName(ref.read(projectProvider).selectedProject, AppLocalizations.of(context)!) : AppLocalizations.of(context)!.defaultProjectName,
                   exportDate: DateTime.now(),
@@ -1167,7 +1148,6 @@ class _PatchScenePageState extends ConsumerState<PatchScenePage> {
                     'Total Pieds': _inputs.where((e) => e.microphoneStand != null && e.microphoneStand!.isNotEmpty).length,
                   },
                 ),
-              ),
             ),
           ],
         ),
@@ -1189,7 +1169,7 @@ class _PatchScenePageState extends ConsumerState<PatchScenePage> {
             // Titre principal avec nom du projet
             Center(
               child: Text(
-                '${loc.patch_title} \'${ref.read(projectProvider).projects.isNotEmpty ? ref.read(projectProvider).getTranslatedProjectName(ref.read(projectProvider).selectedProject, AppLocalizations.of(context)!) : AppLocalizations.of(context)!.defaultProjectName}\'',
+                '${AppLocalizations.of(context)!.rider_technical_title} \'${ref.read(projectProvider).projects.isNotEmpty ? ref.read(projectProvider).getTranslatedProjectName(ref.read(projectProvider).selectedProject, AppLocalizations.of(context)!) : AppLocalizations.of(context)!.defaultProjectName}\'',
                 style: TextStyle(
                   fontSize: 18, // Réduit de 2 points supplémentaires (était 20)
                   fontWeight: FontWeight.bold,
@@ -1199,7 +1179,42 @@ class _PatchScenePageState extends ConsumerState<PatchScenePage> {
                 ),
               ),
             ),
-            const SizedBox(height: 24),
+            const SizedBox(height: 16),
+            
+            // Boutons Commentaire et Reset sous le titre
+            Center(
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  ActionButton.comment(
+                    onPressed: () => _showCommentDialog('rider_tab'),
+                  ),
+                  const SizedBox(width: 16),
+                  ActionButton.reset(
+                    onPressed: _resetRiderPage,
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(height: 16),
+            
+            // Affichage du commentaire s'il existe
+            if (_getCommentForTab('rider_tab').isNotEmpty)
+              Container(
+                margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
+                padding: const EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  color: Colors.blue.withOpacity(0.1),
+                  border: Border.all(color: Colors.blue.withOpacity(0.3)),
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: Text(
+                  _getCommentForTab('rider_tab'),
+                  style: const TextStyle(fontSize: 12),
+                ),
+              ),
+            
+            const SizedBox(height: 8),
             
             // Section INPUT avec Export intégré
             _buildSectionCardWithExport(
@@ -1314,6 +1329,137 @@ class _PatchScenePageState extends ConsumerState<PatchScenePage> {
     content.writeln('Sorties Mono: ${_outputs.where((e) => defaultStereoDestinations[e.destination] == false).length}');
     
     return content.toString();
+  }
+
+  // Méthodes de gestion des commentaires
+  Future<void> _loadComments() async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final projectId = ref.read(projectProvider).selectedProject;
+      if (projectId != null) {
+        final commentsJson = prefs.getString('calcul_projet_comments');
+        if (commentsJson != null) {
+          final Map<String, dynamic> commentsMap = json.decode(commentsJson);
+          _comments = commentsMap.map((key, value) => MapEntry(key, value.toString()));
+        }
+      }
+    } catch (e) {
+      print('Erreur lors du chargement des commentaires: $e');
+    }
+  }
+
+  Future<void> _saveComments() async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final commentsJson = json.encode(_comments);
+      await prefs.setString('calcul_projet_comments', commentsJson);
+    } catch (e) {
+      print('Erreur lors de la sauvegarde des commentaires: $e');
+    }
+  }
+
+  String _getCommentForTab(String tabKey) {
+    final projectId = ref.read(projectProvider).selectedProject;
+    if (projectId != null) {
+      return _comments['${projectId}_$tabKey'] ?? '';
+    }
+    return '';
+  }
+
+  Future<void> _showCommentDialog(String tabKey) async {
+    final projectId = ref.read(projectProvider).selectedProject;
+    if (projectId == null) return;
+
+    final currentComment = _getCommentForTab(tabKey);
+    final controller = TextEditingController(text: currentComment);
+
+    await showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text(
+          'Commentaire',
+          style: TextStyle(fontSize: 10),
+        ),
+        content: TextField(
+          controller: controller,
+          maxLines: 3,
+          decoration: const InputDecoration(
+            hintText: 'Entrez votre commentaire...',
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(),
+            child: const Text('Annuler'),
+          ),
+          TextButton(
+            onPressed: () async {
+              final comment = controller.text.trim();
+              if (comment.isNotEmpty) {
+                _comments['${projectId}_$tabKey'] = comment;
+              } else {
+                _comments.remove('${projectId}_$tabKey');
+              }
+              await _saveComments();
+              setState(() {});
+              Navigator.of(context).pop();
+            },
+            child: const Text('Sauvegarder'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _resetRiderPage() {
+    setState(() {
+      _inputs.clear();
+      _outputs.clear();
+      _trackNameController.clear();
+      _microphoneController.clear();
+      _typeController.clear();
+      _microphoneStandController.clear();
+      
+      // Ajouter les pistes par défaut après reset
+      _addDefaultTracksAfterReset();
+      
+      // Réinitialiser les commentaires
+      final projectId = ref.read(projectProvider).selectedProject;
+      if (projectId != null) {
+        _comments.remove('${projectId}_rider_tab');
+        _saveComments();
+      }
+    });
+  }
+
+  void _addDefaultTracksAfterReset() {
+    // Ajouter 1 piste en entrée : Voix (HF)
+    _inputs.add(PatchEntry(
+      id: DateTime.now().millisecondsSinceEpoch.toString(),
+      trackName: 'Voix (HF)',
+      source: 'HF',
+      microphone: 'HF',
+      quantity: 1,
+    ));
+    
+    // Ajouter 2 pistes en sortie : MainL et MainR
+    _outputs.add(PatchEntry(
+      id: '${DateTime.now().millisecondsSinceEpoch + 1}',
+      trackName: 'MainL',
+      source: 'MainL',
+      destination: 'MainL',
+      type: 'Mono',
+      quantity: 1,
+    ));
+    
+    _outputs.add(PatchEntry(
+      id: '${DateTime.now().millisecondsSinceEpoch + 2}',
+      trackName: 'MainR',
+      source: 'MainR',
+      destination: 'MainR',
+      type: 'Mono',
+      quantity: 1,
+    ));
   }
 }
 

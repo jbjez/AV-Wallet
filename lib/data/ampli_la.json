@@ -1,0 +1,141 @@
+{
+  "amplificationData": [
+    {
+      "enceinte": "Kara II",
+      "amplis": {
+        "LA4X": {"parSortie": 2, "total": 4},
+        "LA8": {"parSortie": 3, "total": 6},
+        "LA12X": {"parSortie": 3, "total": 6}
+      }
+    },
+    {
+      "enceinte": "Kiva II",
+      "amplis": {
+        "LA4X": {"parSortie": 2, "total": 8},
+        "LA8": {"parSortie": 4, "total": 16},
+        "LA12X": {"parSortie": 6, "total": 24}
+      }
+    },
+    {
+      "enceinte": "Kiva / Kilo",
+      "amplis": {
+        "LA4": {"parSortie": 2, "total": 8},
+        "LA8": {"parSortie": 3, "total": 12},
+        "LA12X": {"parSortie": 3, "total": 12}
+      }
+    },
+    {
+      "enceinte": "X8",
+      "amplis": {
+        "LA4X": {"parSortie": 4, "total": 16},
+        "LA8": {"parSortie": 8, "total": 24},
+        "LA12X": {"parSortie": 8, "total": 24}
+      }
+    },
+    {
+      "enceinte": "X12",
+      "amplis": {
+        "LA4X": {"parSortie": 2, "total": 8},
+        "LA8": {"parSortie": 3, "total": 12},
+        "LA12X": {"parSortie": 3, "total": 12}
+      }
+    },
+    {
+      "enceinte": "SB18",
+      "amplis": {
+        "LA4": {"parSortie": 1, "total": 4},
+        "LA4X": {"parSortie": 1, "total": 4},
+        "LA8": {"parSortie": 2, "total": 8},
+        "LA12X": {"parSortie": 2, "total": 8}
+      }
+    },
+    {
+      "enceinte": "KS28",
+      "amplis": {
+        "LA8": {"parSortie": 1, "total": 4},
+        "LA12X": {"parSortie": 1, "total": 4}
+      }
+    },
+    {
+      "enceinte": "Syva",
+      "amplis": {
+        "LA2Xi": {"parSortie": 1, "total": 2},
+        "LA4X": {"parSortie": 1, "total": 4},
+        "LA8": {"parSortie": 2, "total": 8},
+        "LA12X": {"parSortie": 3, "total": 12}
+      }
+    },
+    {
+      "enceinte": "K2",
+      "amplis": {
+        "LA4X": {"parSortie": 1, "total": 1},
+        "LA8": {"parSortie": 3, "total": 3},
+        "LA12X": {"parSortie": 3, "total": 6}
+      }
+    },
+    {
+      "enceinte": "K3",
+      "amplis": {
+        "LA4X": {"parSortie": 1, "total": 2},
+        "LA8": {"parSortie": 2, "total": 4},
+        "LA12X": {"parSortie": 3, "total": 6}
+      }
+    },
+    {
+      "enceinte": "A15",
+      "amplis": {
+        "LA4X": {"parSortie": 1, "total": 4},
+        "LA8": {"parSortie": 2, "total": 8},
+        "LA12X": {"parSortie": 3, "total": 12}
+      }
+    },
+    {
+      "enceinte": "A10",
+      "amplis": {
+        "LA4X": {"parSortie": 2, "total": 8},
+        "LA8": {"parSortie": 2, "total": 8},
+        "LA12X": {"parSortie": 3, "total": 12}
+      }
+    },
+    {
+      "enceinte": "5XT",
+      "amplis": {
+        "LA4X": {"parSortie": 4, "total": 16},
+        "LA8": {"parSortie": 6, "total": 24},
+        "LA12X": {"parSortie": 6, "total": 24}
+      }
+    },
+    {
+      "enceinte": "KS21",
+      "amplis": {
+        "LA4X": {"parSortie": 1, "total": 4},
+        "LA8": {"parSortie": 2, "total": 6},
+        "LA12X": {"parSortie": 2, "total": 8}
+      }
+    },
+    {
+      "enceinte": "SB118",
+      "amplis": {
+        "LA4X": {"parSortie": 1, "total": 4},
+        "LA8": {"parSortie": 2, "total": 8},
+        "LA12X": {"parSortie": 2, "total": 8}
+      }
+    },
+    {
+      "enceinte": "SB218",
+      "amplis": {
+        "LA4X": {"parSortie": 0, "total": 0},
+        "LA8": {"parSortie": 1, "total": 4},
+        "LA12X": {"parSortie": 1, "total": 4}
+      }
+    },
+    {
+      "enceinte": "SB15M",
+      "amplis": {
+        "LA4X": {"parSortie": 1, "total": 4},
+        "LA8": {"parSortie": 2, "total": 6},
+        "LA12X": {"parSortie": 3, "total": 12}
+      }
+    }
+  ]
+} 

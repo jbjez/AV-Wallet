@@ -1,16 +1,15 @@
+import 'package:av_wallet_hive/l10n/app_localizations.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../widgets/preset_widget.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:av_wallet_hive/l10n/app_localizations.dart';
 import '../widgets/custom_app_bar.dart';
 import '../providers/preset_provider.dart';
-import 'catalogue_page.dart';
 import 'video_menu_page.dart';
 import 'structure_menu_page.dart';
 import 'sound_menu_page.dart';
 import 'electricite_menu_page.dart';
 import 'divers_menu_page.dart';
-import '../widgets/export_widget.dart';
 import '../widgets/light_tabs/dmx_tab.dart';
 import '../widgets/light_tabs/beam_tab.dart';
 import '../widgets/light_tabs/accessories_tab.dart';
@@ -211,3 +210,8 @@ class _LightMenuPageState extends ConsumerState<LightMenuPage>
     );
   }
 }
+
+
+
+
+

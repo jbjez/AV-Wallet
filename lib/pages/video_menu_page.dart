@@ -2,11 +2,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../providers/catalogue_provider.dart';
+import '../providers/page_state_provider.dart';
 import '../models/catalogue_item.dart';
 import '../widgets/preset_widget.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import '../widgets/export_widget.dart';
+import 'package:av_wallet_hive/l10n/app_localizations.dart';
 import '../widgets/custom_app_bar.dart';
-import 'led_wall_schema_page.dart';
+import '../widgets/border_labeled_dropdown.dart';
 import '../providers/preset_provider.dart';
 import 'catalogue_page.dart';
 import 'light_menu_page.dart';
@@ -15,10 +17,12 @@ import 'sound_menu_page.dart';
 import 'electricite_menu_page.dart';
 import 'divers_menu_page.dart';
 import 'ar_measure_page.dart';
-import 'projection_schema_page.dart';
 import '../models/lens.dart';
-import '../models/cart_data.dart';
+import '../widgets/action_button.dart';
 import '../models/cart_item.dart';
+import '../widgets/light_tabs/projection_tab.dart';
+import 'timer_tab.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class VideoMenuPage extends ConsumerStatefulWidget {
   const VideoMenuPage({super.key});
@@ -29,19 +33,13 @@ class VideoMenuPage extends ConsumerStatefulWidget {
 
 class _VideoMenuPageState extends ConsumerState<VideoMenuPage>
     with TickerProviderStateMixin {
-  String? selectedCategory;
-  String? selectedSubCategory;
-  String? selectedBrand;
-  CatalogueItem? selectedProjector;
-  double largeurProjection = 5;
-  double distanceProjection = 10;
-  double largeurMurLed = 12;
-  double hauteurMurLed = 7;
+  // Utilisation du provider de persistance
+  VideoPageState get videoState => ref.watch(videoPageStateProvider);
+  
   Map<String, List<CatalogueItem>> brandToProducts = {};
   late final AnimationController _slideController;
   late final TabController _tabController;
   CatalogueItem? selectedMurLed;
-  String searchQuery = '';
   List<CatalogueItem> searchResults = [];
   Offset? animationStartPosition;
   final GlobalKey _cardKey = GlobalKey();
@@ -49,8 +47,6 @@ class _VideoMenuPageState extends ConsumerState<VideoMenuPage>
   late final Animation<double> _animation;
   final GlobalKey _resultKey = GlobalKey();
   final TextEditingController searchController = TextEditingController();
-  bool showProjectionResult = false;
-  bool showLedResult = false;
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   String selectedFormat = '16/9';
   int nbProjecteurs = 1;
@@ -79,7 +75,14 @@ class _VideoMenuPageState extends ConsumerState<VideoMenuPage>
       duration: const Duration(milliseconds: 300),
     );
 
-    _tabController = TabController(length: 2, vsync: this);
+    _tabController = TabController(length: 3, vsync: this);
+    
+    // Ajouter un listener pour sauvegarder l'onglet actif
+    _tabController.addListener(() {
+      if (_tabController.indexIsChanging) {
+        _savePersistedState();
+      }
+    });
 
     _animationController = AnimationController(
       duration: const Duration(milliseconds: 500),
@@ -94,6 +97,7 @@ class _VideoMenuPageState extends ConsumerState<VideoMenuPage>
     // Initialiser les données du catalogue
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _initializeCatalogueData();
+      _loadPersistedState();
     });
   }
 
@@ -143,42 +147,51 @@ class _VideoMenuPageState extends ConsumerState<VideoMenuPage>
   Lens? getRecommendedLens(CatalogueItem proj, double ratio) {
     if (proj.optiques == null || proj.optiques!.isEmpty) return null;
 
-    // Convertir toutes les optiques en Map avec leur ratio moyen
-    final validLenses = proj.optiques!
-        .map((lens) => MapEntry(lens, _parseRatio(lens.ratio)))
-        .where((entry) => entry.value != -1)
-        .toList();
+    print('🔍 getRecommendedLens: ratio calculé = $ratio');
+    print('🔍 Projecteur: ${proj.name}');
+    print('🔍 Nombre d\'optiques: ${proj.optiques!.length}');
 
-    if (validLenses.isEmpty) return null;
-
-    // Chercher d'abord une optique avec un ratio exact
-    for (var entry in validLenses) {
-      final lens = entry.key;
-      final ratioStr = lens.ratio.toLowerCase();
+    // LOGIQUE SIMPLIFIÉE ET ROBUSTE
+    // 1. Chercher d'abord une optique dont la plage contient le ratio calculé
+    for (var lens in proj.optiques!) {
+      final ratioStr = lens.ratio;
+      print('🔍 Test optique: ${lens.reference} - ${lens.ratio}');
 
       // Vérifier si c'est une optique fixe
       if (!ratioStr.contains('–') && !ratioStr.contains('-')) {
         final lensRatio = double.tryParse(
                 ratioStr.trim().split(':').last.replaceAll(',', '.')) ??
             -1;
-        if (lensRatio == ratio) return lens;
+        print('🔍 Optique fixe: ratio = $lensRatio');
+        if (lensRatio != -1 && (lensRatio - ratio).abs() < 0.1) {
+          print('✅ Optique fixe trouvée: ${lens.reference}');
+          return lens;
+        }
       }
       // Vérifier si le ratio est dans la plage de l'optique
       else {
         final parts = ratioStr.replaceAll(',', '.').split(RegExp(r'[–-]'));
-        final min = double.tryParse(parts[0].trim().split(':').last) ?? -1;
-        final max = double.tryParse(parts[1].trim().split(':').last) ?? -1;
-        if (min <= ratio && ratio <= max) return lens;
+        if (parts.length == 2) {
+          final min = double.tryParse(parts[0].trim().split(':').last) ?? -1;
+          final max = double.tryParse(parts[1].trim().split(':').last) ?? -1;
+          print('🔍 Plage: min = $min, max = $max');
+          
+          if (min != -1 && max != -1 && min <= ratio && ratio <= max) {
+            print('✅ Optique avec plage trouvée: ${lens.reference}');
+            return lens;
+          }
+        }
       }
     }
 
-    // Si aucune optique exacte n'est trouvée, chercher l'optique avec le ratio le plus proche mais inférieur
-    Lens? bestLens;
-    double? bestRatioDiff;
+    print('⚠️ Aucune optique ne contient le ratio, recherche de la plus proche...');
 
-    for (var entry in validLenses) {
-      final lens = entry.key;
-      final ratioStr = lens.ratio.toLowerCase();
+    // 2. Si aucune optique ne contient le ratio, chercher la plus proche
+    Lens? bestLens;
+    double bestRatioDiff = double.infinity;
+
+    for (var lens in proj.optiques!) {
+      final ratioStr = lens.ratio;
       double lensRatio;
 
       // Gérer les optiques fixes
@@ -186,25 +199,38 @@ class _VideoMenuPageState extends ConsumerState<VideoMenuPage>
         lensRatio = double.tryParse(
                 ratioStr.trim().split(':').last.replaceAll(',', '.')) ??
             -1;
-        if (lensRatio == -1 || lensRatio > ratio) continue;
+        if (lensRatio == -1) continue;
       }
       // Gérer les optiques avec plage
       else {
         final parts = ratioStr.replaceAll(',', '.').split(RegExp(r'[–-]'));
-        final min = double.tryParse(parts[0].trim().split(':').last) ?? -1;
-        final max = double.tryParse(parts[1].trim().split(':').last) ?? -1;
-        if (min == -1 || max == -1 || min > ratio) continue;
-        lensRatio = min; // On prend le ratio minimum de la plage
+        if (parts.length == 2) {
+          final min = double.tryParse(parts[0].trim().split(':').last) ?? -1;
+          final max = double.tryParse(parts[1].trim().split(':').last) ?? -1;
+          if (min == -1 || max == -1) continue;
+          
+          // Utiliser le ratio moyen de la plage pour la comparaison
+          lensRatio = (min + max) / 2;
+        } else {
+          continue;
+        }
       }
 
-      // Calculer la différence avec le ratio calculé
-      final ratioDiff = ratio - lensRatio;
+      // Calculer la différence absolue avec le ratio calculé
+      final ratioDiff = (ratio - lensRatio).abs();
+      print('🔍 ${lens.reference}: ratio = $lensRatio, diff = $ratioDiff');
 
-      // Si c'est la première optique valide ou si son ratio est plus proche du ratio calculé
-      if (bestLens == null || ratioDiff < bestRatioDiff!) {
+      // Garder l'optique avec la différence la plus petite
+      if (ratioDiff < bestRatioDiff) {
         bestLens = lens;
         bestRatioDiff = ratioDiff;
       }
+    }
+
+    if (bestLens != null) {
+      print('✅ Optique la plus proche: ${bestLens.reference}');
+    } else {
+      print('❌ Aucune optique trouvée');
     }
 
     return bestLens;
@@ -272,17 +298,15 @@ class _VideoMenuPageState extends ConsumerState<VideoMenuPage>
   }
 
   void _resetSelection() {
+    ref.read(videoPageStateProvider.notifier).updateSelectedCategory(null);
+    ref.read(videoPageStateProvider.notifier).updateSelectedSubCategory(null);
+    ref.read(videoPageStateProvider.notifier).updateSelectedBrand(null);
+    ref.read(videoPageStateProvider.notifier).updateSearchQuery('');
+    ref.read(videoPageStateProvider.notifier).updateProjectionResult(false);
+    ref.read(videoPageStateProvider.notifier).updateLedResult(false);
     setState(() {
-      selectedCategory = null;
-      selectedSubCategory = null;
-      selectedBrand = null;
       selectedMurLed = null;
-      largeurMurLed = 1;
-      hauteurMurLed = 1;
-      searchQuery = '';
       searchResults = [];
-      showProjectionResult = false;
-      showLedResult = false;
       searchController.clear();
     });
   }
@@ -299,16 +323,21 @@ class _VideoMenuPageState extends ConsumerState<VideoMenuPage>
         duration: const Duration(milliseconds: 500),
         curve: Curves.easeOut,
       );
+    } else {
+      // Si le contexte n'est pas encore disponible, attendre un peu et réessayer
+      Future.delayed(const Duration(milliseconds: 100), () {
+        if (mounted) {
+          _scrollToResult();
+        }
+      });
     }
   }
 
   void _calculateSimulation() {
-    setState(() {
-      if (_tabController.index == 0) {
-        showProjectionResult = true;
-        showLedResult = false;
-      }
-    });
+    if (_tabController.index == 0) {
+      ref.read(videoPageStateProvider.notifier).updateProjectionResult(true);
+      ref.read(videoPageStateProvider.notifier).updateLedResult(false);
+    }
     
     // Attendre que le widget soit construit avant de faire défiler
     WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -332,12 +361,298 @@ class _VideoMenuPageState extends ConsumerState<VideoMenuPage>
 
   double _getMurLedWeight(CatalogueItem? item) {
     if (item == null) return 10.0;
-    return double.tryParse(item.poids.replaceAll(' kg', '') ?? '10.0') ?? 10.0;
+    return double.tryParse(item.poids.replaceAll(' kg', '')) ?? 10.0;
   }
 
   double _getMurLedConsumption(CatalogueItem? item) {
     if (item == null) return 200.0;
-    return double.tryParse(item.conso.replaceAll(' W', '') ?? '200.0') ?? 200.0;
+    return double.tryParse(item.conso.replaceAll(' W', '')) ?? 200.0;
+  }
+
+  // Fonction utilitaire pour calculer les dimensions pixellaires du mur LED
+  Map<String, int> _calculateLedWallPixels(CatalogueItem? item, double largeur, double hauteur) {
+    if (item == null) {
+      return {'largeur': 200, 'hauteur': 200, 'total': 40000};
+    }
+    
+    final resolution = _getMurLedResolution(item);
+    print('DEBUG: Resolution from item: $resolution'); // Debug
+    
+    // Utiliser une regex pour extraire directement les nombres
+    final regex = RegExp(r'(\d+)\s*x\s*(\d+)');
+    final match = regex.firstMatch(resolution);
+    
+    if (match == null) {
+      print('DEBUG: Invalid resolution format: $resolution');
+      return {'largeur': 200, 'hauteur': 200, 'total': 40000};
+    }
+    
+    final cleanX = match.group(1)!;
+    final cleanY = match.group(2)!;
+    
+    print('DEBUG: Cleaned X: "$cleanX", Cleaned Y: "$cleanY"'); // Debug
+    
+    final resX = int.tryParse(cleanX) ?? 200;
+    final resY = int.tryParse(cleanY) ?? 200;
+    
+    print('DEBUG: Parsed resX: $resX, resY: $resY'); // Debug
+    
+    final largeurPixels = resX * largeur.toInt();
+    final hauteurPixels = resY * hauteur.toInt();
+    final totalPixels = largeurPixels * hauteurPixels;
+    
+    return {
+      'largeur': largeurPixels,
+      'hauteur': hauteurPixels,
+      'total': totalPixels,
+      'resX': resX,
+      'resY': resY,
+    };
+  }
+
+  String _generateSchemaContent() {
+    if (selectedMurLed == null) return 'Aucun mur LED sélectionné';
+    
+    final nbDalles = ((videoState.largeurMurLed ?? 1) * (videoState.hauteurMurLed ?? 1)).toInt();
+    final dimensions = _getMurLedDimensions(selectedMurLed);
+    final resolution = _getMurLedResolution(selectedMurLed);
+    final poids = _getMurLedWeight(selectedMurLed);
+    final conso = _getMurLedConsumption(selectedMurLed);
+    
+    final presetName = ref.watch(activePresetProvider)?.name ?? 'Projet';
+    final largeur = videoState.largeurMurLed ?? 1;
+    final hauteur = videoState.hauteurMurLed ?? 1;
+    
+    // Utilisation de la fonction utilitaire pour les calculs
+    final pixels = _calculateLedWallPixels(selectedMurLed, largeur, hauteur);
+    final megapixels = pixels['total']! / 1000000;
+    final ratio = largeur / hauteur;
+    
+    return '''
+MUR LED - $presetName
+
+Configuration:
+- Nombre de dalles: $nbDalles
+- Dimensions par dalle: $dimensions
+- Résolution par dalle: $resolution
+- Poids total: ${(poids * nbDalles).toStringAsFixed(1)} kg
+- Consommation totale: ${(conso * nbDalles).toStringAsFixed(0)} W
+
+Calculs détaillés:
+- Espace pixellaire: ${pixels['largeur']}px x ${pixels['hauteur']}px
+- Résolution totale: ${megapixels.toStringAsFixed(1)} Mpx
+- Ratio: ${ratio.toStringAsFixed(2)}:1
+
+Schéma de montage:
+- Largeur: ${largeur.toInt()} dalles
+- Hauteur: ${hauteur.toInt()} dalles
+- Disposition: ${largeur.toInt()}x${hauteur.toInt()}
+''';
+  }
+
+  Map<String, dynamic> _buildLedWallProjectSummary() {
+    if (selectedMurLed == null) return {};
+    
+    final nbDalles = ((videoState.largeurMurLed ?? 1) * (videoState.hauteurMurLed ?? 1)).toInt();
+    final dimensions = _getMurLedDimensions(selectedMurLed);
+    final resolution = _getMurLedResolution(selectedMurLed);
+    final poids = _getMurLedWeight(selectedMurLed);
+    final conso = _getMurLedConsumption(selectedMurLed);
+    
+    final largeur = videoState.largeurMurLed ?? 1;
+    final hauteur = videoState.hauteurMurLed ?? 1;
+    
+    // Calculer les dimensions totales du mur en mètres
+    final dimensionsParts = dimensions.split(' x ');
+    final dalleLargeur = double.tryParse(dimensionsParts[0].trim().replaceAll(' mm', '')) ?? 500;
+    final dalleHauteur = double.tryParse(dimensionsParts[1].trim().replaceAll(' mm', '')) ?? 500;
+    
+    final largeurTotale = (dalleLargeur / 1000) * largeur;
+    final hauteurTotale = (dalleHauteur / 1000) * hauteur;
+    
+    // Utilisation de la fonction utilitaire pour les calculs
+    final pixels = _calculateLedWallPixels(selectedMurLed, largeur, hauteur);
+    final megapixels = pixels['total']! / 1000000;
+    final ratio = largeur / hauteur;
+    
+    return {
+      'mur_led': selectedMurLed!.name,
+      'marque': selectedMurLed!.marque,
+      'produit': selectedMurLed!.produit,
+      'dimensions': '${largeur.toInt()} x ${hauteur.toInt()}',
+      'dimensions_totales': '${largeurTotale.toStringAsFixed(2)}m x ${hauteurTotale.toStringAsFixed(2)}m',
+      'nb_dalles': nbDalles,
+      'dimensions_dalle': dimensions,
+      'resolution_dalle': resolution,
+      'resolution_totale': '${pixels['largeur']}px x ${pixels['hauteur']}px',
+      'megapixels': '${megapixels.toStringAsFixed(1)} Mpx',
+      'ratio': '${ratio.toStringAsFixed(2)}:1',
+      'poids_total': '${(poids * nbDalles).toStringAsFixed(1)} kg',
+      'consommation_total': '${(conso * nbDalles).toStringAsFixed(0)} W',
+      'poids_dalle': '${poids.toStringAsFixed(1)} kg',
+      'consommation_dalle': '${conso.toStringAsFixed(0)} W',
+      'largeur_dalles': largeur.toInt(),
+      'hauteur_dalles': hauteur.toInt(),
+      'resX': pixels['resX'],
+      'resY': pixels['resY'],
+    };
+  }
+
+  // Méthodes de persistance
+  Future<void> _loadPersistedState() async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      
+      // Attendre un peu pour s'assurer que le widget est prêt
+      await Future.delayed(const Duration(milliseconds: 500));
+      
+      if (!mounted) return;
+      
+      print('Video: Loading persisted state...');
+      
+      // Restaurer l'onglet actif
+      final savedTabIndex = prefs.getInt('video_tab_index');
+      if (savedTabIndex != null && savedTabIndex >= 0 && savedTabIndex < 3) {
+        _tabController.index = savedTabIndex;
+        print('Video: Restored tab index: $savedTabIndex');
+      }
+      
+      // Restaurer les paramètres de projection
+      final savedProjectionWidth = prefs.getDouble('video_projection_width');
+      final savedProjectionDistance = prefs.getDouble('video_projection_distance');
+      final savedSelectedFormat = prefs.getString('video_selected_format');
+      final savedNbProjecteurs = prefs.getInt('video_nb_projecteurs');
+      final savedChevauchement = prefs.getDouble('video_chevauchement');
+      final savedSelectedProduct = prefs.getString('video_selected_product');
+      final savedShowProjectionResult = prefs.getBool('video_show_projection_result');
+      
+      if (!mounted) return;
+      
+      // Restaurer les paramètres de projection via le provider
+      if (savedProjectionWidth != null) {
+        ref.read(videoPageStateProvider.notifier).updateProjectionResult(false, width: savedProjectionWidth);
+        print('Video: Restored projection width: $savedProjectionWidth');
+      }
+      
+      if (savedProjectionDistance != null) {
+        ref.read(videoPageStateProvider.notifier).updateProjectionResult(false, distance: savedProjectionDistance);
+        print('Video: Restored projection distance: $savedProjectionDistance');
+      }
+      
+      if (savedSelectedFormat != null && ['16/9', '4/3', '1/1'].contains(savedSelectedFormat)) {
+        setState(() {
+          selectedFormat = savedSelectedFormat;
+        });
+        print('Video: Restored selected format: $selectedFormat');
+      }
+      
+      if (savedNbProjecteurs != null && savedNbProjecteurs >= 1 && savedNbProjecteurs <= 10) {
+        setState(() {
+          nbProjecteurs = savedNbProjecteurs;
+        });
+        print('Video: Restored nb projecteurs: $nbProjecteurs');
+      }
+      
+      if (savedChevauchement != null && savedChevauchement >= 0 && savedChevauchement <= 50) {
+        setState(() {
+          chevauchement = savedChevauchement;
+        });
+        print('Video: Restored chevauchement: $chevauchement');
+      }
+      
+      if (savedSelectedProduct != null) {
+        ref.read(videoPageStateProvider.notifier).updateSelectedProduct(savedSelectedProduct);
+        print('Video: Restored selected product: $savedSelectedProduct');
+      }
+      
+      if (savedShowProjectionResult != null) {
+        ref.read(videoPageStateProvider.notifier).updateProjectionResult(savedShowProjectionResult);
+        print('Video: Restored show projection result: $savedShowProjectionResult');
+      }
+      
+      // Restaurer les paramètres de mur LED
+      final savedLargeurMurLed = prefs.getDouble('video_largeur_mur_led');
+      final savedHauteurMurLed = prefs.getDouble('video_hauteur_mur_led');
+      final savedSelectedMurLedBrand = prefs.getString('video_selected_mur_led_brand');
+      final savedSelectedMurLedProduct = prefs.getString('video_selected_mur_led_product');
+      final savedShowLedResult = prefs.getBool('video_show_led_result');
+      
+      if (savedLargeurMurLed != null && savedLargeurMurLed >= 1 && savedLargeurMurLed <= 50) {
+        ref.read(videoPageStateProvider.notifier).updateLedResult(false, largeur: savedLargeurMurLed, hauteur: videoState.hauteurMurLed);
+        print('Video: Restored largeur mur LED: $savedLargeurMurLed');
+      }
+      
+      if (savedHauteurMurLed != null && savedHauteurMurLed >= 1 && savedHauteurMurLed <= 20) {
+        ref.read(videoPageStateProvider.notifier).updateLedResult(false, largeur: videoState.largeurMurLed, hauteur: savedHauteurMurLed);
+        print('Video: Restored hauteur mur LED: $savedHauteurMurLed');
+      }
+      
+      if (savedSelectedMurLedBrand != null) {
+        // Restaurer la marque sélectionnée
+        final ledWalls = _getLedWalls();
+        final brandWalls = ledWalls.where((item) => item.marque == savedSelectedMurLedBrand).toList();
+        if (brandWalls.isNotEmpty) {
+          setState(() {
+            selectedMurLed = brandWalls.first;
+          });
+          print('Video: Restored selected mur LED brand: $savedSelectedMurLedBrand');
+        }
+      }
+      
+      if (savedSelectedMurLedProduct != null) {
+        // Restaurer le produit sélectionné
+        final ledWalls = _getLedWalls();
+        try {
+          final product = ledWalls.firstWhere((item) => item.produit == savedSelectedMurLedProduct);
+          setState(() {
+            selectedMurLed = product;
+          });
+          print('Video: Restored selected mur LED product: $savedSelectedMurLedProduct');
+        } catch (e) {
+          print('Video: Could not restore mur LED product: $e');
+        }
+      }
+      
+      if (savedShowLedResult != null) {
+        ref.read(videoPageStateProvider.notifier).updateLedResult(savedShowLedResult);
+        print('Video: Restored show LED result: $savedShowLedResult');
+      }
+      
+      print('Video: Persistence restoration completed successfully');
+    } catch (e) {
+      print('Video: Error loading persisted state: $e');
+    }
+  }
+
+  Future<void> _savePersistedState() async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      
+      print('Video: Saving state...');
+      
+      // Sauvegarder l'onglet actif
+      await prefs.setInt('video_tab_index', _tabController.index);
+      
+      // Sauvegarder les paramètres de projection
+      await prefs.setDouble('video_projection_width', videoState.projectionWidth ?? 5);
+      await prefs.setDouble('video_projection_distance', videoState.projectionDistance ?? 10);
+      await prefs.setString('video_selected_format', selectedFormat);
+      await prefs.setInt('video_nb_projecteurs', nbProjecteurs);
+      await prefs.setDouble('video_chevauchement', chevauchement);
+      await prefs.setString('video_selected_product', videoState.selectedProduct ?? '');
+      await prefs.setBool('video_show_projection_result', videoState.showProjectionResult);
+      
+      // Sauvegarder les paramètres de mur LED
+      await prefs.setDouble('video_largeur_mur_led', videoState.largeurMurLed ?? 1);
+      await prefs.setDouble('video_hauteur_mur_led', videoState.hauteurMurLed ?? 1);
+      await prefs.setString('video_selected_mur_led_brand', selectedMurLed?.marque ?? '');
+      await prefs.setString('video_selected_mur_led_product', selectedMurLed?.produit ?? '');
+      await prefs.setBool('video_show_led_result', videoState.showLedResult);
+      
+      print('Video: State saved successfully');
+    } catch (e) {
+      print('Video: Error saving state: $e');
+    }
   }
 
   @override
@@ -347,6 +662,7 @@ class _VideoMenuPageState extends ConsumerState<VideoMenuPage>
     _tabController.dispose();
     _animationController.dispose();
     searchController.dispose();
+    _savePersistedState();
     super.dispose();
   }
 
@@ -379,13 +695,14 @@ class _VideoMenuPageState extends ConsumerState<VideoMenuPage>
     showDialog(
       context: context,
       builder: (context) {
+        final loc = AppLocalizations.of(context)!;
         int quantity = _fixtureQuantities[item.id] ?? 1;
         return AlertDialog(
           title: Text(item.produit),
           content: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              Text('Quantité: $quantity'),
+              Text('${loc.quantity}: $quantity'),
               Slider(
                 value: quantity.toDouble(),
                 min: 1,
@@ -445,7 +762,7 @@ class _VideoMenuPageState extends ConsumerState<VideoMenuPage>
 
     if (nbProjecteurs > 1) {
       // Calcul de la largeur de base par projecteur
-      double largeurBase = largeurProjection / nbProjecteurs;
+      double largeurBase = (videoState.projectionWidth ?? 5) / nbProjecteurs;
 
       // Calcul du chevauchement en fonction de la largeur de base
       overlapWidth = largeurBase * (chevauchement / 100);
@@ -453,14 +770,19 @@ class _VideoMenuPageState extends ConsumerState<VideoMenuPage>
       // Chaque projecteur a besoin de sa largeur de base plus les chevauchements
       largeurParProjecteur = largeurBase + (2 * overlapWidth);
     } else {
-      largeurParProjecteur = largeurProjection;
+      largeurParProjecteur = videoState.projectionWidth ?? 5;
     }
 
     // Calcul de la hauteur en fonction du format 16/9 pour la largeur par projecteur
     double hauteurTotale = largeurParProjecteur * (9 / 16);
 
     // Calcul du ratio en fonction du format
-    double baseRatio = distanceProjection / largeurParProjecteur;
+    // Pour le softage, utiliser la largeur de base de chaque VP (sans chevauchement)
+    double largeurPourRatio = nbProjecteurs > 1 
+        ? (videoState.projectionWidth ?? 5) / nbProjecteurs  // Largeur de base par VP
+        : (videoState.projectionWidth ?? 5);  // Largeur totale si un seul VP
+    
+    double baseRatio = (videoState.projectionDistance ?? 10) / largeurPourRatio;
     double ratio;
     switch (selectedFormat) {
       case '4/3':
@@ -473,16 +795,26 @@ class _VideoMenuPageState extends ConsumerState<VideoMenuPage>
         ratio = baseRatio;
     }
 
+    CatalogueItem? selectedProjector;
+    if (videoState.selectedProduct != null) {
+      try {
+        selectedProjector = ref.watch(catalogueProvider).firstWhere(
+          (item) => item.produit == videoState.selectedProduct,
+        );
+      } catch (e) {
+        selectedProjector = null;
+      }
+    }
     final recommendation = selectedProjector != null
-        ? getRecommendedLens(selectedProjector!, ratio)
+        ? getRecommendedLens(selectedProjector, ratio)
         : null;
 
     // Filtrer les résultats de recherche en fonction de l'onglet actif
-    if (searchQuery.isNotEmpty) {
+    if (videoState.searchQuery.isNotEmpty) {
       searchResults = ref.watch(catalogueProvider).where((item) {
         final matchesSearch =
-            item.marque.toLowerCase().contains(searchQuery.toLowerCase()) ||
-                item.produit.toLowerCase().contains(searchQuery.toLowerCase());
+            item.marque.toLowerCase().contains(videoState.searchQuery.toLowerCase()) ||
+                item.produit.toLowerCase().contains(videoState.searchQuery.toLowerCase());
 
         // Filtrer selon l'onglet actif
         if (_tabController.index == 0) {
@@ -508,7 +840,7 @@ class _VideoMenuPageState extends ConsumerState<VideoMenuPage>
       body: Stack(
         children: [
           Opacity(
-            opacity: 0.15,
+            opacity: 0.1,
             child: Container(
               decoration: const BoxDecoration(
                 image: DecorationImage(
@@ -532,15 +864,20 @@ class _VideoMenuPageState extends ConsumerState<VideoMenuPage>
                         padding: const EdgeInsets.symmetric(vertical: 2),
                         child: TabBar(
                           controller: _tabController,
+                          labelColor: Theme.of(context).brightness == Brightness.dark 
+                              ? Colors.lightBlue[300] 
+                              : const Color(0xFF0A1128),
+                          unselectedLabelColor: Colors.white.withOpacity(0.7),
                           tabs: [
                             Tab(
                               child: Row(
                                 mainAxisAlignment: MainAxisAlignment.center,
+                                mainAxisSize: MainAxisSize.min,
                                 children: [
-                                  Icon(Icons.calculate, size: 18),
-                                  SizedBox(width: 8),
+                                  Icon(Icons.calculate, size: 16),
+                                  SizedBox(width: 4),
                                   Text(
-                                    'Projection',
+                                    'Proj', // Abrégé de "Projection"
                                     style: Theme.of(context).textTheme.bodyMedium,
                                   ),
                                 ],
@@ -549,11 +886,26 @@ class _VideoMenuPageState extends ConsumerState<VideoMenuPage>
                             Tab(
                               child: Row(
                                 mainAxisAlignment: MainAxisAlignment.center,
+                                mainAxisSize: MainAxisSize.min,
                                 children: [
-                                  Icon(Icons.calculate, size: 18),
-                                  SizedBox(width: 8),
+                                  Icon(Icons.calculate, size: 16),
+                                  SizedBox(width: 4),
                                   Text(
-                                    'Mur LED',
+                                    'LED', // Déjà court
+                                    style: Theme.of(context).textTheme.bodyMedium,
+                                  ),
+                                ],
+                              ),
+                            ),
+                            Tab(
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  Icon(Icons.timer, size: 16),
+                                  SizedBox(width: 4),
+                                  Text(
+                                    'Timer', // Déjà court
                                     style: Theme.of(context).textTheme.bodyMedium,
                                   ),
                                 ],
@@ -579,553 +931,7 @@ class _VideoMenuPageState extends ConsumerState<VideoMenuPage>
                         child: TabBarView(
                           controller: _tabController,
                           children: [
-                            SingleChildScrollView(
-                              controller: _scrollController,
-                              child: Column(
-                                children: [
-                                  Container(
-                                    margin: const EdgeInsets.all(16),
-                                    decoration: BoxDecoration(
-                                      color: const Color(0xFF0A1128)
-                                          .withAlpha((0.3 * 255).toInt()),
-                                      border: Border.all(
-                                          color: Colors.white, width: 1),
-                                      borderRadius: BorderRadius.circular(12),
-                                    ),
-                                    child: Column(
-                                      children: [
-                                        Container(
-                                          padding: const EdgeInsets.symmetric(
-                                              horizontal: 16, vertical: 8),
-                                          child: TextField(
-                                            controller: searchController,
-                                            style: Theme.of(context).textTheme.bodyMedium,
-                                            decoration: InputDecoration(
-                                              hintText: loc.catalogPage_search,
-                                              hintStyle: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                                                color: Theme.of(context).textTheme.bodyMedium?.color?.withOpacity(0.7),
-                                              ),
-                                              prefixIcon: Icon(
-                                                Icons.search,
-                                                color: Theme.of(context).textTheme.bodyMedium?.color,
-                                                size: 20
-                                              ),
-                                              filled: true,
-                                              fillColor: Colors.transparent,
-                                              border: InputBorder.none,
-                                              enabledBorder: InputBorder.none,
-                                              focusedBorder: InputBorder.none,
-                                              contentPadding:
-                                                  const EdgeInsets.symmetric(
-                                                      vertical: 12),
-                                              isDense: true,
-                                            ),
-                                            onChanged: (value) {
-                                              setState(() {
-                                                searchQuery = value;
-                                                if (value.isEmpty) {
-                                                  searchResults = [];
-                                                  searchController.clear();
-                                                }
-                                              });
-                                            },
-                                          ),
-                                        ),
-                                        if (searchResults.isNotEmpty)
-                                          Container(
-                                            margin: const EdgeInsets.symmetric(
-                                                horizontal: 16),
-                                            decoration: BoxDecoration(
-                                              color:
-                                                  Colors.black.withOpacity(0.4),
-                                              borderRadius:
-                                                  BorderRadius.circular(12),
-                                            ),
-                                            child: ListView.builder(
-                                              shrinkWrap: true,
-                                              physics:
-                                                  const NeverScrollableScrollPhysics(),
-                                              padding: const EdgeInsets.all(8),
-                                              itemCount: searchResults.length,
-                                              itemBuilder: (context, index) {
-                                                final item =
-                                                    searchResults[index];
-                                                return InkWell(
-                                                  onTap: () {
-                                                    setState(() {
-                                                      if (item.sousCategorie ==
-                                                          'Mur LED') {
-                                                        selectedMurLed = item;
-                                                      } else {
-                                                        selectedBrand =
-                                                            item.marque;
-                                                        selectedProjector =
-                                                            item;
-                                                      }
-                                                      searchQuery = '';
-                                                      searchResults = [];
-                                                      searchController.clear();
-                                                    });
-                                                  },
-                                                  child: Padding(
-                                                    padding: const EdgeInsets
-                                                        .symmetric(
-                                                        vertical: 8,
-                                                        horizontal: 12),
-                                                    child: Column(
-                                                      crossAxisAlignment:
-                                                          CrossAxisAlignment
-                                                              .start,
-                                                      children: [
-                                                        Text(
-                                                          '${item.marque} - ${item.produit}',
-                                                          style: Theme.of(context).textTheme.bodyMedium,
-                                                        ),
-                                                        Text(
-                                                          item.sousCategorie,
-                                                          style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                                                            color: Theme.of(context).textTheme.bodySmall?.color?.withOpacity(0.7),
-                                                          ),
-                                                        ),
-                                                      ],
-                                                    ),
-                                                  ),
-                                                );
-                                              },
-                                            ),
-                                          ),
-                                        Padding(
-                                          padding: const EdgeInsets.symmetric(
-                                              horizontal: 16, vertical: 8),
-                                          child: Column(
-                                            crossAxisAlignment:
-                                                CrossAxisAlignment.start,
-                                            children: [
-                                              Row(
-                                                children: [
-                                                  Expanded(
-                                                    child:
-                                                        DropdownButton<String>(
-                                                      hint: Text('Marque',
-                                                          style: Theme.of(context).textTheme.bodyMedium),
-                                                      value: selectedBrand,
-                                                      dropdownColor: Theme.of(context).brightness == Brightness.light 
-                                                          ? Colors.white 
-                                                          : Theme.of(context).colorScheme.surface,
-                                                      style: Theme.of(context).textTheme.bodyMedium,
-                                                      isExpanded: true,
-                                                      onChanged: (brand) {
-                                                        setState(() {
-                                                          selectedBrand = brand;
-                                                          selectedProjector = null;
-                                                        });
-                                                      },
-                                                      items: projectors
-                                                          .map((item) => item.marque)
-                                                          .toSet()
-                                                          .map((marque) {
-                                                        return DropdownMenuItem(
-                                                          value: marque,
-                                                          child: Text(marque,
-                                                              style: Theme.of(context).textTheme.bodyMedium),
-                                                        );
-                                                      }).toList(),
-                                                    ),
-                                                  ),
-                                                  const SizedBox(width: 8),
-                                                  Expanded(
-                                                    child: DropdownButton<
-                                                        CatalogueItem>(
-                                                      hint: Text('Modèle',
-                                                          style: Theme.of(context).textTheme.bodyMedium),
-                                                      value: selectedProjector,
-                                                      dropdownColor: Theme.of(context).brightness == Brightness.light 
-                                                          ? Colors.white 
-                                                          : Theme.of(context).colorScheme.surface,
-                                                      style: Theme.of(context).textTheme.bodyMedium,
-                                                      isExpanded: true,
-                                                      onChanged: (item) {
-                                                        setState(() {
-                                                          selectedProjector = item;
-                                                        });
-                                                      },
-                                                      items: projectors
-                                                          .where((item) => 
-                                                            selectedBrand == null || 
-                                                            item.marque == selectedBrand)
-                                                          .map((item) {
-                                                        return DropdownMenuItem(
-                                                          value: item,
-                                                          child: Text(item.produit,
-                                                              style: Theme.of(context).textTheme.bodyMedium),
-                                                        );
-                                                      }).toList(),
-                                                    ),
-                                                  ),
-                                                  const SizedBox(width: 8),
-                                                  Expanded(
-                                                    child:
-                                                        DropdownButton<String>(
-                                                      value: selectedFormat,
-                                                      dropdownColor: Theme.of(context).brightness == Brightness.light 
-                                                          ? Colors.white 
-                                                          : Theme.of(context).colorScheme.surface,
-                                                      style: Theme.of(context).textTheme.bodyMedium,
-                                                      isExpanded: true,
-                                                      onChanged: (value) {
-                                                        if (value != null) {
-                                                          setState(() {
-                                                            selectedFormat = value;
-                                                          });
-                                                        }
-                                                      },
-                                                      items: [
-                                                        DropdownMenuItem(
-                                                          value: '16/9',
-                                                          child: Text('16/9',
-                                                              style: Theme.of(context).textTheme.bodyMedium),
-                                                        ),
-                                                        DropdownMenuItem(
-                                                          value: '4/3',
-                                                          child: Text('4/3',
-                                                              style: Theme.of(context).textTheme.bodyMedium),
-                                                        ),
-                                                        DropdownMenuItem(
-                                                          value: '1/1',
-                                                          child: Text('1/1',
-                                                              style: Theme.of(context).textTheme.bodyMedium),
-                                                        ),
-                                                      ],
-                                                    ),
-                                                  ),
-                                                ],
-                                              ),
-                                              const SizedBox(height: 8),
-                                              Row(
-                                                children: [
-                                                  Expanded(
-                                                    child: Row(
-                                                      children: [
-                                                        Text('Nb VP :',
-                                                            style: Theme.of(context).textTheme.bodyMedium),
-                                                        const SizedBox(width: 4),
-                                                        Expanded(
-                                                          child: DropdownButton<int>(
-                                                            value: nbProjecteurs,
-                                                            dropdownColor: Theme.of(context).colorScheme.surface,
-                                                            style: Theme.of(context).textTheme.bodyMedium,
-                                                            isExpanded: true,
-                                                            onChanged: (value) {
-                                                              if (value != null) {
-                                                                setState(() {
-                                                                  nbProjecteurs = value;
-                                                                });
-                                                              }
-                                                            },
-                                                            items: List.generate(6, (index) => index + 1)
-                                                                .map((nb) => DropdownMenuItem(
-                                                                      value: nb,
-                                                                      child: Text(nb.toString(),
-                                                                          style: Theme.of(context).textTheme.bodyMedium),
-                                                                    ))
-                                                                .toList(),
-                                                          ),
-                                                        ),
-                                                      ],
-                                                    ),
-                                                  ),
-                                                  const SizedBox(width: 8),
-                                                  Expanded(
-                                                    child: Row(
-                                                      children: [
-                                                        Text('Chevauch. :',
-                                                            style: Theme.of(context).textTheme.bodyMedium),
-                                                        const SizedBox(width: 4),
-                                                        Expanded(
-                                                          child: DropdownButton<double>(
-                                                            value: chevauchement,
-                                                            dropdownColor: Theme.of(context).colorScheme.surface,
-                                                            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                                                                color: nbProjecteurs > 1 
-                                                                    ? Theme.of(context).textTheme.bodyMedium?.color 
-                                                                    : Theme.of(context).disabledColor),
-                                                            isExpanded: true,
-                                                            onChanged: nbProjecteurs > 1
-                                                                ? (value) {
-                                                                    if (value != null) {
-                                                                      setState(() {
-                                                                        chevauchement = value;
-                                                                      });
-                                                                    }
-                                                                  }
-                                                                : null,
-                                                            items: [10.0, 15.0, 20.0]
-                                                                .map((value) => DropdownMenuItem(
-                                                                      value: value,
-                                                                      child: Text('${value.toInt()}%',
-                                                                          style: Theme.of(context).textTheme.bodyMedium),
-                                                                    ))
-                                                                .toList(),
-                                                          ),
-                                                        ),
-                                                      ],
-                                                    ),
-                                                  ),
-                                                ],
-                                              ),
-                                              const SizedBox(height: 12),
-                                              Text(
-                                                  'Largeur image : ${largeurProjection.toStringAsFixed(1)} m',
-                                                  style: Theme.of(context).textTheme.bodyMedium),
-                                              Slider(
-                                                value: largeurProjection,
-                                                min: 1,
-                                                max: 50,
-                                                divisions: 49,
-                                                label: largeurProjection.toStringAsFixed(1),
-                                                onChanged: (value) {
-                                                  setState(() {
-                                                    largeurProjection = value;
-                                                  });
-                                                },
-                                              ),
-                                              Text(
-                                                  'Distance projecteur : ${distanceProjection.toStringAsFixed(1)} m',
-                                                  style: Theme.of(context).textTheme.bodyMedium),
-                                              Slider(
-                                                value: distanceProjection,
-                                                min: 1,
-                                                max: 50,
-                                                divisions: 49,
-                                                label: distanceProjection.toStringAsFixed(1),
-                                                onChanged: (value) {
-                                                  setState(() {
-                                                    distanceProjection = value;
-                                                  });
-                                                },
-                                              ),
-                                              Row(
-                                                mainAxisAlignment:
-                                                    MainAxisAlignment.center,
-                                                children: [
-                                                  ElevatedButton(
-                                                    style: ElevatedButton
-                                                        .styleFrom(
-                                                      foregroundColor:
-                                                          Colors.white,
-                                                      backgroundColor:
-                                                          const Color(
-                                                                  0xFF0A1128)
-                                                              .withOpacity(0.5),
-                                                      elevation: 0,
-                                                      padding: const EdgeInsets
-                                                          .symmetric(
-                                                          horizontal: 12,
-                                                          vertical: 6),
-                                                    ),
-                                                    onPressed: () {
-                                                      Navigator.push(
-                                                        context,
-                                                        MaterialPageRoute(
-                                                            builder: (_) =>
-                                                                const ArMeasurePage()),
-                                                      );
-                                                    },
-                                                    child: Row(
-                                                      mainAxisSize:
-                                                          MainAxisSize.min,
-                                                      children: [
-                                                        Image.asset(
-                                                          'assets/icons/tape_measure.png',
-                                                          width: 16,
-                                                          height: 16,
-                                                          color: Colors.white,
-                                                        ),
-                                                        const SizedBox(
-                                                            width: 4),
-                                                        const Text('AR',
-                                                            style: TextStyle(
-                                                                fontSize: 12,
-                                                                color: Colors
-                                                                    .white)),
-                                                      ],
-                                                    ),
-                                                  ),
-                                                  const SizedBox(width: 8),
-                                                  ElevatedButton(
-                                                    style: ElevatedButton
-                                                        .styleFrom(
-                                                      foregroundColor:
-                                                          Colors.white,
-                                                      backgroundColor:
-                                                          const Color(
-                                                                  0xFF0A1128)
-                                                              .withOpacity(0.5),
-                                                      elevation: 0,
-                                                      padding: const EdgeInsets
-                                                          .symmetric(
-                                                          horizontal: 12,
-                                                          vertical: 6),
-                                                    ),
-                                                    onPressed: () {
-                                                      setState(() {
-                                                        _calculateSimulation();
-                                                        showProjectionResult = true;
-                                                      });
-                                                    },
-                                                    child: const Icon(
-                                                        Icons.calculate,
-                                                        size: 20,
-                                                        color: Colors.white),
-                                                  ),
-                                                  const SizedBox(width: 8),
-                                                  ElevatedButton(
-                                                    style: ElevatedButton
-                                                        .styleFrom(
-                                                      foregroundColor:
-                                                          Colors.white,
-                                                      backgroundColor:
-                                                          const Color(
-                                                                  0xFF0A1128)
-                                                              .withOpacity(0.5),
-                                                      elevation: 0,
-                                                      padding: const EdgeInsets
-                                                          .symmetric(
-                                                          horizontal: 12,
-                                                          vertical: 6),
-                                                    ),
-                                                    onPressed: () {
-                                                      setState(() {
-                                                        _resetSelection();
-                                                        showProjectionResult = false;
-                                                      });
-                                                    },
-                                                    child: const Icon(
-                                                        Icons.refresh,
-                                                        size: 20,
-                                                        color: Colors.white),
-                                                  ),
-                                                ],
-                                              ),
-                                              const SizedBox(height: 16),
-                                              if (showProjectionResult)
-                                                Center(
-                                                  key: _projectionResultKey,
-                                                  child: Container(
-                                                    margin: const EdgeInsets
-                                                        .symmetric(
-                                                        horizontal: 32),
-                                                    padding:
-                                                        const EdgeInsets.all(
-                                                            12),
-                                                    decoration: BoxDecoration(
-                                                      color: const Color(
-                                                              0xFF0A1128)
-                                                          .withOpacity(0.5),
-                                                      border: Border.all(
-                                                          color: const Color(
-                                                              0xFF0A1128),
-                                                          width: 2),
-                                                      borderRadius:
-                                                          BorderRadius.circular(
-                                                              12),
-                                                    ),
-                                                    child: Column(
-                                                      crossAxisAlignment:
-                                                          CrossAxisAlignment
-                                                              .center,
-                                                      children: [
-                                                        Text(
-                                                          'Ratio : ${ratio.toStringAsFixed(2)}:1',
-                                                          style: Theme.of(context).textTheme.titleMedium,
-                                                        ),
-                                                        const SizedBox(
-                                                            height: 8),
-                                                        if (selectedProjector !=
-                                                            null)
-                                                          recommendation != null
-                                                              ? Text(
-                                                                  'Ratio recommandé : ${recommendation.reference} (${recommendation.ratio})',
-                                                                  style:
-                                                                      const TextStyle(
-                                                                    color: Colors
-                                                                        .white,
-                                                                    fontSize:
-                                                                        16,
-                                                                    fontWeight:
-                                                                        FontWeight
-                                                                            .bold,
-                                                                  ),
-                                                                )
-                                                              : const Text(
-                                                                  'Aucune optique disponible pour ce ratio',
-                                                                  style:
-                                                                      TextStyle(
-                                                                    color: Colors
-                                                                        .redAccent,
-                                                                    fontSize:
-                                                                        16,
-                                                                    fontWeight:
-                                                                        FontWeight
-                                                                            .bold,
-                                                                  ),
-                                                                ),
-                                                        const SizedBox(
-                                                            height: 16),
-                                                        ElevatedButton.icon(
-                                                          onPressed: () {
-                                                            Navigator.push(
-                                                              context,
-                                                              MaterialPageRoute(
-                                                                builder:
-                                                                    (context) =>
-                                                                        ProjectionSchemaPage(
-                                                                  largeurTotale:
-                                                                      largeurProjection,
-                                                                  hauteurTotale:
-                                                                      largeurParProjecteur *
-                                                                          (9 /
-                                                                              16),
-                                                                  nbProjecteurs:
-                                                                      nbProjecteurs,
-                                                                  chevauchement:
-                                                                      chevauchement,
-                                                                  largeurParProjecteur:
-                                                                      largeurParProjecteur,
-                                                                  ratio: ratio,
-                                                                  optiqueRecommandee:
-                                                                      recommendation
-                                                                          ?.reference,
-                                                                ),
-                                                              ),
-                                                            );
-                                                          },
-                                                          icon: const Icon(
-                                                              Icons.visibility),
-                                                          label: const Text(
-                                                              'Schéma'),
-                                                          style: ElevatedButton
-                                                              .styleFrom(
-                                                            backgroundColor:
-                                                                Colors.blueGrey[
-                                                                    900],
-                                                            foregroundColor:
-                                                                Colors.white,
-                                                          ),
-                                                        ),
-                                                      ],
-                                                    ),
-                                                  ),
-                                                ),
-                                            ],
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
+                            const ProjectionTab(),
                             SingleChildScrollView(
                               controller: _scrollController,
                               padding: const EdgeInsets.all(16),
@@ -1145,62 +951,40 @@ class _VideoMenuPageState extends ConsumerState<VideoMenuPage>
                                         Row(
                                           children: [
                                             Expanded(
-                                              child: DropdownButton<String>(
-                                                isExpanded: true,
+                                              child: BorderLabeledDropdown<String>(
+                                                label: loc.videoPage_brand,
                                                 value: selectedMurLed?.marque,
-                                                hint: Text('Marque',
-                                                    style: Theme.of(context).textTheme.bodyMedium),
-                                                dropdownColor: Theme.of(context).brightness == Brightness.light 
-                                                    ? Colors.white 
-                                                    : Theme.of(context).colorScheme.surface,
-                                                style: Theme.of(context).textTheme.bodyMedium,
                                                 items: _getLedWalls()
                                                     .map((item) => item.marque)
                                                     .toSet()
                                                     .map((marque) =>
                                                         DropdownMenuItem(
                                                           value: marque,
-                                                          child: Text(marque,
-                                                              style: Theme.of(context).textTheme.bodyMedium),
+                                                          child: Text(marque, style: const TextStyle(fontSize: 11)),
                                                         ))
                                                     .toList(),
-                                                onChanged: (marque) {
-                                                  if (marque != null) {
-                                                    final items = _getLedWalls()
-                                                        .where((item) =>
-                                                            item.marque == marque)
-                                                        .toList();
-                                                    if (items.isNotEmpty) {
-                                                      setState(() {
-                                                        selectedMurLed = items.first;
-                                                        largeurMurLed = 1;
-                                                        hauteurMurLed = 1;
-                                                        showLedResult = false;
-                                                      });
-                                                    }
-                                                  }
-                                                },
+                                          onChanged: (marque) {
+                                            if (marque != null) {
+                                              final items = _getLedWalls()
+                                                  .where((item) =>
+                                                      item.marque == marque)
+                                                  .toList();
+                                              if (items.isNotEmpty) {
+                                                ref.read(videoPageStateProvider.notifier).updateLedResult(false, largeur: 1, hauteur: 1);
+                                                setState(() {
+                                                  selectedMurLed = items.first;
+                                                });
+                                                _savePersistedState();
+                                              }
+                                            }
+                                          },
                                               ),
                                             ),
                                             const SizedBox(width: 16),
                                             Expanded(
-                                              child: DropdownButtonFormField<CatalogueItem>(
-                                                isExpanded: true,
+                                              child: BorderLabeledDropdown<CatalogueItem>(
+                                                label: loc.videoPage_selectLedWall,
                                                 value: selectedMurLed,
-                                                hint: Text('Choisir un mur LED',
-                                                    style: Theme.of(context).textTheme.bodyMedium),
-                                                dropdownColor: Theme.of(context).brightness == Brightness.light 
-                                                    ? Colors.white 
-                                                    : Theme.of(context).colorScheme.surface,
-                                                style: Theme.of(context).textTheme.bodyMedium,
-                                                decoration: const InputDecoration(
-                                                  border: InputBorder.none,
-                                                  enabledBorder: InputBorder.none,
-                                                  focusedBorder: InputBorder.none,
-                                                  contentPadding: EdgeInsets.symmetric(horizontal: 0),
-                                                  fillColor: Colors.transparent,
-                                                  filled: true,
-                                                ),
                                                 items: _getLedWalls()
                                                     .where((item) => 
                                                       selectedMurLed?.marque == null || 
@@ -1210,18 +994,17 @@ class _VideoMenuPageState extends ConsumerState<VideoMenuPage>
                                                           value: item,
                                                           child: Text(
                                                             '${item.marque} - ${item.produit}',
-                                                            style: Theme.of(context).textTheme.bodyMedium,
+                                                            style: const TextStyle(fontSize: 11),
                                                           ),
                                                         ))
                                                     .toList(),
                                                 onChanged: (item) {
                                                   if (item != null) {
+                                                    ref.read(videoPageStateProvider.notifier).updateLedResult(false, largeur: 1, hauteur: 1);
                                                     setState(() {
                                                       selectedMurLed = item;
-                                                      largeurMurLed = 1;
-                                                      hauteurMurLed = 1;
-                                                      showLedResult = false;
                                                     });
+                                                    _savePersistedState();
                                                   }
                                                 },
                                               ),
@@ -1230,56 +1013,39 @@ class _VideoMenuPageState extends ConsumerState<VideoMenuPage>
                                         ),
                                         const SizedBox(height: 16),
                                         Text(
-                                            'Largeur : ${largeurMurLed.toInt()} Dalles / ${((double.tryParse(selectedMurLed?.dimensions.split('x')[0].trim().replaceAll(' mm', '') ?? '500') ?? 500) / 1000 * largeurMurLed).toStringAsFixed(2)} m',
+                                            'Largeur : ${(videoState.largeurMurLed ?? 1).toInt()} Dalles / ${((double.tryParse(selectedMurLed?.dimensions.split('x')[0].trim().replaceAll(' mm', '') ?? '500') ?? 500) / 1000 * (videoState.largeurMurLed ?? 1)).toStringAsFixed(2)} m',
                                             style: Theme.of(context).textTheme.bodyMedium),
                                         Slider(
-                                          value: largeurMurLed,
+                                          value: videoState.largeurMurLed ?? 1,
                                           min: 1,
                                           max: 50,
                                           divisions: 49,
                                           label:
-                                              '${largeurMurLed.toInt()} Dalles / ${((double.tryParse(selectedMurLed?.dimensions.split('x')[0].trim().replaceAll(' mm', '') ?? '500') ?? 500) / 1000 * largeurMurLed).toStringAsFixed(2)} m',
+                                              '${(videoState.largeurMurLed ?? 1).toInt()} Dalles / ${((double.tryParse(selectedMurLed?.dimensions.split('x')[0].trim().replaceAll(' mm', '') ?? '500') ?? 500) / 1000 * (videoState.largeurMurLed ?? 1)).toStringAsFixed(2)} m',
                                           onChanged: (value) {
-                                            setState(() {
-                                              largeurMurLed = value;
-                                              showLedResult = false;
-                                            });
+                                            ref.read(videoPageStateProvider.notifier).updateLedResult(false, largeur: value, hauteur: videoState.hauteurMurLed);
+                                            _savePersistedState();
                                           },
                                         ),
                                         Text(
-                                            'Hauteur : ${hauteurMurLed.toInt()} Dalles / ${((double.tryParse(selectedMurLed?.dimensions.split('x')[1].trim().replaceAll(' mm', '') ?? '500') ?? 500) / 1000 * hauteurMurLed).toStringAsFixed(2)} m',
+                                            'Hauteur : ${(videoState.hauteurMurLed ?? 1).toInt()} Dalles / ${((double.tryParse(selectedMurLed?.dimensions.split('x')[1].trim().replaceAll(' mm', '') ?? '500') ?? 500) / 1000 * (videoState.hauteurMurLed ?? 1)).toStringAsFixed(2)} m',
                                             style: Theme.of(context).textTheme.bodyMedium),
                                         Slider(
-                                          value: hauteurMurLed,
+                                          value: videoState.hauteurMurLed ?? 1,
                                           min: 1,
                                           max: 20,
                                           divisions: 19,
                                           label:
-                                              '${hauteurMurLed.toInt()} Dalles / ${((double.tryParse(selectedMurLed?.dimensions.split('x')[1].trim().replaceAll(' mm', '') ?? '500') ?? 500) / 1000 * hauteurMurLed).toStringAsFixed(2)} m',
+                                              '${(videoState.hauteurMurLed ?? 1).toInt()} Dalles / ${((double.tryParse(selectedMurLed?.dimensions.split('x')[1].trim().replaceAll(' mm', '') ?? '500') ?? 500) / 1000 * (videoState.hauteurMurLed ?? 1)).toStringAsFixed(2)} m',
                                           onChanged: (value) {
-                                            setState(() {
-                                              hauteurMurLed = value;
-                                              showLedResult = false;
-                                            });
+                                            ref.read(videoPageStateProvider.notifier).updateLedResult(false, largeur: videoState.largeurMurLed, hauteur: value);
+                                            _savePersistedState();
                                           },
                                         ),
                                         const SizedBox(height: 16),
-                                        Row(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.center,
-                                          children: [
-                                            ElevatedButton(
-                                              style: ElevatedButton.styleFrom(
-                                                foregroundColor: Colors.white,
-                                                backgroundColor:
-                                                    const Color(0xFF0A1128)
-                                                        .withOpacity(0.5),
-                                                elevation: 0,
-                                                padding:
-                                                    const EdgeInsets.symmetric(
-                                                        horizontal: 12,
-                                                        vertical: 6),
-                                              ),
+                                        ActionButtonRow(
+                                          buttons: [
+                                            ActionButton.photo(
                                               onPressed: () {
                                                 Navigator.push(
                                                   context,
@@ -1288,70 +1054,28 @@ class _VideoMenuPageState extends ConsumerState<VideoMenuPage>
                                                           const ArMeasurePage()),
                                                 );
                                               },
-                                              child: Row(
-                                                mainAxisSize: MainAxisSize.min,
-                                                children: [
-                                                  Image.asset(
-                                                    'assets/icons/tape_measure.png',
-                                                    width: 16,
-                                                    height: 16,
-                                                    color: Colors.white,
-                                                  ),
-                                                  const SizedBox(width: 4),
-                                                  const Text('AR',
-                                                      style: TextStyle(
-                                                          fontSize: 12,
-                                                          color: Colors.white)),
-                                                ],
-                                              ),
                                             ),
-                                            const SizedBox(width: 8),
-                                            ElevatedButton(
-                                              style: ElevatedButton.styleFrom(
-                                                foregroundColor: Colors.white,
-                                                backgroundColor:
-                                                    const Color(0xFF0A1128)
-                                                        .withOpacity(0.5),
-                                                elevation: 0,
-                                                padding:
-                                                    const EdgeInsets.symmetric(
-                                                        horizontal: 12,
-                                                        vertical: 6),
-                                              ),
+                                            ActionButton.calculate(
                                               onPressed: () {
-                                                setState(() {
-                                                  if (_tabController.index == 1) {
-                                                    showLedResult = true;
-                                                    showProjectionResult = false;
+                                                if (_tabController.index == 1) {
+                                                  ref.read(videoPageStateProvider.notifier).updateLedResult(true);
+                                                  ref.read(videoPageStateProvider.notifier).updateProjectionResult(false);
+                                                  
+                                                  // Attendre que le widget soit construit avant de faire défiler
+                                                  WidgetsBinding.instance.addPostFrameCallback((_) {
                                                     _scrollToResult();
-                                                  }
-                                                });
+                                                  });
+                                                  
+                                                  _savePersistedState();
+                                                }
                                               },
-                                              child: const Icon(Icons.calculate,
-                                                  size: 20,
-                                                  color: Colors.white),
                                             ),
-                                            const SizedBox(width: 8),
-                                            ElevatedButton(
-                                              style: ElevatedButton.styleFrom(
-                                                foregroundColor: Colors.white,
-                                                backgroundColor:
-                                                    const Color(0xFF0A1128)
-                                                        .withOpacity(0.5),
-                                                elevation: 0,
-                                                padding:
-                                                    const EdgeInsets.symmetric(
-                                                        horizontal: 12,
-                                                        vertical: 6),
-                                              ),
+                                            ActionButton.reset(
                                               onPressed: _resetSelection,
-                                              child: const Icon(Icons.refresh,
-                                                  size: 20,
-                                                  color: Colors.white),
                                             ),
                                           ],
                                         ),
-                                        if (showLedResult)
+                                        if (videoState.showLedResult)
                                           Container(
                                             key: _ledResultKey,
                                             margin: const EdgeInsets.symmetric(
@@ -1359,7 +1083,7 @@ class _VideoMenuPageState extends ConsumerState<VideoMenuPage>
                                             padding: const EdgeInsets.all(16),
                                             decoration: BoxDecoration(
                                               color: const Color(0xFF0A1128)
-                                                  .withOpacity(0.8),
+                                                  .withOpacity(0.3),
                                               border: Border.all(
                                                   color:
                                                       const Color(0xFF0A1128),
@@ -1371,33 +1095,67 @@ class _VideoMenuPageState extends ConsumerState<VideoMenuPage>
                                               crossAxisAlignment:
                                                   CrossAxisAlignment.center,
                                               children: [
+                                                // Titre "Mur LED 'NomProjet'"
                                                 Center(
                                                   child: Text(
-                                                      '${(largeurMurLed * hauteurMurLed).toInt()} dalles (${_getMurLedDimensions(selectedMurLed)} /u)',
+                                                    'Mur LED \'${ref.watch(activePresetProvider)?.name ?? 'Projet'}\'',
+                                                    style: const TextStyle(
+                                                      color: Colors.white,
+                                                      fontSize: 18,
+                                                      fontWeight: FontWeight.bold,
+                                                    ),
+                                                  ),
+                                                ),
+                                                const SizedBox(height: 16),
+                                                Center(
+                                                  child: Text(
+                                                      '${((videoState.largeurMurLed ?? 1) * (videoState.hauteurMurLed ?? 1)).toInt()} ${loc.videoLedResult_dalles} (${_getMurLedDimensions(selectedMurLed)} /u)',
+                                                      style: const TextStyle(
+                                                          color: Colors.white)),
+                                                ),
+                                                Center(
+                                                  child: Builder(
+                                                    builder: (context) {
+                                                      final pixels = _calculateLedWallPixels(
+                                                        selectedMurLed, 
+                                                        videoState.largeurMurLed ?? 1, 
+                                                        videoState.hauteurMurLed ?? 1
+                                                      );
+                                                      return Text(
+                                                          '${loc.videoLedResult_espacePixellaire} : ${pixels['largeur']}px x ${pixels['hauteur']}px (${pixels['resX']} x ${pixels['resY']} /dalle)',
+                                                          style: const TextStyle(
+                                                              color: Colors.white),
+                                                      );
+                                                    },
+                                                  ),
+                                                ),
+                                                Center(
+                                                  child: Builder(
+                                                    builder: (context) {
+                                                      final pixels = _calculateLedWallPixels(
+                                                        selectedMurLed, 
+                                                        videoState.largeurMurLed ?? 1, 
+                                                        videoState.hauteurMurLed ?? 1
+                                                      );
+                                                      final megapixels = pixels['total']! / 1000000;
+                                                      final ratio = (videoState.largeurMurLed ?? 1) / (videoState.hauteurMurLed ?? 1);
+                                                      return Text(
+                                                          '${megapixels.toStringAsFixed(1)} Mpx / Ratio ${ratio.toStringAsFixed(2)}:1',
+                                                          style: const TextStyle(
+                                                              color: Colors.white),
+                                                      );
+                                                    },
+                                                  ),
+                                                ),
+                                                Center(
+                                                  child: Text(
+                                                      '${loc.videoLedResult_poidsTotal} : ${(_getMurLedWeight(selectedMurLed) * (videoState.largeurMurLed ?? 1) * (videoState.hauteurMurLed ?? 1)).toStringAsFixed(1)} kg',
                                                       style: const TextStyle(
                                                           color: Colors.white)),
                                                 ),
                                                 Center(
                                                   child: Text(
-                                                      'Esp. pixellaire : ${(int.tryParse(_getMurLedResolution(selectedMurLed).split('x')[0].trim().replaceAll('px', '')) ?? 200) * largeurMurLed.toInt()}px x ${(int.tryParse(_getMurLedResolution(selectedMurLed).split('x')[1].trim().replaceAll('px', '')) ?? 200) * hauteurMurLed.toInt()}px (${_getMurLedResolution(selectedMurLed).split('x')[0].trim().replaceAll('px', '')} x ${_getMurLedResolution(selectedMurLed).split('x')[1].trim().replaceAll('px', '')} /u)',
-                                                      style: const TextStyle(
-                                                          color: Colors.white)),
-                                                ),
-                                                Center(
-                                                  child: Text(
-                                                      '${((int.tryParse(_getMurLedResolution(selectedMurLed).split('x')[0].trim().replaceAll('px', '')) ?? 200) * largeurMurLed.toInt() * (int.tryParse(_getMurLedResolution(selectedMurLed).split('x')[1].trim().replaceAll('px', '')) ?? 200) * hauteurMurLed.toInt() / 1000000).toStringAsFixed(1)} Mpx / Ratio ${(largeurMurLed / hauteurMurLed).toStringAsFixed(2)}:1',
-                                                      style: const TextStyle(
-                                                          color: Colors.white)),
-                                                ),
-                                                Center(
-                                                  child: Text(
-                                                      'Poids total : ${(_getMurLedWeight(selectedMurLed) * largeurMurLed * hauteurMurLed).toStringAsFixed(1)} kg',
-                                                      style: const TextStyle(
-                                                          color: Colors.white)),
-                                                ),
-                                                Center(
-                                                  child: Text(
-                                                      'Consommation totale : ${(_getMurLedConsumption(selectedMurLed) * largeurMurLed * hauteurMurLed).toStringAsFixed(0)} W',
+                                                      '${loc.videoLedResult_consommationTotale} : ${(_getMurLedConsumption(selectedMurLed) * (videoState.largeurMurLed ?? 1) * (videoState.hauteurMurLed ?? 1)).toStringAsFixed(0)} W',
                                                       style: const TextStyle(
                                                           color: Colors.white)),
                                                 ),
@@ -1406,41 +1164,22 @@ class _VideoMenuPageState extends ConsumerState<VideoMenuPage>
                                                   mainAxisAlignment:
                                                       MainAxisAlignment.center,
                                                   children: [
-                                                    ElevatedButton.icon(
-                                                      onPressed: () {
-                                                        Navigator.push(
-                                                          context,
-                                                          MaterialPageRoute(
-                                                            builder: (context) =>
-                                                                const LedWallSchemaPage(),
-                                                          ),
-                                                        );
-                                                      },
-                                                      icon: const Icon(
-                                                          Icons.schema,
-                                                          color: Color(
-                                                              0xFF0A1128)),
-                                                      label: const Text(
-                                                          'Voir le schéma',
-                                                          style: TextStyle(
-                                                              color: Color(
-                                                                  0xFF0A1128))),
-                                                      style: ElevatedButton
-                                                          .styleFrom(
-                                                        backgroundColor:
-                                                            Colors.white,
-                                                        foregroundColor:
-                                                            const Color(
-                                                                0xFF0A1128),
-                                                        padding:
-                                                            const EdgeInsets
-                                                                .symmetric(
-                                                                horizontal: 24,
-                                                                vertical: 12),
+                                                    Transform.rotate(
+                                                      angle: 3.14159, // 180° en radians
+                                                      child: ExportWidget(
+                                                        title: 'Schémas Mur LED',
+                                                        content: _generateSchemaContent(),
+                                                        projectType: 'led_wall',
+                                                        fileName: 'schemas_mur_led',
+                                                        customIcon: Icons.schema,
+                                                        backgroundColor: Colors.white,
+                                                        tooltip: 'Exporter les schémas',
+                                                        projectSummary: _buildLedWallProjectSummary(),
                                                       ),
                                                     ),
                                                     const SizedBox(width: 16),
-                                                    ElevatedButton(
+                                                    ActionButton(
+                                                      icon: Icons.shopping_cart,
                                                       onPressed: selectedMurLed ==
                                                                   null ||
                                                               ref
@@ -1458,8 +1197,8 @@ class _VideoMenuPageState extends ConsumerState<VideoMenuPage>
                                                                   .selectedPresetIndex];
                                                               final int
                                                                   nbDalles =
-                                                                  (largeurMurLed *
-                                                                          hauteurMurLed)
+                                                                  ((videoState.largeurMurLed ?? 1) *
+                                                                          (videoState.hauteurMurLed ?? 1))
                                                                       .toInt();
                                                               setState(() {
                                                                 final existingIndex =
@@ -1491,41 +1230,6 @@ class _VideoMenuPageState extends ConsumerState<VideoMenuPage>
                                                                         preset);
                                                               });
                                                             },
-                                                      style: ElevatedButton
-                                                          .styleFrom(
-                                                        backgroundColor:
-                                                            Colors.white,
-                                                        foregroundColor:
-                                                            const Color(
-                                                                0xFF0A1128),
-                                                        elevation: 0,
-                                                        padding:
-                                                            const EdgeInsets
-                                                                .symmetric(
-                                                                horizontal: 18,
-                                                                vertical: 10),
-                                                        shape:
-                                                            RoundedRectangleBorder(
-                                                          borderRadius:
-                                                              BorderRadius
-                                                                  .circular(8),
-                                                        ),
-                                                      ),
-                                                      child: const Row(
-                                                        mainAxisSize:
-                                                            MainAxisSize.min,
-                                                        children: [
-                                                          Icon(Icons.notes,
-                                                              size: 20,
-                                                              color: Color(
-                                                                  0xFF0A1128)),
-                                                          SizedBox(width: 6),
-                                                          Icon(Icons.add,
-                                                              size: 20,
-                                                              color: Color(
-                                                                  0xFF0A1128)),
-                                                        ],
-                                                      ),
                                                     ),
                                                   ],
                                                 ),
@@ -1538,6 +1242,7 @@ class _VideoMenuPageState extends ConsumerState<VideoMenuPage>
                                 ],
                               ),
                             ),
+                            const TimerTab(),
                           ],
                         ),
                       ),

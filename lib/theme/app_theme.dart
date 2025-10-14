@@ -175,7 +175,7 @@ class AppTheme {
       appBarTheme: AppBarTheme(
         centerTitle: true,
         elevation: 0,
-        backgroundColor: AppColors.darkBackground, // Fond sombre pour l'AppBar
+        backgroundColor: AppColors.appBarColor, // Couleur exacte du sélecteur
         iconTheme: const IconThemeData(color: Colors.white), // Icônes blanches
         titleTextStyle: const TextStyle(
           color: Colors.white, // Titre blanc
@@ -185,7 +185,7 @@ class AppTheme {
         ),
       ),
 
-      tabBarTheme: TabBarTheme(
+          tabBarTheme: TabBarThemeData(
         labelColor: AppColors.mainBlue,
         unselectedLabelColor: Colors.grey,
         indicatorColor: AppColors.mainBlue,
@@ -210,7 +210,7 @@ class AppTheme {
         valueIndicatorTextStyle: const TextStyle(color: Colors.white),
       ),
 
-      cardTheme: CardTheme(
+          cardTheme: CardThemeData(
         color: Colors.white,
         elevation: 2,
         shape: RoundedRectangleBorder(
@@ -334,7 +334,7 @@ class AppTheme {
       appBarTheme: const AppBarTheme(
         centerTitle: true,
         elevation: 0,
-        backgroundColor: Colors.transparent,
+        backgroundColor: AppColors.appBarColor, // Couleur exacte du sélecteur
         iconTheme: IconThemeData(color: AppColors.lightText),
         titleTextStyle: TextStyle(
           color: AppColors.lightText,
@@ -344,7 +344,7 @@ class AppTheme {
         ),
       ),
 
-      tabBarTheme: TabBarTheme(
+          tabBarTheme: TabBarThemeData(
         labelColor: skyBlue,  // Onglet sélectionné en bleu ciel
         unselectedLabelColor: AppColors.lightText,  // Onglets non sélectionnés en blanc
         indicatorColor: skyBlue,  // Indicateur en bleu ciel
@@ -369,7 +369,7 @@ class AppTheme {
         valueIndicatorTextStyle: const TextStyle(color: Colors.white),
       ),
 
-      cardTheme: CardTheme(
+          cardTheme: CardThemeData(
         color: AppColors.cardBlue,
         elevation: 4,
         shape: RoundedRectangleBorder(

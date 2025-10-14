@@ -1,20 +1,11 @@
 // lib/pages/divers_menu_page.dart
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
 import '../widgets/custom_app_bar.dart';
 import '../widgets/preset_widget.dart';
+import '../widgets/speedtest_tab.dart';
 import '../providers/preset_provider.dart';
-import 'catalogue_page.dart';
-import 'light_menu_page.dart';
-import 'structure_menu_page.dart';
-import 'sound_menu_page.dart';
-import 'video_menu_page.dart';
-import 'electricite_menu_page.dart';
-import 'divers_products_page.dart';
-// import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:logging/logging.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import '../widgets/uniform_bottom_nav_bar.dart';
 
 class DiversMenuPage extends ConsumerStatefulWidget {
   const DiversMenuPage({super.key});
@@ -25,145 +16,19 @@ class DiversMenuPage extends ConsumerStatefulWidget {
 
 class _DiversMenuPageState extends ConsumerState<DiversMenuPage>
     with SingleTickerProviderStateMixin {
-  final _logger = Logger('DiversMenuPage');
-  bool _isScanning = false;
-  List<dynamic> networks = [];
   late TabController _tabController;
-  String result = '';
-  double downloadSpeed = 0;
-  double uploadSpeed = 0;
 
   @override
   void initState() {
     super.initState();
-    _tabController = TabController(length: 2, vsync: this);
+    _tabController = TabController(length: 3, vsync: this);
   }
 
-  Future<void> _scanNetworks() async {
-    try {
-      setState(() => _isScanning = true);
-      // Fonctionnalité désactivée temporairement
-      setState(() {
-        _isScanning = false;
-      });
-    } catch (e, stackTrace) {
-      _logger.severe('Error scanning networks', e, stackTrace);
-      setState(() => _isScanning = false);
-    }
-  }
 
-  Future<void> testBandwidth() async {
-    setState(() {
-      result = 'Test de bande passante en cours...';
-    });
-    final stopwatch = Stopwatch()..start();
-    final response =
-        await http.get(Uri.parse('https://speed.hetzner.de/100MB.bin'));
-    stopwatch.stop();
-    if (response.statusCode == 200) {
-      final timeSec = stopwatch.elapsedMilliseconds / 1000;
-      final speedMbps = (response.contentLength ?? 0) * 8 / timeSec / 1000000;
-      setState(() {
-        downloadSpeed = speedMbps;
-        uploadSpeed = speedMbps / 10;
-        result =
-            'Download: ${downloadSpeed.toStringAsFixed(2)} Mbps\nUpload: ${uploadSpeed.toStringAsFixed(2)} Mbps';
-      });
-    } else {
-      setState(() {
-        result = 'Erreur lors du téléchargement';
-      });
-    }
-  }
 
-  void _navigateTo(int index) {
-    final pages = [
-      const CataloguePage(),
-      const LightMenuPage(),
-      const StructureMenuPage(),
-      const SoundMenuPage(),
-      const VideoMenuPage(),
-      const ElectriciteMenuPage(),
-      const DiversMenuPage(),
-    ];
 
-    Offset beginOffset;
-    if (index == 0 || index == 1) {
-      beginOffset = const Offset(-1.0, 0.0);
-    } else if (index == 5 || index == 6) {
-      beginOffset = const Offset(1.0, 0.0);
-    } else {
-      beginOffset = Offset.zero;
-    }
 
-    Navigator.push(
-      context,
-      PageRouteBuilder(
-        pageBuilder: (_, __, ___) => pages[index],
-        transitionsBuilder: (_, animation, __, child) {
-          if (beginOffset == Offset.zero) {
-            return FadeTransition(opacity: animation, child: child);
-          } else {
-            final tween = Tween(begin: beginOffset, end: Offset.zero)
-                .chain(CurveTween(curve: Curves.easeInOut));
-            return SlideTransition(
-                position: animation.drive(tween), child: child);
-          }
-        },
-        transitionDuration: const Duration(milliseconds: 400),
-      ),
-    );
-  }
 
-  Widget _buildProduits() {
-    return Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Icon(
-            Icons.inventory_2,
-            size: 80,
-            color: Colors.blueGrey[300],
-          ),
-          const SizedBox(height: 24),
-          Text(
-            'Produits Divers',
-            style: TextStyle(
-              fontSize: 24,
-              color: Colors.white,
-              fontWeight: FontWeight.bold,
-            ),
-          ),
-          const SizedBox(height: 16),
-          Text(
-            'Backstage et Traiteur',
-            style: TextStyle(
-              fontSize: 18,
-              color: Colors.grey[300],
-            ),
-          ),
-          const SizedBox(height: 32),
-          ElevatedButton.icon(
-            onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => const DiversProductsPage(),
-                ),
-              );
-            },
-            icon: const Icon(Icons.arrow_forward),
-            label: const Text('Voir les produits'),
-            style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.blueGrey[700],
-              foregroundColor: Colors.white,
-              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
 
   @override
   void dispose() {
@@ -173,7 +38,6 @@ class _DiversMenuPageState extends ConsumerState<DiversMenuPage>
 
   @override
   Widget build(BuildContext context) {
-    final loc = AppLocalizations.of(context)!;
     return Scaffold(
       appBar: CustomAppBar(
         pageIcon: Icons.more_horiz,
@@ -197,14 +61,13 @@ class _DiversMenuPageState extends ConsumerState<DiversMenuPage>
                 const SizedBox(height: 6),
                 Expanded(
                   child: DefaultTabController(
-                    length: 3,
+                    length: 2,
                     child: Column(
                       children: [
                         const TabBar(
                           tabs: [
-                            Tab(text: 'Produits'),
                             Tab(text: 'Bande Passante'),
-                            Tab(text: 'Scan Réseau'),
+                            Tab(icon: Icon(Icons.calculate)),
                           ],
                         ),
                         const SizedBox(height: 6),
@@ -223,9 +86,8 @@ class _DiversMenuPageState extends ConsumerState<DiversMenuPage>
                         Expanded(
                           child: TabBarView(
                             children: [
-                              _buildProduits(),
                               _buildBandePassante(),
-                              _buildScanReseau(),
+                              _buildCalculatrice(),
                             ],
                           ),
                         ),
@@ -238,146 +100,336 @@ class _DiversMenuPageState extends ConsumerState<DiversMenuPage>
           ),
         ],
       ),
-      bottomNavigationBar: BottomNavigationBar(
-        type: BottomNavigationBarType.fixed,
-        backgroundColor: Colors.blueGrey[900],
-        selectedItemColor: Colors.white,
-        unselectedItemColor: Colors.grey,
-        currentIndex: 6,
-        onTap: (index) {
-          final pages = [
-            const CataloguePage(),
-            const LightMenuPage(),
-            const StructureMenuPage(),
-            const SoundMenuPage(),
-            const VideoMenuPage(),
-            const ElectriciteMenuPage(),
-            const DiversMenuPage(),
-          ];
-
-          Offset beginOffset;
-          if (index == 0 || index == 1) {
-            beginOffset = const Offset(-1.0, 0.0);
-          } else if (index == 5 || index == 6) {
-            beginOffset = const Offset(1.0, 0.0);
-          } else {
-            beginOffset = Offset.zero;
-          }
-
-          Navigator.push(
-            context,
-            PageRouteBuilder(
-              pageBuilder: (_, __, ___) => pages[index],
-              transitionsBuilder: (_, animation, __, child) {
-                if (beginOffset == Offset.zero) {
-                  return FadeTransition(opacity: animation, child: child);
-                } else {
-                  final tween = Tween(begin: beginOffset, end: Offset.zero)
-                      .chain(CurveTween(curve: Curves.easeInOut));
-                  return SlideTransition(
-                      position: animation.drive(tween), child: child);
-                }
-              },
-              transitionDuration: const Duration(milliseconds: 400),
-            ),
-          );
-        },
-        items: [
-          const BottomNavigationBarItem(
-              icon: Icon(Icons.list), label: 'Catalogue'),
-          const BottomNavigationBarItem(
-              icon: Icon(Icons.lightbulb), label: 'Lumière'),
-          BottomNavigationBarItem(
-              icon: Image.asset('assets/truss_icon_grey.png',
-                  width: 24, height: 24),
-              label: 'Structure'),
-          const BottomNavigationBarItem(
-              icon: Icon(Icons.volume_up), label: 'Son'),
-          const BottomNavigationBarItem(
-              icon: Icon(Icons.videocam), label: 'Vidéo'),
-          const BottomNavigationBarItem(
-              icon: Icon(Icons.bolt), label: 'Électricité'),
-          const BottomNavigationBarItem(
-              icon: Icon(Icons.more_horiz), label: 'Divers'),
-        ],
-      ),
+      bottomNavigationBar: const UniformBottomNavBar(currentIndex: 6),
     );
   }
 
   Widget _buildBandePassante() {
-    return SingleChildScrollView(
-      padding: const EdgeInsets.all(16),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const Text(
-            'Aucun réseau détecté',
-            style: TextStyle(color: Colors.white, fontSize: 16),
-          ),
-          const SizedBox(height: 10),
-          ElevatedButton(
-            onPressed: testBandwidth,
-            child: const Text('Lancer le test'),
-          ),
-          const SizedBox(height: 20),
-          Center(
-            child: SpeedTestGauge(speedMbps: downloadSpeed),
-          ),
-          const SizedBox(height: 20),
-          Text(
-            result,
-            style: const TextStyle(color: Colors.white),
-          ),
-        ],
-      ),
-    );
+    return const SpeedtestTab();
   }
 
-  Widget _buildScanReseau() {
-    return const Center(
-      child: Text('Scan réseau local à venir',
-          style: TextStyle(color: Colors.white)),
-    );
+  Widget _buildCalculatrice() {
+    return const CalculatorPageCompact();
   }
 }
 
-class SpeedTestGauge extends StatelessWidget {
-  final double speedMbps;
+// Version compacte de la calculatrice pour l'onglet Divers
+class CalculatorPageCompact extends StatefulWidget {
+  const CalculatorPageCompact({super.key});
 
-  const SpeedTestGauge({super.key, required this.speedMbps});
+  @override
+  State<CalculatorPageCompact> createState() => _CalculatorPageCompactState();
+}
+
+class _CalculatorPageCompactState extends State<CalculatorPageCompact> {
+  static const Color darkBlue = Color(0xFF0A1128);
+  static const Color glass = Color.fromARGB(140, 255, 255, 255);
+  static const EdgeInsets pad = EdgeInsets.symmetric(horizontal: 8);
+
+  String _display = '0';
+  double? _accumulator;
+  String? _pendingOp;
+  bool _replaceOnNextDigit = false;
+  List<String> _calculationHistory = [];
+
+  void _inputDigit(String d) {
+    setState(() {
+      if (_replaceOnNextDigit || _display == '0') {
+        _display = d;
+        _replaceOnNextDigit = false;
+      } else {
+        _display += d;
+      }
+    });
+  }
+
+  void _inputDot() {
+    setState(() {
+      if (_replaceOnNextDigit) {
+        _display = '0.';
+        _replaceOnNextDigit = false;
+      } else if (!_display.contains('.')) {
+        _display += '.';
+      }
+    });
+  }
+
+  double _asNumber() {
+    final sanitized = _display.replaceAll(RegExp(r'[^0-9\.\-]'), '');
+    return double.tryParse(sanitized) ?? 0.0;
+  }
+
+  void _clear() {
+    setState(() {
+      _display = '0';
+      _accumulator = null;
+      _pendingOp = null;
+      _replaceOnNextDigit = false;
+    });
+  }
+
+  void _toggleSign() {
+    setState(() {
+      final n = _asNumber() * -1;
+      _display = _format(n);
+    });
+  }
+
+  void _percent() {
+    setState(() {
+      final n = _asNumber() / 100.0;
+      _display = _format(n);
+      _replaceOnNextDigit = true;
+    });
+  }
+
+  String _format(double n) {
+    final s = n.toStringAsFixed(10);
+    var trimmed = s.replaceFirst(RegExp(r'\.?0+$'), '');
+    if (trimmed == '-0') trimmed = '0';
+    return trimmed;
+  }
+
+  void _operate(String op) {
+    setState(() {
+      final current = _asNumber();
+      if (_accumulator == null) {
+        _accumulator = current;
+      } else if (_pendingOp != null) {
+        _accumulator = _eval(_accumulator!, current, _pendingOp!);
+        _display = _format(_accumulator!);
+      }
+      _pendingOp = op;
+      _replaceOnNextDigit = true;
+    });
+  }
+
+  void _equals() {
+    setState(() {
+      if (_accumulator != null && _pendingOp != null) {
+        final current = _asNumber();
+        final result = _eval(_accumulator!, current, _pendingOp!);
+        _calculationHistory.add('${_format(_accumulator!)} ${_pendingOp!} ${_format(current)} = ${_format(result)}');
+        _accumulator = result;
+        _display = _format(_accumulator!);
+        _pendingOp = null;
+        _replaceOnNextDigit = true;
+      }
+    });
+  }
+
+  double _eval(double a, double b, String op) {
+    switch (op) {
+      case '+': return a + b;
+      case '-': return a - b;
+      case '×': return a * b;
+      case '÷': return b == 0 ? 0 : a / b;
+      default: return b;
+    }
+  }
+
+  void _appendUnit(String unit) {
+    setState(() { _display = '${_format(_asNumber())} $unit'; });
+  }
+
+  void _ampsFromWatts230V() {
+    final watts = _asNumber();
+    final amps = watts / 230.0;
+    setState(() { _display = '${_format(amps)} A'; });
+  }
 
   @override
   Widget build(BuildContext context) {
-    return SizedBox(
-      width: 160,
-      height: 160,
-      child: Stack(
-        alignment: Alignment.center,
+    return Center(
+      child: Container(
+        width: MediaQuery.of(context).size.width * 0.8, // Élargie de 20% (80% de la largeur)
+        decoration: const BoxDecoration(
+          color: darkBlue,
+        ),
+        child: SafeArea(
+          child: Column(
+            children: [
+              const SizedBox(height: 8),
+              _displayPanel(),
+              const SizedBox(height: 6),
+              _avChips(),
+              const SizedBox(height: 6),
+              Expanded(child: _keypad()),
+              const SizedBox(height: 8),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _displayPanel() {
+    return Container(
+      width: double.infinity,
+      margin: pad,
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: glass,
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: Colors.white, width: 1),
+      ),
+      child: Align(
+        alignment: Alignment.centerRight,
+        child: Text(
+          _display,
+          style: const TextStyle(
+            color: Colors.white,
+            fontSize: 24,
+            fontFeatures: [FontFeature.tabularFigures()],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _avChips() {
+    return Padding(
+      padding: pad,
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: [
-          Container(
-            width: 160,
-            height: 160,
-            decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              color: Colors.grey.shade800,
-            ),
-          ),
-          CircularProgressIndicator(
-            value: (speedMbps / 100).clamp(0, 1),
-            strokeWidth: 12,
-            backgroundColor: Colors.grey,
-            valueColor: const AlwaysStoppedAnimation<Color>(Colors.blue),
-          ),
-          Text(
-            '${speedMbps.toStringAsFixed(1)} Mbps',
-            style: const TextStyle(
-              fontSize: 18,
-              fontWeight: FontWeight.bold,
-              color: Colors.white,
-            ),
-          ),
+          Expanded(child: _chip('kg', () => _appendUnit('kg'))),
+          const SizedBox(width: 4),
+          Expanded(child: _chip('W', () => _appendUnit('W'))),
+          const SizedBox(width: 4),
+          Expanded(child: _chip('A @230V', _ampsFromWatts230V)),
+          const SizedBox(width: 4),
+          Expanded(child: _chip('m', () => _appendUnit('m'))),
+          const SizedBox(width: 4),
+          Expanded(child: _chip('m²', () => _appendUnit('m²'))),
         ],
       ),
     );
   }
+
+  Widget _chip(String label, VoidCallback onTap) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 4),
+        decoration: BoxDecoration(
+          color: glass,
+          borderRadius: BorderRadius.circular(8),
+          border: Border.all(color: Colors.white, width: 1),
+        ),
+        child: Center(
+          child: Text(
+            label,
+            style: const TextStyle(color: Colors.white, fontSize: 9),
+            textAlign: TextAlign.center,
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _keypad() {
+    final keys = <_KeyDefCompact>[
+      _KeyDefCompact('C', onTap: _clear, kind: KeyKindCompact.fn),
+      _KeyDefCompact('±', onTap: _toggleSign, kind: KeyKindCompact.fn),
+      _KeyDefCompact('%', onTap: _percent, kind: KeyKindCompact.fn),
+      _KeyDefCompact('÷', onTap: () => _operate('÷'), kind: KeyKindCompact.op),
+      _KeyDefCompact('7', onTap: () => _inputDigit('7')),
+      _KeyDefCompact('8', onTap: () => _inputDigit('8')),
+      _KeyDefCompact('9', onTap: () => _inputDigit('9')),
+      _KeyDefCompact('×', onTap: () => _operate('×'), kind: KeyKindCompact.op),
+      _KeyDefCompact('4', onTap: () => _inputDigit('4')),
+      _KeyDefCompact('5', onTap: () => _inputDigit('5')),
+      _KeyDefCompact('6', onTap: () => _inputDigit('6')),
+      _KeyDefCompact('-', onTap: () => _operate('-'), kind: KeyKindCompact.op),
+      _KeyDefCompact('1', onTap: () => _inputDigit('1')),
+      _KeyDefCompact('2', onTap: () => _inputDigit('2')),
+      _KeyDefCompact('3', onTap: () => _inputDigit('3')),
+      _KeyDefCompact('+', onTap: () => _operate('+'), kind: KeyKindCompact.op),
+      _KeyDefCompact('0', onTap: () => _inputDigit('0'), flex: 2),
+      _KeyDefCompact('.', onTap: _inputDot),
+      _KeyDefCompact('=', onTap: _equals, kind: KeyKindCompact.eq),
+    ];
+
+    return Padding(
+      padding: pad,
+      child: LayoutBuilder(
+        builder: (context, c) {
+          final width = c.maxWidth;
+          final colW = (width - 3 * 4) / 4;
+          return Wrap(
+            spacing: 4,
+            runSpacing: 14, // Espacement vertical augmenté de 10px (4 + 10 = 14)
+            children: keys.map((k) {
+              final w = k.flex == 2 ? colW * 2 + 4 : colW;
+              return SizedBox(
+                width: w,
+                height: 32,
+                child: _GlassButtonCompact(
+                  label: k.label,
+                  onTap: k.onTap,
+                  kind: k.kind,
+                ),
+              );
+            }).toList(),
+          );
+        },
+      ),
+    );
+  }
 }
+
+enum KeyKindCompact { num, op, fn, eq }
+
+class _KeyDefCompact {
+  final String label;
+  final VoidCallback onTap;
+  final int flex;
+  final KeyKindCompact kind;
+  _KeyDefCompact(this.label, {required this.onTap, this.flex = 1, this.kind = KeyKindCompact.num});
+}
+
+class _GlassButtonCompact extends StatelessWidget {
+  final String label;
+  final VoidCallback onTap;
+  final KeyKindCompact kind;
+  const _GlassButtonCompact({required this.label, required this.onTap, required this.kind});
+
+  @override
+  Widget build(BuildContext context) {
+    final isOp = kind == KeyKindCompact.op;
+    final isEq = kind == KeyKindCompact.eq;
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        alignment: Alignment.center,
+        decoration: BoxDecoration(
+          color: _StateColorsCompact.bg(kind),
+          borderRadius: BorderRadius.circular(8),
+          border: Border.all(color: Colors.white.withOpacity(0.9), width: 1),
+        ),
+        child: Text(
+          label,
+          style: TextStyle(
+            color: isEq ? Colors.black87 : Colors.white,
+            fontSize: 12,
+            fontWeight: isOp || isEq ? FontWeight.w700 : FontWeight.w500,
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _StateColorsCompact {
+  static const glass = Color.fromARGB(140, 255, 255, 255);
+  static Color bg(KeyKindCompact k) {
+    switch (k) {
+      case KeyKindCompact.op: return glass;
+      case KeyKindCompact.eq: return Colors.amber;
+      case KeyKindCompact.fn: return glass;
+      case KeyKindCompact.num: return glass;
+    }
+  }
+}
+

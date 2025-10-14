@@ -1,23 +1,19 @@
 import 'package:flutter/material.dart';
 import 'dart:math';
 import '../widgets/custom_app_bar.dart';
-import 'catalogue_page.dart';
-import 'structure_menu_page.dart';
-import 'sound_menu_page.dart';
-import 'video_menu_page.dart';
-import 'electricite_menu_page.dart';
-import 'divers_menu_page.dart';
-import 'ar_measure_page.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
-import '../models/catalogue_item.dart';
-import '../models/cart_data.dart';
-import '../models/cart_item.dart';
+import '../widgets/light_tabs/dmx_tab.dart';
+import '../widgets/uniform_bottom_nav_bar.dart';
+import '../widgets/export_widget.dart';
 import '../widgets/preset_widget.dart';
-import '../models/preset.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../providers/preset_provider.dart';
-import '../providers/catalogue_provider.dart';
+import '../widgets/border_labeled_dropdown.dart';
+import '../widgets/action_button.dart';
+import 'package:av_wallet_hive/l10n/app_localizations.dart';
+import '../services/translation_service.dart';
 import '../theme/app_theme.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../providers/page_state_provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'dart:convert';
 
 class Driver {
   final int voies;
@@ -36,25 +32,14 @@ class LightMenuPage extends ConsumerStatefulWidget {
 class _LightMenuPageState extends ConsumerState<LightMenuPage>
     with SingleTickerProviderStateMixin {
   late TabController _tabController;
-  final ScrollController _dmxScrollController = ScrollController();
-  double angle = 35;
-  double height = 10;
-  double distance = 20;
-  double ampereParVoie = 3;
-  int nbVoies = 5;
-  int tension = 24;
-  String selectedDriver = 'S04x5A';
-  double longueurLed = 5;
-  String searchQuery = '';
-  String? selectedProduct;
-  String? selectedBrand;
-  List<CatalogueItem> selectedFixtures = [];
-  Map<CatalogueItem, int> fixtureQuantities = {};
-  String? beamCalculationResult;
-  String? driverCalculationResult;
-  String? dmxCalculationResult;
-  final TextEditingController _searchController = TextEditingController();
-  bool _isLoading = true;
+  
+  // Utilisation du provider de persistance
+  LightPageState get lightState => ref.watch(lightPageStateProvider);
+  
+  // Gestion des commentaires
+  Map<String, String> _comments = {};
+  String _currentBeamResult = ''; // Clé unique pour le résultat faisceau actuel
+  String _currentDriverResult = ''; // Clé unique pour le résultat driver actuel
 
   final Map<String, Driver> drivers = {
     'S04x5A': const Driver(voies: 4, ampereParVoie: 5),
@@ -63,478 +48,232 @@ class _LightMenuPageState extends ConsumerState<LightMenuPage>
     'S32x3A': const Driver(voies: 32, ampereParVoie: 3),
   };
 
+  // Listes pour les nouveaux menus déroulants
+  final List<String> ledTypes = [
+    'Blanc (W)',
+    'Bi-Blanc (WW)',
+    'RVB',
+    'RVBW',
+    'RVBWW',
+  ];
+
+  final List<String> ledPowers = [
+    '5W', '6W', '7W', '8W', '9W', '10W', '11W', '12W', '13W', '14W', '15W',
+    '16W', '17W', '18W', '19W', '20W', '21W', '22W', '23W', '24W', '25W',
+    '26W', '27W', '28W', '29W', '30W', '31W', '32W'
+  ];
+
+  final List<String> driverChoices = [
+    'S04x5A',
+    'S04x10A',
+    'S05x6A',
+    'S32x3A',
+    'Custom',
+  ];
+
   @override
   void initState() {
     super.initState();
     _tabController = TabController(length: 3, vsync: this);
-    _initializeCatalogue();
-  }
-
-  Future<void> _initializeCatalogue() async {
-    try {
-      await ref.read(catalogueProvider.notifier).loadCatalogue();
-    } finally {
-      setState(() {
-        _isLoading = false;
-      });
-    }
+    _loadComments();
   }
 
   @override
   void dispose() {
     _tabController.dispose();
-    _searchController.dispose();
-    _dmxScrollController.dispose();
     super.dispose();
   }
 
-  List<String> get _uniqueBrands {
-    return ref
-        .watch(catalogueProvider)
-        .where((item) => item.categorie == 'Lumière')
-        .map((item) => item.marque)
-        .toSet()
-        .toList()
-      ..sort();
-  }
-
-  List<String> get _productsForSelectedBrand {
-    if (selectedBrand == null) return [];
-    return ref
-        .watch(catalogueProvider)
-        .where((item) =>
-            item.categorie == 'Lumière' && item.marque == selectedBrand)
-        .map((item) => item.produit)
-        .toSet()
-        .toList()
-      ..sort();
-  }
-
-  List<CatalogueItem> get _filteredProducts {
-    if (_searchController.text.isEmpty) return [];
-    final query = _searchController.text.toLowerCase();
-    return ref
-        .watch(catalogueProvider)
-        .where((item) =>
-            item.categorie == 'Lumière' &&
-            (item.produit.toLowerCase().contains(query) ||
-                item.marque.toLowerCase().contains(query)))
-        .toList()
-      ..sort((a, b) => a.produit.compareTo(b.produit));
-  }
-
-  List<String> get _dmxUniqueBrands {
-    return ref
-        .watch(catalogueProvider)
-        .where((item) => 
-            item.categorie == 'Lumière' && 
-            item.dmxMax != null && 
-            item.dmxMax!.isNotEmpty)
-        .map((item) => item.marque)
-        .toSet()
-        .toList()
-      ..sort();
-  }
-
-  List<String> get _dmxProductsForSelectedBrand {
-    if (selectedBrand == null) return [];
-    return ref
-        .watch(catalogueProvider)
-        .where((item) => 
-            item.categorie == 'Lumière' && 
-            item.marque == selectedBrand &&
-            item.dmxMax != null &&
-            item.dmxMax!.isNotEmpty)
-        .map((item) => item.produit)
-        .toSet()
-        .toList()
-      ..sort();
-  }
-
-  List<CatalogueItem> get _dmxFilteredProducts {
-    if (_searchController.text.isEmpty) return [];
-    final query = _searchController.text.toLowerCase();
-    return ref
-        .watch(catalogueProvider)
-        .where((item) => 
-            item.categorie == 'Lumière' &&
-            item.dmxMax != null &&
-            item.dmxMax!.isNotEmpty &&
-            (item.produit.toLowerCase().contains(query) ||
-             item.marque.toLowerCase().contains(query)))
-        .toList()
-      ..sort((a, b) => a.produit.compareTo(b.produit));
-  }
-
-  double get diameter {
-    double rad = angle * pi / 180;
-    double hypotenuse = sqrt(pow(height, 2) + pow(distance, 2));
-    return 2 * (hypotenuse * tan(rad / 2));
-  }
-
-  void _navigateTo(Widget page) {
-    Navigator.push(
-      context,
-      MaterialPageRoute(builder: (context) => page),
-    );
-  }
-
-  void _showQuantityDialog(CatalogueItem fixture) {
-    final TextEditingController quantityController = TextEditingController();
-    final loc = AppLocalizations.of(context)!;
-
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: Text(fixture.produit,
-            style: Theme.of(context).textTheme.bodyMedium),
-        content: TextField(
-          controller: quantityController,
-          keyboardType: TextInputType.number,
-          decoration: InputDecoration(
-            labelText: loc.lightPage_quantity,
-            hintText: loc.lightPage_enterQuantity,
-          ),
-          style: Theme.of(context).textTheme.bodyMedium,
-          onSubmitted: (value) {
-            if (value.isNotEmpty) {
-              setState(() {
-                final quantity = int.parse(value);
-                fixtureQuantities[fixture] = quantity;
-                if (!selectedFixtures.contains(fixture)) {
-                  selectedFixtures.add(fixture);
-                }
-
-                // Mettre à jour le preset actif
-                if (ref.read(presetProvider.notifier).selectedPresetIndex >=
-                    0) {
-                  final preset = ref.read(presetProvider.notifier).state[
-                      ref.read(presetProvider.notifier).selectedPresetIndex];
-                  final existingIndex =
-                      preset.items.indexWhere((i) => i.item.id == fixture.id);
-                  if (existingIndex != -1) {
-                    preset.items[existingIndex] = CartItem(
-                        item: fixture,
-                        quantity: fixtureQuantities[fixture] ?? 1);
-                  } else {
-                    preset.items.add(CartItem(
-                        item: fixture,
-                        quantity: fixtureQuantities[fixture] ?? 1));
-                  }
-                  ref.read(presetProvider.notifier).updatePreset(preset);
-                }
-
-                selectedProduct = null;
-              });
-              Navigator.pop(context);
-            }
-          },
-        ),
-        actions: [
-          TextButton(
-            onPressed: () {
-              setState(() {
-                selectedProduct = null;
-              });
-              Navigator.pop(context);
-            },
-            child: Text(loc.lightPage_cancel,
-                style: Theme.of(context).textTheme.bodyMedium),
-          ),
-          TextButton(
-            onPressed: () {
-              final value = quantityController.text;
-              if (value.isNotEmpty) {
-                setState(() {
-                  final quantity = int.parse(value);
-                  fixtureQuantities[fixture] = quantity;
-                  if (!selectedFixtures.contains(fixture)) {
-                    selectedFixtures.add(fixture);
-                  }
-
-                  // Mettre à jour le preset actif
-                  if (ref.read(presetProvider.notifier).selectedPresetIndex >=
-                      0) {
-                    final preset = ref.read(presetProvider.notifier).state[
-                        ref.read(presetProvider.notifier).selectedPresetIndex];
-                    final existingIndex =
-                        preset.items.indexWhere((i) => i.item.id == fixture.id);
-                    if (existingIndex != -1) {
-                      preset.items[existingIndex] = CartItem(
-                          item: fixture,
-                          quantity: fixtureQuantities[fixture] ?? 1);
-                    } else {
-                      preset.items.add(CartItem(
-                          item: fixture,
-                          quantity: fixtureQuantities[fixture] ?? 1));
-                    }
-                    ref.read(presetProvider.notifier).updatePreset(preset);
-                  }
-
-                  selectedProduct = null;
-                });
-                Navigator.pop(context);
-              }
-            },
-            child: Text(loc.lightPage_confirm,
-                style: Theme.of(context).textTheme.bodyMedium),
-          ),
-        ],
-      ),
-    );
-  }
-
-  void _loadPreset(Preset preset) {
-    setState(() {
-      selectedFixtures.clear();
-      fixtureQuantities.clear();
-      searchQuery = '';
-
-      // Charger les projecteurs du preset
-      for (var presetItem in preset.items) {
-        final fixture = ref.watch(catalogueProvider).firstWhere(
-              (f) => f.id == presetItem.item.id,
-              orElse: () => const CatalogueItem(
-                id: '',
-                name: '',
-                description: '',
-                categorie: '',
-                sousCategorie: '',
-                marque: '',
-                produit: '',
-                dimensions: '',
-                poids: '',
-                conso: '',
-              ),
-            );
-
-        if (fixture.id.isNotEmpty) {
-          selectedFixtures.add(fixture);
-          fixtureQuantities[fixture] = 1;
-        }
-      }
-    });
-  }
-
-  void _savePreset() {
-    final loc = AppLocalizations.of(context)!;
-    if (selectedFixtures.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(loc.lightPage_noFixturesSelected,
-              style: Theme.of(context).textTheme.bodyMedium),
-        ),
-      );
-      return;
-    }
-
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: Text(loc.lightPage_savePreset,
-            style: Theme.of(context).textTheme.bodyMedium),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            TextField(
-              decoration: InputDecoration(
-                labelText: loc.lightPage_presetName,
-              ),
-              onChanged: (value) {
-                setState(() {
-                  searchQuery = value;
-                });
-              },
-              style: Theme.of(context).textTheme.bodyMedium,
-            ),
-          ],
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: Text(loc.lightPage_cancel,
-                style: Theme.of(context).textTheme.bodyMedium),
-          ),
-          TextButton(
-            onPressed: () {
-              final preset = Preset(
-                id: DateTime.now().toString(),
-                name: searchQuery,
-                description: '',
-                items: selectedFixtures
-                    .map((fixture) => CartItem(
-                          item: fixture,
-                          quantity: fixtureQuantities[fixture] ?? 1,
-                        ))
-                    .toList(),
-              );
-              final presetRef = ref;
-              presetRef.read(presetProvider.notifier).addPreset(preset);
-              Navigator.pop(context);
-            },
-            child: Text(loc.lightPage_save,
-                style: Theme.of(context).textTheme.bodyMedium),
-          ),
-        ],
-      ),
-    );
-  }
-
   void _calculateBeam() {
-    double rad = angle * pi / 180;
-    double hypotenuse = sqrt(pow(height, 2) + pow(distance, 2));
-    double diameter = 2 * (hypotenuse * tan(rad / 2));
-
-    final loc = AppLocalizations.of(context)!;
+    final beamDiameter = 2 * lightState.distance * tan(lightState.angle * pi / 180);
+    final result = '${AppLocalizations.of(context)!.lightPage_beamDiameter}: ${beamDiameter.toStringAsFixed(2)} m';
+    ref.read(lightPageStateProvider.notifier).updateBeamCalculation(result);
+    
+    // Générer une nouvelle clé unique pour ce résultat
     setState(() {
-      beamCalculationResult = '${loc.lightPage_beamDiameter}: ${diameter.toStringAsFixed(2)} ${loc.lightPage_meters}';
+      _currentBeamResult = _generateBeamResultKey();
     });
   }
 
-  void _calculateDriver() {
-    final loc = AppLocalizations.of(context)!;
-    final driver = drivers[selectedDriver];
-    if (driver == null) return;
-
-    double totalAmpere = 0;
-    for (var fixture in selectedFixtures) {
-      final quantity = fixtureQuantities[fixture] ?? 0;
-      final powerInWatts =
-          double.tryParse(fixture.conso.replaceAll('W', '').trim()) ?? 0;
-      totalAmpere += (powerInWatts / tension) * quantity;
+  void _resetBeamCalculation() {
+    // Utiliser la méthode reset() du provider comme les autres boutons reset
+    ref.read(lightPageStateProvider.notifier).reset();
+    
+    // Effacer le commentaire du résultat précédent
+    if (_currentBeamResult.isNotEmpty) {
+      _comments.remove(_currentBeamResult);
+      _saveComments();
     }
-
-    int nbDrivers =
-        (totalAmpere / (driver.voies * driver.ampereParVoie)).ceil();
-
+    
+    // Forcer la mise à jour de l'interface
     setState(() {
-      driverCalculationResult = '${loc.lightPage_recommendedConfig}:\n'
-          '$nbDrivers x $selectedDriver\n'
-          '${loc.lightPage_total}: ${(nbDrivers * driver.voies * driver.ampereParVoie).toStringAsFixed(1)}A';
+      _currentBeamResult = '';
     });
   }
 
-  void _calculateDMX() {
-    final loc = AppLocalizations.of(context)!;
-    Map<int, List<Map<String, dynamic>>> universes = {};
-    int currentUniverse = 1;
-    int remainingChannels = 512;
 
-    List<Map<String, dynamic>> allFixtures = [];
-    for (var fixture in selectedFixtures) {
-      final channels = int.parse(fixture.dmxMax?.toString() ?? '0');
-      final quantity = fixtureQuantities[fixture] ?? 0;
-      for (int i = 0; i < quantity; i++) {
-        allFixtures.add({
-          'name': fixture.produit,
-          'channels': channels,
-        });
-      }
-    }
-
-    allFixtures.sort((a, b) => b['channels'].compareTo(a['channels']));
-
-    for (var fixture in allFixtures) {
-      if (fixture['channels'] > remainingChannels) {
-        currentUniverse++;
-        remainingChannels = 512;
-      }
-
-      if (!universes.containsKey(currentUniverse)) {
-        universes[currentUniverse] = [];
-      }
-      universes[currentUniverse]!.add(fixture);
-      remainingChannels -= fixture['channels'] as int;
-    }
-
-    String result = '\n${universes.length} ${loc.lightPage_dmxUniverses}\n\n';
-
-    result += '${loc.lightPage_universe} | ${loc.lightPage_quantity} | ${loc.lightPage_fixture}\n';
-    result += '-' * 40 + '\n';
-
-    for (var entry in universes.entries) {
-      final universe = entry.key;
-      final fixtures = entry.value;
-
-      Map<String, int> groupedFixtures = {};
-      for (var fixture in fixtures) {
-        final name = fixture['name'] as String;
-        groupedFixtures[name] = (groupedFixtures[name] ?? 0) + 1;
-      }
-
-      bool isFirstInUniverse = true;
-      for (var fixture in groupedFixtures.entries) {
-        if (isFirstInUniverse) {
-          result += '   ${universe.toString().padRight(4)} | ';
-          isFirstInUniverse = false;
-        } else {
-          result += '        | ';
-        }
-        result += '${fixture.value.toString().padRight(8)} | ${fixture.key}\n';
-      }
-      result += '-' * 40 + '\n';
-    }
-
-    final totalChannels = allFixtures.fold<int>(0, (sum, fixture) => sum + (fixture['channels'] as int));
-    result += '\n${loc.lightPage_total}: $totalChannels ${loc.lightPage_dmxChannelsUsed}\n';
-
-    setState(() {
-      dmxCalculationResult = result;
-    });
-
-    Future.delayed(const Duration(milliseconds: 100), () {
-      if (_dmxScrollController.hasClients) {
-        _dmxScrollController.animateTo(
-          _dmxScrollController.position.maxScrollExtent,
-          duration: const Duration(milliseconds: 500),
-          curve: Curves.easeOut,
+  // Nouvelles fonctions pour l'onglet Driver refait
+  void _showCustomDriverDialog() {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return StatefulBuilder(
+          builder: (context, setDialogState) {
+            return AlertDialog(
+              backgroundColor: Colors.blueGrey[900],
+              title: Text(
+                AppLocalizations.of(context)!.driverTab_customDriverTitle,
+                style: const TextStyle(color: Colors.white),
+              ),
+              content: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  TextField(
+                    keyboardType: TextInputType.number,
+                    style: const TextStyle(color: Colors.white),
+                    decoration: InputDecoration(
+                      labelText: AppLocalizations.of(context)!.driverTab_customDriverChannels,
+                      labelStyle: const TextStyle(color: Colors.white70),
+                      enabledBorder: const UnderlineInputBorder(
+                        borderSide: BorderSide(color: Colors.white70),
+                      ),
+                      focusedBorder: const UnderlineInputBorder(
+                        borderSide: BorderSide(color: Colors.white),
+                      ),
+                    ),
+                    onChanged: (value) {
+                      setDialogState(() {
+                        ref.read(lightPageStateProvider.notifier).updateCustomChannels(int.tryParse(value) ?? 4);
+                        // Effacer le commentaire du résultat précédent
+                        if (_currentDriverResult.isNotEmpty) {
+                          _comments.remove(_currentDriverResult);
+                          _saveComments();
+                        }
+                        _currentDriverResult = '';
+                      });
+                    },
+                  ),
+                  const SizedBox(height: 16),
+                  TextField(
+                    keyboardType: TextInputType.number,
+                    style: const TextStyle(color: Colors.white),
+                    decoration: InputDecoration(
+                      labelText: AppLocalizations.of(context)!.driverTab_customDriverIntensity,
+                      labelStyle: const TextStyle(color: Colors.white70),
+                      enabledBorder: const UnderlineInputBorder(
+                        borderSide: BorderSide(color: Colors.white70),
+                      ),
+                      focusedBorder: const UnderlineInputBorder(
+                        borderSide: BorderSide(color: Colors.white),
+                      ),
+                    ),
+                    onChanged: (value) {
+                      setDialogState(() {
+                        ref.read(lightPageStateProvider.notifier).updateCustomIntensity(double.tryParse(value) ?? 5.0);
+                        // Effacer le commentaire du résultat précédent
+                        if (_currentDriverResult.isNotEmpty) {
+                          _comments.remove(_currentDriverResult);
+                          _saveComments();
+                        }
+                        _currentDriverResult = '';
+                      });
+                    },
+                  ),
+                ],
+              ),
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.pop(context),
+                  child: const Text('Annuler', style: TextStyle(color: Colors.white)),
+                ),
+                TextButton(
+                  onPressed: () {
+                    ref.read(lightPageStateProvider.notifier).updateSelectedDriverNew('Custom');
+                    Navigator.pop(context);
+                  },
+                  child: const Text('Confirmer', style: TextStyle(color: Colors.white)),
+                ),
+              ],
+            );
+          },
         );
-      }
+      },
+    );
+  }
+
+  void _calculateDriverNew() {
+    final loc = AppLocalizations.of(context)!;
+    
+    // Calculer la puissance totale
+    final powerValue = double.parse(lightState.selectedLedPower.replaceAll('W', ''));
+    final totalPower = lightState.longueurLed * powerValue;
+    
+    // Calculer l'ampérage total (supposons 24V)
+    final totalAmperage = totalPower / 24.0;
+    
+    // Déterminer le driver
+    String driverInfo;
+    int channels;
+    double intensityPerChannel;
+    
+    if (lightState.selectedDriverNew == 'Custom') {
+      driverInfo = 'Custom (${lightState.customChannels} voies)';
+      channels = lightState.customChannels;
+      intensityPerChannel = lightState.customIntensity;
+    } else {
+      final driver = drivers[lightState.selectedDriverNew]!;
+      driverInfo = lightState.selectedDriverNew;
+      channels = driver.voies;
+      intensityPerChannel = driver.ampereParVoie.toDouble();
+    }
+    
+    // Calculer l'ampérage par voie
+    final amperagePerChannel = totalAmperage / channels;
+    
+    // Vérifier la compatibilité
+    final isCompatible = amperagePerChannel <= intensityPerChannel;
+    
+    final result = '${loc.driverTab_result}:\n\n'
+        'LED Strip: ${lightState.selectedLedType}\n'
+        'Longueur: ${lightState.longueurLed.toStringAsFixed(1)} m\n'
+        'Puissance: ${lightState.selectedLedPower}/m\n'
+        'Puissance totale: ${totalPower.toStringAsFixed(1)} W\n\n'
+        'Driver: $driverInfo\n'
+        'Ampérage total: ${totalAmperage.toStringAsFixed(2)} A\n'
+        'Ampérage par voie: ${amperagePerChannel.toStringAsFixed(2)} A\n'
+        'Capacité par voie: ${intensityPerChannel.toStringAsFixed(1)} A\n\n'
+        '${isCompatible ? '✅ Compatible' : '❌ Non compatible'}';
+    
+    ref.read(lightPageStateProvider.notifier).updateDriverCalculation(result);
+    
+    // Générer une nouvelle clé unique pour ce résultat
+    setState(() {
+      _currentDriverResult = _generateDriverResultKey();
     });
   }
 
-  void _resetPage() {
+  void _resetDriverCalculation() {
+    // Utiliser la méthode reset() du provider comme les autres boutons reset
+    ref.read(lightPageStateProvider.notifier).reset();
+    
+    // Effacer le commentaire du résultat précédent
+    if (_currentDriverResult.isNotEmpty) {
+      _comments.remove(_currentDriverResult);
+      _saveComments();
+    }
+    
+    // Forcer la mise à jour de l'interface
     setState(() {
-      selectedFixtures.clear();
-      fixtureQuantities.clear();
-      selectedProduct = null;
-      selectedBrand = null;
-      _searchController.clear();
-      beamCalculationResult = null;
-      driverCalculationResult = null;
-      dmxCalculationResult = null;
+      _currentDriverResult = '';
     });
   }
 
-  void _resetDmx() {
-    setState(() {
-      selectedFixtures.clear();
-      fixtureQuantities.clear();
-      selectedProduct = null;
-      selectedBrand = null;
-      _searchController.clear();
-      beamCalculationResult = null;
-      driverCalculationResult = null;
-      dmxCalculationResult = null;
-    });
-  }
-
-  void _onSearchChanged(String value) {
-    setState(() {
-      if (value.isNotEmpty) {
-        final results = _dmxFilteredProducts;
-        if (results.isNotEmpty) {
-          final firstResult = results.first;
-          selectedBrand = firstResult.marque;
-          selectedProduct = firstResult.produit;
-        }
-      }
-    });
-  }
 
   @override
   Widget build(BuildContext context) {
     final loc = AppLocalizations.of(context)!;
+    final translationService = TranslationService();
+
     return Scaffold(
       appBar: const CustomAppBar(
         pageIcon: Icons.lightbulb,
@@ -542,7 +281,7 @@ class _LightMenuPageState extends ConsumerState<LightMenuPage>
       body: Stack(
         children: [
           Opacity(
-            opacity: Theme.of(context).brightness == Brightness.light ? 0.15 : 0.5,
+            opacity: 0.1,
             child: Container(
               decoration: const BoxDecoration(
                 image: DecorationImage(
@@ -557,9 +296,7 @@ class _LightMenuPageState extends ConsumerState<LightMenuPage>
               children: [
                 const SizedBox(height: 6),
                 Container(
-                  decoration: const BoxDecoration(),
-                  margin:
-                      const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+                  margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
                   padding: const EdgeInsets.symmetric(vertical: 2),
                   child: TabBar(
                     controller: _tabController,
@@ -571,29 +308,29 @@ class _LightMenuPageState extends ConsumerState<LightMenuPage>
                           children: [
                             const Icon(Icons.calculate, size: 16),
                             const SizedBox(width: 4),
-                            const Text('Faisceau'),
-                          ],
-                        ),
-                      ),
-                      Tab(
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            const Icon(Icons.calculate, size: 16),
-                            const SizedBox(width: 4),
-                            const Text('Driver'),
-                          ],
-                        ),
-                      ),
-                      Tab(
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            const Icon(Icons.calculate, size: 16),
-                            const SizedBox(width: 4),
                             const Text('DMX'),
+                          ],
+                        ),
+                      ),
+                      Tab(
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            const Icon(Icons.calculate, size: 16),
+                            const SizedBox(width: 4),
+                            Text(translationService.t('beam_short')),
+                          ],
+                        ),
+                      ),
+                      Tab(
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            const Icon(Icons.calculate, size: 16),
+                            const SizedBox(width: 4),
+                            const Text('Drv'),
                           ],
                         ),
                       ),
@@ -610,14 +347,15 @@ class _LightMenuPageState extends ConsumerState<LightMenuPage>
                   child: TabBarView(
                     controller: _tabController,
                     children: [
-                      // Premier onglet - Faisceau
+                      // Premier onglet - DMX
+                      const DmxTab(),
+                      // Deuxième onglet - Faisceau
                       SingleChildScrollView(
                         padding: const EdgeInsets.all(16),
                         child: Container(
                           padding: const EdgeInsets.all(16),
                           decoration: BoxDecoration(
-                            color: const Color(0xFF0A1128)
-                                .withAlpha((0.3 * 255).round()),
+                            color: const Color(0xFF0A1128).withAlpha((0.3 * 255).round()),
                             border: Border.all(color: Colors.white, width: 1),
                             borderRadius: BorderRadius.circular(12),
                           ),
@@ -625,560 +363,399 @@ class _LightMenuPageState extends ConsumerState<LightMenuPage>
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(
-                                '${loc.lightPage_angleRange}: ${angle.toStringAsFixed(1)}°',
-                                style: Theme.of(context)
-                                    .extension<ResultContainerTheme>()
-                                    ?.textStyle,
+                                '${loc.lightPage_angleRange}: ${lightState.angle.toStringAsFixed(1)}°',
+                                style: Theme.of(context).extension<ResultContainerTheme>()?.textStyle,
                               ),
                               Slider(
-                                value: angle,
+                                value: lightState.angle,
                                 min: 1,
                                 max: 70,
                                 divisions: 69,
-                                label: '${angle.round()}°',
-                                onChanged: (value) =>
-                                    setState(() => angle = value),
+                                label: '${lightState.angle.round()}°',
+                                onChanged: (value) {
+                                  ref.read(lightPageStateProvider.notifier).updateAngle(value);
+                                  // Effacer le commentaire du résultat précédent
+                                  if (_currentBeamResult.isNotEmpty) {
+                                    _comments.remove(_currentBeamResult);
+                                    _saveComments();
+                                  }
+                                  _currentBeamResult = '';
+                                },
                               ),
                               const SizedBox(height: 8),
                               Text(
-                                '${loc.lightPage_heightRange}: ${height.toStringAsFixed(1)} m',
-                                style: Theme.of(context)
-                                    .extension<ResultContainerTheme>()
-                                    ?.textStyle,
+                                '${loc.lightPage_heightRange}: ${lightState.height.toStringAsFixed(1)} m',
+                                style: Theme.of(context).extension<ResultContainerTheme>()?.textStyle,
                               ),
                               Slider(
                                 min: 1,
                                 max: 20,
                                 divisions: 19,
-                                value: height,
-                                label: '${height.round()}m',
-                                onChanged: (value) =>
-                                    setState(() => height = value),
+                                value: lightState.height,
+                                label: '${lightState.height.round()}m',
+                                onChanged: (value) => ref.read(lightPageStateProvider.notifier).updateHeight(value),
                               ),
                               const SizedBox(height: 8),
                               Text(
-                                '${loc.lightPage_distanceRange}: ${distance.toStringAsFixed(1)} m',
-                                style: Theme.of(context)
-                                    .extension<ResultContainerTheme>()
-                                    ?.textStyle,
+                                '${loc.lightPage_distanceRange}: ${lightState.distance.toStringAsFixed(1)} m',
+                                style: Theme.of(context).extension<ResultContainerTheme>()?.textStyle,
                               ),
                               Slider(
                                 min: 1,
                                 max: 40,
                                 divisions: 39,
-                                value: distance,
-                                label: '${distance.round()}m',
-                                onChanged: (value) =>
-                                    setState(() => distance = value),
+                                value: lightState.distance,
+                                label: '${lightState.distance.round()}m',
+                                onChanged: (value) {
+                                  ref.read(lightPageStateProvider.notifier).updateDistance(value);
+                                  // Effacer le commentaire du résultat précédent
+                                  if (_currentBeamResult.isNotEmpty) {
+                                    _comments.remove(_currentBeamResult);
+                                    _saveComments();
+                                  }
+                                  _currentBeamResult = '';
+                                },
                               ),
                               const SizedBox(height: 16),
+                              // Bouton calculer/reset centré avec ActionButton
                               Center(
-                                child: Row(
-                                  mainAxisSize: MainAxisSize.min,
-                                  children: [
-                                    ElevatedButton(
-                                      onPressed: () =>
-                                          _navigateTo(const ArMeasurePage()),
-                                      style: ElevatedButton.styleFrom(
-                                        backgroundColor: const Color(0xFF0A1128)
-                                            .withAlpha((0.5 * 255).round()),
-                                        side: BorderSide(
-                                            color: const Color(0xFF0A1128)
-                                                .withAlpha((0.8 * 255).round()),
-                                            width: 1),
-                                        padding: const EdgeInsets.symmetric(
-                                            horizontal: 8, vertical: 8),
-                                        shape: RoundedRectangleBorder(
-                                            borderRadius:
-                                                BorderRadius.circular(8)),
-                                      ),
-                                      child: Row(
-                                        mainAxisSize: MainAxisSize.min,
-                                        children: [
-                                          Image.asset(
-                                              'assets/icons/tape_measure.png',
-                                              width: 18,
-                                              height: 18,
-                                              color: Colors.white),
-                                          const SizedBox(width: 6),
-                                          const Text('AR',
-                                              style: TextStyle(
-                                                  color: Colors.white)),
-                                        ],
-                                      ),
-                                    ),
-                                    const SizedBox(width: 40),
-                                    ElevatedButton(
-                                      onPressed: _calculateBeam,
-                                      style: ElevatedButton.styleFrom(
-                                        backgroundColor: const Color(0xFF0A1128)
-                                            .withAlpha((0.5 * 255).round()),
-                                        side: BorderSide(
-                                            color: const Color(0xFF0A1128)
-                                                .withAlpha((0.8 * 255).round()),
-                                            width: 1),
-                                        padding: const EdgeInsets.all(12),
-                                        shape: RoundedRectangleBorder(
-                                            borderRadius:
-                                                BorderRadius.circular(8)),
-                                      ),
-                                      child: const Icon(Icons.calculate,
-                                          color: Colors.white, size: 24),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                              if (beamCalculationResult != null) ...[
-                                const SizedBox(height: 16),
-                                Center(
-                                  child: Container(
-                                    padding: const EdgeInsets.all(12),
-                                    decoration: BoxDecoration(
-                                      color: Theme.of(context)
-                                              .extension<ResultContainerTheme>()
-                                              ?.backgroundColor ??
-                                          const Color(0xFF0A1128)
-                                              .withOpacity(0.5),
-                                      border: Border.all(
-                                          color: Theme.of(context)
-                                                  .extension<
-                                                      ResultContainerTheme>()
-                                                  ?.borderColor ??
-                                              Colors.white,
-                                          width: 1),
-                                      borderRadius: BorderRadius.circular(8),
-                                    ),
-                                    child: Text(
-                                      beamCalculationResult!,
-                                      style: Theme.of(context)
-                                              .extension<ResultContainerTheme>()
-                                              ?.textStyle ??
-                                          Theme.of(context)
-                                              .textTheme
-                                              .bodyMedium!
-                                              .copyWith(color: Colors.white),
-                                      textAlign: TextAlign.center,
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            ],
-                          ),
-                        ),
-                      ),
-                      // Deuxième onglet - Driver
-                      SingleChildScrollView(
-                        padding: const EdgeInsets.all(16),
-                        child: Container(
-                          padding: const EdgeInsets.all(16),
-                          decoration: BoxDecoration(
-                            color: const Color(0xFF0A1128)
-                                .withAlpha((0.3 * 255).round()),
-                            border: Border.all(color: Colors.white, width: 1),
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Container(
-                                padding: const EdgeInsets.all(8),
-                                decoration: BoxDecoration(
-                                  color: Colors.transparent,
-                                  borderRadius: BorderRadius.circular(12),
-                                  border: Border.all(color: Colors.white24),
-                                ),
-                                child: Row(
-                                  children: [
-                                    Expanded(
-                                        child: DropdownButton<int>(
-                                            value: tension,
-                                            dropdownColor: Colors.blueGrey[900],
-                                            style: Theme.of(context)
-                                                .textTheme
-                                                .bodyMedium,
-                                            isExpanded: true,
-                                            items: [9, 12, 24]
-                                                .map((v) => DropdownMenuItem(
-                                                      value: v,
-                                                      child: Text('$v V',
-                                                          style:
-                                                              Theme.of(context)
-                                                                  .textTheme
-                                                                  .bodyMedium),
-                                                    ))
-                                                .toList(),
-                                            onChanged: (v) =>
-                                                setState(() => tension = v!))),
-                                    const SizedBox(width: 8),
-                                    Expanded(
-                                        child: DropdownButton<int>(
-                                            value: nbVoies,
-                                            dropdownColor: Colors.blueGrey[900],
-                                            style: Theme.of(context)
-                                                .textTheme
-                                                .bodyMedium,
-                                            isExpanded: true,
-                                            items: List.generate(
-                                                    5, (i) => i + 1)
-                                                .map((v) => DropdownMenuItem(
-                                                      value: v,
-                                                      child: Text(
-                                                          '$v ${v > 1 ? loc.lightPage_channels : loc.lightPage_channel}',
-                                                          style:
-                                                              Theme.of(context)
-                                                                  .textTheme
-                                                                  .bodyMedium),
-                                                    ))
-                                                .toList(),
-                                            onChanged: (v) =>
-                                                setState(() => nbVoies = v!))),
-                                    const SizedBox(width: 8),
-                                    Expanded(
-                                        child: DropdownButton<int>(
-                                            value: ampereParVoie.toInt(),
-                                            dropdownColor: Colors.blueGrey[900],
-                                            style: Theme.of(context)
-                                                .textTheme
-                                                .bodyMedium,
-                                            isExpanded: true,
-                                            items: List.generate(
-                                                    10, (i) => i + 1)
-                                                .map((v) => DropdownMenuItem(
-                                                      value: v,
-                                                      child: Text('$v A',
-                                                          style:
-                                                              Theme.of(context)
-                                                                  .textTheme
-                                                                  .bodyMedium),
-                                                    ))
-                                                .toList(),
-                                            onChanged: (v) => setState(() =>
-                                                ampereParVoie =
-                                                    v!.toDouble()))),
-                                    const SizedBox(width: 8),
-                                    Expanded(
-                                        child: DropdownButton<String>(
-                                            value: selectedDriver,
-                                            dropdownColor: Colors.blueGrey[900],
-                                            style: Theme.of(context)
-                                                .textTheme
-                                                .bodyMedium,
-                                            isExpanded: true,
-                                            items: drivers.keys
-                                                .map((d) => DropdownMenuItem(
-                                                      value: d,
-                                                      child: Text(d,
-                                                          style:
-                                                              Theme.of(context)
-                                                                  .textTheme
-                                                                  .bodyMedium),
-                                                    ))
-                                                .toList(),
-                                            onChanged: (v) => setState(
-                                                () => selectedDriver = v!))),
-                                  ],
-                                ),
-                              ),
-                              const SizedBox(height: 12),
-                              Text(
-                                loc.lightPage_ledLength,
-                                style: Theme.of(context)
-                                        .extension<ResultContainerTheme>()
-                                        ?.textStyle ??
-                                    Theme.of(context)
-                                        .textTheme
-                                        .bodyMedium!
-                                        .copyWith(color: Colors.white),
-                              ),
-                              Slider(
-                                min: 1,
-                                max: 100,
-                                divisions: 99,
-                                value: longueurLed,
-                                label: '${longueurLed.round()} m',
-                                onChanged: (v) =>
-                                    setState(() => longueurLed = v),
-                              ),
-                              const SizedBox(height: 16),
-                              Center(
-                                child: ElevatedButton(
-                                  onPressed: _calculateDriver,
-                                  style: ElevatedButton.styleFrom(
-                                    backgroundColor: const Color(0xFF0A1128)
-                                        .withAlpha((0.5 * 255).round()),
-                                    side: BorderSide(
-                                        color: const Color(0xFF0A1128)
-                                            .withAlpha((0.8 * 255).round()),
-                                        width: 1),
-                                    padding: const EdgeInsets.all(12),
-                                    shape: RoundedRectangleBorder(
-                                        borderRadius: BorderRadius.circular(8)),
-                                  ),
-                                  child: const Icon(Icons.calculate,
-                                      color: Colors.white, size: 24),
-                                ),
-                              ),
-                              if (driverCalculationResult != null) ...[
-                                const SizedBox(height: 16),
-                                Center(
-                                  child: Container(
-                                    padding: const EdgeInsets.all(12),
-                                    decoration: BoxDecoration(
-                                      color: Theme.of(context)
-                                              .extension<ResultContainerTheme>()
-                                              ?.backgroundColor ??
-                                          const Color(0xFF0A1128)
-                                              .withOpacity(0.5),
-                                      border: Border.all(
-                                          color: Theme.of(context)
-                                                  .extension<
-                                                      ResultContainerTheme>()
-                                                  ?.borderColor ??
-                                              Colors.white,
-                                          width: 1),
-                                      borderRadius: BorderRadius.circular(8),
-                                    ),
-                                    child: Text(
-                                      driverCalculationResult!,
-                                      style: Theme.of(context)
-                                              .extension<ResultContainerTheme>()
-                                              ?.textStyle ??
-                                          Theme.of(context)
-                                              .textTheme
-                                              .bodyMedium!
-                                              .copyWith(color: Colors.white),
-                                      textAlign: TextAlign.center,
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            ],
-                          ),
-                        ),
-                      ),
-                      // Troisième onglet - DMX
-                      Column(
-                        children: [
-                          Padding(
-                            padding: const EdgeInsets.all(16.0),
-                            child: PresetWidget(
-                              loadOnInit: true,
-                              onPresetSelected: _loadPreset,
-                            ),
-                          ),
-                          Expanded(
-                            child: SingleChildScrollView(
-                              controller: _dmxScrollController,
-                              padding: const EdgeInsets.all(16),
-                              child: Container(
-                                padding: const EdgeInsets.all(16),
-                                decoration: BoxDecoration(
-                                  color: const Color(0xFF0A1128).withOpacity(0.3),
-                                  border: Border.all(color: Colors.white, width: 1),
-                                  borderRadius: BorderRadius.circular(12),
-                                ),
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                                  children: [
-                                    if (_isLoading)
-                                      const Center(
-                                        child: CircularProgressIndicator(),
+                                child: lightState.beamCalculationResult != null
+                                    ? ActionButton.reset(
+                                        onPressed: _resetBeamCalculation,
+                                        iconSize: 32,
+                                        color: Colors.white,
                                       )
-                                    else
-                                      Column(
-                                        children: [
-                                          Row(
+                                    : ActionButton(
+                                        icon: Icons.calculate,
+                                        onPressed: _calculateBeam,
+                                        iconSize: 32,
+                                        color: Colors.white,
+                                      ),
+                              ),
+                              const SizedBox(height: 16),
+                              if (lightState.beamCalculationResult != null)
+                                Container(
+                                  padding: const EdgeInsets.all(16),
+                                  decoration: BoxDecoration(
+                                    color: const Color(0xFF0A1128).withOpacity(0.5),
+                                    border: Border.all(color: const Color(0xFF0A1128), width: 1),
+                                    borderRadius: BorderRadius.circular(12),
+                                  ),
+                                  child: Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        loc.calculationResult,
+                                        style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                                          color: Colors.white,
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                      ),
+                                      const SizedBox(height: 8),
+                                      Text(
+                                        lightState.beamCalculationResult!,
+                                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: Colors.white),
+                                      ),
+                                      const SizedBox(height: 16),
+                                      
+                                      // Commentaire utilisateur (au-dessus des boutons)
+                                      if (_getCommentForTab('beam_tab').isNotEmpty) ...[
+                                        Container(
+                                          width: double.infinity,
+                                          padding: const EdgeInsets.all(12),
+                                          decoration: BoxDecoration(
+                                            color: Theme.of(context).brightness == Brightness.dark
+                                                ? Colors.blue[900]?.withOpacity(0.3)
+                                                : Colors.blue[50],
+                                            borderRadius: BorderRadius.circular(8),
+                                            border: Border.all(
+                                              color: Theme.of(context).brightness == Brightness.dark
+                                                  ? Colors.lightBlue[300]!
+                                                  : Colors.blue[300]!,
+                                              width: 1,
+                                            ),
+                                          ),
+                                          child: Column(
+                                            crossAxisAlignment: CrossAxisAlignment.start,
                                             children: [
-                                              Expanded(
-                                                child: DropdownButtonFormField<String>(
-                                                  value: selectedBrand,
-                                                  decoration: InputDecoration(
-                                                    labelText: loc.lightPage_brand,
-                                                    labelStyle: TextStyle(
-                                                      color: Theme.of(context).extension<LightPageTheme>()?.dropdownTextColor,
-                                                    ),
-                                                    filled: true,
-                                                    fillColor: Theme.of(context).extension<LightPageTheme>()?.dropdownBackgroundColor,
-                                                    border: OutlineInputBorder(
-                                                      borderRadius: BorderRadius.circular(8),
-                                                      borderSide: BorderSide.none,
-                                                    ),
-                                                    contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-                                                  ),
-                                                  dropdownColor: Theme.of(context).cardColor,
-                                                  style: TextStyle(
-                                                    color: Theme.of(context).extension<LightPageTheme>()?.dropdownTextColor,
-                                                  ),
-                                                  items: _dmxUniqueBrands
-                                                      .map((brand) => DropdownMenuItem(
-                                                            value: brand,
-                                                            child: Text(brand),
-                                                          ))
-                                                      .toList(),
-                                                  onChanged: (value) {
-                                                    setState(() {
-                                                      selectedBrand = value;
-                                                      selectedProduct = null;
-                                                    });
-                                                  },
-                                                ),
+                                              Icon(
+                                                Icons.chat_bubble_outline,
+                                                size: 16,
+                                                color: Theme.of(context).brightness == Brightness.dark
+                                                    ? Colors.lightBlue[300]
+                                                    : Colors.blue[700],
                                               ),
-                                              const SizedBox(width: 2),
-                                              Expanded(
-                                                child: DropdownButtonFormField<String>(
-                                                  value: selectedProduct,
-                                                  decoration: InputDecoration(
-                                                    labelText: loc.lightPage_product,
-                                                    labelStyle: TextStyle(
-                                                      color: Theme.of(context).extension<LightPageTheme>()?.dropdownTextColor,
-                                                    ),
-                                                    filled: true,
-                                                    fillColor: Theme.of(context).extension<LightPageTheme>()?.dropdownBackgroundColor,
-                                                    border: OutlineInputBorder(
-                                                      borderRadius: BorderRadius.circular(8),
-                                                      borderSide: BorderSide.none,
-                                                    ),
-                                                    contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-                                                  ),
-                                                  dropdownColor: Theme.of(context).cardColor,
-                                                  style: TextStyle(
-                                                    color: Theme.of(context).extension<LightPageTheme>()?.dropdownTextColor,
-                                                  ),
-                                                  isExpanded: true,
-                                                  menuMaxHeight: 300,
-                                                  items: _dmxProductsForSelectedBrand
-                                                      .map((product) => DropdownMenuItem(
-                                                            value: product,
-                                                            child: Text(
-                                                              product,
-                                                              overflow: TextOverflow.ellipsis,
-                                                            ),
-                                                          ))
-                                                      .toList(),
-                                                  onChanged: (value) {
-                                                    if (value != null) {
-                                                      final item = ref
-                                                          .read(catalogueProvider)
-                                                          .firstWhere(
-                                                            (item) =>
-                                                                item.produit == value &&
-                                                                item.categorie == 'Lumière' &&
-                                                                item.marque == selectedBrand,
-                                                            orElse: () => throw Exception('Produit non trouvé'),
-                                                          );
-                                                      _showQuantityDialog(item);
-                                                    }
-                                                  },
+                                              const SizedBox(height: 6),
+                                              Text(
+                                                _getCommentForTab('beam_tab'),
+                                                style: TextStyle(
+                                                  fontSize: 13,
+                                                  color: Theme.of(context).brightness == Brightness.dark
+                                                      ? Colors.white
+                                                      : Colors.black87,
                                                 ),
                                               ),
                                             ],
                                           ),
-                                          const SizedBox(height: 2),
-                                          TextField(
-                                            controller: _searchController,
-                                            decoration: InputDecoration(
-                                              labelText: loc.lightPage_searchProduct,
-                                              labelStyle: TextStyle(
-                                                color: Theme.of(context).extension<LightPageTheme>()?.searchTextColor,
-                                              ),
-                                              filled: true,
-                                              fillColor: Theme.of(context).extension<LightPageTheme>()?.dropdownBackgroundColor,
-                                              border: OutlineInputBorder(
-                                                borderRadius: BorderRadius.circular(8),
-                                                borderSide: BorderSide.none,
-                                              ),
-                                              contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-                                              prefixIcon: Icon(
-                                                Icons.search,
-                                                color: Theme.of(context).extension<LightPageTheme>()?.searchIconColor,
-                                              ),
-                                            ),
-                                            style: TextStyle(
-                                              color: Theme.of(context).extension<LightPageTheme>()?.searchTextColor,
-                                            ),
-                                            onChanged: _onSearchChanged,
+                                        ),
+                                        const SizedBox(height: 16),
+                                      ],
+                                      
+                                      // Boutons d'action
+                                      Row(
+                                        mainAxisAlignment: MainAxisAlignment.center,
+                                        children: [
+                                          // Bouton Commentaire (icône uniquement)
+                                          ActionButton.comment(
+                                            onPressed: () => _showCommentDialog('beam_tab', 'Faisceau'),
+                                            iconSize: 28,
+                                          ),
+                                          const SizedBox(width: 20),
+                                          // Bouton Export
+                                          ExportWidget(
+                                            title: 'Calcul Faisceau',
+                                            content: lightState.beamCalculationResult!,
+                                            projectType: 'light',
+                                            fileName: 'calcul_faisceau',
+                                            customIcon: Icons.cloud_upload,
+                                            backgroundColor: Colors.blueGrey[900],
+                                            tooltip: 'Exporter le calcul',
                                           ),
                                         ],
                                       ),
-                                    if (selectedFixtures.isNotEmpty) ...[
-                                      const SizedBox(height: 2),
-                                      ListView.builder(
-                                        shrinkWrap: true,
-                                        physics: const NeverScrollableScrollPhysics(),
-                                        itemCount: selectedFixtures.length,
-                                        itemBuilder: (context, index) {
-                                          final fixture = selectedFixtures[index];
-                                          final quantity = fixtureQuantities[fixture] ?? 0;
-                                          return Padding(
-                                            padding: const EdgeInsets.symmetric(vertical: 1),
-                                            child: ListTile(
-                                              title: Text(fixture.produit),
-                                              subtitle: Text(fixture.marque),
-                                              trailing: Row(
-                                                mainAxisSize: MainAxisSize.min,
-                                                children: [
-                                                  IconButton(
-                                                    icon: const Icon(Icons.remove),
-                                                    onPressed: () {
-                                                      setState(() {
-                                                        if (quantity > 1) {
-                                                          fixtureQuantities[fixture] = quantity - 1;
-                                                        } else {
-                                                          fixtureQuantities.remove(fixture);
-                                                          selectedFixtures.remove(fixture);
-                                                        }
-                                                      });
-                                                    },
-                                                  ),
-                                                  Text('$quantity'),
-                                                  IconButton(
-                                                    icon: const Icon(Icons.add),
-                                                    onPressed: () {
-                                                      setState(() {
-                                                        fixtureQuantities[fixture] = quantity + 1;
-                                                      });
-                                                    },
-                                                  ),
-                                                ],
-                                              ),
-                                            ),
-                                          );
-                                        },
-                                      ),
-                                      const SizedBox(height: 16),
-                                      Center(
-                                        child: ElevatedButton(
-                                          onPressed: _calculateDMX,
-                                          style: ElevatedButton.styleFrom(
-                                            backgroundColor: const Color(0xFF0A1128).withOpacity(0.5),
-                                            side: BorderSide(
-                                              color: const Color(0xFF0A1128),
-                                              width: 1,
-                                            ),
-                                            padding: const EdgeInsets.all(12),
-                                            shape: RoundedRectangleBorder(
-                                              borderRadius: BorderRadius.circular(8),
-                                            ),
-                                          ),
-                                          child: const Icon(Icons.calculate, color: Colors.white, size: 24),
-                                        ),
-                                      ),
                                     ],
-                                    if (dmxCalculationResult != null) ...[
-                                      const SizedBox(height: 16),
+                                  ),
+                                ),
+                            ],
+                          ),
+                        ),
+                      ),
+                      // Troisième onglet - Driver (refait)
+                      Column(
+                        children: [
+                          // Widget Preset
+                          PresetWidget(
+                            onPresetSelected: (preset) {
+                              // Logique de sélection de preset si nécessaire
+                            },
+                          ),
+                          // Cadre principal
+                          Expanded(
+                            child: Container(
+                              margin: const EdgeInsets.all(16),
+                              decoration: BoxDecoration(
+                                color: const Color(0xFF0A1128).withOpacity(0.3),
+                                border: Border.all(color: Colors.white, width: 1),
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                              child: SingleChildScrollView(
+                                padding: const EdgeInsets.all(16),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    
+                                    // Slider longueur LED strip (1-250m)
+                                    Text(
+                                      '${AppLocalizations.of(context)!.driverTab_ledLength}: ${lightState.longueurLed.toStringAsFixed(1)} m',
+                                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                        color: Colors.white,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                    const SizedBox(height: 8),
+                                    Slider(
+                                      value: lightState.longueurLed,
+                                      min: 1.0,
+                                      max: 250.0,
+                                      divisions: 249,
+                                      label: '${lightState.longueurLed.toStringAsFixed(1)} m',
+                                      onChanged: (value) {
+                                        ref.read(lightPageStateProvider.notifier).updateLedLength(value);
+                                        // Effacer le commentaire du résultat précédent
+                                        if (_currentDriverResult.isNotEmpty) {
+                                          _comments.remove(_currentDriverResult);
+                                          _saveComments();
+                                        }
+                                        _currentDriverResult = '';
+                                      },
+                                    ),
+                                    const SizedBox(height: 24),
+                                    
+                                    // Menus déroulants côte à côte
+                                    Row(
+                                      children: [
+                                        // Menu déroulant LED Strip
+                                        Expanded(
+                                          child: BorderLabeledDropdown<String>(
+                                            label: 'LED Strip',
+                                            value: lightState.selectedLedType,
+                                            items: ledTypes.map((type) => DropdownMenuItem(
+                                              value: type,
+                                              child: Text(type, style: const TextStyle(fontSize: 11)),
+                                            )).toList(),
+                                            onChanged: (String? newValue) {
+                                              ref.read(lightPageStateProvider.notifier).updateSelectedLedType(newValue!);
+                                              // Effacer le commentaire du résultat précédent
+                                              if (_currentDriverResult.isNotEmpty) {
+                                                _comments.remove(_currentDriverResult);
+                                                _saveComments();
+                                              }
+                                              _currentDriverResult = '';
+                                            },
+                                          ),
+                                        ),
+                                        const SizedBox(width: 16),
+                                        // Menu déroulant Puissance LED strip
+                                        Expanded(
+                                          child: BorderLabeledDropdown<String>(
+                                            label: AppLocalizations.of(context)!.driverTab_ledPower,
+                                            value: lightState.selectedLedPower,
+                                            items: ledPowers.map((power) => DropdownMenuItem(
+                                              value: power,
+                                              child: Text(power, style: const TextStyle(fontSize: 11)),
+                                            )).toList(),
+                                            onChanged: (String? newValue) {
+                                              ref.read(lightPageStateProvider.notifier).updateSelectedLedPower(newValue!);
+                                              // Effacer le commentaire du résultat précédent
+                                              if (_currentDriverResult.isNotEmpty) {
+                                                _comments.remove(_currentDriverResult);
+                                                _saveComments();
+                                              }
+                                              _currentDriverResult = '';
+                                            },
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                    const SizedBox(height: 16),
+                                    
+                                    // Menu déroulant Choix Driver
+                                    BorderLabeledDropdown<String>(
+                                      label: AppLocalizations.of(context)!.driverTab_driverChoice,
+                                      value: lightState.selectedDriverNew,
+                                      items: driverChoices.map((driver) => DropdownMenuItem(
+                                        value: driver,
+                                        child: Text(driver, style: const TextStyle(fontSize: 11)),
+                                      )).toList(),
+                                      onChanged: (String? newValue) {
+                                        if (newValue == 'Custom') {
+                                          _showCustomDriverDialog();
+                                        } else {
+                                          ref.read(lightPageStateProvider.notifier).updateSelectedDriverNew(newValue!);
+                                        }
+                                        // Effacer le commentaire du résultat précédent
+                                        if (_currentDriverResult.isNotEmpty) {
+                                          _comments.remove(_currentDriverResult);
+                                          _saveComments();
+                                        }
+                                        _currentDriverResult = '';
+                                      },
+                                    ),
+                                    const SizedBox(height: 32),
+                                    
+                                    // Bouton calculer/reset centré avec ActionButton
+                                    Center(
+                                      child: lightState.driverCalculationResult != null
+                                          ? ActionButton.reset(
+                                              onPressed: _resetDriverCalculation,
+                                              iconSize: 32,
+                                              color: Colors.white,
+                                            )
+                                          : ActionButton(
+                                              icon: Icons.calculate,
+                                              onPressed: _calculateDriverNew,
+                                              iconSize: 32,
+                                              color: Colors.white,
+                                            ),
+                                    ),
+                                    
+                                    // Résultat du calcul
+                                    if (lightState.driverCalculationResult != null) ...[
+                                      const SizedBox(height: 24),
                                       Container(
                                         padding: const EdgeInsets.all(16),
                                         decoration: BoxDecoration(
-                                          color: Theme.of(context).extension<ResultContainerTheme>()?.backgroundColor,
-                                          border: Border.all(
-                                            color: Theme.of(context).extension<ResultContainerTheme>()?.borderColor ?? Colors.white,
-                                          ),
-                                          borderRadius: BorderRadius.circular(8),
+                                          color: const Color(0xFF0A1128).withOpacity(0.5),
+                                          border: Border.all(color: const Color(0xFF0A1128), width: 1),
+                                          borderRadius: BorderRadius.circular(12),
                                         ),
-                                        child: Text(
-                                          dmxCalculationResult!,
-                                          style: Theme.of(context).extension<ResultContainerTheme>()?.textStyle,
-                                          textAlign: TextAlign.center,
+                                        child: Column(
+                                          crossAxisAlignment: CrossAxisAlignment.start,
+                                          children: [
+                                            Text(
+                                              lightState.driverCalculationResult!,
+                                              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                                color: Colors.white,
+                                              ),
+                                            ),
+                                            const SizedBox(height: 16),
+                                            
+                                            // Commentaire utilisateur (au-dessus des boutons)
+                                            if (_getCommentForTab('driver_tab').isNotEmpty) ...[
+                                              Container(
+                                                width: double.infinity,
+                                                padding: const EdgeInsets.all(12),
+                                                decoration: BoxDecoration(
+                                                  color: Theme.of(context).brightness == Brightness.dark
+                                                      ? Colors.blue[900]?.withOpacity(0.3)
+                                                      : Colors.blue[50],
+                                                  borderRadius: BorderRadius.circular(8),
+                                                  border: Border.all(
+                                                    color: Theme.of(context).brightness == Brightness.dark
+                                                        ? Colors.lightBlue[300]!
+                                                        : Colors.blue[300]!,
+                                                    width: 1,
+                                                  ),
+                                                ),
+                                                child: Column(
+                                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                                  children: [
+                                                    Icon(
+                                                      Icons.chat_bubble_outline,
+                                                      size: 16,
+                                                      color: Theme.of(context).brightness == Brightness.dark
+                                                          ? Colors.lightBlue[300]
+                                                          : Colors.blue[700],
+                                                    ),
+                                                    const SizedBox(height: 6),
+                                                    Text(
+                                                      _getCommentForTab('driver_tab'),
+                                                      style: TextStyle(
+                                                        fontSize: 13,
+                                                        color: Theme.of(context).brightness == Brightness.dark
+                                                            ? Colors.white
+                                                            : Colors.black87,
+                                                      ),
+                                                    ),
+                                                  ],
+                                                ),
+                                              ),
+                                              const SizedBox(height: 16),
+                                            ],
+                                            
+                                            // Boutons d'action
+                                            Row(
+                                              mainAxisAlignment: MainAxisAlignment.center,
+                                              children: [
+                                                // Bouton Commentaire (icône uniquement)
+                                                ActionButton.comment(
+                                                  onPressed: () => _showCommentDialog('driver_tab', 'Driver'),
+                                                  iconSize: 28,
+                                                ),
+                                                const SizedBox(width: 20),
+                                                // Bouton Export (rotated)
+                                                ExportWidget(
+                                                  title: 'Configuration Driver LED',
+                                                  content: lightState.driverCalculationResult!,
+                                                  projectType: 'light',
+                                                  fileName: 'configuration_driver_led',
+                                                  customIcon: Icons.cloud_upload,
+                                                  backgroundColor: Colors.blueGrey[900],
+                                                  tooltip: 'Exporter la configuration',
+                                                ),
+                                              ],
+                                            ),
+                                          ],
                                         ),
                                       ),
                                     ],
@@ -1197,69 +774,120 @@ class _LightMenuPageState extends ConsumerState<LightMenuPage>
           ),
         ],
       ),
-      bottomNavigationBar: BottomNavigationBar(
-        type: BottomNavigationBarType.fixed,
-        backgroundColor: Colors.blueGrey[900],
-        selectedItemColor: Colors.white,
-        unselectedItemColor: Colors.grey,
-        currentIndex: 1,
-        onTap: (index) {
-          final pages = [
-            const CataloguePage(),
-            const LightMenuPage(),
-            const StructureMenuPage(),
-            const SoundMenuPage(),
-            const VideoMenuPage(),
-            const ElectriciteMenuPage(),
-            const DiversMenuPage(),
-          ];
+      bottomNavigationBar: const UniformBottomNavBar(currentIndex: 1),
+    );
+  }
 
-          Offset beginOffset;
-          if (index == 0 || index == 1) {
-            beginOffset = const Offset(-1.0, 0.0);
-          } else if (index == 5 || index == 6) {
-            beginOffset = const Offset(1.0, 0.0);
-          } else {
-            beginOffset = Offset.zero;
-          }
+  // Méthodes de gestion des commentaires
+  Future<void> _loadComments() async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final commentsJson = prefs.getString('light_comments');
+      if (commentsJson != null) {
+        setState(() {
+          _comments = Map<String, String>.from(json.decode(commentsJson));
+        });
+      }
+    } catch (e) {
+      print('Erreur lors du chargement des commentaires: $e');
+    }
+  }
 
-          Navigator.push(
-            context,
-            PageRouteBuilder(
-              pageBuilder: (_, __, ___) => pages[index],
-              transitionsBuilder: (_, animation, __, child) {
-                if (beginOffset == Offset.zero) {
-                  return FadeTransition(opacity: animation, child: child);
+  Future<void> _saveComments() async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.setString('light_comments', json.encode(_comments));
+    } catch (e) {
+      print('Erreur lors de la sauvegarde des commentaires: $e');
+    }
+  }
+
+  String _getCommentForTab(String tabKey) {
+    if (tabKey == 'beam_tab') {
+      // Pour l'onglet faisceau, utiliser la clé unique du résultat
+      return _comments[_currentBeamResult] ?? '';
+    } else if (tabKey == 'driver_tab') {
+      // Pour l'onglet driver, utiliser la clé unique du résultat
+      return _comments[_currentDriverResult] ?? '';
+    } else {
+      // Pour les autres onglets, utiliser le système normal
+      return _comments[tabKey] ?? '';
+    }
+  }
+
+  String _generateBeamResultKey() {
+    // Générer une clé unique basée sur les paramètres du calcul faisceau
+    return 'beam_${lightState.selectedLedType}_${lightState.selectedLedPower}_${lightState.angle.toStringAsFixed(1)}_${lightState.distance.toStringAsFixed(1)}_${lightState.height.toStringAsFixed(1)}';
+  }
+
+  String _generateDriverResultKey() {
+    // Générer une clé unique basée sur les paramètres du calcul driver
+    return 'driver_${lightState.selectedLedType}_${lightState.selectedLedPower}_${lightState.longueurLed.toStringAsFixed(1)}_${lightState.selectedDriverNew}_${lightState.customChannels}_${lightState.customIntensity.toStringAsFixed(1)}';
+  }
+
+  Future<void> _showCommentDialog(String tabKey, String tabName) async {
+    final TextEditingController commentController = TextEditingController(
+      text: _getCommentForTab(tabKey),
+    );
+
+    return showDialog<void>(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          backgroundColor: const Color(0xFF0A1128),
+          title: Text(
+            'Commentaire - $tabName',
+            style: const TextStyle(color: Colors.white, fontSize: 10),
+          ),
+          content: TextField(
+            controller: commentController,
+            maxLines: 3,
+            style: const TextStyle(color: Colors.white),
+            decoration: const InputDecoration(
+              hintText: 'Entrez votre commentaire...',
+              hintStyle: TextStyle(color: Colors.grey),
+              border: OutlineInputBorder(),
+              focusedBorder: OutlineInputBorder(
+                borderSide: BorderSide(color: Colors.blue),
+              ),
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(),
+              child: const Text(
+                'Annuler',
+                style: TextStyle(color: Colors.white),
+              ),
+            ),
+            ElevatedButton(
+              onPressed: () async {
+                final comment = commentController.text.trim();
+                String commentKey;
+                
+                if (tabKey == 'beam_tab') {
+                  // Pour l'onglet faisceau, utiliser la clé unique du résultat
+                  commentKey = _currentBeamResult;
+                } else if (tabKey == 'driver_tab') {
+                  // Pour l'onglet driver, utiliser la clé unique du résultat
+                  commentKey = _currentDriverResult;
                 } else {
-                  final tween = Tween(begin: beginOffset, end: Offset.zero)
-                      .chain(CurveTween(curve: Curves.easeInOut));
-                  return SlideTransition(
-                      position: animation.drive(tween), child: child);
+                  // Pour les autres onglets, utiliser le système normal
+                  commentKey = tabKey;
+                }
+                
+                _comments[commentKey] = comment;
+                await _saveComments();
+                if (mounted) {
+                  setState(() {});
+                  Navigator.of(context).pop();
                 }
               },
-              transitionDuration: const Duration(milliseconds: 400),
+              child: const Text('Sauvegarder'),
             ),
-          );
-        },
-        items: [
-          const BottomNavigationBarItem(
-              icon: Icon(Icons.list), label: 'Catalogue'),
-          const BottomNavigationBarItem(
-              icon: Icon(Icons.lightbulb), label: 'Lumière'),
-          BottomNavigationBarItem(
-              icon: Image.asset('assets/truss_icon_grey.png',
-                  width: 24, height: 24),
-              label: 'Structure'),
-          const BottomNavigationBarItem(
-              icon: Icon(Icons.volume_up), label: 'Son'),
-          const BottomNavigationBarItem(
-              icon: Icon(Icons.videocam), label: 'Vidéo'),
-          const BottomNavigationBarItem(
-              icon: Icon(Icons.bolt), label: 'Électricité'),
-          const BottomNavigationBarItem(
-              icon: Icon(Icons.more_horiz), label: 'Divers'),
-        ],
-      ),
+          ],
+        );
+      },
     );
   }
 }

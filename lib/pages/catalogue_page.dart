@@ -1,23 +1,23 @@
+import 'dart:convert';
 import 'package:flutter/material.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:av_wallet_hive/l10n/app_localizations.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../models/catalogue_item.dart';
-import '../models/cart_data.dart';
 import '../models/cart_item.dart';
-import 'light_menu_page.dart';
-import 'structure_menu_page.dart';
-import 'sound_menu_page.dart';
-import 'video_menu_page.dart';
-import 'electricite_menu_page.dart';
-import 'divers_menu_page.dart';
+import '../models/lens.dart';
 import 'calcul_projet_page.dart';
 import 'ar_measure_page.dart';
 import '../widgets/preset_widget.dart';
 import '../widgets/custom_app_bar.dart';
+import '../widgets/border_labeled_dropdown.dart';
+import '../widgets/action_button.dart';
+import '../widgets/export_widget.dart';
+import '../widgets/uniform_bottom_nav_bar.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../providers/catalogue_provider.dart';
 import '../providers/preset_provider.dart';
 import '../theme/app_theme.dart';
-import '../widgets/catalogue_item_form.dart';
+import '../services/freemium_access_service.dart';
 
 class CataloguePage extends ConsumerStatefulWidget {
   const CataloguePage({super.key});
@@ -26,7 +26,7 @@ class CataloguePage extends ConsumerStatefulWidget {
   ConsumerState<CataloguePage> createState() => _CataloguePageState();
 }
 
-class _CataloguePageState extends ConsumerState<CataloguePage> {
+class _CataloguePageState extends ConsumerState<CataloguePage> with TickerProviderStateMixin {
   String searchQuery = '';
   String? selectedBrand;
   String? selectedCategory;
@@ -40,17 +40,314 @@ class _CataloguePageState extends ConsumerState<CataloguePage> {
   bool _isAnimating = false;
   Offset? _startPosition;
   Size? _startSize;
+  late final TextEditingController _searchController;
+  late TabController _tabController;
+  
+  // Gestion des commentaires
+  Map<String, String> _comments = {}; // Clé: "marque_produit", Valeur: commentaire
 
   @override
   void initState() {
     super.initState();
-    Future.microtask(() => ref.read(catalogueServiceProvider).loadCatalogue());
+    _searchController = TextEditingController();
+    _tabController = TabController(length: 1, vsync: this);
+    _searchController.addListener(() {
+      if (_searchController.text != searchQuery) {
+        setState(() {
+          searchQuery = _searchController.text;
+        });
+      }
+    });
+    // Charger les données du catalogue au démarrage (avec vérification freemium)
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      print('Initializing catalogue page...');
+      
+      // Vérifier l'accès au catalogue (premium uniquement)
+      final hasAccess = await FreemiumAccessService.canAccessCatalogue(context, ref);
+      if (!hasAccess) {
+        // L'utilisateur n'a pas accès, ne pas charger le catalogue
+        setState(() {
+          isLoading = false;
+          error = 'Accès au catalogue refusé - Premium requis';
+        });
+        return;
+      }
+      
+      setState(() {
+        isLoading = true;
+        error = null;
+      });
+      try {
+        await ref.read(catalogueProvider.notifier).loadCatalogue();
+        print('Catalogue loaded in page');
+      } catch (e) {
+        print('Error loading catalogue in page: $e');
+        setState(() {
+          error = 'Erreur lors du chargement du catalogue';
+        });
+      } finally {
+        setState(() {
+          isLoading = false;
+        });
+      }
+    });
+    // Charger l'état persisté après que le widget soit construit
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) {
+        _loadComments();
+        _loadPersistedState();
+      }
+    });
   }
 
   @override
   void dispose() {
+    _savePersistedState();
     _scrollController.dispose();
+    _searchController.dispose();
+    _tabController.dispose();
     super.dispose();
+  }
+
+  // Méthodes de persistance
+  Future<void> _loadComments() async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final commentsJson = prefs.getString('catalogue_comments');
+      if (commentsJson != null) {
+        final Map<String, dynamic> commentsMap = Map<String, dynamic>.from(
+          json.decode(commentsJson)
+        );
+        _comments = commentsMap.map((key, value) => MapEntry(key, value.toString()));
+      }
+    } catch (e) {
+      print('Error loading comments: $e');
+    }
+  }
+
+  Future<void> _saveComments() async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final commentsJson = json.encode(_comments);
+      await prefs.setString('catalogue_comments', commentsJson);
+    } catch (e) {
+      print('Error saving comments: $e');
+    }
+  }
+
+  Future<void> _loadPersistedState() async {
+    try {
+      print('Starting persistence restoration...');
+      
+      // Vérifier que le widget est encore monté
+      if (!mounted) return;
+      
+      // Attendre un peu que le catalogue se charge
+      await Future.delayed(const Duration(milliseconds: 1000));
+      
+      // Vérifier que le widget est encore monté après l'attente
+      if (!mounted) return;
+      
+      // Vérifier que le catalogue est chargé
+      final items = ref.read(catalogueProvider);
+      if (items.isEmpty) {
+        print('Catalogue not loaded yet, skipping persistence restoration');
+        return;
+      }
+      
+      print('Catalogue loaded with ${items.length} items, proceeding with persistence restoration');
+      
+      final prefs = await SharedPreferences.getInstance();
+      
+      // Vérifier toutes les clés disponibles
+      final allKeys = prefs.getKeys();
+      print('All SharedPreferences keys: $allKeys');
+      
+      // Restaurer la requête de recherche
+      final savedSearchQuery = prefs.getString('catalogue_search_query') ?? '';
+      print('Restoring search query: "$savedSearchQuery"');
+      
+      if (savedSearchQuery.isNotEmpty && mounted) {
+        _searchController.text = savedSearchQuery;
+        searchQuery = savedSearchQuery;
+      }
+      
+      // Restaurer les filtres avec validation
+      final savedBrand = prefs.getString('catalogue_selected_brand');
+      final savedCategory = prefs.getString('catalogue_selected_category');
+      final savedSubCategory = prefs.getString('catalogue_selected_subcategory');
+      final savedProduct = prefs.getString('catalogue_selected_product');
+      
+      print('Restoring filters - Brand: $savedBrand, Category: $savedCategory, SubCategory: $savedSubCategory, Product: $savedProduct');
+      
+      // Valider que les valeurs existent dans les listes disponibles
+      final availableCategories = items
+          .where((item) => item.categorie.isNotEmpty)
+          .map((item) => item.categorie)
+          .toSet()
+          .toList()
+        ..sort();
+      
+      print('Available categories: $availableCategories');
+      
+      // Restaurer la catégorie d'abord
+      selectedCategory = (savedCategory != null && savedCategory.isNotEmpty && availableCategories.contains(savedCategory)) ? savedCategory : null;
+      print('Restored category: $selectedCategory');
+      
+      // Si pas de catégorie mais un produit sélectionné, essayer de trouver la catégorie du produit
+      if (selectedCategory == null && savedProduct != null && savedProduct.isNotEmpty) {
+        final productItem = items.firstWhere(
+          (item) => item.produit == savedProduct,
+          orElse: () => CatalogueItem(
+            id: '', name: '', description: '', categorie: '', sousCategorie: '', 
+            marque: '', produit: '', dimensions: '', poids: '', conso: ''
+          ),
+        );
+        if (productItem.categorie.isNotEmpty && availableCategories.contains(productItem.categorie)) {
+          selectedCategory = productItem.categorie;
+          print('Found category from product: $selectedCategory');
+        }
+      }
+      
+      // Puis restaurer les autres filtres en fonction de la catégorie
+      if (selectedCategory != null) {
+        // Calculer les marques disponibles pour la catégorie et sous-catégorie sélectionnées
+        final availableBrands = items
+            .where((item) =>
+                item.marque.isNotEmpty &&
+                item.categorie == selectedCategory &&
+                (selectedSubCategory == null || item.sousCategorie == selectedSubCategory))
+            .map((item) => item.marque)
+            .toSet()
+            .toList()
+          ..sort();
+        
+        // Calculer les sous-catégories disponibles
+        final availableSubCategories = items
+            .where((item) =>
+                item.categorie == selectedCategory && item.sousCategorie.isNotEmpty)
+            .map((item) => item.sousCategorie)
+            .toSet()
+            .toList()
+          ..sort();
+        
+        // Calculer les produits disponibles en respectant tous les filtres
+        final availableProducts = items
+            .where((item) =>
+                item.categorie == selectedCategory &&
+                (selectedBrand == null || item.marque == selectedBrand) &&
+                (selectedSubCategory == null || item.sousCategorie == selectedSubCategory) &&
+                item.produit.isNotEmpty)
+            .map((item) => item.produit)
+            .toSet()
+            .toList()
+          ..sort();
+        
+        print('Available brands for category $selectedCategory: $availableBrands');
+        print('Available subcategories: $availableSubCategories');
+        print('Available products: $availableProducts');
+        
+        selectedBrand = (savedBrand != null && availableBrands.contains(savedBrand)) ? savedBrand : null;
+        selectedSubCategory = (savedSubCategory != null && availableSubCategories.contains(savedSubCategory)) ? savedSubCategory : null;
+        selectedProduct = (savedProduct != null && availableProducts.contains(savedProduct)) ? savedProduct : null;
+        
+        print('Restored filters - Brand: $selectedBrand, SubCategory: $selectedSubCategory, Product: $selectedProduct');
+      } else {
+        // Si aucune catégorie valide, essayer de restaurer au moins le produit
+        if (savedProduct != null && savedProduct.isNotEmpty) {
+          // Chercher le produit dans tout le catalogue
+          final productItem = items.firstWhere(
+            (item) => item.produit == savedProduct,
+            orElse: () => CatalogueItem(
+              id: '', name: '', description: '', categorie: '', sousCategorie: '', 
+              marque: '', produit: '', dimensions: '', poids: '', conso: ''
+            ),
+          );
+          if (productItem.produit.isNotEmpty) {
+            selectedProduct = savedProduct;
+            selectedBrand = productItem.marque.isNotEmpty ? productItem.marque : null;
+            selectedSubCategory = productItem.sousCategorie.isNotEmpty ? productItem.sousCategorie : null;
+            print('Restored product without category - Product: $selectedProduct, Brand: $selectedBrand, SubCategory: $selectedSubCategory');
+          } else {
+            selectedBrand = null;
+            selectedSubCategory = null;
+            selectedProduct = null;
+            print('Product not found, resetting all filters');
+          }
+        } else {
+          selectedBrand = null;
+          selectedSubCategory = null;
+          selectedProduct = null;
+          print('No valid category or product found, resetting all filters');
+        }
+      }
+      
+      // Restaurer les résultats de recherche si une recherche était active
+      if (savedSearchQuery.isNotEmpty && mounted) {
+        print('Performing search with restored query: $savedSearchQuery');
+        _performSearch(savedSearchQuery);
+      }
+      
+      if (mounted) {
+        setState(() {});
+        print('Persistence restoration completed successfully');
+      }
+    } catch (e) {
+      print('Error loading persisted state: $e');
+    }
+  }
+
+  Future<void> _savePersistedState() async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      
+      print('Saving persisted state - Search: "$searchQuery", Brand: $selectedBrand, Category: $selectedCategory, SubCategory: $selectedSubCategory, Product: $selectedProduct');
+      
+      // Sauvegarder la requête de recherche
+      await prefs.setString('catalogue_search_query', searchQuery);
+      
+      // Sauvegarder les filtres
+      await prefs.setString('catalogue_selected_brand', selectedBrand ?? '');
+      await prefs.setString('catalogue_selected_category', selectedCategory ?? '');
+      await prefs.setString('catalogue_selected_subcategory', selectedSubCategory ?? '');
+      await prefs.setString('catalogue_selected_product', selectedProduct ?? '');
+      
+      // Vérifier que les données ont été sauvegardées
+      final savedSearch = prefs.getString('catalogue_search_query');
+      final savedCategory = prefs.getString('catalogue_selected_category');
+      print('Verification - Saved search: "$savedSearch", Saved category: "$savedCategory"');
+      
+      print('Persistence state saved successfully');
+    } catch (e) {
+      print('Error saving persisted state: $e');
+    }
+  }
+
+  void _performSearch(String query) {
+    if (query.length >= 3 && mounted) {
+      try {
+        // Utiliser ref.watch pour s'assurer que le provider est disponible
+        final items = ref.watch(catalogueProvider);
+        if (items.isNotEmpty) {
+          searchResults = items
+              .where((item) =>
+                  item.name.toLowerCase().contains(query.toLowerCase()) ||
+                  item.marque.toLowerCase().contains(query.toLowerCase()) ||
+                  item.produit.toLowerCase().contains(query.toLowerCase()))
+              .toList();
+          print('Search performed: found ${searchResults.length} results for "$query"');
+        } else {
+          searchResults = [];
+          print('Search performed: no items available for search');
+        }
+      } catch (e) {
+        print('Error performing search: $e');
+        searchResults = [];
+      }
+    } else {
+      searchResults = [];
+      print('Search query too short or widget not mounted: "$query"');
+    }
   }
 
   void _scrollToResult() {
@@ -59,9 +356,9 @@ class _CataloguePageState extends ConsumerState<CataloguePage> {
         if (_resultKey.currentContext != null) {
           Scrollable.ensureVisible(
             _resultKey.currentContext!,
-            duration: const Duration(milliseconds: 500),
+            duration: const Duration(milliseconds: 800),
             curve: Curves.easeInOut,
-            alignment: 0.5, // Centre le résultat dans la vue
+            alignment: 0.3, // Centre le résultat dans la vue (0.3 pour laisser de l'espace en haut)
           );
         }
       });
@@ -78,10 +375,12 @@ class _CataloguePageState extends ConsumerState<CataloguePage> {
 
   List<String> get _uniqueBrands {
     final items = ref.watch(catalogueProvider);
+    if (items.isEmpty) return [];
     return items
         .where((item) =>
             item.marque.isNotEmpty &&
-            (selectedCategory == null || item.categorie == selectedCategory))
+            (selectedCategory == null || item.categorie == selectedCategory) &&
+            (selectedSubCategory == null || item.sousCategorie == selectedSubCategory))
         .map((item) => item.marque)
         .toSet()
         .toList()
@@ -90,6 +389,7 @@ class _CataloguePageState extends ConsumerState<CataloguePage> {
 
   List<String> get _categories {
     final items = ref.watch(catalogueProvider);
+    if (items.isEmpty) return [];
     return items
         .where((item) => item.categorie.isNotEmpty)
         .map((item) => item.categorie)
@@ -100,7 +400,7 @@ class _CataloguePageState extends ConsumerState<CataloguePage> {
 
   List<String> get _subCategoriesForSelectedCategory {
     final items = ref.watch(catalogueProvider);
-    if (selectedCategory == null) return [];
+    if (items.isEmpty || selectedCategory == null) return [];
     return items
         .where((item) =>
             item.categorie == selectedCategory && item.sousCategorie.isNotEmpty)
@@ -112,6 +412,7 @@ class _CataloguePageState extends ConsumerState<CataloguePage> {
 
   List<String> get _productsForSelectedFilters {
     final items = ref.watch(catalogueProvider);
+    if (items.isEmpty) return [];
     return items
         .where((item) =>
             (selectedCategory == null || item.categorie == selectedCategory) &&
@@ -132,11 +433,27 @@ class _CataloguePageState extends ConsumerState<CataloguePage> {
       selectedSubCategory = null;
       selectedProduct = null;
       searchQuery = '';
+      _searchController.clear(); // Réinitialiser le champ de recherche
     });
+    _savePersistedState();
   }
 
   List<CatalogueItem> get filteredItems {
     final items = ref.watch(catalogueProvider);
+    
+    // Si une recherche est active, rechercher dans tout le catalogue
+    if (searchQuery.isNotEmpty && searchQuery.length >= 3) {
+      return items.where((item) {
+        return item.produit.toLowerCase().contains(searchQuery.toLowerCase()) ||
+               item.marque.toLowerCase().contains(searchQuery.toLowerCase()) ||
+               (item.description.isNotEmpty &&
+                   item.description.toLowerCase().contains(searchQuery.toLowerCase())) ||
+               item.categorie.toLowerCase().contains(searchQuery.toLowerCase()) ||
+               item.sousCategorie.toLowerCase().contains(searchQuery.toLowerCase());
+      }).toList();
+    }
+    
+    // Sinon, appliquer les filtres normaux
     return items.where((item) {
       final matchesBrand =
           selectedBrand == null || item.marque == selectedBrand;
@@ -146,51 +463,20 @@ class _CataloguePageState extends ConsumerState<CataloguePage> {
           item.sousCategorie == selectedSubCategory;
       final matchesProduct =
           selectedProduct == null || item.produit == selectedProduct;
-      final matchesSearch = searchQuery.isEmpty ||
-          (searchQuery.length >= 3 &&
-              (item.produit.toLowerCase().contains(searchQuery.toLowerCase()) ||
-                  item.marque
-                      .toLowerCase()
-                      .contains(searchQuery.toLowerCase()) ||
-                  (item.description.isNotEmpty &&
-                      item.description
-                          .toLowerCase()
-                          .contains(searchQuery.toLowerCase()))));
 
       return matchesBrand &&
           matchesCategory &&
           matchesSubCategory &&
-          matchesProduct &&
-          matchesSearch;
+          matchesProduct;
     }).toList();
   }
 
   void _handleSearch(String value) {
     setState(() {
       searchQuery = value;
-      if (value.length >= 3) {
-        final results = filteredItems;
-        if (results.isNotEmpty) {
-          // Si on trouve une marque correspondante, on la sélectionne
-          final matchingBrand = results.first.marque;
-          if (matchingBrand.toLowerCase().contains(value.toLowerCase())) {
-            selectedBrand = matchingBrand;
-            selectedProduct = null;
-          }
-          // Si on trouve un produit correspondant, on le sélectionne
-          else if (results.length == 1) {
-            selectedProduct = results.first.produit;
-            selectedBrand = results.first.marque;
-          }
-        }
-      } else {
-        // Réinitialiser les sélections si la recherche est vide
-        selectedBrand = null;
-        selectedCategory = null;
-        selectedSubCategory = null;
-        selectedProduct = null;
-      }
     });
+    _performSearch(value);
+    _savePersistedState();
   }
 
   void _handleCategorySelection(String? category) {
@@ -201,24 +487,27 @@ class _CataloguePageState extends ConsumerState<CataloguePage> {
       selectedProduct = null;
       searchQuery = ''; // Réinitialiser la recherche
     });
+    _savePersistedState();
   }
 
   void _handleBrandSelection(String? brand) {
     setState(() {
       selectedBrand = brand;
-      selectedSubCategory = null;
+      // Ne pas réinitialiser selectedSubCategory pour la persistance
       selectedProduct = null;
       searchQuery = ''; // Réinitialiser la recherche
     });
+    _savePersistedState();
   }
 
   void _handleSubCategorySelection(String? subCategory) {
     setState(() {
       selectedSubCategory = subCategory;
-      selectedBrand = null;
+      selectedBrand = null; // Réinitialiser la marque car les marques disponibles changent
       selectedProduct = null;
       searchQuery = ''; // Réinitialiser la recherche
     });
+    _savePersistedState();
   }
 
   void _handleProductSelection(String? product) {
@@ -226,12 +515,209 @@ class _CataloguePageState extends ConsumerState<CataloguePage> {
       selectedProduct = product;
       searchQuery = ''; // Réinitialiser la recherche
     });
+    _savePersistedState();
+    
+    // Focus automatique vers le résultat
+    if (product != null && product.isNotEmpty) {
+      _scrollToResult();
+    }
   }
 
   void _navigateTo(Widget page) {
     Navigator.push(
       context,
       MaterialPageRoute(builder: (context) => page),
+    );
+  }
+
+  String _getCommentForItem(CatalogueItem item) {
+    final String commentKey = '${item.marque}_${item.produit}';
+    return _comments[commentKey] ?? '';
+  }
+
+  String _buildExportContent(CatalogueItem item) {
+    final StringBuffer content = StringBuffer();
+    
+    // Informations de base
+    content.writeln('Marque: ${item.marque}');
+    content.writeln('Produit: ${item.produit}');
+    content.writeln('Catégorie: ${item.categorie}');
+    content.writeln('Sous-catégorie: ${item.sousCategorie}');
+    content.writeln('');
+    
+    // Description
+    if (item.description.isNotEmpty) {
+      content.writeln(item.description);
+      content.writeln('');
+    }
+    
+    // Caractéristiques physiques
+    if (item.taille != null) content.writeln('Taille: ${item.taille}"');
+    if (item.dimensions.isNotEmpty) content.writeln('Dimensions: ${item.dimensions}');
+    if (item.poids.isNotEmpty) content.writeln('Poids: ${item.poids}');
+    if (item.conso.isNotEmpty) content.writeln('Consommation: ${item.conso}');
+    content.writeln('');
+    
+    // Caractéristiques techniques
+    if (item.resolutionDalle != null) content.writeln('Résolution dalle: ${item.resolutionDalle}');
+    if (item.resolution != null) content.writeln('Résolution: ${item.resolution}');
+    if (item.pitch != null) content.writeln('Pitch: ${item.pitch}');
+    content.writeln('');
+    
+    // Caractéristiques lumière
+    if (item.angle != null) content.writeln('Angle: ${item.angle}');
+    if (item.lux != null) content.writeln('Lux: ${item.lux}');
+    if (item.lumens != null) content.writeln('Lumens: ${item.lumens}');
+    if (item.definition != null) content.writeln('Définition: ${item.definition}');
+    content.writeln('');
+    
+    // Caractéristiques DMX
+    if (item.dmxMax != null) content.writeln('DMX Max: ${item.dmxMax}');
+    if (item.dmxMini != null) content.writeln('DMX Mini: ${item.dmxMini}');
+    content.writeln('');
+    
+    // Caractéristiques audio
+    if (item.puissanceAdmissible != null) content.writeln('Puissance admissible: ${item.puissanceAdmissible}');
+    if (item.impedanceNominale != null) content.writeln('Impédance nominale: ${item.impedanceNominale}');
+    if (item.impedanceOhms != null) content.writeln('Impédance: ${item.impedanceOhms} Ω');
+    if (item.powerRmsW != null) content.writeln('Puissance RMS: ${item.powerRmsW} W');
+    if (item.powerProgramW != null) content.writeln('Puissance Program: ${item.powerProgramW} W');
+    if (item.powerPeakW != null) content.writeln('Puissance Peak: ${item.powerPeakW} W');
+    if (item.maxVoltageVrms != null) content.writeln('Tension max: ${item.maxVoltageVrms} Vrms');
+    content.writeln('');
+    
+    // Commentaire utilisateur
+    final comment = _getCommentForItem(item);
+    if (comment.isNotEmpty) {
+      content.writeln(comment);
+      content.writeln('');
+    }
+    
+    // Lentilles de projection
+    if (item.optiques != null && item.optiques!.isNotEmpty) {
+      for (final optique in item.optiques!) {
+        content.writeln('• ${optique}');
+      }
+      content.writeln('');
+    }
+    
+    return content.toString();
+  }
+
+  void _showCommentDialog(CatalogueItem item) {
+    final TextEditingController commentController = TextEditingController();
+    final String commentKey = '${item.marque}_${item.produit}';
+    
+    // Charger le commentaire existant s'il y en a un
+    final existingComment = _comments[commentKey] ?? '';
+    commentController.text = existingComment;
+    
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          backgroundColor: Theme.of(context).brightness == Brightness.dark
+              ? const Color(0xFF0A1128)
+              : Colors.white,
+          title: Row(
+            children: [
+              Icon(
+                Icons.chat_bubble_outline,
+                color: Theme.of(context).brightness == Brightness.dark
+                    ? Colors.lightBlue[300]
+                    : const Color(0xFF0A1128),
+              ),
+              const SizedBox(width: 8),
+              Text(
+                'Commentaire',
+                style: TextStyle(
+                  color: Theme.of(context).brightness == Brightness.dark
+                      ? Colors.white
+                      : Colors.black,
+                ),
+              ),
+            ],
+          ),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                '${item.marque} - ${item.produit}',
+                style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  color: Theme.of(context).brightness == Brightness.dark
+                      ? Colors.white
+                      : Colors.black,
+                ),
+              ),
+              const SizedBox(height: 16),
+              TextField(
+                controller: commentController,
+                maxLines: 4,
+                decoration: InputDecoration(
+                  hintText: 'Ajoutez votre commentaire...',
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  filled: true,
+                  fillColor: Theme.of(context).brightness == Brightness.dark
+                      ? Colors.grey[800]
+                      : Colors.grey[100],
+                ),
+                style: TextStyle(
+                  color: Theme.of(context).brightness == Brightness.dark
+                      ? Colors.white
+                      : Colors.black,
+                ),
+              ),
+            ],
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(),
+              child: Text(
+                'Annuler',
+                style: TextStyle(
+                  color: Theme.of(context).brightness == Brightness.dark
+                      ? Colors.grey[400]
+                      : Colors.grey[600],
+                ),
+              ),
+            ),
+            ElevatedButton(
+              onPressed: () {
+                // Sauvegarder le commentaire
+                setState(() {
+                  if (commentController.text.trim().isEmpty) {
+                    _comments.remove(commentKey);
+                  } else {
+                    _comments[commentKey] = commentController.text.trim();
+                  }
+                });
+                _saveComments();
+                
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text(commentController.text.trim().isEmpty 
+                        ? 'Commentaire supprimé' 
+                        : 'Commentaire sauvegardé'),
+                    backgroundColor: Colors.green,
+                  ),
+                );
+                Navigator.of(context).pop();
+              },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Theme.of(context).brightness == Brightness.dark
+                    ? Colors.lightBlue[300]
+                    : const Color(0xFF0A1128),
+                foregroundColor: Colors.white,
+              ),
+              child: const Text('Sauvegarder'),
+            ),
+          ],
+        );
+      },
     );
   }
 
@@ -439,9 +925,6 @@ class _CataloguePageState extends ConsumerState<CataloguePage> {
 
   @override
   Widget build(BuildContext context) {
-    final loc = AppLocalizations.of(context)!;
-    final catalogueService = ref.watch(catalogueServiceProvider);
-    final items = ref.watch(catalogueProvider);
 
     return Scaffold(
       appBar: const CustomAppBar(
@@ -450,7 +933,7 @@ class _CataloguePageState extends ConsumerState<CataloguePage> {
       body: Stack(
         children: [
           Opacity(
-            opacity: 0.15,
+            opacity: 0.1,
             child: Container(
               decoration: const BoxDecoration(
                 image: DecorationImage(
@@ -460,42 +943,300 @@ class _CataloguePageState extends ConsumerState<CataloguePage> {
               ),
             ),
           ),
-          if (catalogueService.isLoading)
-            const Center(
+          SafeArea(
+            child: Column(
+              children: [
+                Container(
+                  margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+                  padding: const EdgeInsets.symmetric(vertical: 2),
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: TabBar(
+                    controller: _tabController,
+                    indicatorColor: Theme.of(context).brightness == Brightness.dark 
+                        ? Colors.lightBlue[300]  // Bleu ciel en mode nuit
+                        : const Color(0xFF0A1128),  // Bleu nuit en mode jour
+                    indicatorWeight: 3,
+                    labelColor: Theme.of(context).brightness == Brightness.dark 
+                        ? Colors.lightBlue[300]  // Bleu ciel en mode nuit
+                        : const Color(0xFF0A1128),  // Bleu nuit en mode jour
+                    unselectedLabelColor: Colors.grey,
+                    tabs: [
+                      Tab(
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Icon(
+                              Icons.list,
+                              size: 16,
+                              color: Theme.of(context).brightness == Brightness.dark
+                                  ? Colors.lightBlue[300]  // Bleu ciel en mode nuit
+                                  : const Color(0xFF0A1128),  // Bleu nuit en mode jour
+                            ),
+                            const SizedBox(width: 4),
+                            Text(
+                              'Catalogue AV',
+                              style: TextStyle(
+                                fontSize: 14,
+                                fontWeight: FontWeight.bold,
+                                color: Theme.of(context).brightness == Brightness.dark
+                                    ? Colors.lightBlue[300]  // Bleu ciel en mode nuit
+                                    : const Color(0xFF0A1128),  // Bleu nuit en mode jour
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                Expanded(
+                  child: Padding(
+                    padding: const EdgeInsets.only(top: 40), // Descendu de 10 à 40 (+30px)
+                    child: TabBarView(
+                      controller: _tabController,
+                      children: [
+                        _buildCatalogueContent(),
+                      ],
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+          // PresetWidget fixe sous le titre - centré et transparent
+          Positioned(
+            top: 70, // Descendu de 60 à 70 (+10px)
+            left: 0,
+            right: 0,
+            child: Center(
+              child: Container(
+                color: Colors.transparent, // Fond complètement transparent
+                child: const PresetWidget(
+                  loadOnInit: true,
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
+      bottomNavigationBar: const UniformBottomNavBar(currentIndex: 0),
+    );
+  }
+
+  // Méthode helper pour vérifier si un item a des données à afficher
+  bool _hasDataToShow(CatalogueItem item) {
+    return item.marque.isNotEmpty ||
+           item.description.isNotEmpty ||
+           item.taille != null ||
+           item.dimensions.isNotEmpty ||
+           item.poids.isNotEmpty ||
+           item.conso.isNotEmpty ||
+           item.resolutionDalle != null ||
+           item.resolution != null ||
+           item.pitch != null ||
+           item.angle != null ||
+           item.lux != null ||
+           item.lumens != null ||
+           item.definition != null ||
+           item.dmxMax != null ||
+           item.dmxMini != null ||
+           item.puissanceAdmissible != null ||
+           item.impedanceNominale != null ||
+           item.impedanceOhms != null ||
+           item.powerRmsW != null ||
+           item.powerProgramW != null ||
+           item.powerPeakW != null ||
+           item.maxVoltageVrms != null ||
+           (item.optiques != null && item.optiques!.isNotEmpty);
+  }
+
+  // Méthode helper pour afficher une caractéristique
+  Widget _buildCharacteristicRow(String label, String value) {
+    // Nettoyer la valeur pour supprimer les deux-points en fin de chaîne
+    String cleanValue = value.trim();
+    
+    // Supprimer les deux-points en fin de chaîne
+    while (cleanValue.endsWith(':')) {
+      cleanValue = cleanValue.substring(0, cleanValue.length - 1).trim();
+    }
+    
+    // Supprimer les espaces multiples
+    cleanValue = cleanValue.replaceAll(RegExp(r'\s+'), ' ');
+    
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 2),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          SizedBox(
+            width: 120,
+            child: Text(
+              '$label :',
+              style: Theme.of(context)
+                  .extension<ResultContainerTheme>()
+                  ?.textStyle ??
+                  Theme.of(context)
+                      .textTheme
+                      .bodyMedium!
+                      .copyWith(
+                        color: Colors.white70,
+                        fontWeight: FontWeight.w500,
+                      ),
+            ),
+          ),
+          Expanded(
+            child: Text(
+              cleanValue,
+              style: Theme.of(context)
+                  .extension<ResultContainerTheme>()
+                  ?.textStyle ??
+                  Theme.of(context)
+                      .textTheme
+                      .bodyMedium!
+                      .copyWith(color: Colors.white),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  // Méthode helper pour afficher la description sur toute la largeur
+  Widget _buildDescriptionRow(String label, String value) {
+    // Nettoyer la valeur pour supprimer les deux-points en fin de chaîne
+    String cleanValue = value.trim();
+    
+    // Supprimer les deux-points en fin de chaîne
+    while (cleanValue.endsWith(':')) {
+      cleanValue = cleanValue.substring(0, cleanValue.length - 1).trim();
+    }
+    
+    // Supprimer les espaces multiples
+    cleanValue = cleanValue.replaceAll(RegExp(r'\s+'), ' ');
+    
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 2),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            '$label :',
+            style: Theme.of(context)
+                .extension<ResultContainerTheme>()
+                ?.textStyle ??
+                Theme.of(context)
+                    .textTheme
+                    .bodyMedium!
+                    .copyWith(
+                      color: Colors.white70,
+                      fontWeight: FontWeight.w500,
+                    ),
+          ),
+          const SizedBox(height: 4),
+          Text(
+            cleanValue,
+            style: Theme.of(context)
+                .extension<ResultContainerTheme>()
+                ?.textStyle ??
+                Theme.of(context)
+                    .textTheme
+                    .bodyMedium!
+                    .copyWith(color: Colors.white),
+          ),
+        ],
+      ),
+    );
+  }
+
+  // Méthode helper pour afficher la section lentilles de projection
+  Widget _buildOptiquesSection(List<Lens> optiques) {
+    final loc = AppLocalizations.of(context)!;
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          loc.catalogue_lensesAvailable,
+          style: Theme.of(context)
+              .extension<ResultContainerTheme>()
+              ?.textStyle ??
+              Theme.of(context)
+                  .textTheme
+                  .bodyMedium!
+                  .copyWith(
+                    color: Colors.white70,
+                    fontWeight: FontWeight.w600,
+                  ),
+        ),
+        const SizedBox(height: 4),
+        ...optiques.map((optique) => Padding(
+          padding: const EdgeInsets.only(left: 16, top: 2),
+          child: Text(
+            '• ${optique.reference} - ${loc.catalogue_projectionRatio}: ${optique.ratio}',
+            style: Theme.of(context)
+                .extension<ResultContainerTheme>()
+                ?.textStyle ??
+                Theme.of(context)
+                    .textTheme
+                    .bodySmall!
+                    .copyWith(color: Colors.white70),
+          ),
+        )).toList(),
+        if (optiques.any((optique) => optique.notes != null && optique.notes!.isNotEmpty))
+          Padding(
+            padding: const EdgeInsets.only(left: 16, top: 4),
+            child: Text(
+              'Notes: ${optiques.where((optique) => optique.notes != null && optique.notes!.isNotEmpty).map((optique) => optique.notes).join(', ')}',
+              style: Theme.of(context)
+                  .extension<ResultContainerTheme>()
+                  ?.textStyle ??
+                  Theme.of(context)
+                      .textTheme
+                      .bodySmall!
+                      .copyWith(color: Colors.white60, fontStyle: FontStyle.italic),
+            ),
+          ),
+      ],
+    );
+  }
+
+  Widget _buildCatalogueContent() {
+
+    if (isLoading) {
+      return const Center(
               child: CircularProgressIndicator(),
-            )
-          else if (catalogueService.error != null)
-            Center(
+      );
+    } else if (error != null) {
+      return Center(
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Text(
-                    catalogueService.error!,
+                    error!,
                     style: const TextStyle(color: Colors.red),
                     textAlign: TextAlign.center,
                   ),
                   const SizedBox(height: 16),
                   ElevatedButton(
                     onPressed: () {
-                      ref.read(catalogueServiceProvider).loadCatalogue();
+                      setState(() {
+                        isLoading = true;
+                        error = null;
+                      });
+                      ref.read(catalogueProvider.notifier).loadCatalogue();
                     },
                     child: const Text('Réessayer'),
                   ),
                 ],
               ),
-            )
-          else if (items.isEmpty)
-            const Center(child: Text('Aucun élément dans le catalogue'))
-          else
-            SafeArea(
-              child: SingleChildScrollView(
+      );
+    } else {
+      return SingleChildScrollView(
                 child: Column(
                   children: [
                     const SizedBox(height: 12),
-                    const PresetWidget(
-                      loadOnInit: true,
-                    ),
-                    const SizedBox(height: 6),
                     Container(
                       margin: const EdgeInsets.symmetric(
                           horizontal: 16, vertical: 4),
@@ -512,30 +1253,30 @@ class _CataloguePageState extends ConsumerState<CataloguePage> {
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 TextField(
+                                  controller: _searchController,
+                                  textDirection: TextDirection.ltr,
+                                  textAlign: TextAlign.left,
                                   style: Theme.of(context).textTheme.bodyMedium,
                                   decoration: InputDecoration(
-                                    hintText: loc.catalogPage_search,
-                                    hintStyle: Theme.of(context)
-                                        .textTheme
-                                        .bodyMedium!
-                                        .copyWith(
-                                            color: Theme.of(context)
-                                                        .brightness ==
-                                                    Brightness.dark
-                                                ? Colors.white.withOpacity(0.7)
-                                                : Colors.black
-                                                    .withOpacity(0.7)),
-                                    prefixIcon: Icon(Icons.search,
-                                        color: Theme.of(context).brightness ==
-                                                Brightness.dark
-                                            ? Colors.white
-                                            : Colors.black,
-                                        size: 20),
+                                    hintText: AppLocalizations.of(context)!.catalogPage_search,
+                                    hintStyle: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                      color: Theme.of(context).brightness == Brightness.dark
+                                          ? Colors.white.withOpacity(0.7)
+                                          : Colors.black.withOpacity(0.7),
+                                    ),
+                                    prefixIcon: Icon(
+                                      Icons.search,
+                                      color: Theme.of(context).brightness == Brightness.dark
+                                          ? Colors.white
+                                          : Colors.black,
+                                      size: 20,
+                                    ),
                                     filled: true,
                                     fillColor: Colors.transparent,
                                     border: InputBorder.none,
+                                    enabledBorder: InputBorder.none,
+                                    focusedBorder: InputBorder.none,
                                   ),
-                                  onChanged: _handleSearch,
                                 ),
                                 if (searchQuery.length >= 3 &&
                                     filteredItems.isNotEmpty)
@@ -571,6 +1312,10 @@ class _CataloguePageState extends ConsumerState<CataloguePage> {
                                               selectedProduct = item.produit;
                                               searchQuery = '';
                                             });
+                                            _savePersistedState();
+                                            
+                                            // Focus automatique vers le résultat
+                                            _scrollToResult();
                                           },
                                           child: Padding(
                                             padding: const EdgeInsets.symmetric(
@@ -612,49 +1357,14 @@ class _CataloguePageState extends ConsumerState<CataloguePage> {
                                 Row(
                                   children: [
                                     Expanded(
-                                      child: DropdownButton<String>(
+                                      child: BorderLabeledDropdown<String>(
+                                        label: AppLocalizations.of(context)!.category,
                                         value: selectedCategory,
-                                        hint: Text('Catégorie',
-                                            style: Theme.of(context)
-                                                .textTheme
-                                                .bodyMedium!
-                                                .copyWith(
-                                                    color: Theme.of(context)
-                                                                .brightness ==
-                                                            Brightness.dark
-                                                        ? Colors.white
-                                                            .withOpacity(0.7)
-                                                        : Colors.black
-                                                            .withOpacity(0.7))),
-                                        dropdownColor:
-                                            Theme.of(context).brightness ==
-                                                    Brightness.dark
-                                                ? const Color(0xFF0A1128)
-                                                : Colors.white,
-                                        style: Theme.of(context)
-                                            .textTheme
-                                            .bodyMedium!
-                                            .copyWith(
-                                                color: Theme.of(context)
-                                                            .brightness ==
-                                                        Brightness.dark
-                                                    ? Colors.white
-                                                    : Colors.black),
                                         items: _categories
                                             .map((cat) => DropdownMenuItem(
                                                   value: cat,
                                                   child: Text(cat,
-                                                      style: Theme.of(context)
-                                                          .textTheme
-                                                          .bodyMedium!
-                                                          .copyWith(
-                                                              color: Theme.of(context)
-                                                                          .brightness ==
-                                                                      Brightness
-                                                                          .dark
-                                                                  ? Colors.white
-                                                                  : Colors
-                                                                      .black)),
+                                                      style: const TextStyle(fontSize: 11)),
                                                 ))
                                             .toList(),
                                         onChanged: _handleCategorySelection,
@@ -662,49 +1372,14 @@ class _CataloguePageState extends ConsumerState<CataloguePage> {
                                     ),
                                     const SizedBox(width: 8),
                                     Expanded(
-                                      child: DropdownButton<String>(
+                                      child: BorderLabeledDropdown<String>(
+                                        label: AppLocalizations.of(context)!.catalogPage_subCategory,
                                         value: selectedSubCategory,
-                                        hint: Text('Sous-catégorie',
-                                            style: Theme.of(context)
-                                                .textTheme
-                                                .bodyMedium!
-                                                .copyWith(
-                                                    color: Theme.of(context)
-                                                                .brightness ==
-                                                            Brightness.dark
-                                                        ? Colors.white
-                                                            .withOpacity(0.7)
-                                                        : Colors.black
-                                                            .withOpacity(0.7))),
-                                        dropdownColor:
-                                            Theme.of(context).brightness ==
-                                                    Brightness.dark
-                                                ? const Color(0xFF0A1128)
-                                                : Colors.white,
-                                        style: Theme.of(context)
-                                            .textTheme
-                                            .bodyMedium!
-                                            .copyWith(
-                                                color: Theme.of(context)
-                                                            .brightness ==
-                                                        Brightness.dark
-                                                    ? Colors.white
-                                                    : Colors.black),
                                         items: _subCategoriesForSelectedCategory
                                             .map((sub) => DropdownMenuItem(
                                                   value: sub,
                                                   child: Text(sub,
-                                                      style: Theme.of(context)
-                                                          .textTheme
-                                                          .bodyMedium!
-                                                          .copyWith(
-                                                              color: Theme.of(context)
-                                                                          .brightness ==
-                                                                      Brightness
-                                                                          .dark
-                                                                  ? Colors.white
-                                                                  : Colors
-                                                                      .black)),
+                                                      style: const TextStyle(fontSize: 11)),
                                                 ))
                                             .toList(),
                                         onChanged: _handleSubCategorySelection,
@@ -713,96 +1388,96 @@ class _CataloguePageState extends ConsumerState<CataloguePage> {
                                   ],
                                 ),
                                 const SizedBox(height: 8),
-                                DropdownButton<String>(
+                                BorderLabeledDropdown<String>(
+                                  label: AppLocalizations.of(context)!.brand,
                                   value: selectedBrand,
-                                  hint: Text('Marque',
-                                      style: Theme.of(context)
-                                          .textTheme
-                                          .bodyMedium!
-                                          .copyWith(
-                                              color: Theme.of(context)
-                                                          .brightness ==
-                                                      Brightness.dark
-                                                  ? Colors.white
-                                                      .withOpacity(0.7)
-                                                  : Colors.black
-                                                      .withOpacity(0.7))),
-                                  dropdownColor: Theme.of(context).brightness ==
-                                          Brightness.dark
-                                      ? const Color(0xFF0A1128)
-                                      : Colors.white,
-                                  style: Theme.of(context)
-                                      .textTheme
-                                      .bodyMedium!
-                                      .copyWith(
-                                          color: Theme.of(context).brightness ==
-                                                  Brightness.dark
-                                              ? Colors.white
-                                              : Colors.black),
-                                  isExpanded: true,
                                   items: _uniqueBrands
                                       .map((brand) => DropdownMenuItem(
                                             value: brand,
                                             child: Text(brand,
-                                                style: Theme.of(context)
-                                                    .textTheme
-                                                    .bodyMedium!
-                                                    .copyWith(
-                                                        color: Theme.of(context)
-                                                                    .brightness ==
-                                                                Brightness.dark
-                                                            ? Colors.white
-                                                            : Colors.black)),
+                                                style: const TextStyle(fontSize: 11)),
                                           ))
                                       .toList(),
                                   onChanged: _handleBrandSelection,
                                 ),
                                 const SizedBox(height: 8),
-                                DropdownButton<String>(
+                                BorderLabeledDropdown<String>(
+                                  label: AppLocalizations.of(context)!.product,
                                   value: selectedProduct,
-                                  hint: Text('Produit',
-                                      style: Theme.of(context)
-                                          .textTheme
-                                          .bodyMedium!
-                                          .copyWith(
-                                              color: Theme.of(context)
-                                                          .brightness ==
-                                                      Brightness.dark
-                                                  ? Colors.white
-                                                      .withOpacity(0.7)
-                                                  : Colors.black
-                                                      .withOpacity(0.7))),
-                                  dropdownColor: Theme.of(context).brightness ==
-                                          Brightness.dark
-                                      ? const Color(0xFF0A1128)
-                                      : Colors.white,
-                                  style: Theme.of(context)
-                                      .textTheme
-                                      .bodyMedium!
-                                      .copyWith(
-                                          color: Theme.of(context).brightness ==
-                                                  Brightness.dark
-                                              ? Colors.white
-                                              : Colors.black),
-                                  isExpanded: true,
                                   items: _productsForSelectedFilters
                                       .map((prod) => DropdownMenuItem(
                                             value: prod,
                                             child: Text(prod,
-                                                style: Theme.of(context)
-                                                    .textTheme
-                                                    .bodyMedium!
-                                                    .copyWith(
-                                                        color: Theme.of(context)
-                                                                    .brightness ==
-                                                                Brightness.dark
-                                                            ? Colors.white
-                                                            : Colors.black)),
+                                                style: const TextStyle(fontSize: 11)),
                                           ))
                                       .toList(),
                                   onChanged: _handleProductSelection,
                                 ),
                                 const SizedBox(height: 12),
+                                
+                                // Boutons d'action toujours visibles
+                                Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                            children: [
+                                    ActionButton(
+                                      icon: Icons.camera_alt,
+                                                onPressed: () {
+                                                  Navigator.push(
+                                                    context,
+                                                    MaterialPageRoute(
+                                                      builder: (context) =>
+                                                          const ArMeasurePage(),
+                                                    ),
+                                                  );
+                                                },
+                                      iconSize: 18,
+                                              ),
+                                              const SizedBox(width: 8),
+                                    ActionButton(
+                                      icon: Icons.add,
+                                                onPressed: () {
+                                                  if (selectedProduct != null) {
+                                                    final selectedItem =
+                                              filteredItems.firstWhere(
+                                                      (item) =>
+                                                item.produit == selectedProduct,
+                                            orElse: () => CatalogueItem(
+                                                        id: '',
+                                                        name: '',
+                                                        description: '',
+                                                        categorie: '',
+                                                        sousCategorie: '',
+                                                        marque: '',
+                                                        produit: '',
+                                                        dimensions: '',
+                                                        poids: '',
+                                                        conso: '',
+                                                      ),
+                                                    );
+                                          if (selectedItem.id.isNotEmpty) {
+                                            _showQuantityDialog(selectedItem);
+                                          }
+                                        } else {
+                                          ScaffoldMessenger.of(context).showSnackBar(
+                                            const SnackBar(
+                                              content: Text('Veuillez sélectionner un produit d\'abord'),
+                                            ),
+                                          );
+                                        }
+                                      },
+                                      iconSize: 18,
+                                              ),
+                                              const SizedBox(width: 8),
+                                    ActionButton(
+                                      icon: Icons.refresh,
+                                                onPressed: _resetFilters,
+                                      iconSize: 18,
+                                              ),
+                                            ],
+                                          ),
+                                          const SizedBox(height: 12),
+                                
+                                // Résultat du produit sélectionné
                                 if (selectedProduct != null &&
                                     selectedProduct!.isNotEmpty)
                                   Builder(
@@ -824,173 +1499,11 @@ class _CataloguePageState extends ConsumerState<CataloguePage> {
                                           conso: '',
                                         ),
                                       );
-                                      if (selectedItem.id.isEmpty) {
+                                      if (selectedItem.id.isEmpty || !_hasDataToShow(selectedItem)) {
                                         return const SizedBox();
                                       }
                                       return Column(
                                         children: [
-                                          Row(
-                                            mainAxisAlignment:
-                                                MainAxisAlignment.center,
-                                            children: [
-                                              ElevatedButton(
-                                                onPressed: () {
-                                                  Navigator.push(
-                                                    context,
-                                                    MaterialPageRoute(
-                                                      builder: (context) =>
-                                                          const ArMeasurePage(),
-                                                    ),
-                                                  );
-                                                },
-                                                style: ElevatedButton.styleFrom(
-                                                  backgroundColor: const Color(
-                                                          0xFF0A1128)
-                                                      .withAlpha(
-                                                          (0.5 * 255).round()),
-                                                  side: BorderSide(
-                                                      color: const Color(
-                                                              0xFF0A1128)
-                                                          .withAlpha((0.8 * 255)
-                                                              .round()),
-                                                      width: 1),
-                                                  padding: const EdgeInsets
-                                                      .symmetric(
-                                                      horizontal: 8,
-                                                      vertical: 8),
-                                                  shape: RoundedRectangleBorder(
-                                                    borderRadius:
-                                                        BorderRadius.circular(
-                                                            8),
-                                                  ),
-                                                ),
-                                                child: Row(
-                                                  mainAxisSize:
-                                                      MainAxisSize.min,
-                                                  children: [
-                                                    Image.asset(
-                                                      'assets/icons/tape_measure.png',
-                                                      width: 18,
-                                                      height: 18,
-                                                      color: Colors.white,
-                                                    ),
-                                                    const SizedBox(width: 6),
-                                                    const Text('AR',
-                                                        style: TextStyle(
-                                                            color:
-                                                                Colors.white)),
-                                                  ],
-                                                ),
-                                              ),
-                                              const SizedBox(width: 8),
-                                              ElevatedButton(
-                                                onPressed: () {
-                                                  if (selectedProduct != null) {
-                                                    final selectedItem =
-                                                        filteredItems
-                                                            .firstWhere(
-                                                      (item) =>
-                                                          item.produit ==
-                                                          selectedProduct,
-                                                      orElse: () =>
-                                                          CatalogueItem(
-                                                        id: '',
-                                                        name: '',
-                                                        description: '',
-                                                        categorie: '',
-                                                        sousCategorie: '',
-                                                        marque: '',
-                                                        produit: '',
-                                                        dimensions: '',
-                                                        poids: '',
-                                                        conso: '',
-                                                      ),
-                                                    );
-                                                    if (selectedItem
-                                                        .id.isNotEmpty) {
-                                                      _showQuantityDialog(
-                                                          selectedItem);
-                                                    }
-                                                  }
-                                                },
-                                                style: ElevatedButton.styleFrom(
-                                                  backgroundColor: const Color(
-                                                          0xFF0A1128)
-                                                      .withAlpha(
-                                                          (0.5 * 255).round()),
-                                                  side: BorderSide(
-                                                      color: const Color(
-                                                              0xFF0A1128)
-                                                          .withAlpha((0.8 * 255)
-                                                              .round()),
-                                                      width: 1),
-                                                  padding: const EdgeInsets
-                                                      .symmetric(
-                                                      horizontal: 8,
-                                                      vertical: 8),
-                                                  shape: RoundedRectangleBorder(
-                                                    borderRadius:
-                                                        BorderRadius.circular(
-                                                            8),
-                                                  ),
-                                                ),
-                                                child: Row(
-                                                  mainAxisSize:
-                                                      MainAxisSize.min,
-                                                  children: [
-                                                    const Icon(Icons.add,
-                                                        color: Colors.white,
-                                                        size: 18),
-                                                    const SizedBox(width: 6),
-                                                    const Text('Projet',
-                                                        style: TextStyle(
-                                                            color:
-                                                                Colors.white)),
-                                                  ],
-                                                ),
-                                              ),
-                                              const SizedBox(width: 8),
-                                              ElevatedButton(
-                                                onPressed: _resetFilters,
-                                                style: ElevatedButton.styleFrom(
-                                                  backgroundColor: const Color(
-                                                          0xFF0A1128)
-                                                      .withAlpha(
-                                                          (0.5 * 255).round()),
-                                                  side: BorderSide(
-                                                      color: const Color(
-                                                              0xFF0A1128)
-                                                          .withAlpha((0.8 * 255)
-                                                              .round()),
-                                                      width: 1),
-                                                  padding: const EdgeInsets
-                                                      .symmetric(
-                                                      horizontal: 8,
-                                                      vertical: 8),
-                                                  shape: RoundedRectangleBorder(
-                                                    borderRadius:
-                                                        BorderRadius.circular(
-                                                            8),
-                                                  ),
-                                                ),
-                                                child: Row(
-                                                  mainAxisSize:
-                                                      MainAxisSize.min,
-                                                  children: [
-                                                    const Icon(Icons.refresh,
-                                                        color: Colors.white,
-                                                        size: 18),
-                                                    const SizedBox(width: 6),
-                                                    const Text('Réinit',
-                                                        style: TextStyle(
-                                                            color:
-                                                                Colors.white)),
-                                                  ],
-                                                ),
-                                              ),
-                                            ],
-                                          ),
-                                          const SizedBox(height: 12),
                                           Container(
                                             key: _resultKey,
                                             width: double.infinity,
@@ -1031,79 +1544,146 @@ class _CataloguePageState extends ConsumerState<CataloguePage> {
                                                               color:
                                                                   Colors.white),
                                                 ),
+                                                const SizedBox(height: 12),
+                                                
+                                                // Informations de base
+                                                if (selectedItem.marque.isNotEmpty)
+                                                  _buildCharacteristicRow(AppLocalizations.of(context)!.catalogue_brand, selectedItem.marque),
+                                                if (selectedItem.description.isNotEmpty)
+                                                  _buildDescriptionRow(AppLocalizations.of(context)!.catalogue_description, selectedItem.description),
+                                                
                                                 const SizedBox(height: 8),
-                                                if (selectedItem
-                                                    .marque.isNotEmpty)
-                                                  Text(
-                                                      'Marque : ${selectedItem.marque}',
-                                                      style: Theme.of(context)
-                                                              .extension<
-                                                                  ResultContainerTheme>()
-                                                              ?.textStyle ??
-                                                          Theme.of(context)
-                                                              .textTheme
-                                                              .bodyMedium!
-                                                              .copyWith(
-                                                                  color: Colors
-                                                                      .white)),
-                                                if (selectedItem
-                                                    .description.isNotEmpty)
-                                                  Text(
-                                                      'Description : ${selectedItem.description}',
-                                                      style: Theme.of(context)
-                                                              .extension<
-                                                                  ResultContainerTheme>()
-                                                              ?.textStyle ??
-                                                          Theme.of(context)
-                                                              .textTheme
-                                                              .bodyMedium!
-                                                              .copyWith(
-                                                                  color: Colors
-                                                                      .white)),
-                                                if (selectedItem
-                                                    .dimensions.isNotEmpty)
-                                                  Text(
-                                                      'Dimensions : ${selectedItem.dimensions}',
-                                                      style: Theme.of(context)
-                                                              .extension<
-                                                                  ResultContainerTheme>()
-                                                              ?.textStyle ??
-                                                          Theme.of(context)
-                                                              .textTheme
-                                                              .bodyMedium!
-                                                              .copyWith(
-                                                                  color: Colors
-                                                                      .white)),
-                                                if (selectedItem
-                                                    .poids.isNotEmpty)
-                                                  Text(
-                                                      'Poids : ${selectedItem.poids}',
-                                                      style: Theme.of(context)
-                                                              .extension<
-                                                                  ResultContainerTheme>()
-                                                              ?.textStyle ??
-                                                          Theme.of(context)
-                                                              .textTheme
-                                                              .bodyMedium!
-                                                              .copyWith(
-                                                                  color: Colors
-                                                                      .white)),
-                                                if (selectedItem
-                                                    .conso.isNotEmpty)
-                                                  Text(
-                                                      'Consommation : ${selectedItem.conso}',
-                                                      style: Theme.of(context)
-                                                              .extension<
-                                                                  ResultContainerTheme>()
-                                                              ?.textStyle ??
-                                                          Theme.of(context)
-                                                              .textTheme
-                                                              .bodyMedium!
-                                                              .copyWith(
-                                                                  color: Colors
-                                                                      .white)),
+                                                
+                                                // Caractéristiques physiques
+                                                if (selectedItem.taille != null)
+                                                  _buildCharacteristicRow('Taille', '${selectedItem.taille}"'),
+                                                if (selectedItem.dimensions.isNotEmpty)
+                                                  _buildCharacteristicRow(AppLocalizations.of(context)!.catalogue_dimensions, selectedItem.dimensions),
+                                                if (selectedItem.poids.isNotEmpty)
+                                                  _buildCharacteristicRow(AppLocalizations.of(context)!.catalogue_weight, selectedItem.poids),
+                                                if (selectedItem.conso.isNotEmpty)
+                                                  _buildCharacteristicRow(AppLocalizations.of(context)!.catalogue_consumption, selectedItem.conso),
+                                                
+                                                const SizedBox(height: 8),
+                                                
+                                                // Caractéristiques techniques
+                                                if (selectedItem.resolutionDalle != null)
+                                                  _buildCharacteristicRow('Résolution dalle', selectedItem.resolutionDalle!),
+                                                if (selectedItem.resolution != null)
+                                                  _buildCharacteristicRow(AppLocalizations.of(context)!.catalogue_resolution, selectedItem.resolution!),
+                                                if (selectedItem.pitch != null)
+                                                  _buildCharacteristicRow(AppLocalizations.of(context)!.catalogue_pitch, selectedItem.pitch!),
+                                                
+                                                const SizedBox(height: 8),
+                                                
+                                                // Caractéristiques lumière
+                                                if (selectedItem.angle != null)
+                                                  _buildCharacteristicRow(AppLocalizations.of(context)!.catalogue_angle, selectedItem.angle!),
+                                                if (selectedItem.lux != null)
+                                                  _buildCharacteristicRow(AppLocalizations.of(context)!.catalogue_lux, selectedItem.lux!),
+                                                if (selectedItem.lumens != null)
+                                                  _buildCharacteristicRow(AppLocalizations.of(context)!.catalogue_lumens, selectedItem.lumens!),
+                                                if (selectedItem.definition != null)
+                                                  _buildCharacteristicRow(AppLocalizations.of(context)!.catalogue_definition, selectedItem.definition!),
+                                                
+                                                const SizedBox(height: 8),
+                                                
+                                                // Caractéristiques DMX
+                                                if (selectedItem.dmxMax != null)
+                                                  _buildCharacteristicRow(AppLocalizations.of(context)!.catalogue_dmxMax, selectedItem.dmxMax!),
+                                                if (selectedItem.dmxMini != null)
+                                                  _buildCharacteristicRow(AppLocalizations.of(context)!.catalogue_dmxMini, selectedItem.dmxMini!),
+                                                
+                                                const SizedBox(height: 8),
+                                                
+                                                // Caractéristiques audio
+                                                if (selectedItem.puissanceAdmissible != null)
+                                                  _buildCharacteristicRow(AppLocalizations.of(context)!.catalogue_powerAdmissible, selectedItem.puissanceAdmissible!),
+                                                if (selectedItem.impedanceNominale != null)
+                                                  _buildCharacteristicRow(AppLocalizations.of(context)!.catalogue_impedanceNominal, selectedItem.impedanceNominale!),
+                                                if (selectedItem.impedanceOhms != null)
+                                                  _buildCharacteristicRow(AppLocalizations.of(context)!.catalogue_impedance, '${selectedItem.impedanceOhms} Ω'),
+                                                if (selectedItem.powerRmsW != null)
+                                                  _buildCharacteristicRow(AppLocalizations.of(context)!.catalogue_powerRms, '${selectedItem.powerRmsW} W'),
+                                                if (selectedItem.powerProgramW != null)
+                                                  _buildCharacteristicRow(AppLocalizations.of(context)!.catalogue_powerProgram, '${selectedItem.powerProgramW} W'),
+                                                if (selectedItem.powerPeakW != null)
+                                                  _buildCharacteristicRow(AppLocalizations.of(context)!.catalogue_powerPeak, '${selectedItem.powerPeakW} W'),
+                                                if (selectedItem.maxVoltageVrms != null)
+                                                  _buildCharacteristicRow(AppLocalizations.of(context)!.catalogue_maxVoltage, '${selectedItem.maxVoltageVrms} Vrms'),
+                                                
+                                                const SizedBox(height: 8),
+                                                
+                                                // Lentilles de projection (pour projecteurs vidéo)
+                                                if (selectedItem.optiques != null && selectedItem.optiques!.isNotEmpty)
+                                                  _buildOptiquesSection(selectedItem.optiques!),
+                                                
+                                                const SizedBox(height: 4),
+                                                
+                                                // Commentaire utilisateur
+                                                if (_getCommentForItem(selectedItem).isNotEmpty) ...[
+                                                  const SizedBox(height: 12),
+                                                  Container(
+                                                    width: double.infinity,
+                                                    padding: const EdgeInsets.all(12),
+    decoration: BoxDecoration(
+                                                      color: Theme.of(context).brightness == Brightness.dark
+                                                          ? Colors.blue[900]?.withOpacity(0.3)
+                                                          : Colors.blue[50],
+                                                      borderRadius: BorderRadius.circular(8),
+                                                      border: Border.all(
+                                                        color: Theme.of(context).brightness == Brightness.dark
+                                                            ? Colors.lightBlue[300]!
+                                                            : Colors.blue[300]!,
+                                                        width: 1,
+                                                      ),
+    ),
+    child: Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+                                                        Icon(
+                                                          Icons.chat_bubble_outline,
+                                                          size: 16,
+                                                          color: Theme.of(context).brightness == Brightness.dark
+                                                              ? Colors.lightBlue[300]
+                                                              : Colors.blue[700],
+                                                        ),
+                                                        const SizedBox(height: 6),
+                                                        Text(
+                                                          _getCommentForItem(selectedItem),
+                                                          style: TextStyle(
+                                                            fontSize: 13,
+                                                            color: Theme.of(context).brightness == Brightness.dark
+                                                                ? Colors.white
+                                                                : Colors.black87,
+                                                          ),
+                                                        ),
+                                                      ],
+                                                    ),
+                                                  ),
+                                                ],
                                               ],
                                             ),
+                                          ),
+                                          
+                                          // Boutons d'action dans le cadre résultat
+        const SizedBox(height: 8),
+                                          Row(
+                                            mainAxisAlignment: MainAxisAlignment.center,
+                                            children: [
+                                              // Bouton Commentaire (icône uniquement)
+                                              ActionButton.comment(
+                                                onPressed: () => _showCommentDialog(selectedItem),
+                                                iconSize: 28,
+                                              ),
+                                              const SizedBox(width: 20),
+                                              // Bouton Export
+                                              ExportWidget(
+                                                title: 'Catalogue AV Wallet',
+                                                content: _buildExportContent(selectedItem),
+                                                fileName: 'catalogue_${DateTime.now().millisecondsSinceEpoch}',
+                                              ),
+                                            ],
                                           ),
                                         ],
                                       );
@@ -1117,234 +1697,7 @@ class _CataloguePageState extends ConsumerState<CataloguePage> {
                     ),
                   ],
                 ),
-              ),
-            ),
-          Positioned(
-            right: 16,
-            bottom: 16,
-            child: FloatingActionButton(
-              onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                      builder: (context) => const CalculProjetPage()),
-                );
-              },
-              backgroundColor: const Color(0xFF0A1128).withOpacity(0.5),
-              child: const Icon(Icons.visibility, color: Colors.white),
-            ),
-          ),
-          if (_isAnimating && _startPosition != null && _startSize != null)
-            AnimatedCardShrink(
-              startPosition: _startPosition!,
-              endPosition: const Offset(16, 16), // Position du preset widget
-              startSize: _startSize!,
-              onCompleted: () {
-                setState(() {
-                  _isAnimating = false;
-                  _startPosition = null;
-                  _startSize = null;
-                });
-              },
-            ),
-        ],
-      ),
-      bottomNavigationBar: BottomNavigationBar(
-        type: BottomNavigationBarType.fixed,
-        backgroundColor: Colors.blueGrey[900],
-        selectedItemColor: Colors.white,
-        unselectedItemColor: Colors.grey,
-        currentIndex: 0,
-        onTap: (index) {
-          final pages = [
-            const CataloguePage(),
-            const LightMenuPage(),
-            const StructureMenuPage(),
-            const SoundMenuPage(),
-            const VideoMenuPage(),
-            const ElectriciteMenuPage(),
-            const DiversMenuPage(),
-          ];
-
-          Offset beginOffset;
-          if (index == 0 || index == 1) {
-            beginOffset = const Offset(-1.0, 0.0);
-          } else if (index == 5 || index == 6) {
-            beginOffset = const Offset(1.0, 0.0);
-          } else {
-            beginOffset = Offset.zero;
-          }
-
-          Navigator.push(
-            context,
-            PageRouteBuilder(
-              pageBuilder: (_, __, ___) => pages[index],
-              transitionsBuilder: (_, animation, __, child) {
-                if (beginOffset == Offset.zero) {
-                  return FadeTransition(opacity: animation, child: child);
-                } else {
-                  final tween = Tween(begin: beginOffset, end: Offset.zero)
-                      .chain(CurveTween(curve: Curves.easeInOut));
-                  return SlideTransition(
-                      position: animation.drive(tween), child: child);
-                }
-              },
-              transitionDuration: const Duration(milliseconds: 400),
-            ),
-          );
-        },
-        items: [
-          const BottomNavigationBarItem(
-              icon: Icon(Icons.list), label: 'Catalogue'),
-          const BottomNavigationBarItem(
-              icon: Icon(Icons.lightbulb), label: 'Lumière'),
-          BottomNavigationBarItem(
-              icon: Image.asset('assets/truss_icon_grey.png',
-                  width: 24, height: 24),
-              label: 'Structure'),
-          const BottomNavigationBarItem(
-              icon: Icon(Icons.volume_up), label: 'Son'),
-          const BottomNavigationBarItem(
-              icon: Icon(Icons.videocam), label: 'Vidéo'),
-          const BottomNavigationBarItem(
-              icon: Icon(Icons.bolt), label: 'Électricité'),
-          const BottomNavigationBarItem(
-              icon: Icon(Icons.more_horiz), label: 'Divers'),
-        ],
-      ),
     );
   }
-
-  Future<void> _showAddItemDialog(BuildContext context) async {
-    final result = await showDialog<CatalogueItem>(
-      context: context,
-      builder: (context) => const CatalogueItemForm(),
-    );
-
-    if (result != null) {
-      await ref.read(catalogueServiceProvider).addItem(result);
-    }
-  }
-
-  Future<void> _showEditItemDialog(
-      BuildContext context, CatalogueItem item) async {
-    final result = await showDialog<CatalogueItem>(
-      context: context,
-      builder: (context) => CatalogueItemForm(item: item),
-    );
-
-    if (result != null) {
-      await ref.read(catalogueServiceProvider).updateItem(result);
-    }
-  }
-
-  Future<void> _showDeleteConfirmation(
-      BuildContext context, CatalogueItem item) async {
-    final confirmed = await showDialog<bool>(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Confirmer la suppression'),
-        content: Text('Voulez-vous vraiment supprimer ${item.name} ?'),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context, false),
-            child: const Text('Annuler'),
-          ),
-          TextButton(
-            onPressed: () => Navigator.pop(context, true),
-            child: const Text('Supprimer'),
-          ),
-        ],
-      ),
-    );
-
-    if (confirmed == true) {
-      await ref.read(catalogueServiceProvider).deleteItem(item.id);
-    }
-  }
-}
-
-class AnimatedCardShrink extends StatefulWidget {
-  final Offset startPosition;
-  final Offset endPosition;
-  final Size startSize;
-  final VoidCallback onCompleted;
-
-  const AnimatedCardShrink({
-    super.key,
-    required this.startPosition,
-    required this.endPosition,
-    required this.startSize,
-    required this.onCompleted,
-  });
-
-  @override
-  _AnimatedCardShrinkState createState() => _AnimatedCardShrinkState();
-}
-
-class _AnimatedCardShrinkState extends State<AnimatedCardShrink>
-    with SingleTickerProviderStateMixin {
-  late AnimationController _controller;
-  late Animation<double> _scaleAnimation;
-  late Animation<Offset> _positionAnimation;
-
-  @override
-  void initState() {
-    super.initState();
-    _controller = AnimationController(
-      vsync: this,
-      duration: const Duration(milliseconds: 600),
-    );
-
-    _positionAnimation = Tween<Offset>(
-      begin: widget.startPosition,
-      end: widget.endPosition,
-    ).animate(CurvedAnimation(parent: _controller, curve: Curves.easeInOut));
-
-    _scaleAnimation = Tween<double>(
-      begin: 1.0,
-      end: 0.0,
-    ).animate(CurvedAnimation(parent: _controller, curve: Curves.easeInOut));
-
-    _controller.forward().then((_) {
-      widget.onCompleted();
-    });
-  }
-
-  @override
-  void dispose() {
-    _controller.dispose();
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return AnimatedBuilder(
-      animation: _controller,
-      builder: (context, child) {
-        return Positioned(
-          left: _positionAnimation.value.dx,
-          top: _positionAnimation.value.dy,
-          child: Transform.scale(
-            scale: _scaleAnimation.value,
-            child: Opacity(
-              opacity: _scaleAnimation.value,
-              child: Container(
-                width: widget.startSize.width,
-                height: widget.startSize.height,
-                decoration: BoxDecoration(
-                  color: const Color(0xFF0A1128).withOpacity(0.5),
-                  borderRadius: BorderRadius.circular(12),
-                  border: Border.all(color: Colors.white, width: 2),
-                ),
-                child: const Center(
-                  child: Icon(Icons.notes, color: Colors.white),
-                ),
-              ),
-            ),
-          ),
-        );
-      },
-    );
   }
 }

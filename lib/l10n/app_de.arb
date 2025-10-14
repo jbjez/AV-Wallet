@@ -64,6 +64,10 @@
   "lightPage_universe": "UNIVERSUM",
   "lightPage_fixture": "LEUCHTE",
   "lightPage_dmxChannelsUsed": "DMX-Kanäle verwendet",
+  "search_speaker": "Nach einem Lautsprecher suchen...",
+  "view_preset": "Preset anzeigen",
+  "rename_preset": "Preset umbenennen",
+  "delete_preset": "Preset löschen",
   "lightPage_channel": "Kanal",
   "lightPage_channels": "Kanäle",
 
@@ -93,6 +97,16 @@
   "soundPage_confirm": "Bestätigen",
   "soundPage_addToCart": "In den Warenkorb",
   "soundPage_preferredAmplifier": "Bevorzugter Verstärker",
+  "soundPage_noSpeakersSelected": "Keine Lautsprecher ausgewählt",
+  "soundPage_power": "Leistung",
+  "soundPage_amplifier": "Verstärker",
+  "soundPage_capacity": "Kapazität",
+  "soundPage_speakersPerChannel": "Lautsprecher/Kanal",
+  "soundPage_speakersPerAmp": "Lautsprecher/Verstärker",
+  "soundPage_amplifiersRequired": "Verstärker erforderlich",
+  "soundPage_with": "mit",
+  "soundPage_noPresetSelected": "Kein Preset ausgewählt",
+  "rider_technical_title": "Technischer Rider",
 
   "@_videoPage": {
     "description": "Videoseite Abschnitt"
@@ -106,7 +120,7 @@
   "videoPage_selectProduct": "Produkt auswählen",
   "videoPage_format": "Format",
   "videoPage_model": "Modell",
-  "videoPage_selectLedWall": "LED-Wand auswählen",
+  "videoPage_selectLedWall": "LED-Panel auswählen",
   "videoPage_brand": "Marke",
   "videoPage_projectionCalculation": "Projektionsberechnung",
   "videoPage_ledWallCalculation": "LED-Wandberechnung",
@@ -123,6 +137,7 @@
     "description": "Strukturseite Abschnitt"
   },
   "structurePage_title": "Struktur",
+  "structurePage_projectWeightTab": "Gewicht Projekt",
   "selectStructure": "Struktur auswählen",
   "distance_label": "{distance} m",
   "@distance_label": {
@@ -277,6 +292,61 @@
   "networkPage_signalStrength": "Signalstärke",
   "networkPage_frequency": "Frequenz",
 
+  "@_speedtest": {
+    "description": "Geschwindigkeitstest Abschnitt"
+  },
+  "speedtest_ready": "Bereit",
+  "speedtest_downloading": "Download...",
+  "speedtest_uploading": "Upload...",
+  "speedtest_completed": "Abgeschlossen",
+  "speedtest_download": "Download",
+  "speedtest_upload": "Upload",
+  "speedtest_running": "Läuft...",
+  "speedtest_start": "Starten (8s)",
+  "speedtest_mbps": "Mbps",
+  "speedtest_speed": "Geschwindigkeit",
+
+  "@_arMeasure": {
+    "description": "AR-Messung Abschnitt"
+  },
+  "arMeasure_photoAr": "Foto/AR",
+  "arMeasure_takePhotosAndMeasure": "Machen Sie Referenzfotos und starten Sie AR-Messungen",
+  "arMeasure_capturing": "Aufnahme...",
+  "arMeasure_photo": "Foto",
+  "arMeasure_unity": "Unity",
+  "arMeasure_photosAutoSaved": "Fotos werden automatisch im aktiven Projektordner gespeichert",
+  "arMeasure_photoSaved": "Foto im Projekt gespeichert!",
+  "arMeasure_captureError": "Fehler bei der Aufnahme",
+  "arMeasure_saveError": "Fehler beim Speichern",
+  "arMeasure_defaultProject": "Projekt",
+  "arMeasure_photoFileName": "Foto_AR_{projectName}_{timestamp}.jpg",
+
+  "@_bottomNavigation": {
+    "description": "Untere Navigationsleiste"
+  },
+  "bottomNav_catalogue": "Katalog",
+  "bottomNav_light": "Licht",
+  "bottomNav_structure": "Struktur",
+  "bottomNav_sound": "Ton",
+  "bottomNav_video": "Video",
+  "bottomNav_electricity": "Elektrizität",
+  "bottomNav_misc": "Verschiedenes",
+  "bottomNav_arMeasure": "AR Messung",
+
+  "@_subscription": {
+    "description": "Abonnement- und Zahlungsbereich"
+  },
+  "subscription_premium": "Premium",
+  "subscription_description": "Alle Funktionen freischalten",
+  "subscription_choose_plan": "Wählen Sie Ihren Plan",
+  "subscription_popular": "Beliebt",
+  "subscription_subscribe": "Abonnieren",
+  "subscription_free_trial": "Genießen Sie 30 Tage kostenlos",
+  "subscription_free_trial_started": "Kostenlose Testversion gestartet!",
+  "subscription_free_trial_error": "Fehler beim Starten der kostenlosen Testversion",
+  "subscription_security": "Sichere Zahlung",
+  "subscription_security_description": "Ihre Daten sind durch Bank-Level-Verschlüsselung geschützt",
+
   "@_settings": {
     "description": "Einstellungen Abschnitt"
   },
@@ -369,8 +439,8 @@
   "projectPage_enterQuantity": "Menge eingeben",
   "projectPage_confirm": "Bestätigen",
   "projectPage_cancel": "Abbrechen",
-  "projectPage_powerTabShort": "Leist.",
-  "projectPage_weightTabShort": "Gew.",
+  "projectPage_powerTabShort": "L",
+  "projectPage_weightTabShort": "G",
   "defaultProjectName": "Projekt",
   "defaultPresetName": "Voreinstellung",
   "newProject": "Neues Projekt",
@@ -456,5 +526,107 @@
   },
   "loginMenu_accountSettings": "Kontoeinstellungen",
   "loginMenu_myProjects": "Meine Projekte",
-  "loginMenu_logout": "Abmelden"
+  "loginMenu_logout": "Abmelden",
+
+  "@_dropdownLabels": {
+    "description": "Labels für Dropdown-Menüs"
+  },
+  "brand": "Marke",
+  "product": "Produkt",
+  "category": "Kategorie",
+  "subcategory": "Unterkategorie",
+  "model": "Modell",
+  "type": "Typ",
+  "quantity": "Menge",
+  "amplifier": "Verstärker",
+  "speaker": "Lautsprecher",
+  "microphone": "Mikrofon",
+  "stand": "Ständer",
+  "source": "Quelle",
+  "destination": "Ziel",
+  "lens": "Objektiv",
+  "projector": "Projektor",
+  "screen": "Bildschirm",
+  "cable": "Kabel",
+  "connector": "Stecker",
+  "power": "Leistung",
+  "voltage": "Spannung",
+  "current": "Strom",
+  "frequency": "Frequenz",
+  "impedance": "Impedanz",
+  "sensitivity": "Empfindlichkeit",
+  "weight": "Gewicht",
+  "dimensions": "Abmessungen",
+  "color": "Farbe",
+  "material": "Material",
+  "manufacturer": "Hersteller",
+  "country": "Land",
+
+  "@_structurePage": {
+    "description": "Übersetzungen der Strukturseite"
+  },
+  "structurePage_chargesTab": "Lasten",
+  "structurePage_projectWeightTab": "Projektgewicht",
+  "structurePage_distance": "Entfernung: {distance} m",
+  "structurePage_maxLoad": "Maximale Last: {value} kg{unit}",
+  "structurePage_structureWeight": "Strukturgewicht: {value} kg/m",
+  "structurePage_maxDeflection": "Maximale Durchbiegung: {value} mm",
+  "structurePage_deflectionRatio": "Durchbiegungsverhältnis: 1/{ratio}",
+  "structurePage_noPresetSelected": "Kein Preset ausgewählt",
+  "structurePage_structure": "Struktur:",
+  "structurePage_length": "Länge:",
+  "structurePage_chargeType": "Lasttyp:",
+  "structurePage_maxLoadTitle": "Maximale Last",
+  "structurePage_structureWeightTitle": "Strukturgewicht",
+  "structurePage_maxDeflectionTitle": "Maximale Durchbiegung",
+  "structurePage_deflectionRatioTitle": "Durchbiegungsverhältnis",
+  
+  "@_catalogueCharacteristics": {
+    "description": "Katalogproduktmerkmale"
+  },
+  "catalogue_brand": "Marke",
+  "catalogue_description": "Beschreibung",
+  "catalogue_dimensions": "Abmessungen",
+  "catalogue_weight": "Gewicht",
+  "catalogue_consumption": "Verbrauch",
+  "catalogue_angle": "Projektionswinkel",
+  "catalogue_lux": "Lux",
+  "catalogue_lumens": "Lumen",
+  "catalogue_definition": "Definition",
+  "catalogue_resolution": "Auflösung",
+  "catalogue_pitch": "Pitch",
+  "catalogue_dmxMax": "DMX Max",
+  "catalogue_dmxMini": "DMX Mini",
+  "catalogue_powerAdmissible": "Zulässige Leistung",
+  "catalogue_impedanceNominal": "Nennimpedanz",
+  "catalogue_impedance": "Impedanz",
+  "catalogue_powerRms": "RMS-Leistung",
+  "catalogue_powerProgram": "Programm-Leistung",
+  "catalogue_powerPeak": "Peak-Leistung",
+  "catalogue_maxVoltage": "Max. Spannung",
+  "catalogue_lensesAvailable": "Verfügbare Projektionslinsen",
+  "catalogue_projectionRatio": "Projektionsverhältnis",
+  
+  "@_videoLedResult": {
+    "description": "Übersetzungen für das LED-Tab-Ergebnis auf der Video-Seite"
+  },
+  "videoLedResult_dalles": "Panels",
+  "videoLedResult_espacePixellaire": "Pixel-Raum",
+  "videoLedResult_poidsTotal": "Gesamtgewicht",
+  "videoLedResult_consommationTotale": "Gesamtverbrauch",
+
+  "@_arMeasurePage": {
+    "description": "Übersetzungen für die AR-Messseite"
+  },
+  "arMeasurePage_title": "Foto/AR",
+  "arMeasurePage_description": "Nehmen Sie Referenzfotos auf und starten Sie AR-Messungen",
+  "arMeasurePage_photoButton": "Foto",
+  "arMeasurePage_unityButton": "Unity",
+  "arMeasurePage_captureInProgress": "Aufnahme...",
+  "arMeasurePage_cameraPermissionRequired": "Kamera-Berechtigungen erforderlich",
+  "arMeasurePage_photoSaved": "Foto im Projekt gespeichert!",
+  "arMeasurePage_errorMessage": "Ein Fehler ist aufgetreten",
+  "arMeasurePage_photosAutoSaved": "Fotos werden automatisch im aktiven Projektordner gespeichert",
+  "arMeasurePage_takeReferencePhotos": "Nehmen Sie Referenzfotos auf und starten Sie AR-Messungen",
+  "arMeasurePage_photosAutoSavedInfo": "Fotos werden automatisch im aktiven Projektordner gespeichert"
 }

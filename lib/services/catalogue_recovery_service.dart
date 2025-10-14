@@ -1,5 +1,4 @@
 import 'package:logging/logging.dart';
-import 'package:hive_flutter/hive_flutter.dart';
 import '../models/catalogue_item.dart';
 import 'hive_service.dart';
 import 'dart:convert';

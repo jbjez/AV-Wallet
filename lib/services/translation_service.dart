@@ -34,7 +34,7 @@ class TranslationService extends StateNotifier<Locale> {
   }
 
   // Traductions françaises (langue par défaut)
-  static const Map<String, String> _frenchTranslations = {
+  static final Map<String, String> _frenchTranslations = {
     // Navigation et menus
     'home': 'Accueil',
     'catalogue': 'Catalogue',
@@ -44,6 +44,32 @@ class TranslationService extends StateNotifier<Locale> {
     'structure': 'Structure',
     'electricity': 'Électricité',
     'divers': 'Divers',
+    
+    // Page lumière
+    'beam': 'Faisceau',
+    'beam_short': 'Fais.',
+    
+    // Page vidéo
+    'video_projection': 'Projection',
+    'video_led_wall': 'Mur LED',
+    'video_screens': 'Écrans',
+    'video_accessories': 'Accessoires',
+    'video_quantity': 'Quantité',
+    'video_cancel': 'Annuler',
+    'video_add': 'Ajouter',
+    'video_brand': 'Marque',
+    'video_choose_led_wall': 'Choisir un mur LED',
+    'video_width': 'Largeur',
+    'video_height': 'Hauteur',
+    'video_tiles': 'Dalles',
+    'video_pixel_pitch': 'Esp. pixellaire',
+    'video_total_pixels': 'Mpx',
+    'video_ratio': 'Ratio',
+    'video_total_weight': 'Poids total',
+    'video_total_consumption': 'Consommation totale',
+    'video_view_schema': 'Voir le schéma',
+    'video_calculation_done': 'Calcul effectué !',
+    'video_ar': 'AR',
     
     // Page de connexion
     'login': 'Connexion',
@@ -65,6 +91,69 @@ class TranslationService extends StateNotifier<Locale> {
     'continue_with_google': 'Continuer avec Google',
     'remember_me': 'Se souvenir de moi',
     'sign_in': 'Se connecter',
+    
+    // Authentification complète
+    'sign_up': 'S\'inscrire',
+    'create_account': 'Créer un compte',
+    'already_have_account': 'Vous avez déjà un compte ?',
+    'dont_have_account': 'Vous n\'avez pas de compte ?',
+    'or_continue_with': 'Ou continuer avec',
+    'google_sign_in': 'Google',
+    'biometric_auth': 'Auth. biométrique',
+    'face_recognition': 'Reconnaissance faciale',
+    'manage_projects': 'Gérer les projets',
+    'invalid_credentials': 'Email ou mot de passe incorrect',
+    'email_not_confirmed': 'Veuillez vérifier votre email avant de vous connecter',
+    'email_already_used': 'Cette adresse email est déjà utilisée',
+    'signup_failed': 'L\'inscription a échoué. Veuillez réessayer',
+    'verification_code_sent': 'Un code de vérification a été envoyé à',
+    'enter_verification_code': 'Entrez le code de vérification',
+    'verification_code': 'Code de vérification',
+    'verify_code': 'Vérifier le code',
+    'resend_code': 'Renvoyer le code',
+    'code_sent_successfully': 'Code de vérification renvoyé !',
+    'email_verified_successfully': 'Email vérifié avec succès !',
+    'invalid_verification_code': 'Code de vérification invalide ou expiré',
+    'code_must_be_6_digits': 'Le code doit contenir 6 chiffres',
+    'code_expires_in_10_minutes': 'Le code expire dans 10 minutes',
+    'check_inbox_instructions': 'Vérifiez votre boîte de réception et vos spams',
+    'back_to_login': 'Retour à la connexion',
+    'verification_instructions': 'Instructions',
+    'verification_instructions_text': 'Vérifiez votre boîte de réception\\nCherchez l\'email de AV Wallet\\nEntrez le code à 6 chiffres\\nLe code expire dans 10 minutes',
+    
+    // Messages d'erreur et de succès
+    'auth_service_loading': 'Service d\'authentification en cours de chargement',
+    'auth_service_error': 'Erreur du service d\'authentification',
+    'invalid_credentials_error': 'Email ou mot de passe incorrect',
+    'connection_error': 'Erreur de connexion',
+    'ok': 'OK',
+    'enter_email_first': 'Veuillez entrer votre email',
+    'reset_email_sent': 'Un email de réinitialisation a été envoyé. Vérifiez votre boîte de réception et vos spams.',
+    
+    // Messages de bienvenue et inscription
+    'welcome_to_avwallet': 'Bienvenue sur AVWallet',
+    'welcome_to_avwallet_with_name': 'Bienvenue sur AVWallet, {name}',
+    'premium_usage_remaining': 'Vous bénéficiez de l\'utilisation premium.\\nIl vous reste {count} utilisations',
+    'continue': 'Continuer',
+    'signup': 'Inscription',
+    
+    // Textes de connexion manquants
+    'remember_me': 'Se souvenir de moi',
+    'sign_up': 'S\'inscrire',
+    'already_have_account': 'Déjà un compte ?',
+    'dont_have_account': 'Vous n\'avez pas de compte ?',
+    'sign_in': 'Se connecter',
+    'or_continue_with': 'Ou continuer avec',
+    'google_sign_in': 'Se connecter avec Google',
+    
+    // Menu utilisateur
+    'account_settings': 'Paramètres du compte',
+    'manage_projects': 'Gérer les projets',
+    'logout': 'Se déconnecter',
+    'user_menu': 'Menu utilisateur',
+    
+    // Messages de vérification
+    'verification_code_sent_message': 'Un code de vérification a été envoyé',
     
     // Catalogue
     'search': 'Rechercher',
@@ -147,6 +236,19 @@ class TranslationService extends StateNotifier<Locale> {
     'channel': 'canal',
     'channels': 'canaux',
     'no_fixtures_selected': 'Aucun appareil sélectionné',
+    
+    // Vidéo - Projection
+    'projection_brand': 'Marque',
+    'projection_model': 'Modèle',
+    'projection_format': 'Format',
+    'projection_nb_projectors': 'Nb VP',
+    'projection_overlap': 'Recouv.',
+    'projection_image_width': 'Largeur image',
+    'projection_distance': 'Distance projecteur',
+    'projection_ratio': 'Ratio',
+    'projection_recommended_ratio': 'Ratio recommandé',
+    'projection_no_optics': 'Aucune optique disponible pour ce ratio',
+    'projection_overlap_percentage': 'Recouvrement',
     'selected_fixtures': 'Appareils sélectionnés',
     'save_preset': 'Sauvegarder le preset',
     'preset_name': 'Nom du preset',
@@ -181,6 +283,8 @@ class TranslationService extends StateNotifier<Locale> {
     'create_preset': 'Créer un preset',
     'edit_preset': 'Modifier le preset',
     'delete_preset': 'Supprimer le preset',
+    'view_preset': 'Voir preset',
+    'rename_preset': 'Renommer preset',
     'created_date': 'Date de création',
     'updated_date': 'Date de modification',
     'view_project': 'Voir projet',
@@ -291,7 +395,7 @@ class TranslationService extends StateNotifier<Locale> {
   };
 
   // Traductions anglaises
-  static const Map<String, String> _englishTranslations = {
+  static final Map<String, String> _englishTranslations = {
     // Navigation et menus
     'home': 'Home',
     'catalogue': 'Catalog',
@@ -301,6 +405,32 @@ class TranslationService extends StateNotifier<Locale> {
     'structure': 'Structure',
     'electricity': 'Electricity',
     'divers': 'Miscellaneous',
+    
+    // Page lumière
+    'beam': 'Beam',
+    'beam_short': 'Beam',
+    
+    // Page vidéo
+    'video_projection': 'Projection',
+    'video_led_wall': 'LED Wall',
+    'video_screens': 'Screens',
+    'video_accessories': 'Accessories',
+    'video_quantity': 'Quantity',
+    'video_cancel': 'Cancel',
+    'video_add': 'Add',
+    'video_brand': 'Brand',
+    'video_choose_led_wall': 'Choose LED wall',
+    'video_width': 'Width',
+    'video_height': 'Height',
+    'video_tiles': 'Tiles',
+    'video_pixel_pitch': 'Pixel pitch',
+    'video_total_pixels': 'Mpx',
+    'video_ratio': 'Ratio',
+    'video_total_weight': 'Total weight',
+    'video_total_consumption': 'Total consumption',
+    'video_view_schema': 'View schema',
+    'video_calculation_done': 'Calculation done!',
+    'video_ar': 'AR',
     
     // Page de connexion
     'login': 'Login',
@@ -322,6 +452,69 @@ class TranslationService extends StateNotifier<Locale> {
     'continue_with_google': 'Continue with Google',
     'remember_me': 'Remember me',
     'sign_in': 'Sign In',
+    
+    // Complete authentication
+    'sign_up': 'Sign Up',
+    'create_account': 'Create Account',
+    'already_have_account': 'Already have an account?',
+    'dont_have_account': 'Don\'t have an account?',
+    'or_continue_with': 'Or continue with',
+    'google_sign_in': 'Google',
+    'biometric_auth': 'Biometric Auth',
+    'face_recognition': 'Face Recognition',
+    'manage_projects': 'Manage Projects',
+    'invalid_credentials': 'Invalid email or password',
+    'email_not_confirmed': 'Please verify your email before signing in',
+    'email_already_used': 'This email address is already in use',
+    'signup_failed': 'Sign up failed. Please try again',
+    'verification_code_sent': 'A verification code has been sent to',
+    'enter_verification_code': 'Enter verification code',
+    'verification_code': 'Verification Code',
+    'verify_code': 'Verify Code',
+    'resend_code': 'Resend Code',
+    'code_sent_successfully': 'Verification code resent!',
+    'email_verified_successfully': 'Email verified successfully!',
+    'invalid_verification_code': 'Invalid or expired verification code',
+    'code_must_be_6_digits': 'Code must contain 6 digits',
+    'code_expires_in_10_minutes': 'Code expires in 10 minutes',
+    'check_inbox_instructions': 'Check your inbox and spam folder',
+    'back_to_login': 'Back to Login',
+    'verification_instructions': 'Instructions',
+    'verification_instructions_text': 'Check your inbox\\nLook for AV Wallet email\\nEnter the 6-digit code\\nCode expires in 10 minutes',
+    
+    // Messages d'erreur et de succès
+    'auth_service_loading': 'Authentication service loading',
+    'auth_service_error': 'Authentication service error',
+    'invalid_credentials_error': 'Invalid email or password',
+    'connection_error': 'Connection error',
+    'ok': 'OK',
+    'enter_email_first': 'Please enter your email',
+    'reset_email_sent': 'A reset email has been sent. Check your inbox and spam folder.',
+    
+    // Messages de bienvenue et inscription
+    'welcome_to_avwallet': 'Welcome to AVWallet',
+    'welcome_to_avwallet_with_name': 'Welcome to AVWallet, {name}',
+    'premium_usage_remaining': 'You have premium usage.\\nYou have {count} uses remaining',
+    'continue': 'Continue',
+    'signup': 'Sign Up',
+    
+    // Textes de connexion manquants
+    'remember_me': 'Remember me',
+    'sign_up': 'Sign Up',
+    'already_have_account': 'Already have an account?',
+    'dont_have_account': 'Don\'t have an account?',
+    'sign_in': 'Sign In',
+    'or_continue_with': 'Or continue with',
+    'google_sign_in': 'Sign in with Google',
+    
+    // Menu utilisateur
+    'account_settings': 'Account Settings',
+    'manage_projects': 'Manage Projects',
+    'logout': 'Logout',
+    'user_menu': 'User Menu',
+    
+    // Messages de vérification
+    'verification_code_sent_message': 'A verification code has been sent',
     
     // Catalogue
     'search': 'Search',
@@ -404,6 +597,19 @@ class TranslationService extends StateNotifier<Locale> {
     'channel': 'channel',
     'channels': 'channels',
     'no_fixtures_selected': 'No fixtures selected',
+    
+    // Video - Projection
+    'projection_brand': 'Brand',
+    'projection_model': 'Model',
+    'projection_format': 'Format',
+    'projection_nb_projectors': 'Nb VP',
+    'projection_overlap': 'Overlap',
+    'projection_image_width': 'Image width',
+    'projection_distance': 'Projector distance',
+    'projection_ratio': 'Ratio',
+    'projection_recommended_ratio': 'Recommended ratio',
+    'projection_no_optics': 'No optics available for this ratio',
+    'projection_overlap_percentage': 'Overlap',
     'selected_fixtures': 'Selected Fixtures',
     'save_preset': 'Save Preset',
     'preset_name': 'Preset Name',
@@ -438,6 +644,8 @@ class TranslationService extends StateNotifier<Locale> {
     'create_preset': 'Create Preset',
     'edit_preset': 'Edit Preset',
     'delete_preset': 'Delete Preset',
+    'view_preset': 'View Preset',
+    'rename_preset': 'Rename Preset',
     'created_date': 'Created Date',
     'updated_date': 'Updated Date',
     'view_project': 'View Project',
@@ -548,7 +756,7 @@ class TranslationService extends StateNotifier<Locale> {
   };
 
   // Traductions espagnoles
-  static const Map<String, String> _spanishTranslations = {
+  static final Map<String, String> _spanishTranslations = {
     // Navigation et menus
     'home': 'Inicio',
     'catalogue': 'Catálogo',
@@ -558,6 +766,32 @@ class TranslationService extends StateNotifier<Locale> {
     'structure': 'Estructura',
     'electricity': 'Electricidad',
     'divers': 'Diversos',
+    
+    // Page lumière
+    'beam': 'Haz',
+    'beam_short': 'Haz',
+    
+    // Page vidéo
+    'video_projection': 'Proyección',
+    'video_led_wall': 'Pared LED',
+    'video_screens': 'Pantallas',
+    'video_accessories': 'Accesorios',
+    'video_quantity': 'Cantidad',
+    'video_cancel': 'Cancelar',
+    'video_add': 'Agregar',
+    'video_brand': 'Marca',
+    'video_choose_led_wall': 'Elegir pared LED',
+    'video_width': 'Ancho',
+    'video_height': 'Alto',
+    'video_tiles': 'Baldosas',
+    'video_pixel_pitch': 'Paso de píxel',
+    'video_total_pixels': 'Mpx',
+    'video_ratio': 'Proporción',
+    'video_total_weight': 'Peso total',
+    'video_total_consumption': 'Consumo total',
+    'video_view_schema': 'Ver esquema',
+    'video_calculation_done': '¡Cálculo realizado!',
+    'video_ar': 'AR',
     
     // Page de connexion
     'login': 'Iniciar sesión',
@@ -678,6 +912,19 @@ class TranslationService extends StateNotifier<Locale> {
     'led_wall': 'Muro LED',
     'led_walls': 'Muros LED',
     
+    // Video - Projection
+    'projection_brand': 'Marca',
+    'projection_model': 'Modelo',
+    'projection_format': 'Formato',
+    'projection_nb_projectors': 'Nb VP',
+    'projection_overlap': 'Solap.',
+    'projection_image_width': 'Ancho de imagen',
+    'projection_distance': 'Distancia proyector',
+    'projection_ratio': 'Relación',
+    'projection_recommended_ratio': 'Relación recomendada',
+    'projection_no_optics': 'No hay ópticas disponibles para esta relación',
+    'projection_overlap_percentage': 'Solapamiento',
+    
     // Structure
     'load_type': 'Tipo de carga',
     'max_load': 'Carga máxima',
@@ -695,6 +942,8 @@ class TranslationService extends StateNotifier<Locale> {
     'create_preset': 'Crear preset',
     'edit_preset': 'Editar preset',
     'delete_preset': 'Eliminar preset',
+    'view_preset': 'Ver preset',
+    'rename_preset': 'Renombrar preset',
     'created_date': 'Fecha de creación',
     'updated_date': 'Fecha de actualización',
     'view_project': 'Ver proyecto',
@@ -802,10 +1051,38 @@ class TranslationService extends StateNotifier<Locale> {
     'server_error': 'Error del servidor',
     'try_again': 'Intentar de nuevo',
     'contact_support': 'Contactar soporte',
+    
+    // Messages d'erreur et de succès
+    'auth_service_loading': 'Servicio de autenticación cargando',
+    'auth_service_error': 'Error del servicio de autenticación',
+    'invalid_credentials_error': 'Email o contraseña incorrectos',
+    'connection_error': 'Error de conexión',
+    'ok': 'OK',
+    'enter_email_first': 'Por favor ingresa tu email',
+    'reset_email_sent': 'Se ha enviado un email de restablecimiento. Revisa tu bandeja de entrada y spam.',
+    
+    // Messages de bienvenue et inscription
+    'welcome_to_avwallet': 'Bienvenido a AVWallet',
+    'welcome_to_avwallet_with_name': 'Bienvenido a AVWallet, {name}',
+    'premium_usage_remaining': 'Tienes uso premium.\\nTe quedan {count} usos',
+    'continue': 'Continuar',
+    'signup': 'Registrarse',
+    
+    // Textes de connexion manquants
+    'remember_me': 'Recordarme',
+    'sign_up': 'Registrarse',
+    'already_have_account': '¿Ya tienes una cuenta?',
+    'dont_have_account': '¿No tienes una cuenta?',
+    'sign_in': 'Iniciar sesión',
+    'or_continue_with': 'O continuar con',
+    'google_sign_in': 'Iniciar sesión con Google',
+    
+    // Messages de vérification
+    'verification_code_sent_message': 'Se ha enviado un código de verificación',
   };
 
   // Traductions allemandes
-  static const Map<String, String> _germanTranslations = {
+  static final Map<String, String> _germanTranslations = {
     // Navigation et menus
     'home': 'Startseite',
     'catalogue': 'Katalog',
@@ -815,6 +1092,32 @@ class TranslationService extends StateNotifier<Locale> {
     'structure': 'Struktur',
     'electricity': 'Elektrizität',
     'divers': 'Verschiedenes',
+    
+    // Page lumière
+    'beam': 'Strahl',
+    'beam_short': 'Strahl',
+    
+    // Page vidéo
+    'video_projection': 'Projektion',
+    'video_led_wall': 'LED-Wand',
+    'video_screens': 'Bildschirme',
+    'video_accessories': 'Zubehör',
+    'video_quantity': 'Menge',
+    'video_cancel': 'Abbrechen',
+    'video_add': 'Hinzufügen',
+    'video_brand': 'Marke',
+    'video_choose_led_wall': 'LED-Wand wählen',
+    'video_width': 'Breite',
+    'video_height': 'Höhe',
+    'video_tiles': 'Kacheln',
+    'video_pixel_pitch': 'Pixelabstand',
+    'video_total_pixels': 'Mpx',
+    'video_ratio': 'Verhältnis',
+    'video_total_weight': 'Gesamtgewicht',
+    'video_total_consumption': 'Gesamtverbrauch',
+    'video_view_schema': 'Schema anzeigen',
+    'video_calculation_done': 'Berechnung abgeschlossen!',
+    'video_ar': 'AR',
     
     // Page de connexion
     'login': 'Anmelden',
@@ -935,6 +1238,19 @@ class TranslationService extends StateNotifier<Locale> {
     'led_wall': 'LED-Wand',
     'led_walls': 'LED-Wände',
     
+    // Video - Projection
+    'projection_brand': 'Marke',
+    'projection_model': 'Modell',
+    'projection_format': 'Format',
+    'projection_nb_projectors': 'Nb VP',
+    'projection_overlap': 'Überlapp.',
+    'projection_image_width': 'Bildbreite',
+    'projection_distance': 'Projektorabstand',
+    'projection_ratio': 'Verhältnis',
+    'projection_recommended_ratio': 'Empfohlenes Verhältnis',
+    'projection_no_optics': 'Keine Optik für dieses Verhältnis verfügbar',
+    'projection_overlap_percentage': 'Überlappung',
+    
     // Structure
     'load_type': 'Lasttyp',
     'max_load': 'Maximale Last',
@@ -952,6 +1268,8 @@ class TranslationService extends StateNotifier<Locale> {
     'create_preset': 'Preset erstellen',
     'edit_preset': 'Preset bearbeiten',
     'delete_preset': 'Preset löschen',
+    'view_preset': 'Preset anzeigen',
+    'rename_preset': 'Preset umbenennen',
     'created_date': 'Erstellungsdatum',
     'updated_date': 'Aktualisierungsdatum',
     'view_project': 'Projekt anzeigen',
@@ -1059,10 +1377,38 @@ class TranslationService extends StateNotifier<Locale> {
     'server_error': 'Serverfehler',
     'try_again': 'Erneut versuchen',
     'contact_support': 'Support kontaktieren',
+    
+    // Messages d'erreur et de succès
+    'auth_service_loading': 'Authentifizierungsservice lädt',
+    'auth_service_error': 'Authentifizierungsservice-Fehler',
+    'invalid_credentials_error': 'Ungültige E-Mail oder Passwort',
+    'connection_error': 'Verbindungsfehler',
+    'ok': 'OK',
+    'enter_email_first': 'Bitte geben Sie Ihre E-Mail ein',
+    'reset_email_sent': 'Eine Reset-E-Mail wurde gesendet. Überprüfen Sie Ihren Posteingang und Spam-Ordner.',
+    
+    // Messages de bienvenue et inscription
+    'welcome_to_avwallet': 'Willkommen bei AVWallet',
+    'welcome_to_avwallet_with_name': 'Willkommen bei AVWallet, {name}',
+    'premium_usage_remaining': 'Sie haben Premium-Nutzung.\\nSie haben {count} Verwendungen übrig',
+    'continue': 'Weiter',
+    'signup': 'Registrieren',
+    
+    // Textes de connexion manquants
+    'remember_me': 'Angemeldet bleiben',
+    'sign_up': 'Registrieren',
+    'already_have_account': 'Bereits ein Konto?',
+    'dont_have_account': 'Noch kein Konto?',
+    'sign_in': 'Anmelden',
+    'or_continue_with': 'Oder fortfahren mit',
+    'google_sign_in': 'Mit Google anmelden',
+    
+    // Messages de vérification
+    'verification_code_sent_message': 'Ein Bestätigungscode wurde gesendet',
   };
 
   // Traductions italiennes
-  static const Map<String, String> _italianTranslations = {
+  static final Map<String, String> _italianTranslations = {
     // Navigation et menus
     'home': 'Home',
     'catalogue': 'Catalogo',
@@ -1072,6 +1418,32 @@ class TranslationService extends StateNotifier<Locale> {
     'structure': 'Struttura',
     'electricity': 'Elettricità',
     'divers': 'Varie',
+    
+    // Page lumière
+    'beam': 'Fascio',
+    'beam_short': 'Fascio',
+    
+    // Page vidéo
+    'video_projection': 'Proiezione',
+    'video_led_wall': 'Parete LED',
+    'video_screens': 'Schermi',
+    'video_accessories': 'Accessori',
+    'video_quantity': 'Quantità',
+    'video_cancel': 'Annulla',
+    'video_add': 'Aggiungi',
+    'video_brand': 'Marca',
+    'video_choose_led_wall': 'Scegli parete LED',
+    'video_width': 'Larghezza',
+    'video_height': 'Altezza',
+    'video_tiles': 'Piastrelle',
+    'video_pixel_pitch': 'Passo pixel',
+    'video_total_pixels': 'Mpx',
+    'video_ratio': 'Rapporto',
+    'video_total_weight': 'Peso totale',
+    'video_total_consumption': 'Consumo totale',
+    'video_view_schema': 'Visualizza schema',
+    'video_calculation_done': 'Calcolo completato!',
+    'video_ar': 'AR',
     
     // Page de connexion
     'login': 'Accedi',
@@ -1192,6 +1564,19 @@ class TranslationService extends StateNotifier<Locale> {
     'led_wall': 'Muro LED',
     'led_walls': 'Muri LED',
     
+    // Video - Projection
+    'projection_brand': 'Marca',
+    'projection_model': 'Modello',
+    'projection_format': 'Formato',
+    'projection_nb_projectors': 'Nb VP',
+    'projection_overlap': 'Sovrapp.',
+    'projection_image_width': 'Larghezza immagine',
+    'projection_distance': 'Distanza proiettore',
+    'projection_ratio': 'Rapporto',
+    'projection_recommended_ratio': 'Rapporto raccomandato',
+    'projection_no_optics': 'Nessuna ottica disponibile per questo rapporto',
+    'projection_overlap_percentage': 'Sovrapposizione',
+    
     // Structure
     'load_type': 'Tipo di carico',
     'max_load': 'Carico massimo',
@@ -1209,6 +1594,8 @@ class TranslationService extends StateNotifier<Locale> {
     'create_preset': 'Crea preset',
     'edit_preset': 'Modifica preset',
     'delete_preset': 'Elimina preset',
+    'view_preset': 'Visualizza preset',
+    'rename_preset': 'Rinomina preset',
     'created_date': 'Data creazione',
     'updated_date': 'Data aggiornamento',
     'view_project': 'Visualizza progetto',
@@ -1316,6 +1703,34 @@ class TranslationService extends StateNotifier<Locale> {
     'server_error': 'Errore del server',
     'try_again': 'Riprova',
     'contact_support': 'Contatta il supporto',
+    
+    // Messages d'erreur et de succès
+    'auth_service_loading': 'Servizio di autenticazione in caricamento',
+    'auth_service_error': 'Errore del servizio di autenticazione',
+    'invalid_credentials_error': 'Email o password non validi',
+    'connection_error': 'Errore di connessione',
+    'ok': 'OK',
+    'enter_email_first': 'Inserisci la tua email',
+    'reset_email_sent': 'È stata inviata un\'email di reset. Controlla la tua casella di posta e spam.',
+    
+    // Messages de bienvenue et inscription
+    'welcome_to_avwallet': 'Benvenuto in AVWallet',
+    'welcome_to_avwallet_with_name': 'Benvenuto in AVWallet, {name}',
+    'premium_usage_remaining': 'Hai l\'uso premium.\\nTi rimangono {count} utilizzi',
+    'continue': 'Continua',
+    'signup': 'Registrati',
+    
+    // Textes de connexion manquants
+    'remember_me': 'Ricordami',
+    'sign_up': 'Registrati',
+    'already_have_account': 'Hai già un account?',
+    'dont_have_account': 'Non hai un account?',
+    'sign_in': 'Accedi',
+    'or_continue_with': 'O continua con',
+    'google_sign_in': 'Accedi con Google',
+    
+    // Messages de vérification
+    'verification_code_sent_message': 'È stato inviato un codice di verifica',
   };
 }
 

@@ -294,7 +294,13 @@ class ScreenMigrationService {
         lumens: '37 500 lm',
         optiques: [
           Lens(reference: 'TLD+ Ultra Short Throw', ratio: '0.37:1'),
-          Lens(reference: 'TLD+ Zoom', ratio: '0.85-1.24:1'),
+          Lens(reference: 'TLD+ Fixed', ratio: '0.65:1'),
+          Lens(reference: 'TLD+ Zoom', ratio: '0.85–1.24:1'),
+          Lens(reference: 'TLD+ Zoom', ratio: '1.20–1.70:1'),
+          Lens(reference: 'TLD+ Zoom', ratio: '1.50–2.00:1'),
+          Lens(reference: 'TLD+ Zoom', ratio: '2.00–2.80:1'),
+          Lens(reference: 'TLD+ Zoom', ratio: '2.50–4.10:1'),
+          Lens(reference: 'TLD+ Long Zoom', ratio: '4.10–7.00:1'),
         ],
       ),
 

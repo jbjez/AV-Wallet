@@ -3,9 +3,10 @@ import 'package:logging/logging.dart';
 import '../models/catalogue_item.dart';
 import '../models/preset.dart';
 import '../models/lens.dart';
-import '../models/cart_data.dart';
 import '../models/cart_item.dart';
 import '../models/project.dart';
+import '../models/project_calculation.dart';
+import 'catalogue_dmx_migration_service.dart';
 
 class HiveService {
   static final _logger = Logger('HiveService');
@@ -70,6 +71,7 @@ class HiveService {
           _openBoxWithMigration<Lens>('lenses'),
           _openBoxWithMigration<CartItem>('cart'),
           _openBoxWithMigration<Project>('projects'),
+          _openBoxWithMigration<ProjectCalculation>('project_calculations'),
         ]);
       } catch (e) {
         _logger.warning('Error opening boxes, attempting to recover...', e);
@@ -79,6 +81,7 @@ class HiveService {
         await _openBoxWithMigration<Lens>('lenses');
         await _openBoxWithMigration<CartItem>('cart');
         await _openBoxWithMigration<Project>('projects');
+        await _openBoxWithMigration<ProjectCalculation>('project_calculations');
       }
 
       _isInitialized = true;
@@ -330,9 +333,36 @@ class HiveService {
       await Hive.deleteBoxFromDisk('presets');
       await Hive.deleteBoxFromDisk('lenses');
       await Hive.deleteBoxFromDisk('cart');
+      await Hive.deleteBoxFromDisk('projects');
+      await Hive.deleteBoxFromDisk('project_calculations');
       print('All Hive data cleared successfully');
     } catch (e) {
       print('Error clearing Hive data: $e');
+      rethrow;
+    }
+  }
+
+  /// Initialise Hive et exécute les migrations nécessaires
+  static Future<void> init() async {
+    try {
+      _logger.info('Initializing Hive with migrations...');
+      
+      // Initialiser Hive
+      await initialize();
+      
+      // Exécuter la migration DMX si nécessaire
+      final needsDmxMigration = await CatalogueDmxMigrationService.needsDmxMigration();
+      if (needsDmxMigration) {
+        _logger.info('DMX migration needed, executing...');
+        await CatalogueDmxMigrationService.migrateDmxDataAndNewProducts();
+        _logger.info('DMX migration completed');
+      } else {
+        _logger.info('No DMX migration needed');
+      }
+      
+      _logger.info('Hive initialization with migrations completed');
+    } catch (e, stackTrace) {
+      _logger.severe('Error during Hive initialization with migrations', e, stackTrace);
       rethrow;
     }
   }

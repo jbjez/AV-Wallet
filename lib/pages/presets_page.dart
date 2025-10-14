@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../providers/preset_provider.dart';
 import '../models/preset.dart';
-import '../models/cart_data.dart';
 
 class PresetsPage extends ConsumerStatefulWidget {
   const PresetsPage({super.key});

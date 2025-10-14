@@ -1,6 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:hive/hive.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:av_wallet_hive/l10n/app_localizations.dart';
 import '../models/project.dart';
 import '../models/preset.dart';
 
@@ -199,10 +199,14 @@ class ProjectNotifier extends StateNotifier<ProjectState> {
     }
   }
 
-  void addProject(Project project) async {
-    await _box.add(project);
-    // Mettre à jour seulement la liste des projets sans recharger tout
-    final newProjects = _box.values.toList();
+  void addProject(Project project) {
+    // Ajouter le projet de manière asynchrone mais mettre à jour l'état immédiatement
+    Future.microtask(() async {
+      await _box.add(project);
+    });
+    
+    // Mettre à jour l'état immédiatement pour l'UI
+    final newProjects = [...state.projects, project];
     state = state.copyWith(
       projects: newProjects, 
       selectedProjectIndex: newProjects.length - 1

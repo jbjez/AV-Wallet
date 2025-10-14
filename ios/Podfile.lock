@@ -15,6 +15,8 @@ PODS:
     - Flutter
   - camera_avfoundation (0.0.1):
     - Flutter
+  - device_info_plus (0.0.1):
+    - Flutter
   - Flutter (1.0.0)
   - google_sign_in_ios (0.0.1):
     - AppAuth (>= 1.7.4)
@@ -46,6 +48,9 @@ PODS:
     - GTMSessionFetcher/Core
   - image_picker_ios (0.0.1):
     - Flutter
+  - local_auth_darwin (0.0.1):
+    - Flutter
+    - FlutterMacOS
   - mic_stream (0.0.1):
     - Flutter
   - path_provider_foundation (0.0.1):
@@ -59,8 +64,47 @@ PODS:
   - shared_preferences_foundation (0.0.1):
     - Flutter
     - FlutterMacOS
+  - Stripe (23.27.6):
+    - StripeApplePay (= 23.27.6)
+    - StripeCore (= 23.27.6)
+    - StripePayments (= 23.27.6)
+    - StripePaymentsUI (= 23.27.6)
+    - StripeUICore (= 23.27.6)
+  - stripe_ios (0.0.1):
+    - Flutter
+    - Stripe (~> 23.27.0)
+    - StripeApplePay (~> 23.27.0)
+    - StripeFinancialConnections (~> 23.27.0)
+    - StripePayments (~> 23.27.0)
+    - StripePaymentSheet (~> 23.27.0)
+    - StripePaymentsUI (~> 23.27.0)
+  - StripeApplePay (23.27.6):
+    - StripeCore (= 23.27.6)
+  - StripeCore (23.27.6)
+  - StripeFinancialConnections (23.27.6):
+    - StripeCore (= 23.27.6)
+    - StripeUICore (= 23.27.6)
+  - StripePayments (23.27.6):
+    - StripeCore (= 23.27.6)
+    - StripePayments/Stripe3DS2 (= 23.27.6)
+  - StripePayments/Stripe3DS2 (23.27.6):
+    - StripeCore (= 23.27.6)
+  - StripePaymentSheet (23.27.6):
+    - StripeApplePay (= 23.27.6)
+    - StripeCore (= 23.27.6)
+    - StripePayments (= 23.27.6)
+    - StripePaymentsUI (= 23.27.6)
+  - StripePaymentsUI (23.27.6):
+    - StripeCore (= 23.27.6)
+    - StripePayments (= 23.27.6)
+    - StripeUICore (= 23.27.6)
+  - StripeUICore (23.27.6):
+    - StripeCore (= 23.27.6)
   - url_launcher_ios (0.0.1):
     - Flutter
+  - webview_flutter_wkwebview (0.0.1):
+    - Flutter
+    - FlutterMacOS
   - wifi_scan (0.0.1):
     - Flutter
 
@@ -68,15 +112,19 @@ DEPENDENCIES:
   - app_links (from `.symlinks/plugins/app_links/ios`)
   - audio_streamer (from `.symlinks/plugins/audio_streamer/ios`)
   - camera_avfoundation (from `.symlinks/plugins/camera_avfoundation/ios`)
+  - device_info_plus (from `.symlinks/plugins/device_info_plus/ios`)
   - Flutter (from `Flutter`)
   - google_sign_in_ios (from `.symlinks/plugins/google_sign_in_ios/darwin`)
   - image_picker_ios (from `.symlinks/plugins/image_picker_ios/ios`)
+  - local_auth_darwin (from `.symlinks/plugins/local_auth_darwin/darwin`)
   - mic_stream (from `.symlinks/plugins/mic_stream/ios`)
   - path_provider_foundation (from `.symlinks/plugins/path_provider_foundation/darwin`)
   - permission_handler_apple (from `.symlinks/plugins/permission_handler_apple/ios`)
   - share_plus (from `.symlinks/plugins/share_plus/ios`)
   - shared_preferences_foundation (from `.symlinks/plugins/shared_preferences_foundation/darwin`)
+  - stripe_ios (from `.symlinks/plugins/stripe_ios/ios`)
   - url_launcher_ios (from `.symlinks/plugins/url_launcher_ios/ios`)
+  - webview_flutter_wkwebview (from `.symlinks/plugins/webview_flutter_wkwebview/darwin`)
   - wifi_scan (from `.symlinks/plugins/wifi_scan/ios`)
 
 SPEC REPOS:
@@ -88,6 +136,14 @@ SPEC REPOS:
     - GTMAppAuth
     - GTMSessionFetcher
     - PromisesObjC
+    - Stripe
+    - StripeApplePay
+    - StripeCore
+    - StripeFinancialConnections
+    - StripePayments
+    - StripePaymentSheet
+    - StripePaymentsUI
+    - StripeUICore
 
 EXTERNAL SOURCES:
   app_links:
@@ -96,12 +152,16 @@ EXTERNAL SOURCES:
     :path: ".symlinks/plugins/audio_streamer/ios"
   camera_avfoundation:
     :path: ".symlinks/plugins/camera_avfoundation/ios"
+  device_info_plus:
+    :path: ".symlinks/plugins/device_info_plus/ios"
   Flutter:
     :path: Flutter
   google_sign_in_ios:
     :path: ".symlinks/plugins/google_sign_in_ios/darwin"
   image_picker_ios:
     :path: ".symlinks/plugins/image_picker_ios/ios"
+  local_auth_darwin:
+    :path: ".symlinks/plugins/local_auth_darwin/darwin"
   mic_stream:
     :path: ".symlinks/plugins/mic_stream/ios"
   path_provider_foundation:
@@ -112,8 +172,12 @@ EXTERNAL SOURCES:
     :path: ".symlinks/plugins/share_plus/ios"
   shared_preferences_foundation:
     :path: ".symlinks/plugins/shared_preferences_foundation/darwin"
+  stripe_ios:
+    :path: ".symlinks/plugins/stripe_ios/ios"
   url_launcher_ios:
     :path: ".symlinks/plugins/url_launcher_ios/ios"
+  webview_flutter_wkwebview:
+    :path: ".symlinks/plugins/webview_flutter_wkwebview/darwin"
   wifi_scan:
     :path: ".symlinks/plugins/wifi_scan/ios"
 
@@ -123,20 +187,32 @@ SPEC CHECKSUMS:
   AppCheckCore: cc8fd0a3a230ddd401f326489c99990b013f0c4f
   audio_streamer: 2e472b9f81cec5e381c4cf7667afa3055dcb45a4
   camera_avfoundation: be3be85408cd4126f250386828e9b1dfa40ab436
-  Flutter: e0871f40cf51350855a761d2e70bf5af5b9b5de7
+  device_info_plus: 335f3ce08d2e174b9fdc3db3db0f4e3b1f66bd89
+  Flutter: cabc95a1d2626b1b06e7179b784ebcf0c0cde467
   google_sign_in_ios: b48bb9af78576358a168361173155596c845f0b9
   GoogleSignIn: ce8c89bb9b37fb624b92e7514cc67335d1e277e4
   GoogleUtilities: 00c88b9a86066ef77f0da2fab05f65d7768ed8e1
   GTMAppAuth: f69bd07d68cd3b766125f7e072c45d7340dea0de
   GTMSessionFetcher: 5aea5ba6bd522a239e236100971f10cb71b96ab6
   image_picker_ios: 7fe1ff8e34c1790d6fff70a32484959f563a928a
+  local_auth_darwin: c3ee6cce0a8d56be34c8ccb66ba31f7f180aaebb
   mic_stream: 5b34e9b3939173b7d42ad30a92d704b72221bacf
   path_provider_foundation: 080d55be775b7414fd5a5ef3ac137b97b097e564
   permission_handler_apple: 3787117e48f80715ff04a3830ca039283d6a4f29
   PromisesObjC: f5707f49cb48b9636751c5b2e7d227e43fba9f47
   share_plus: 50da8cb520a8f0f65671c6c6a99b3617ed10a58a
   shared_preferences_foundation: 9e1978ff2562383bd5676f64ec4e9aa8fa06a6f7
+  Stripe: 9fec845645e39f371e6898926d096fd9c2feb5a5
+  stripe_ios: 5accba1ff472f89300e1676c351166f29dc93ced
+  StripeApplePay: 5f017e8dfe259fafbab70137776189deef754bb2
+  StripeCore: 01ec57f0dddfe742054dc6a322f811426c25313d
+  StripeFinancialConnections: 56698cb6274bf89fb8c76b934f6156f368e97765
+  StripePayments: 6adf11faf1b7038e77aa97019410305c6adca79d
+  StripePaymentSheet: 3eaf870c4388e44b0cc37e4c69d00b6957fd8bd7
+  StripePaymentsUI: 59ccddeacad592b09fa67e8d641340820ddb4751
+  StripeUICore: 879bbf5889265db13f52fac8aad7a176ba62481f
   url_launcher_ios: 694010445543906933d732453a59da0a173ae33d
+  webview_flutter_wkwebview: 8ebf4fded22593026f7dbff1fbff31ea98573c8d
   wifi_scan: 3254c160abc7266feac359a927f8ab64f2703774
 
 PODFILE CHECKSUM: b696d230b2105d81dab8770c9bfd28af0cba18ab

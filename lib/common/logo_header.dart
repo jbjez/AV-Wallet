@@ -12,7 +12,7 @@ class LogoHeader extends StatelessWidget {
           onTap: () {
             Navigator.of(context).pushNamed('/home');
           },
-          child: Image.asset('assets/images/logo.png', height: 51), // Réduit de 15% (60 * 0.85 = 51)
+          child: Image.asset('assets/Logo2.png', height: 51), // Réduit de 15% (60 * 0.85 = 51)
         ),
         const SizedBox(height: 10),
         Text(title, style: const TextStyle(fontSize: 24, color: Colors.white)),

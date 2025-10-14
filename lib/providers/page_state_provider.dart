@@ -9,6 +9,7 @@ class LightPageState {
   final Map<CatalogueItem, String> fixtureDmxModes;
   final String? selectedProduct;
   final String? selectedBrand;
+  final String? selectedCategory;
   final String searchQuery;
   final String? beamCalculationResult;
   final String? driverCalculationResult;
@@ -23,6 +24,11 @@ class LightPageState {
   final double longueurLed;
   final String selectedRubanType;
   final int selectedPower;
+  final String selectedLedType;
+  final String selectedLedPower;
+  final String selectedDriverNew;
+  final int customChannels;
+  final double customIntensity;
 
   const LightPageState({
     this.selectedFixtures = const [],
@@ -30,6 +36,7 @@ class LightPageState {
     this.fixtureDmxModes = const {},
     this.selectedProduct,
     this.selectedBrand,
+    this.selectedCategory,
     this.searchQuery = '',
     this.beamCalculationResult,
     this.driverCalculationResult,
@@ -44,6 +51,11 @@ class LightPageState {
     this.longueurLed = 5,
     this.selectedRubanType = 'blanc',
     this.selectedPower = 15,
+    this.selectedLedType = 'Blanc (W)',
+    this.selectedLedPower = '5W',
+    this.selectedDriverNew = 'S04x5A',
+    this.customChannels = 4,
+    this.customIntensity = 5.0,
   });
 
   LightPageState copyWith({
@@ -52,6 +64,7 @@ class LightPageState {
     Map<CatalogueItem, String>? fixtureDmxModes,
     String? selectedProduct,
     String? selectedBrand,
+    String? selectedCategory,
     String? searchQuery,
     String? beamCalculationResult,
     String? driverCalculationResult,
@@ -66,6 +79,11 @@ class LightPageState {
     double? longueurLed,
     String? selectedRubanType,
     int? selectedPower,
+    String? selectedLedType,
+    String? selectedLedPower,
+    String? selectedDriverNew,
+    int? customChannels,
+    double? customIntensity,
   }) {
     return LightPageState(
       selectedFixtures: selectedFixtures ?? this.selectedFixtures,
@@ -73,6 +91,7 @@ class LightPageState {
       fixtureDmxModes: fixtureDmxModes ?? this.fixtureDmxModes,
       selectedProduct: selectedProduct ?? this.selectedProduct,
       selectedBrand: selectedBrand ?? this.selectedBrand,
+      selectedCategory: selectedCategory ?? this.selectedCategory,
       searchQuery: searchQuery ?? this.searchQuery,
       beamCalculationResult: beamCalculationResult ?? this.beamCalculationResult,
       driverCalculationResult: driverCalculationResult ?? this.driverCalculationResult,
@@ -87,6 +106,11 @@ class LightPageState {
       longueurLed: longueurLed ?? this.longueurLed,
       selectedRubanType: selectedRubanType ?? this.selectedRubanType,
       selectedPower: selectedPower ?? this.selectedPower,
+      selectedLedType: selectedLedType ?? this.selectedLedType,
+      selectedLedPower: selectedLedPower ?? this.selectedLedPower,
+      selectedDriverNew: selectedDriverNew ?? this.selectedDriverNew,
+      customChannels: customChannels ?? this.customChannels,
+      customIntensity: customIntensity ?? this.customIntensity,
     );
   }
 
@@ -138,39 +162,67 @@ class CataloguePageState {
 class VideoPageState {
   final String? selectedProduct;
   final String? selectedBrand;
+  final String? selectedCategory;
+  final String? selectedSubCategory;
   final String searchQuery;
   final bool showProjectionResult;
+  final bool showLedResult;
   final double? projectionDistance;
   final double? projectionWidth;
   final double? projectionHeight;
+  final double? largeurMurLed;
+  final double? hauteurMurLed;
+  final String? projectionCalculationResult;
+  final String? ledCalculationResult;
 
   const VideoPageState({
     this.selectedProduct,
     this.selectedBrand,
+    this.selectedCategory,
+    this.selectedSubCategory,
     this.searchQuery = '',
     this.showProjectionResult = false,
+    this.showLedResult = false,
     this.projectionDistance,
     this.projectionWidth,
     this.projectionHeight,
+    this.largeurMurLed,
+    this.hauteurMurLed,
+    this.projectionCalculationResult,
+    this.ledCalculationResult,
   });
 
   VideoPageState copyWith({
     String? selectedProduct,
     String? selectedBrand,
+    String? selectedCategory,
+    String? selectedSubCategory,
     String? searchQuery,
     bool? showProjectionResult,
+    bool? showLedResult,
     double? projectionDistance,
     double? projectionWidth,
     double? projectionHeight,
+    double? largeurMurLed,
+    double? hauteurMurLed,
+    String? projectionCalculationResult,
+    String? ledCalculationResult,
   }) {
     return VideoPageState(
       selectedProduct: selectedProduct ?? this.selectedProduct,
       selectedBrand: selectedBrand ?? this.selectedBrand,
+      selectedCategory: selectedCategory ?? this.selectedCategory,
+      selectedSubCategory: selectedSubCategory ?? this.selectedSubCategory,
       searchQuery: searchQuery ?? this.searchQuery,
       showProjectionResult: showProjectionResult ?? this.showProjectionResult,
+      showLedResult: showLedResult ?? this.showLedResult,
       projectionDistance: projectionDistance ?? this.projectionDistance,
       projectionWidth: projectionWidth ?? this.projectionWidth,
       projectionHeight: projectionHeight ?? this.projectionHeight,
+      largeurMurLed: largeurMurLed ?? this.largeurMurLed,
+      hauteurMurLed: hauteurMurLed ?? this.hauteurMurLed,
+      projectionCalculationResult: projectionCalculationResult ?? this.projectionCalculationResult,
+      ledCalculationResult: ledCalculationResult ?? this.ledCalculationResult,
     );
   }
 
@@ -276,6 +328,13 @@ class LightPageStateNotifier extends StateNotifier<LightPageState> {
     _saveState();
   }
 
+  void updateSingleFixtureQuantity(CatalogueItem fixture, int quantity) {
+    final newQuantities = Map<CatalogueItem, int>.from(state.fixtureQuantities);
+    newQuantities[fixture] = quantity;
+    state = state.copyWith(fixtureQuantities: newQuantities);
+    _saveState();
+  }
+
   void updateFixtureDmxModes(Map<CatalogueItem, String> modes) {
     state = state.copyWith(fixtureDmxModes: modes);
     _saveState();
@@ -301,6 +360,11 @@ class LightPageStateNotifier extends StateNotifier<LightPageState> {
     _saveState();
   }
 
+  void clearDmxCalculation() {
+    state = state.copyWith(dmxCalculationResult: null);
+    _saveState();
+  }
+
   void updateSelectedBrand(String? brand) {
     state = state.copyWith(selectedBrand: brand);
     _saveState();
@@ -308,6 +372,56 @@ class LightPageStateNotifier extends StateNotifier<LightPageState> {
 
   void updateSelectedProduct(String? product) {
     state = state.copyWith(selectedProduct: product);
+    _saveState();
+  }
+
+  void updateSelectedLedType(String ledType) {
+    state = state.copyWith(selectedLedType: ledType);
+    _saveState();
+  }
+
+  void updateSelectedLedPower(String ledPower) {
+    state = state.copyWith(selectedLedPower: ledPower);
+    _saveState();
+  }
+
+  void updateSelectedDriverNew(String driverNew) {
+    state = state.copyWith(selectedDriverNew: driverNew);
+    _saveState();
+  }
+
+  void updateCustomChannels(int channels) {
+    state = state.copyWith(customChannels: channels);
+    _saveState();
+  }
+
+  void updateCustomIntensity(double intensity) {
+    state = state.copyWith(customIntensity: intensity);
+    _saveState();
+  }
+
+  void updateLedLength(double length) {
+    state = state.copyWith(longueurLed: length);
+    _saveState();
+  }
+
+  void updateAngle(double angle) {
+    state = state.copyWith(angle: angle);
+    _saveState();
+  }
+
+  void updateHeight(double height) {
+    state = state.copyWith(height: height);
+    _saveState();
+  }
+
+  void updateDistance(double distance) {
+    state = state.copyWith(distance: distance);
+    _saveState();
+  }
+
+  void updateSelectedCategory(String? category) {
+    state = state.copyWith(selectedCategory: category);
     _saveState();
   }
 }
@@ -420,6 +534,35 @@ class VideoPageStateNotifier extends StateNotifier<VideoPageState> {
       projectionWidth: width,
       projectionHeight: height,
     );
+    _saveState();
+  }
+
+  void updateSelectedCategory(String? category) {
+    state = state.copyWith(selectedCategory: category);
+    _saveState();
+  }
+
+  void updateSelectedSubCategory(String? subCategory) {
+    state = state.copyWith(selectedSubCategory: subCategory);
+    _saveState();
+  }
+
+  void updateLedResult(bool show, {double? largeur, double? hauteur}) {
+    state = state.copyWith(
+      showLedResult: show,
+      largeurMurLed: largeur,
+      hauteurMurLed: hauteur,
+    );
+    _saveState();
+  }
+
+  void updateProjectionCalculation(String? result) {
+    state = state.copyWith(projectionCalculationResult: result);
+    _saveState();
+  }
+
+  void updateLedCalculation(String? result) {
+    state = state.copyWith(ledCalculationResult: result);
     _saveState();
   }
 }

@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
-import '../services/translation_service.dart';
-import '../services/backup_service.dart';
+import 'package:av_wallet_hive/l10n/app_localizations.dart';
+import '../providers/locale_provider.dart';
+import '../providers/usage_provider.dart';
 
 import '../pages/home_page.dart';
 import '../pages/settings_page.dart';
@@ -44,205 +44,70 @@ class CustomAppBar extends ConsumerWidget implements PreferredSizeWidget {
     }
   }
 
-  Future<void> _createBackup(BuildContext context) async {
-    try {
-      final scaffoldMessenger = ScaffoldMessenger.of(context);
-      showDialog(
-        context: context,
-        barrierDismissible: false,
-        builder: (context) => const Center(child: CircularProgressIndicator()),
-      );
-
-      await BackupService.createBackup();
-
-      Navigator.of(context).pop(); // Ferme le dialogue de chargement
-
-      scaffoldMessenger.showSnackBar(
-        const SnackBar(
-          content: Text('Sauvegarde créée avec succès'),
-          backgroundColor: Colors.green,
-        ),
-      );
-    } catch (e) {
-      Navigator.of(context).pop(); // Ferme le dialogue de chargement
-      showDialog(
-        context: context,
-        builder: (context) => AlertDialog(
-          title: const Text('Erreur'),
-          content: Text('Erreur lors de la création de la sauvegarde: $e'),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.of(context).pop(),
-              child: const Text('OK'),
-            ),
-          ],
-        ),
-      );
-    }
-  }
-
-  Future<void> _restoreBackup(BuildContext context) async {
-    try {
-      final scaffoldMessenger = ScaffoldMessenger.of(context);
-      showDialog(
-        context: context,
-        builder: (context) => AlertDialog(
-          title: const Text('Restaurer une sauvegarde'),
-          content: const Text(
-            'Cette action remplacera toutes les données actuelles. '
-            'Voulez-vous continuer ?',
-          ),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.of(context).pop(),
-              child: const Text('Annuler'),
-            ),
-            TextButton(
-              onPressed: () async {
-                Navigator.of(context)
-                    .pop(); // Ferme le dialogue de confirmation
-
-                showDialog(
-                  context: context,
-                  barrierDismissible: false,
-                  builder: (context) =>
-                      const Center(child: CircularProgressIndicator()),
-                );
-
-                try {
-                  // TODO: Implémenter la sélection du fichier de sauvegarde
-                  const backupPath = 'path/to/backup/file';
-                  await BackupService.restoreBackup(backupPath);
-
-                  Navigator.of(context)
-                      .pop(); // Ferme le dialogue de chargement
-
-                  scaffoldMessenger.showSnackBar(
-                    const SnackBar(
-                      content: Text('Restauration effectuée avec succès'),
-                      backgroundColor: Colors.green,
-                    ),
-                  );
-                } catch (e) {
-                  Navigator.of(context)
-                      .pop(); // Ferme le dialogue de chargement
-                  showDialog(
-                    context: context,
-                    builder: (context) => AlertDialog(
-                      title: const Text('Erreur'),
-                      content: Text('Erreur lors de la restauration: $e'),
-                      actions: [
-                        TextButton(
-                          onPressed: () => Navigator.of(context).pop(),
-                          child: const Text('OK'),
-                        ),
-                      ],
-                    ),
-                  );
-                }
-              },
-              child: const Text('Continuer'),
-            ),
-          ],
-        ),
-      );
-    } catch (e) {
-      showDialog(
-        context: context,
-        builder: (context) => AlertDialog(
-          title: const Text('Erreur'),
-          content: Text('Erreur: $e'),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.of(context).pop(),
-              child: const Text('OK'),
-            ),
-          ],
-        ),
-      );
-    }
-  }
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final currentLocale = ref.watch(translationServiceProvider);
+    final currentLocale = ref.watch(localeProvider);
+    final isDarkMode = Theme.of(context).brightness == Brightness.dark;
 
     return PreferredSize(
       preferredSize: preferredSize,
       child: Container(
-        color: Theme.of(context).brightness == Brightness.light 
-            ? AppColors.darkBackground // Fond sombre en mode jour
-            : Colors.transparent, // Transparent en mode sombre
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        width: double.infinity,
+        color: AppColors.appBarColor, // Couleur exacte du sélecteur
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+        child: Transform.translate(
+          offset: const Offset(0, 20), // Déplace tous les éléments de 20px vers le bas
+          child: Row(
           children: [
-            // Partie gauche : Bouton retour et titre
-            Expanded(
-              flex: 2,
-              child: Row(
-                children: [
-                  if (showBackButton)
-                    IconButton(
-                      icon: const Icon(Icons.arrow_back, color: Colors.white),
-                      onPressed: () => Navigator.pop(context),
-                    ),
-                  if (customIcon != null)
-                    customIcon!
-                  else if (pageIcon != null)
-                    Icon(pageIcon, color: Colors.white, size: 24),
-                  if (title != null)
-                    Padding(
-                      padding: const EdgeInsets.only(left: 8),
-                      child: Text(
-                        title!,
-                        style: const TextStyle(
-                          color: Colors.white,
-                          fontSize: 20,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ),
-
-                ],
-              ),
+            // Partie gauche : Bouton retour et icône de page (espace minimum)
+            Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                if (showBackButton)
+                  IconButton(
+                    icon: const Icon(Icons.arrow_back, color: Colors.white, size: 24),
+                    onPressed: () => Navigator.pop(context),
+                    padding: EdgeInsets.zero,
+                    constraints: const BoxConstraints(),
+                  ),
+                if (showBackButton && (customIcon != null || pageIcon != null))
+                  const SizedBox(width: 2),
+                if (customIcon != null)
+                  customIcon!
+                else if (pageIcon != null)
+                  Icon(pageIcon, color: Colors.white, size: 19),
+              ],
             ),
-            // Partie centrale : Logo
+            
+            // Espacement supplémentaire de 20px entre l'icône de page et le logo
+            const SizedBox(width: 20),
+            
+            // Logo au centre (utilise Logo2)
             Expanded(
-              flex: 3,
               child: Center(
                 child: GestureDetector(
                   onTap: () => Navigator.pushReplacement(
                     context,
                     MaterialPageRoute(builder: (context) => const HomePage()),
                   ),
-                  child: Container(
-                    width: 45,
-                    height: 45,
-                    decoration: BoxDecoration(
-                      color: Colors.white.withAlpha(128),
-                      border: Border.all(color: Colors.white, width: 2),
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                    child: Padding(
-                      padding: const EdgeInsets.all(3),
-                      child: Image.asset(
-                        'assets/logo.png',
-                        fit: BoxFit.contain,
-                      ),
-                    ),
+                  child: Image.asset(
+                    'assets/Logo2.png', // Utilise Logo2 comme demandé
+                    width: 50,
+                    height: 50,
+                    fit: BoxFit.contain,
                   ),
                 ),
               ),
             ),
-            // Partie droite : Login et drapeau
-            Expanded(
-              flex: 2,
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.end,
-                children: [
+            
+            // Partie droite : Login et drapeau (espace minimum)
+            Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                  // Menu Login avec icône d'utilisation (étoile 5)
                   PopupMenuButton<String>(
-                    icon: const Icon(Icons.person, color: Colors.white),
+                    icon: const Icon(Icons.person, color: Colors.white, size: 24),
                     onSelected: (value) async {
                       switch (value) {
                         case 'account':
@@ -261,61 +126,142 @@ class CustomAppBar extends ConsumerWidget implements PreferredSizeWidget {
                       }
                     },
                     itemBuilder: (BuildContext context) => [
+                      // Indicateur d'utilisation (étoile 5) dans le menu
+                      PopupMenuItem<String>(
+                        value: 'usage',
+                        enabled: false,
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Icon(Icons.star, size: 18, color: Colors.amber),
+                            SizedBox(width: 6),
+                            Text('Utilisation: ${ref.watch(usageProvider).remainingUsage}', 
+                                 style: TextStyle(fontSize: 10, color: isDarkMode ? Colors.grey[600] : Colors.black87)),
+                          ],
+                        ),
+                      ),
                       PopupMenuItem<String>(
                         value: 'account',
                         child: Row(
+                          mainAxisSize: MainAxisSize.min,
                           children: [
-                            Icon(Icons.settings, size: 20),
-                            SizedBox(width: 8),
-                            Text(AppLocalizations.of(context)!.loginMenu_accountSettings),
+                            Icon(Icons.settings, size: 18),
+                            SizedBox(width: 6),
+                            Text(AppLocalizations.of(context)!.loginMenu_accountSettings, 
+                                 style: TextStyle(fontSize: 10, color: isDarkMode ? Colors.white : Colors.black87)),
                           ],
                         ),
                       ),
                       PopupMenuItem<String>(
                         value: 'presets',
                         child: Row(
+                          mainAxisSize: MainAxisSize.min,
                           children: [
-                            Icon(Icons.save, size: 20),
-                            SizedBox(width: 8),
-                            Text(AppLocalizations.of(context)!.loginMenu_myProjects),
+                            Icon(Icons.save, size: 18),
+                            SizedBox(width: 6),
+                            Text(AppLocalizations.of(context)!.loginMenu_myProjects, 
+                                 style: TextStyle(fontSize: 10, color: isDarkMode ? Colors.white : Colors.black87)),
                           ],
                         ),
                       ),
                       PopupMenuItem<String>(
                         value: 'logout',
                         child: Row(
+                          mainAxisSize: MainAxisSize.min,
                           children: [
-                            Icon(Icons.logout, size: 20),
-                            SizedBox(width: 8),
-                            Text(AppLocalizations.of(context)!.loginMenu_logout),
+                            Icon(Icons.logout, size: 18),
+                            SizedBox(width: 6),
+                            Text(AppLocalizations.of(context)!.loginMenu_logout, 
+                                 style: TextStyle(fontSize: 10, color: isDarkMode ? Colors.white : Colors.black87)),
                           ],
                         ),
                       ),
                     ],
                   ),
-                  GestureDetector(
-                    onTap: () {
-                      // TODO: Implémenter la logique de changement de langue
-                    },
-                    child: Container(
-                      width: 16,
-                      height: 16,
+                  
+                  const SizedBox(width: 2), // Espace minimum entre login et drapeau
+                  
+                  // Drapeau de langue
+                  PopupMenuButton<Locale>(
+                    icon: Container(
+                      width: 15,
+                      height: 15,
                       decoration: BoxDecoration(
                         border: Border.all(color: Colors.white, width: 1),
-                        borderRadius: BorderRadius.circular(4),
+                        borderRadius: BorderRadius.circular(2),
                       ),
                       child: Image.asset(
                         _getFlagAsset(currentLocale),
-                        width: 14,
-                        height: 14,
+                        width: 13,
+                        height: 13,
                         fit: BoxFit.cover,
                       ),
                     ),
+                    onSelected: (Locale locale) {
+                      ref.read(localeProvider.notifier).setLocale(locale);
+                    },
+                    itemBuilder: (BuildContext context) => [
+                      PopupMenuItem<Locale>(
+                        value: const Locale('fr'),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Image.asset('assets/flag_fr_48.png', width: 11, height: 11),
+                            const SizedBox(width: 6),
+                            Text('Français', style: TextStyle(fontSize: 10, color: isDarkMode ? Colors.white : Colors.black87)),
+                          ],
+                        ),
+                      ),
+                      PopupMenuItem<Locale>(
+                        value: const Locale('en'),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Image.asset('assets/flag_en_48.png', width: 11, height: 11),
+                            const SizedBox(width: 6),
+                            Text('English', style: TextStyle(fontSize: 10, color: isDarkMode ? Colors.white : Colors.black87)),
+                          ],
+                        ),
+                      ),
+                      PopupMenuItem<Locale>(
+                        value: const Locale('de'),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Image.asset('assets/flag_de_48.png', width: 11, height: 11),
+                            const SizedBox(width: 6),
+                            Text('Deutsch', style: TextStyle(fontSize: 10, color: isDarkMode ? Colors.white : Colors.black87)),
+                          ],
+                        ),
+                      ),
+                      PopupMenuItem<Locale>(
+                        value: const Locale('es'),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Image.asset('assets/flag_es_48.png', width: 11, height: 11),
+                            const SizedBox(width: 6),
+                            Text('Español', style: TextStyle(fontSize: 10, color: isDarkMode ? Colors.white : Colors.black87)),
+                          ],
+                        ),
+                      ),
+                      PopupMenuItem<Locale>(
+                        value: const Locale('it'),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Image.asset('assets/flag_it_48.png', width: 11, height: 11),
+                            const SizedBox(width: 6),
+                            Text('Italiano', style: TextStyle(fontSize: 10, color: isDarkMode ? Colors.white : Colors.black87)),
+                          ],
+                        ),
+                      ),
+                    ],
                   ),
                 ],
               ),
-            ),
           ],
+        ),
         ),
       ),
     );

@@ -5,16 +5,26 @@ import 'structure_menu_page.dart';
 import 'sound_menu_page.dart';
 import 'video_menu_page.dart';
 import 'divers_menu_page.dart';
-// import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+// import 'package:av_wallet_hive/l10n/app_localizations.dart';
 import '../widgets/preset_widget.dart';
 import '../widgets/custom_app_bar.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../providers/preset_provider.dart';
+import '../providers/catalogue_provider.dart';
+import '../providers/project_provider.dart';
+import '../providers/imported_files_provider.dart';
 import '../models/catalogue_item.dart';
 import '../models/cart_data.dart';
 import '../models/cart_item.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import '../models/preset.dart';
+import 'package:av_wallet_hive/l10n/app_localizations.dart';
 import '../theme/colors.dart';
+import '../widgets/uniform_dropdown.dart';
+import '../widgets/export_widget.dart';
+import '../widgets/uniform_bottom_nav_bar.dart';
+import '../widgets/action_button.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'dart:convert';
 
 class ElectriciteMenuPage extends ConsumerStatefulWidget {
   const ElectriciteMenuPage({super.key});
@@ -31,6 +41,9 @@ class _ElectriciteMenuPageState extends ConsumerState<ElectriciteMenuPage>
   double puissanceParPhase = 0;
   int nombrePhases = 1;
   bool showResult = false;
+  
+  // Gestion des commentaires
+  Map<String, String> _comments = {}; // Clé: "projectId_tabKey", Valeur: commentaire
 
   // Module P = U * I
   final TextEditingController _currentController = TextEditingController();
@@ -43,6 +56,11 @@ class _ElectriciteMenuPageState extends ConsumerState<ElectriciteMenuPage>
   final TextEditingController _kvaController = TextEditingController();
   final TextEditingController _pfController = TextEditingController();
   final String _selectedPf = '0.8';
+  
+  // Variables pour l'onglet calcul projet
+  String searchQuery = '';
+  List<CatalogueItem> searchResults = [];
+  bool showSearchResults = false;
 
   @override
   void initState() {
@@ -50,12 +68,21 @@ class _ElectriciteMenuPageState extends ConsumerState<ElectriciteMenuPage>
     _tabController = TabController(length: 2, vsync: this);
     _pfController.text = _selectedPf;
 
-    _currentController.addListener(_updatePowerCalculations);
-    _powerController.addListener(_updatePowerCalculations);
+    // Supprimé les listeners automatiques pour P=U*I et kW kVA
+    // _currentController.addListener(_updatePowerCalculations);
+    // _powerController.addListener(_updatePowerCalculations);
+    // _kwController.addListener(_updateKvaCalculations);
+    // _kvaController.addListener(_updateKvaCalculations);
+    // _pfController.addListener(_updateKvaCalculations);
+    
+    _loadComments();
+  }
 
-    _kwController.addListener(_updateKvaCalculations);
-    _kvaController.addListener(_updateKvaCalculations);
-    _pfController.addListener(_updateKvaCalculations);
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    // Recharger les commentaires quand on change de projet
+    _loadComments();
   }
 
   @override
@@ -88,6 +115,7 @@ class _ElectriciteMenuPageState extends ConsumerState<ElectriciteMenuPage>
       _currentController.text = current.toStringAsFixed(1);
     }
   }
+
 
   void _updateKvaCalculations() {
     if (_pfController.text.isEmpty ||
@@ -146,175 +174,865 @@ class _ElectriciteMenuPageState extends ConsumerState<ElectriciteMenuPage>
     );
   }
 
-  Widget _buildProjectTab() {
-    final theme = Theme.of(context);
-    final isDark = theme.brightness == Brightness.dark;
-    final preset = ref.read(presetProvider.notifier).activePreset;
+  void _onSearchChanged(String value) {
+    setState(() {
+      searchQuery = value;
+      if (value.length >= 3) {
+        final items = ref.read(catalogueProvider);
+        searchResults = items
+            .where((item) =>
+                item.name.toLowerCase().contains(value.toLowerCase()) ||
+                item.marque.toLowerCase().contains(value.toLowerCase()) ||
+                item.produit.toLowerCase().contains(value.toLowerCase()))
+            .toList();
+        showSearchResults = true;
+      } else {
+        showSearchResults = false;
+      }
+    });
+  }
 
-    if (preset == null) {
+  void _showQuantityDialog(CatalogueItem item, int initialQuantity) {
+    int quantity = initialQuantity;
+    bool isFirstInput = true;
+    final TextEditingController quantityController =
+        TextEditingController(text: quantity.toString());
+
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return StatefulBuilder(
+          builder: (context, setState) {
+            void updateQuantity(String value) {
+              if (isFirstInput && value.isNotEmpty) {
+                isFirstInput = false;
+                quantityController.clear();
+                return;
+              }
+              
+              if (value.isEmpty) return;
+              
+              final newQuantity = int.tryParse(value) ?? 1;
+              if (newQuantity > 0) {
+                setState(() {
+                  quantity = newQuantity;
+                });
+              }
+            }
+
+            return AlertDialog(
+              backgroundColor: Theme.of(context).brightness == Brightness.dark
+                  ? const Color(0xFF0A1128)
+                  : Colors.white,
+              title: Text(
+                'Entrer la quantité',
+                style: Theme.of(context).textTheme.titleLarge!.copyWith(
+                    color: Theme.of(context).brightness == Brightness.dark
+                        ? Colors.white
+                        : Colors.black),
+              ),
+              content: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(
+                    item.produit,
+                    style: Theme.of(context).textTheme.bodyMedium!.copyWith(
+                        color: Theme.of(context).brightness == Brightness.dark
+                            ? Colors.white
+                            : Colors.black),
+                  ),
+                  const SizedBox(height: 16),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      IconButton(
+                        icon: const Icon(Icons.remove),
+                        onPressed: () {
+                          if (quantity > 1) {
+                            setState(() {
+                              quantity--;
+                              quantityController.text = quantity.toString();
+                            });
+                          }
+                        },
+                        color: Theme.of(context).brightness == Brightness.dark
+                            ? Colors.white
+                            : Colors.black,
+                      ),
+                      Container(
+                        width: 80,
+                        padding: const EdgeInsets.symmetric(horizontal: 8),
+                        child: TextField(
+                          controller: quantityController,
+                          keyboardType: TextInputType.number,
+                          textAlign: TextAlign.center,
+                          autofocus: true,
+                          onTap: () {
+                            quantityController.selection = TextSelection(
+                              baseOffset: 0,
+                              extentOffset: quantityController.text.length,
+                            );
+                          },
+                          style: Theme.of(context)
+                              .textTheme
+                              .titleLarge!
+                              .copyWith(
+                                  color: Theme.of(context).brightness ==
+                                          Brightness.dark
+                                      ? Colors.white
+                                      : Colors.black),
+                          decoration: InputDecoration(
+                            isDense: true,
+                            contentPadding:
+                                const EdgeInsets.symmetric(vertical: 8),
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(8),
+                              borderSide: BorderSide(
+                                color: Theme.of(context).brightness ==
+                                        Brightness.dark
+                                    ? Colors.white
+                                    : Colors.black,
+                              ),
+                            ),
+                            enabledBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(8),
+                              borderSide: BorderSide(
+                                color: Theme.of(context).brightness ==
+                                        Brightness.dark
+                                    ? Colors.white
+                                    : Colors.black,
+                              ),
+                            ),
+                            focusedBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(8),
+                              borderSide: BorderSide(
+                                color: Theme.of(context).brightness ==
+                                        Brightness.dark
+                                    ? Colors.white
+                                    : Colors.black,
+                              ),
+                            ),
+                          ),
+                          onChanged: updateQuantity,
+                        ),
+                      ),
+                      IconButton(
+                        icon: const Icon(Icons.add),
+                        onPressed: () {
+                          setState(() {
+                            quantity++;
+                            quantityController.text = quantity.toString();
+                          });
+                        },
+                        color: Theme.of(context).brightness == Brightness.dark
+                            ? Colors.white
+                            : Colors.black,
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.of(context).pop(),
+                  child: const Text('Annuler'),
+                ),
+                ElevatedButton(
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                    // Ajouter l'article au preset actif
+                    final activePreset = ref.read(presetProvider.notifier).activePreset;
+                    if (activePreset != null) {
+                      // Vérifier si l'article existe déjà dans le preset
+                      final existingItemIndex = activePreset.items.indexWhere(
+                        (cartItem) => cartItem.item.id == item.id,
+                      );
+                      
+                      if (existingItemIndex != -1) {
+                        // Modifier la quantité de l'article existant
+                        final updatedItems = List<CartItem>.from(activePreset.items);
+                        updatedItems[existingItemIndex] = updatedItems[existingItemIndex].copyWith(
+                          quantity: quantity,
+                        );
+                        final updatedPreset = activePreset.copyWith(items: updatedItems);
+                        ref.read(presetProvider.notifier).updatePreset(updatedPreset);
+                      } else {
+                        // Ajouter un nouvel article au preset
+                        final newCartItem = CartItem(
+                          item: item,
+                          quantity: quantity,
+                        );
+                        final updatedItems = [...activePreset.items, newCartItem];
+                        final updatedPreset = activePreset.copyWith(items: updatedItems);
+                        ref.read(presetProvider.notifier).updatePreset(updatedPreset);
+                      }
+                      setState(() {});
+                    }
+                  },
+                  child: const Text('OK'),
+                ),
+              ],
+            );
+          },
+        );
+      },
+    );
+  }
+
+  Widget _buildProjectTab() {
+    // Récupérer tous les presets du projet actuel au lieu d'un seul
+    final presets = ref.watch(presetProvider);
+    
+    if (presets.isEmpty) {
       return Center(
         child: Text(
-          'Aucun preset sélectionné',
-          style: TextStyle(
-            color: isDark ? AppColors.lightText : AppColors.mainBlue
-          ),
+          AppLocalizations.of(context)!.noPresetSelected,
+          style: Theme.of(context).textTheme.bodyLarge,
         ),
       );
     }
 
-    final items = preset.items;
-
     final grouped = <String, List<CatalogueItem>>{};
     final totalsPerCategory = <String, double>{};
-    double totalPreset = 0;
+    double totalProjet = 0;
+    int totalItems = 0;
+    int totalExports = 0;
 
-    // 🔹 Calcule pour le preset sélectionné
-    for (var item in items) {
-      final cat = item.item.categorie;
-      grouped.putIfAbsent(cat, () => []).add(item.item);
+    // 🔹 Calcule pour TOUS les presets du projet (focus sur la puissance)
+    for (final preset in presets) {
+      for (var item in preset.items) {
+        final cat = item.item.categorie;
+        grouped.putIfAbsent(cat, () => []).add(item.item);
 
-      final value = item.item.conso.contains('W')
-          ? (double.tryParse(item.item.conso.replaceAll('W', '').trim()) ?? 0) * item.quantity
-          : 0;
+        final value = item.item.conso.contains('W')
+            ? (double.tryParse(item.item.conso.replaceAll('W', '').trim()) ?? 0) * item.quantity
+            : 0;
 
-      totalsPerCategory.update(
-        cat,
-        (existing) => existing + value,
-        ifAbsent: () => value.toDouble(),
-      );
+        totalsPerCategory.update(
+          cat,
+          (existing) => existing + value,
+          ifAbsent: () => value.toDouble(),
+        );
 
-      totalPreset += value;
+        totalProjet += value;
+        
+        // Compter les exports
+        if (item.item.categorie == 'Export') {
+          totalExports += item.quantity;
+        } else {
+          // Compter seulement les vrais articles (pas les exports)
+          totalItems += item.quantity;
+        }
+      }
     }
 
     return Container(
       padding: const EdgeInsets.all(16),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            preset.name,
-            style: TextStyle(
-              color: isDark ? AppColors.lightText : AppColors.mainBlue,
-              fontSize: 18,
-              fontWeight: FontWeight.bold,
-            ),
-          ),
-          const SizedBox(height: 16),
-          ...grouped.entries.map((entry) {
-            final category = entry.key;
-            final items = entry.value;
-            final total = totalsPerCategory[category] ?? 0;
-
-            return Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  category,
-                  style: TextStyle(
-                    color: isDark ? AppColors.lightText : AppColors.mainBlue,
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
+      decoration: BoxDecoration(
+        color: const Color(0xFF0A1128).withOpacity(0.3),
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: SingleChildScrollView(
+        physics: const AlwaysScrollableScrollPhysics(),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // Barre de recherche pour ajouts d'articles de dernière minute
+            Container(
+              margin: const EdgeInsets.only(bottom: 16),
+              child: TextField(
+                onChanged: _onSearchChanged,
+                decoration: InputDecoration(
+                  hintText: AppLocalizations.of(context)!.searchArticlePlaceholder,
+                  hintStyle: TextStyle(color: Colors.white.withOpacity(0.7)),
+                  prefixIcon: Icon(Icons.search, color: Colors.white),
+                  filled: true,
+                  fillColor: const Color(0xFF0A1128).withOpacity(0.3),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                    borderSide: BorderSide(color: Colors.white, width: 1),
+                  ),
+                  enabledBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                    borderSide: BorderSide(color: Colors.white.withOpacity(0.5), width: 1),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                    borderSide: BorderSide(color: Colors.white, width: 2),
                   ),
                 ),
-                const SizedBox(height: 8),
-                ...items.map((item) {
-                  final cartItem = preset.items.firstWhere(
-                    (cartItem) => cartItem.item.id == item.id,
-                    orElse: () => CartItem(item: item, quantity: 0),
-                  );
-                  
-                  return Padding(
-                    padding: const EdgeInsets.only(left: 16, bottom: 4),
-                    child: Row(
-                      children: [
-                        Expanded(
-                          child: Text(
-                            '${item.produit} - ${item.marque}',
-                            style: TextStyle(
-                              color: isDark ? Colors.white70 : AppColors.mainBlue.withOpacity(0.7)
-                            ),
-                          ),
-                        ),
-                        Row(
-                          mainAxisSize: MainAxisSize.min,
+                style: TextStyle(color: Colors.white),
+              ),
+            ),
+            
+            // Résultats de recherche
+            if (showSearchResults && searchResults.isNotEmpty) ...[
+              Container(
+                margin: const EdgeInsets.only(bottom: 16),
+                decoration: BoxDecoration(
+                  color: const Color(0xFF0A1128).withOpacity(0.3),
+                  border: Border.all(color: Colors.white, width: 1),
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    ...searchResults.take(5).map((item) => InkWell(
+                      onTap: () {
+                        // Fermer la recherche
+                        setState(() {
+                          searchQuery = '';
+                          showSearchResults = false;
+                          searchResults.clear();
+                        });
+                        // Lancer automatiquement le popup quantité
+                        _showQuantityDialog(item, 1);
+                      },
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 12),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            IconButton(
-                              icon: const Icon(Icons.remove, size: 16),
-                              onPressed: () {
-                                if (cartItem.quantity > 1) {
-                                  cartItem.quantity--;
-                                  ref.read(presetProvider.notifier).updatePreset(preset);
-                                  setState(() {});
-                                }
-                              },
-                              color: isDark ? Colors.white : Colors.black,
-                              padding: EdgeInsets.zero,
-                              constraints: const BoxConstraints(),
-                            ),
-                            Container(
-                              width: 32,
-                              padding: const EdgeInsets.symmetric(horizontal: 4),
-                              child: Text(
-                                cartItem.quantity.toString(),
-                                textAlign: TextAlign.center,
-                                style: TextStyle(
-                                  color: isDark ? Colors.white70 : AppColors.mainBlue.withOpacity(0.7)
-                                ),
+                            Text(
+                              '${item.marque} - ${item.produit}',
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 12,
                               ),
                             ),
-                            IconButton(
-                              icon: const Icon(Icons.add, size: 16),
-                              onPressed: () {
-                                cartItem.quantity++;
-                                ref.read(presetProvider.notifier).updatePreset(preset);
-                                setState(() {});
-                              },
-                              color: isDark ? Colors.white : Colors.black,
-                              padding: EdgeInsets.zero,
-                              constraints: const BoxConstraints(),
+                            if (item.sousCategorie.isNotEmpty)
+                              Text(
+                                item.sousCategorie,
+                                style: TextStyle(
+                                  color: Colors.white.withOpacity(0.7),
+                                  fontSize: 10,
+                                ),
+                              ),
+                          ],
+                        ),
+                      ),
+                    )),
+                  ],
+                ),
+              ),
+            ],
+            
+            // Résumé global du projet
+            Container(
+              width: double.infinity,
+              constraints: BoxConstraints(
+                minWidth: 200,
+                maxWidth: 400,
+              ),
+              padding: const EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                color: const Color(0xFF0A1128).withOpacity(0.3),
+                border: Border.all(color: Colors.white, width: 1),
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    '${ref.read(projectProvider).projects.isNotEmpty ? ref.read(projectProvider).getTranslatedProjectName(ref.read(projectProvider).selectedProject, AppLocalizations.of(context)!) : AppLocalizations.of(context)!.defaultProjectName}',
+                    style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                      fontSize: Theme.of(context).textTheme.titleLarge!.fontSize! - 3,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white,
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+                  Text(
+                    '${AppLocalizations.of(context)!.presetCount} : ${presets.length}',
+                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                      color: Colors.white,
+                    ),
+                  ),
+                  Text(
+                    '${AppLocalizations.of(context)!.totalArticlesCount} : $totalItems',
+                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                      color: Colors.white,
+                    ),
+                  ),
+                  Text(
+                    '${AppLocalizations.of(context)!.exportCount} : $totalExports',
+                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                      color: Colors.white,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(height: 16),
+            
+            // Détail par preset
+            ...presets.asMap().entries.map((presetEntry) {
+              final presetIndex = presetEntry.key;
+              final preset = presetEntry.value;
+              
+              // Calculer le total pour ce preset
+              double totalPreset = 0;
+              final groupedByCategory = <String, List<CartItem>>{};
+              
+              for (var item in preset.items) {
+                final cat = item.item.categorie;
+                groupedByCategory.putIfAbsent(cat, () => []).add(item);
+                
+                final value = item.item.conso.contains('W')
+                    ? (double.tryParse(item.item.conso.replaceAll('W', '').trim()) ?? 0) * item.quantity
+                    : 0;
+                
+                totalPreset += value;
+              }
+              
+              return Container(
+                margin: const EdgeInsets.only(bottom: 16),
+                decoration: BoxDecoration(
+                  color: const Color(0xFF0A1128).withOpacity(0.3),
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(color: Colors.white, width: 1), // Bordure blanche pour le cadre preset
+                ),
+                child: Padding(
+                  padding: const EdgeInsets.all(16),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      // Titre du preset
+                      Text(
+                        preset.name,
+                        style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                          fontWeight: FontWeight.bold,
+                          color: Colors.white,
+                        ),
+                      ),
+                      const SizedBox(height: 4),
+                      // Catégorie du preset (si tous les articles ont la même catégorie)
+                      if (preset.items.isNotEmpty && preset.items.where((item) => item.item.categorie != 'Export').isNotEmpty) ...[
+                        Text(
+                          preset.items.where((item) => item.item.categorie != 'Export').first.item.categorie,
+                          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                            fontWeight: FontWeight.bold,
+                            color: Colors.blue[300],
+                            fontSize: 14,
+                          ),
+                        ),
+                        const SizedBox(height: 8),
+                      ],
+                      
+                      // Articles du preset (sans groupement par catégorie et sans exports)
+                      ...preset.items
+                          .where((item) => item.item.categorie != 'Export') // Filtrer les exports
+                          .map((item) => Padding(
+                        padding: const EdgeInsets.only(bottom: 12),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            // Ligne 1: Nom de l'article
+                            Text(
+                              '${item.item.name} (${item.item.marque})',
+                              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                color: Colors.white,
+                                fontWeight: FontWeight.w500,
+                              ),
                             ),
-                            IconButton(
-                              icon: const Icon(Icons.delete_outline, size: 16),
-                              onPressed: () {
-                                preset.items.removeWhere((item) => item.item.id == cartItem.item.id);
-                                ref.read(presetProvider.notifier).updatePreset(preset);
-                                setState(() {});
-                              },
-                              color: isDark ? Colors.white : Colors.black,
-                              padding: EdgeInsets.zero,
-                              constraints: const BoxConstraints(),
+                            const SizedBox(height: 4),
+                            // Ligne 2: Quantité avec + et - et puissance à droite
+                            Row(
+                              children: [
+                                // Bouton -
+                                GestureDetector(
+                                  onTap: () async {
+                                    if (item.quantity > 1) {
+                                      final newQuantity = item.quantity - 1;
+                                      // Mettre à jour le preset
+                                      final updatedItems = preset.items.map((i) {
+                                        if (i.item.id == item.item.id) {
+                                          return i.copyWith(quantity: newQuantity);
+                                        }
+                                        return i;
+                                      }).toList();
+                                      
+                                      final updatedPreset = preset.copyWith(items: updatedItems);
+                                      await ref.read(presetProvider.notifier).updatePreset(updatedPreset);
+                                      
+                                      // Le provider notifiera automatiquement le changement
+                                    }
+                                  },
+                                  child: Container(
+                                    width: 24,
+                                    height: 24,
+                                    decoration: BoxDecoration(
+                                      color: Colors.red.withOpacity(0.3),
+                                      borderRadius: BorderRadius.circular(12),
+                                      border: Border.all(color: Colors.white, width: 1),
+                                    ),
+                                    child: Icon(
+                                      Icons.remove,
+                                      color: Colors.white,
+                                      size: 16,
+                                    ),
+                                  ),
+                                ),
+                                const SizedBox(width: 8),
+                                // Quantité (cliquable pour modification)
+                                GestureDetector(
+                                  onTap: () {
+                                    _showPresetItemQuantityDialog(item, preset);
+                                  },
+                                  child: Container(
+                                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+                                    decoration: BoxDecoration(
+                                      color: Colors.white.withOpacity(0.1),
+                                      borderRadius: BorderRadius.circular(8),
+                                      border: Border.all(color: Colors.white, width: 1),
+                                    ),
+                                    child: Text(
+                                      '${item.quantity}',
+                                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                        color: Colors.white,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                                const SizedBox(width: 8),
+                                // Bouton +
+                                GestureDetector(
+                                  onTap: () async {
+                                    final newQuantity = item.quantity + 1;
+                                    // Mettre à jour le preset
+                                    final updatedItems = preset.items.map((i) {
+                                      if (i.item.id == item.item.id) {
+                                        return i.copyWith(quantity: newQuantity);
+                                      }
+                                      return i;
+                                    }).toList();
+                                    
+                                    final updatedPreset = preset.copyWith(items: updatedItems);
+                                    await ref.read(presetProvider.notifier).updatePreset(updatedPreset);
+                                    
+                                    // Le provider notifiera automatiquement le changement
+                                  },
+                                  child: Container(
+                                    width: 24,
+                                    height: 24,
+                                    decoration: BoxDecoration(
+                                      color: Colors.green.withOpacity(0.3),
+                                      borderRadius: BorderRadius.circular(12),
+                                      border: Border.all(color: Colors.white, width: 1),
+                                    ),
+                                    child: Icon(
+                                      Icons.add,
+                                      color: Colors.white,
+                                      size: 16,
+                                    ),
+                                  ),
+                                ),
+                                const Spacer(),
+                                // Puissance à droite
+                                Text(
+                                  '${(double.tryParse(item.item.conso.replaceAll('W', '').trim()) ?? 0) * item.quantity} W',
+                                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                    color: Colors.white,
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                                ),
+                              ],
                             ),
                           ],
                         ),
-                      ],
-                    ),
-                  );
-                }),
-                Padding(
-                  padding: const EdgeInsets.only(left: 16, top: 4),
-                  child: Text(
-                    'Total puissance ${category.toLowerCase()} : ${total.toStringAsFixed(2)}W',
-                    style: TextStyle(
-                      color: isDark ? AppColors.lightText : AppColors.mainBlue,
+                      )),
+                      
+                      // Total de ce preset
+                      Container(
+                        margin: const EdgeInsets.only(top: 12),
+                        padding: const EdgeInsets.all(12),
+                        decoration: BoxDecoration(
+                          color: const Color(0xFF0A1128).withOpacity(0.3),
+                          borderRadius: BorderRadius.circular(8),
+                          border: Border.all(
+                            color: Theme.of(context).brightness == Brightness.dark 
+                                ? Colors.lightBlue[300]! // Bleu ciel en mode sombre
+                                : const Color(0xFF1B3B5A), // Bleu nuit en mode clair
+                            width: 1
+                          ), // Bordure adaptative pour le total preset
+                        ),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            // Ligne 1: Total Puissance
+                            Text(
+                              '${AppLocalizations.of(context)!.totalPreset} ${AppLocalizations.of(context)!.power}',
+                              style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                                fontWeight: FontWeight.bold,
+                                color: Colors.white,
+                              ),
+                            ),
+                            const SizedBox(height: 4),
+                            // Ligne 2: Projet + résultat
+                            Text(
+                              '${preset.name} : ${(totalPreset / 1000).toStringAsFixed(2)} kW',
+                              style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                                fontWeight: FontWeight.bold,
+                                color: Colors.white,
+                                fontSize: 14,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              );
+            }),
+            
+            // Total global du projet (tout en bas)
+            const SizedBox(height: 20),
+            Container(
+              padding: const EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                color: const Color(0xFF0A1128).withOpacity(0.3),
+                border: Border.all(color: Colors.white, width: 1), // Bordure blanche pour le total projet
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  // Ligne 1: Total Puissance
+                  Text(
+                    '${AppLocalizations.of(context)!.totalProject} ${AppLocalizations.of(context)!.power}',
+                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
                       fontWeight: FontWeight.bold,
+                      color: Colors.white,
+                      fontSize: 16,
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  // Ligne 2: Nom Projet + calcul du total en kW
+                  Text(
+                    '${ref.read(projectProvider).projects.isNotEmpty ? ref.read(projectProvider).getTranslatedProjectName(ref.read(projectProvider).selectedProject, AppLocalizations.of(context)!) : AppLocalizations.of(context)!.defaultProjectName} : ${(totalProjet / 1000).toStringAsFixed(2)} kW',
+                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white,
+                      fontSize: 16,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            
+            // Commentaire utilisateur (au-dessus des boutons)
+            if (_getCommentForTab('power_tab').isNotEmpty) ...[
+              const SizedBox(height: 20),
+              Container(
+                width: double.infinity,
+                padding: const EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  color: Theme.of(context).brightness == Brightness.dark
+                      ? Colors.blue[900]?.withOpacity(0.3)
+                      : Colors.blue[50],
+                  borderRadius: BorderRadius.circular(8),
+                  border: Border.all(
+                    color: Theme.of(context).brightness == Brightness.dark
+                        ? Colors.lightBlue[300]!
+                        : Colors.blue[300]!,
+                    width: 1,
+                  ),
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Icon(
+                      Icons.chat_bubble_outline,
+                      size: 16,
+                      color: Theme.of(context).brightness == Brightness.dark
+                          ? Colors.lightBlue[300]
+                          : Colors.blue[700],
+                    ),
+                    const SizedBox(height: 6),
+                    Text(
+                      _getCommentForTab('power_tab'),
+                      style: TextStyle(
+                        fontSize: 13,
+                        color: Theme.of(context).brightness == Brightness.dark
+                            ? Colors.white
+                            : Colors.black87,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+            
+            // Cadre des fichiers importés (PDF et photos)
+            Consumer(
+              builder: (context, ref, child) {
+                final importedFiles = ref.watch(importedFilesProvider);
+                if (importedFiles.isEmpty) return const SizedBox.shrink();
+                
+                return Column(
+                  children: [
+                    const SizedBox(height: 20),
+                    Container(
+                      padding: const EdgeInsets.all(16),
+                      decoration: BoxDecoration(
+                        color: const Color(0xFF0A1128).withOpacity(0.3),
+                        border: Border.all(
+                          color: Colors.white.withOpacity(0.3),
+                          width: 1,
+                        ),
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Row(
+                            children: [
+                              Icon(
+                                Icons.folder_open,
+                                color: Colors.white.withOpacity(0.8),
+                                size: 20,
+                              ),
+                              const SizedBox(width: 8),
+                              Text(
+                                'Fichiers importés (${importedFiles.length})',
+                                style: TextStyle(
+                                  color: Colors.white.withOpacity(0.9),
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
+                            ],
+                          ),
+                          const SizedBox(height: 12),
+                          ...(importedFiles.map((fileName) {
+                            final isPdf = fileName.toLowerCase().endsWith('.pdf');
+                            final isImage = fileName.toLowerCase().endsWith('.jpg') || 
+                                           fileName.toLowerCase().endsWith('.jpeg') || 
+                                           fileName.toLowerCase().endsWith('.png');
+                            
+                            return Container(
+                              margin: const EdgeInsets.only(bottom: 8),
+                              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                              decoration: BoxDecoration(
+                                color: Colors.white.withOpacity(0.1),
+                                borderRadius: BorderRadius.circular(8),
+                                border: Border.all(
+                                  color: Colors.white.withOpacity(0.2),
+                                  width: 1,
+                                ),
+                              ),
+                              child: Row(
+                                children: [
+                                  Icon(
+                                    isPdf ? Icons.picture_as_pdf : 
+                                    isImage ? Icons.image : Icons.insert_drive_file,
+                                    color: isPdf ? Colors.red.withOpacity(0.8) : 
+                                           isImage ? Colors.blue.withOpacity(0.8) : 
+                                           Colors.grey.withOpacity(0.8),
+                                    size: 18,
+                                  ),
+                                  const SizedBox(width: 8),
+                                  Expanded(
+                                    child: Text(
+                                      fileName,
+                                      style: TextStyle(
+                                        color: Colors.white.withOpacity(0.9),
+                                        fontSize: 12,
+                                      ),
+                                      overflow: TextOverflow.ellipsis,
+                                    ),
+                                  ),
+                                  IconButton(
+                                    onPressed: () => ref.read(importedFilesProvider.notifier).removeFile(fileName),
+                                    icon: Icon(
+                                      Icons.delete_outline,
+                                      color: Colors.red.withOpacity(0.8),
+                                      size: 18,
+                                    ),
+                                    padding: EdgeInsets.zero,
+                                    constraints: const BoxConstraints(
+                                      minWidth: 24,
+                                      minHeight: 24,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            );
+                          }).toList()),
+                        ],
+                      ),
+                    ),
+                  ],
+                );
+              },
+            ),
+            
+            // Boutons d'action en bas de page
+            const SizedBox(height: 20),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                // Bouton Commentaire (icône uniquement)
+                ActionButton.comment(
+                  onPressed: () => _showCommentDialog('power_tab', 'Puissance'),
+                  iconSize: 28,
+                ),
+                const SizedBox(width: 20),
+                // Bouton Export (rotated)
+                Transform.rotate(
+                  angle: 3.14159, // 180° en radians
+                  child: Container(
+                    decoration: BoxDecoration(
+                      color: Colors.transparent,
+                    ),
+                    child: Consumer(
+                      builder: (context, ref, child) {
+                        try {
+                          final project = ref.watch(projectProvider);
+                          final projectName = project.projects.isNotEmpty 
+                              ? project.getTranslatedProjectName(project.selectedProject, AppLocalizations.of(context)!)
+                              : AppLocalizations.of(context)!.defaultProjectName;
+                          
+                          return ExportWidget(
+                            title: '${AppLocalizations.of(context)!.defaultProjectName} $projectName',
+                            content: 'Résumé complet du projet avec tous les presets et articles',
+                            presetName: projectName,
+                            exportDate: DateTime.now(),
+                            additionalData: [
+                              {
+                                'totalItems': totalItems.toString(),
+                                'totalExports': totalExports.toString(),
+                                'totalPower': '${(totalProjet / 1000).toStringAsFixed(2)} kW',
+                                'presetCount': presets.length.toString(),
+                              }
+                            ],
+                          );
+                        } catch (e) {
+                          return ExportWidget(
+                            title: '${AppLocalizations.of(context)!.defaultProjectName} Projet',
+                            content: 'Résumé complet du projet avec tous les presets et articles',
+                            presetName: AppLocalizations.of(context)!.defaultProjectName,
+                            exportDate: DateTime.now(),
+                            additionalData: [
+                              {
+                                'totalItems': totalItems.toString(),
+                                'totalExports': totalExports.toString(),
+                                'totalPower': '${(totalProjet / 1000).toStringAsFixed(2)} kW',
+                                'presetCount': presets.length.toString(),
+                              }
+                            ],
+                          );
+                        }
+                      },
                     ),
                   ),
                 ),
-                const SizedBox(height: 16),
               ],
-            );
-          }),
-          const Divider(color: Colors.white30),
-          const SizedBox(height: 8),
-          Text(
-            'Total puissance preset : ${totalPreset.toStringAsFixed(2)}W',
-            style: TextStyle(
-              color: isDark ? AppColors.lightText : AppColors.mainBlue,
-              fontSize: 16,
-              fontWeight: FontWeight.bold,
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
@@ -350,7 +1068,7 @@ class _ElectriciteMenuPageState extends ConsumerState<ElectriciteMenuPage>
                       'P = U × I',
                       style: const TextStyle(
                         color: Colors.white,
-                        fontSize: 16,
+                        fontSize: 14,
                         fontWeight: FontWeight.bold
                       ),
                     ),
@@ -369,69 +1087,53 @@ class _ElectriciteMenuPageState extends ConsumerState<ElectriciteMenuPage>
                     Text(
                       _isThreePhase ? 'Triphasé' : 'Monophasé',
                       style: const TextStyle(
-                        color: Colors.white
+                        color: Colors.white,
+                        fontSize: 12
                       ),
                     ),
                   ],
                 ),
                 const SizedBox(height: 8),
+                // Menu déroulant tension sur une ligne séparée
+                Theme(
+                  data: Theme.of(context).copyWith(
+                    canvasColor: const Color(0xFF0A1128),
+                  ),
+                  child: UniformDropdown(
+                    value: _selectedVoltage,
+                    labelText: 'Tension U (V)',
+                    items: const [
+                      '110',
+                      '120', 
+                      '220',
+                      '230',
+                    ],
+                    onChanged: (value) {
+                      if (value != null) {
+                        setState(() {
+                          _selectedVoltage = value;
+                          _updatePowerCalculations();
+                        });
+                      }
+                    },
+                  ),
+                ),
+                const SizedBox(height: 12),
+                // Champs de saisie sur une ligne
                 Row(
                   children: [
-                    Expanded(
-                      child: Theme(
-                        data: Theme.of(context).copyWith(
-                          canvasColor: const Color(0xFF0A1128),
-                        ),
-                        child: DropdownButtonFormField<String>(
-                          value: _selectedVoltage,
-                          isExpanded: true,
-                          isDense: true,
-                          style: const TextStyle(
-                            color: Colors.white
-                          ),
-                          decoration: const InputDecoration(
-                            filled: true,
-                            fillColor: Colors.transparent,
-                            labelText: 'U (V)',
-                            labelStyle: TextStyle(
-                              color: Colors.white70
-                            ),
-                            enabledBorder: UnderlineInputBorder(
-                              borderSide: BorderSide(
-                                color: Colors.white30
-                              ),
-                            ),
-                            focusedBorder: UnderlineInputBorder(
-                              borderSide: BorderSide(
-                                color: Colors.white
-                              ),
-                            ),
-                          ),
-                          items: const [
-                            DropdownMenuItem(value: '110', child: Text('110')),
-                            DropdownMenuItem(value: '120', child: Text('120')),
-                            DropdownMenuItem(value: '220', child: Text('220')),
-                            DropdownMenuItem(value: '230', child: Text('230')),
-                          ],
-                          onChanged: (value) {
-                            if (value != null) {
-                              setState(() {
-                                _selectedVoltage = value;
-                                _updatePowerCalculations();
-                              });
-                            }
-                          },
-                        ),
-                      ),
-                    ),
-                    const SizedBox(width: 16),
                     Expanded(
                       child: TextField(
                         controller: _currentController,
                         style: const TextStyle(
-                          color: Colors.white
+                          color: Colors.white,
+                          fontSize: 12
                         ),
                         keyboardType: TextInputType.number,
+                        textInputAction: TextInputAction.done,
+                        onSubmitted: (_) {
+                          FocusScope.of(context).unfocus();
+                        },
                         decoration: InputDecoration(
                           filled: true,
                           fillColor: Colors.transparent,
@@ -439,7 +1141,8 @@ class _ElectriciteMenuPageState extends ConsumerState<ElectriciteMenuPage>
                               ? 'I phase (A)'
                               : 'I (A)',
                           labelStyle: const TextStyle(
-                            color: Colors.white70
+                            color: Colors.white70,
+                            fontSize: 10
                           ),
                           enabledBorder: const UnderlineInputBorder(
                             borderSide: BorderSide(
@@ -459,9 +1162,14 @@ class _ElectriciteMenuPageState extends ConsumerState<ElectriciteMenuPage>
                       child: TextField(
                         controller: _powerController,
                         style: const TextStyle(
-                          color: Colors.white
+                          color: Colors.white,
+                          fontSize: 12
                         ),
                         keyboardType: TextInputType.number,
+                        textInputAction: TextInputAction.done,
+                        onSubmitted: (_) {
+                          FocusScope.of(context).unfocus();
+                        },
                         decoration: InputDecoration(
                           filled: true,
                           fillColor: Colors.transparent,
@@ -469,7 +1177,8 @@ class _ElectriciteMenuPageState extends ConsumerState<ElectriciteMenuPage>
                               ? 'P totale (W)'
                               : 'P (W)',
                           labelStyle: const TextStyle(
-                            color: Colors.white70
+                            color: Colors.white70,
+                            fontSize: 10
                           ),
                           enabledBorder: const UnderlineInputBorder(
                             borderSide: BorderSide(
@@ -487,19 +1196,39 @@ class _ElectriciteMenuPageState extends ConsumerState<ElectriciteMenuPage>
                   ],
                 ),
                 const SizedBox(height: 8),
-                TextButton(
-                  onPressed: () {
-                    setState(() {
-                      _currentController.clear();
-                      _powerController.clear();
-                    });
-                  },
-                  child: const Text(
-                    'Réinitialiser',
-                    style: TextStyle(
-                      color: Colors.blue
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: [
+                    ElevatedButton(
+                      onPressed: _updatePowerCalculations,
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.green[700],
+                        padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 4),
+                      ),
+                      child: const Text(
+                        'OK',
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 10
+                        ),
+                      ),
                     ),
-                  ),
+                    TextButton(
+                      onPressed: () {
+                        setState(() {
+                          _currentController.clear();
+                          _powerController.clear();
+                        });
+                      },
+                      child: const Text(
+                        'Réinitialiser',
+                        style: TextStyle(
+                          color: Colors.blue,
+                          fontSize: 12
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
               ],
             ),
@@ -523,7 +1252,7 @@ class _ElectriciteMenuPageState extends ConsumerState<ElectriciteMenuPage>
                   'kW ↔ kVA',
                   style: const TextStyle(
                     color: Colors.white,
-                    fontSize: 16,
+                    fontSize: 14,
                     fontWeight: FontWeight.bold
                   ),
                 ),
@@ -534,9 +1263,14 @@ class _ElectriciteMenuPageState extends ConsumerState<ElectriciteMenuPage>
                       child: TextField(
                         controller: _kwController,
                         style: const TextStyle(
-                          color: Colors.white
+                          color: Colors.white,
+                          fontSize: 12
                         ),
                         keyboardType: TextInputType.number,
+                        textInputAction: TextInputAction.done,
+                        onSubmitted: (_) {
+                          FocusScope.of(context).unfocus();
+                        },
                         decoration: const InputDecoration(
                           filled: true,
                           fillColor: Colors.transparent,
@@ -562,9 +1296,14 @@ class _ElectriciteMenuPageState extends ConsumerState<ElectriciteMenuPage>
                       child: TextField(
                         controller: _pfController,
                         style: const TextStyle(
-                          color: Colors.white
+                          color: Colors.white,
+                          fontSize: 12
                         ),
                         keyboardType: TextInputType.number,
+                        textInputAction: TextInputAction.done,
+                        onSubmitted: (_) {
+                          FocusScope.of(context).unfocus();
+                        },
                         decoration: const InputDecoration(
                           filled: true,
                           fillColor: Colors.transparent,
@@ -590,9 +1329,14 @@ class _ElectriciteMenuPageState extends ConsumerState<ElectriciteMenuPage>
                       child: TextField(
                         controller: _kvaController,
                         style: const TextStyle(
-                          color: Colors.white
+                          color: Colors.white,
+                          fontSize: 12
                         ),
                         keyboardType: TextInputType.number,
+                        textInputAction: TextInputAction.done,
+                        onSubmitted: (_) {
+                          FocusScope.of(context).unfocus();
+                        },
                         decoration: const InputDecoration(
                           filled: true,
                           fillColor: Colors.transparent,
@@ -616,20 +1360,40 @@ class _ElectriciteMenuPageState extends ConsumerState<ElectriciteMenuPage>
                   ],
                 ),
                 const SizedBox(height: 8),
-                TextButton(
-                  onPressed: () {
-                    setState(() {
-                      _pfController.text = _selectedPf;
-                      _kwController.clear();
-                      _kvaController.clear();
-                    });
-                  },
-                  child: const Text(
-                    'Réinitialiser',
-                    style: TextStyle(
-                      color: Colors.blue
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: [
+                    ElevatedButton(
+                      onPressed: _updateKvaCalculations,
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.green[700],
+                        padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 4),
+                      ),
+                      child: const Text(
+                        'OK',
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 10
+                        ),
+                      ),
                     ),
-                  ),
+                    TextButton(
+                      onPressed: () {
+                        setState(() {
+                          _pfController.text = _selectedPf;
+                          _kwController.clear();
+                          _kvaController.clear();
+                        });
+                      },
+                      child: const Text(
+                        'Réinitialiser',
+                        style: TextStyle(
+                          color: Colors.blue,
+                          fontSize: 12
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
               ],
             ),
@@ -652,7 +1416,7 @@ class _ElectriciteMenuPageState extends ConsumerState<ElectriciteMenuPage>
       body: Stack(
         children: [
           Opacity(
-            opacity: isDark ? 0.5 : 0.15,
+            opacity: 0.1,
             child: Container(
               decoration: const BoxDecoration(
                 image: DecorationImage(
@@ -668,12 +1432,35 @@ class _ElectriciteMenuPageState extends ConsumerState<ElectriciteMenuPage>
                 const SizedBox(height: 8),
                 TabBar(
                   controller: _tabController,
-                  labelColor: isDark ? AppColors.lightText : AppColors.mainBlue,
-                  unselectedLabelColor: Colors.grey,
-                  indicatorColor: isDark ? AppColors.lightText : AppColors.mainBlue,
-                  tabs: const [
-                    Tab(text: 'Calcul Projet'),
-                    Tab(text: 'Calcul Puissance'),
+                  labelColor: isDark ? Colors.lightBlue[300] : const Color(0xFF1B3B5A), // Bleu ciel en mode sombre, bleu nuit en mode clair
+                  unselectedLabelColor: Colors.white, // Blanc pour l'onglet non sélectionné
+                  indicatorColor: isDark ? Colors.lightBlue[300] : const Color(0xFF1B3B5A), // Indicateur adaptatif
+                  labelStyle: TextStyle(fontSize: 12), // Réduit de 2 points (14 -> 12)
+                  unselectedLabelStyle: TextStyle(fontSize: 12), // Réduit de 2 points (14 -> 12)
+                  tabs: [
+                    Tab(
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Icon(Icons.bolt, size: 16),
+                          const SizedBox(width: 4),
+                          Consumer(
+                            builder: (context, ref, child) {
+                              try {
+                                final project = ref.watch(projectProvider).selectedProject;
+                                final projectName = project != null 
+                                    ? ref.read(projectProvider).getTranslatedProjectName(project, AppLocalizations.of(context)!)
+                                    : 'Projet';
+                                return Text('Puiss. $projectName');
+                              } catch (e) {
+                                return const Text('Puiss. Projet');
+                              }
+                            },
+                          ),
+                        ],
+                      ),
+                    ),
+                    const Tab(text: 'Calcul Puissance'),
                   ],
                 ),
                 const SizedBox(height: 6),
@@ -726,32 +1513,250 @@ class _ElectriciteMenuPageState extends ConsumerState<ElectriciteMenuPage>
           ),
         ],
       ),
-      bottomNavigationBar: BottomNavigationBar(
-        type: BottomNavigationBarType.fixed,
-        backgroundColor: AppColors.cardBlue,
-        selectedItemColor: AppColors.lightText,
-        unselectedItemColor: Colors.grey,
-        currentIndex: 5,
-        onTap: _navigateTo,
-        items: [
-          BottomNavigationBarItem(
-              icon: const Icon(Icons.list), label: loc.catalogAccess),
-          BottomNavigationBarItem(
-              icon: const Icon(Icons.lightbulb), label: loc.lightMenu),
-          BottomNavigationBarItem(
-              icon: Image.asset('assets/truss_icon_grey.png',
-                  width: 24, height: 24),
-              label: loc.structureMenu),
-          BottomNavigationBarItem(
-              icon: const Icon(Icons.volume_up), label: loc.soundMenu),
-          BottomNavigationBarItem(
-              icon: const Icon(Icons.videocam), label: loc.videoMenu),
-          BottomNavigationBarItem(
-              icon: const Icon(Icons.bolt), label: loc.electricityMenu),
-          BottomNavigationBarItem(
-              icon: const Icon(Icons.more_horiz), label: loc.networkMenu),
-        ],
-      ),
+      bottomNavigationBar: const UniformBottomNavBar(currentIndex: 5),
+    );
+  }
+
+  String _getProjectName() {
+    try {
+      final project = ref.read(projectProvider).selectedProject;
+      if (project == null) return 'Projet';
+      
+      // Utiliser la méthode de traduction du ProjectProvider
+      return ref.read(projectProvider).getTranslatedProjectName(project, AppLocalizations.of(context)!);
+    } catch (e) {
+      return 'Projet';
+    }
+  }
+
+  void _showPresetItemQuantityDialog(CartItem item, Preset preset) {
+    int quantity = item.quantity;
+    final TextEditingController quantityController =
+        TextEditingController(text: quantity.toString());
+
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return StatefulBuilder(
+          builder: (context, setState) {
+            return AlertDialog(
+              backgroundColor: const Color(0xFF0A1128),
+              content: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(
+                    '${item.item.name} (${item.item.marque})',
+                    style: Theme.of(context).textTheme.bodyMedium!.copyWith(
+                      color: Colors.white,
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      IconButton(
+                        icon: const Icon(Icons.remove),
+                        onPressed: () {
+                          if (quantity > 1) {
+                            setState(() {
+                              quantity--;
+                              quantityController.text = quantity.toString();
+                            });
+                          }
+                        },
+                        color: Colors.white,
+                      ),
+                      Container(
+                        width: 80,
+                        padding: const EdgeInsets.symmetric(horizontal: 8),
+                        child: TextField(
+                          controller: quantityController,
+                          keyboardType: TextInputType.number,
+                          textAlign: TextAlign.center,
+                          autofocus: true,
+                          onTap: () {
+                            quantityController.selection = TextSelection(
+                              baseOffset: 0,
+                              extentOffset: quantityController.text.length,
+                            );
+                          },
+                          style: Theme.of(context).textTheme.titleLarge!.copyWith(
+                            color: Colors.white,
+                          ),
+                          decoration: const InputDecoration(
+                            border: OutlineInputBorder(),
+                            contentPadding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                          ),
+                          onChanged: (value) {
+                            final newQuantity = int.tryParse(value) ?? 1;
+                            if (newQuantity > 0) {
+                              setState(() {
+                                quantity = newQuantity;
+                              });
+                            }
+                          },
+                        ),
+                      ),
+                      IconButton(
+                        icon: const Icon(Icons.add),
+                        onPressed: () {
+                          setState(() {
+                            quantity++;
+                            quantityController.text = quantity.toString();
+                          });
+                        },
+                        color: Colors.white,
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.pop(context),
+                  child: const Text(
+                    'Annuler',
+                    style: TextStyle(color: Colors.white),
+                  ),
+                ),
+                ElevatedButton(
+                  onPressed: () async {
+                    if (quantity != item.quantity) {
+                      // Mettre à jour le preset
+                      final updatedItems = preset.items.map((i) {
+                        if (i.item.id == item.item.id) {
+                          return i.copyWith(quantity: quantity);
+                        }
+                        return i;
+                      }).toList();
+                      
+                      final updatedPreset = preset.copyWith(items: updatedItems);
+                      await ref.read(presetProvider.notifier).updatePreset(updatedPreset);
+                      
+                      // Fermer le dialog et laisser le provider notifier le changement
+                      if (context.mounted) {
+                        Navigator.pop(context);
+                      }
+                    } else {
+                      Navigator.pop(context);
+                    }
+                  },
+                  child: const Text('Confirmer'),
+                ),
+              ],
+            );
+          },
+        );
+      },
+    );
+  }
+
+  // Méthodes de gestion des commentaires
+  Future<void> _loadComments() async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final commentsJson = prefs.getString('calcul_projet_comments');
+      if (commentsJson != null) {
+        setState(() {
+          _comments = Map<String, String>.from(json.decode(commentsJson));
+        });
+      }
+    } catch (e) {
+      print('Error loading comments: $e');
+    }
+  }
+
+  Future<void> _saveComments() async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.setString('calcul_projet_comments', json.encode(_comments));
+      // Nettoyer les anciens commentaires (garder seulement les 20 plus récents)
+      _cleanupOldComments();
+    } catch (e) {
+      print('Error saving comments: $e');
+    }
+  }
+
+  void _cleanupOldComments() {
+    if (_comments.length > 20) {
+      // Garder seulement les 20 commentaires les plus récents
+      final sortedEntries = _comments.entries.toList()
+        ..sort((a, b) => a.key.compareTo(b.key));
+      
+      _comments.clear();
+      for (int i = 0; i < 20 && i < sortedEntries.length; i++) {
+        _comments[sortedEntries[i].key] = sortedEntries[i].value;
+      }
+    }
+  }
+
+  String _getCommentForTab(String tabKey) {
+    try {
+      final projectId = ref.read(projectProvider).selectedProject.id;
+      final commentKey = '${projectId}_$tabKey';
+      return _comments[commentKey] ?? '';
+    } catch (e) {
+      return '';
+    }
+  }
+
+  Future<void> _showCommentDialog(String tabKey, String tabName) async {
+    final TextEditingController commentController = TextEditingController(
+      text: _getCommentForTab(tabKey),
+    );
+
+    return showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          backgroundColor: Theme.of(context).brightness == Brightness.dark
+              ? const Color(0xFF0A1128)
+              : Colors.white,
+          content: SizedBox(
+            width: 300, // Largeur fixe pour éviter le resserrement
+            child: TextField(
+              controller: commentController,
+              maxLines: 3,
+              minLines: 3,
+              decoration: InputDecoration(
+                hintText: 'Ajouter un commentaire pour $tabName...',
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                contentPadding: const EdgeInsets.all(12),
+              ),
+              autofocus: true,
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(),
+              child: const Text('Annuler'),
+            ),
+            ElevatedButton(
+              onPressed: () async {
+                final comment = commentController.text.trim();
+                try {
+                  final projectId = ref.read(projectProvider).selectedProject.id;
+                  final commentKey = '${projectId}_$tabKey';
+                  setState(() {
+                    if (comment.isEmpty) {
+                      _comments.remove(commentKey);
+                    } else {
+                      _comments[commentKey] = comment;
+                    }
+                  });
+                  await _saveComments();
+                } catch (e) {
+                  print('Error saving comment: $e');
+                }
+                Navigator.of(context).pop();
+              },
+              child: const Text('Sauvegarder'),
+            ),
+          ],
+        );
+      },
     );
   }
 }

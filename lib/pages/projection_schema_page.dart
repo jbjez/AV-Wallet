@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
-// import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:av_wallet_hive/l10n/app_localizations.dart';
+// import 'package:av_wallet_hive/l10n/app_localizations.dart';
 import '../widgets/custom_app_bar.dart';
 import 'catalogue_page.dart';
 import 'light_menu_page.dart';
@@ -43,7 +43,7 @@ class ProjectionSchemaPage extends StatelessWidget {
       body: Stack(
         children: [
           Opacity(
-            opacity: Theme.of(context).brightness == Brightness.light ? 0.15 : 0.5,
+            opacity: 0.1,
             child: Container(
               decoration: const BoxDecoration(
                 image: DecorationImage(

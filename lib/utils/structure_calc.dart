@@ -1,4 +1,3 @@
-import 'dart:math' as math;
 
 class TrussSpecPoint {
   final double spanM;          // portée en mètres

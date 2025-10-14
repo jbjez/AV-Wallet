@@ -7,6 +7,9 @@ import 'package:flutter/material.dart';                  // [4]
 import 'package:permission_handler/permission_handler.dart'; // [5]
 import 'package:mic_stream/mic_stream.dart';            // [6]
 import '../utils/permissions.dart';                      // [7]
+import '../widgets/action_button.dart';                  // [8]
+import 'package:shared_preferences/shared_preferences.dart'; // [9]
+import 'dart:convert';                                   // [11]
 
 enum DbWeighting { flat, A, C }                          // [8]
 enum DbResponse { fast, slow }                           // [9]
@@ -30,6 +33,10 @@ class _DecibelMeterTabState extends State<DecibelMeterTab> {  // [16]
   Color _digitColor = const Color(0xFFFF3B30);           // [26] // rouge par défaut
   final ValueNotifier<double> _liveDb = ValueNotifier(-120); // [27] // pour le plein écran
 
+  // Gestion des commentaires
+  Map<String, String> _comments = {};
+  String _currentRiderResult = ''; // Clé unique pour le résultat rider actuel
+
   // Configs de réponse (constantes temps). Fast ≈ 125 ms, Slow ≈ 1 s.     // [29]
   double get _alpha {
     final tau = _response == DbResponse.fast ? 0.125 : 1.0; // seconds       // [30]
@@ -41,6 +48,12 @@ class _DecibelMeterTabState extends State<DecibelMeterTab> {  // [16]
   // Ici on applique un IIR d'ordre 2 très standardisé pour une approximation
   // NOTE: ça suffit pour un usage utilitaire (pas de classe 1/2).           // [36]
   Biquad? _biquad;                                                           // [37]
+
+  @override
+  void initState() {
+    super.initState();
+    _loadComments();
+  }
 
   @override
   void dispose() {                                                           // [39]
@@ -88,13 +101,9 @@ class _DecibelMeterTabState extends State<DecibelMeterTab> {  // [16]
       audioFormat: AudioFormat.ENCODING_PCM_16BIT,                           // [78]
     );
 
-    if (stream == null) {
-      debugPrint('Failed to get microphone stream');
-      return;
-    }
 
     _running = true;                                                         // [80]
-    _micSub = stream.listen(_onAudioData, onError: (e) {                     // [81]
+    _micSub = stream?.listen(_onAudioData, onError: (e) {                     // [81]
       debugPrint('Mic error: $e');                                           // [82]
       _stop();                                                               // [83]
     });
@@ -145,6 +154,12 @@ class _DecibelMeterTabState extends State<DecibelMeterTab> {  // [16]
     _leqSamples += 1;                                                        // [127]
 
     _liveDb.value = _dbInstant;                                              // [129]
+    
+    // Générer une nouvelle clé unique pour ce résultat
+    setState(() {
+      _currentRiderResult = _generateRiderResultKey();
+    });
+    
     if (mounted) setState(() {});                                            // [130]
   }
 
@@ -179,128 +194,148 @@ class _DecibelMeterTabState extends State<DecibelMeterTab> {  // [16]
   }
 
   @override
-  Widget build(BuildContext context) {                                       // [160]
-    return Column(                                                           // [161]
+  Widget build(BuildContext context) {
+    return Column(
       children: [
-        const SizedBox(height: 8),                                           // [163]
-        // Bande outils                                                       // [164]
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 12.0),             // [166]
-          child: Row(
-            children: [
-              _chip('A', _weighting == DbWeighting.A, () {
-                setState(() { _weighting = DbWeighting.A; _buildFilter(); }); // [170]
-              }),
-              const SizedBox(width: 6),
-              _chip('C', _weighting == DbWeighting.C, () {
-                setState(() { _weighting = DbWeighting.C; _buildFilter(); }); // [173]
-              }),
-              const SizedBox(width: 6),
-              _chip('Flat', _weighting == DbWeighting.flat, () {
-                setState(() { _weighting = DbWeighting.flat; _buildFilter(); });// [176]
-              }),
-              const Spacer(),
-              _chip('Fast', _response == DbResponse.fast, () {
-                setState(() {}); _response = DbResponse.fast;                 // [179]
-              }),
-              const SizedBox(width: 6),
-              _chip('Slow', _response == DbResponse.slow, () {
-                setState(() {}); _response = DbResponse.slow;                 // [182]
-              }),
-              const SizedBox(width: 6),
-              IconButton(
-                tooltip: 'Plein écran',
-                onPressed: _openFullscreen,
-                icon: const Icon(Icons.play_circle_fill, color: Colors.white),// [190]
-              ),
-            ],
-          ),
-        ),
-
-        const SizedBox(height: 8),                                           // [194]
-
-        // Afficheur numérique                                                // [196]
+        const SizedBox(height: 8),
+        // Cadre principal
         Expanded(
-          child: Center(
+          child: SingleChildScrollView(
             child: Container(
-              width: double.infinity,
-              margin: const EdgeInsets.symmetric(horizontal: 16),            // [200]
-              padding: const EdgeInsets.symmetric(vertical: 24),
+              margin: const EdgeInsets.all(16),
               decoration: BoxDecoration(
-                color: Colors.black,                                         // [203]
-                borderRadius: BorderRadius.circular(16),
-                border: Border.all(color: Colors.white24),
-                boxShadow: const [BoxShadow(color: Colors.black54, blurRadius: 20)],
+                color: const Color(0xFF0A1128).withOpacity(0.3),
+                border: Border.all(color: Colors.white, width: 1),
+                borderRadius: BorderRadius.circular(12),
               ),
               child: Column(
-                mainAxisSize: MainAxisSize.min,
                 children: [
-                  _bigDigits('${_dbInstant.toStringAsFixed(1)} dB', _digitColor), // [210]
-                  const SizedBox(height: 12),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
+                const SizedBox(height: 16),
+                // Contrôles ultra-simples
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                  child: Column(
                     children: [
-                      _miniTile('Peak', _dbPeakHold),
-                      const SizedBox(width: 16),
-                      _miniTile('Leq', _leqDb),
+                      // Ligne 1: Pondération A/C et Fast/Slow sur une ligne
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        children: [
+                          _simpleChip('A', _weighting == DbWeighting.A, () {
+                            setState(() { _weighting = DbWeighting.A; _buildFilter(); });
+                          }),
+                          _simpleChip('C', _weighting == DbWeighting.C, () {
+                            setState(() { _weighting = DbWeighting.C; _buildFilter(); });
+                          }),
+                          _simpleChip('F', _weighting == DbWeighting.flat, () {
+                            setState(() { _weighting = DbWeighting.flat; _buildFilter(); });
+                          }),
+                          _simpleChip('Fast', _response == DbResponse.fast, () {
+                            setState(() { _response = DbResponse.fast; });
+                          }),
+                          _simpleChip('Slow', _response == DbResponse.slow, () {
+                            setState(() { _response = DbResponse.slow; });
+                          }),
+                        ],
+                      ),
+                      const SizedBox(height: 16),
                     ],
                   ),
-                  const SizedBox(height: 12),
-                  Text('Weight: $_weightingLabel • Resp: $_responseLabel',   // [219]
-                      style: const TextStyle(color: Colors.white70, fontSize: 12)), // Réduit de 2 pts (14->12)
-                  const SizedBox(height: 8),
-                  Row(
+                ),
+
+                // Afficheur numérique
+                Container(
+                  width: double.infinity,
+                  margin: const EdgeInsets.symmetric(horizontal: 16),
+                  padding: const EdgeInsets.symmetric(vertical: 24),
+                  decoration: BoxDecoration(
+                    color: Colors.black,
+                    borderRadius: BorderRadius.circular(16),
+                    border: Border.all(color: Colors.white24),
+                    boxShadow: const [BoxShadow(color: Colors.black54, blurRadius: 20)],
+                  ),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      _bigDigits('${_dbInstant.toStringAsFixed(1)} dB', _digitColor),
+                      const SizedBox(height: 12),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          _miniTile('Peak', _dbPeakHold),
+                          const SizedBox(width: 16),
+                          _miniTile('Leq', _leqDb),
+                        ],
+                      ),
+                      const SizedBox(height: 12),
+                      Text('Weight: $_weightingLabel • Resp: $_responseLabel',
+                          style: const TextStyle(color: Colors.white70, fontSize: 12)),
+                      const SizedBox(height: 8),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Flexible(
+                            child: ElevatedButton(
+                              onPressed: () {
+                                setState(() { _dbPeakHold = _dbInstant; _peakHoldTs = DateTime.now(); });
+                              },
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: const Color(0xFF0A1128),
+                                foregroundColor: Colors.white,
+                                side: const BorderSide(color: Colors.white30),
+                                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                              ),
+                              child: const Text(
+                                'Reset Peak',
+                                style: TextStyle(fontSize: 10),
+                              ),
+                            ),
+                          ),
+                          const SizedBox(width: 8),
+                          IconButton(
+                            tooltip: 'Couleur des digits',
+                            onPressed: _pickColor,
+                            icon: const Icon(Icons.color_lens, color: Colors.white, size: 20),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 16),
+                
+                // Boutons Play/Stop + Plein écran
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                  child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       ElevatedButton(
-                        onPressed: () {
-                          setState(() { _dbPeakHold = _dbInstant; _peakHoldTs = DateTime.now(); }); // [246]
-                        },
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: const Color(0xFF0A1128),
-                          foregroundColor: Colors.white,
-                          side: const BorderSide(color: Colors.white30),
-                          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                        ),
-                        child: const Text(
-                          'Reset Peak',
-                          style: TextStyle(fontSize: 10), // Réduit de 2 pts (12->10)
-                        ),
+                        style: ElevatedButton.styleFrom(backgroundColor: Colors.white10,
+                          foregroundColor: Colors.white, side: const BorderSide(color: Colors.white30)),
+                        onPressed: _running ? null : _start,
+                        child: const Icon(Icons.play_arrow),
                       ),
                       const SizedBox(width: 12),
-                      IconButton(
-                        tooltip: 'Couleur des digits',
-                        onPressed: _pickColor,
-                        icon: const Icon(Icons.color_lens, color: Colors.white, size: 20),
+                      ElevatedButton(
+                        style: ElevatedButton.styleFrom(backgroundColor: Colors.white10,
+                          foregroundColor: Colors.white, side: const BorderSide(color: Colors.white30)),
+                        onPressed: _running ? _stop : null,
+                        child: const Icon(Icons.stop),
+                      ),
+                      const SizedBox(width: 12),
+                      ElevatedButton(
+                        style: ElevatedButton.styleFrom(backgroundColor: Colors.white10,
+                          foregroundColor: Colors.white, side: const BorderSide(color: Colors.white30)),
+                        onPressed: _openFullscreen,
+                        child: const Icon(Icons.fullscreen),
                       ),
                     ],
                   ),
+                ),
+                const SizedBox(height: 16),
                 ],
               ),
             ),
-          ),
-        ),
-
-        // Boutons Start/Stop                                     // [225]
-        Padding(
-          padding: const EdgeInsets.symmetric(vertical: 8.0),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              ElevatedButton(
-                style: ElevatedButton.styleFrom(backgroundColor: Colors.white10,
-                  foregroundColor: Colors.white, side: const BorderSide(color: Colors.white30)),
-                onPressed: _running ? null : _start,                         // [233]
-                child: const Icon(Icons.play_arrow),
-              ),
-              const SizedBox(width: 12),
-              ElevatedButton(
-                style: ElevatedButton.styleFrom(backgroundColor: Colors.white10,
-                  foregroundColor: Colors.white, side: const BorderSide(color: Colors.white30)),
-                onPressed: _running ? _stop : null,                          // [240]
-                child: const Icon(Icons.stop),
-              ),
-            ],
           ),
         ),
       ],
@@ -333,7 +368,7 @@ class _DecibelMeterTabState extends State<DecibelMeterTab> {  // [16]
         txt,
         style: TextStyle(
           fontFamily: 'RobotoMono',
-          fontSize: 100,
+          fontSize: 102,
           color: color,
           letterSpacing: 1.5,
           shadows: const [
@@ -344,18 +379,123 @@ class _DecibelMeterTabState extends State<DecibelMeterTab> {  // [16]
     );
   }
 
-  Widget _chip(String text, bool selected, VoidCallback onTap) {             // [289]
-    return InkWell(
+  Widget _simpleChip(String text, bool selected, VoidCallback onTap) {
+    return GestureDetector(
       onTap: onTap,
       child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
         decoration: BoxDecoration(
           color: selected ? Colors.white24 : Colors.white10,
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: BorderRadius.circular(6),
           border: Border.all(color: Colors.white30),
         ),
-        child: Text(text, style: const TextStyle(color: Colors.white)),
+        child: Text(
+          text, 
+          style: const TextStyle(color: Colors.white, fontSize: 12, fontWeight: FontWeight.bold),
+        ),
       ),
+    );
+  }
+
+  // Méthodes de gestion des commentaires
+  Future<void> _loadComments() async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final commentsJson = prefs.getString('rider_comments');
+      if (commentsJson != null) {
+        setState(() {
+          _comments = Map<String, String>.from(json.decode(commentsJson));
+        });
+      }
+    } catch (e) {
+      print('Erreur lors du chargement des commentaires: $e');
+    }
+  }
+
+  Future<void> _saveComments() async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.setString('rider_comments', json.encode(_comments));
+    } catch (e) {
+      print('Erreur lors de la sauvegarde des commentaires: $e');
+    }
+  }
+
+  String _getCommentForTab(String tabKey) {
+    if (tabKey == 'rider_tab') {
+      // Pour l'onglet rider, utiliser la clé unique du résultat
+      return _comments[_currentRiderResult] ?? '';
+    } else {
+      // Pour les autres onglets, utiliser le système normal
+      return _comments[tabKey] ?? '';
+    }
+  }
+
+  String _generateRiderResultKey() {
+    // Générer une clé unique basée sur les paramètres du calcul rider
+    return 'rider_${_weightingLabel}_${_responseLabel}_${_dbInstant.toStringAsFixed(1)}_${_dbPeakHold.toStringAsFixed(1)}_${_leqDb.toStringAsFixed(1)}';
+  }
+
+  Future<void> _showCommentDialog(String tabKey, String tabName) async {
+    final TextEditingController commentController = TextEditingController(
+      text: _getCommentForTab(tabKey),
+    );
+
+    return showDialog<void>(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          backgroundColor: const Color(0xFF0A1128),
+          title: Text(
+            'Commentaire - $tabName',
+            style: const TextStyle(color: Colors.white, fontSize: 10),
+          ),
+          content: TextField(
+            controller: commentController,
+            maxLines: 3,
+            style: const TextStyle(color: Colors.white),
+            decoration: const InputDecoration(
+              hintText: 'Entrez votre commentaire...',
+              hintStyle: TextStyle(color: Colors.grey),
+              border: OutlineInputBorder(),
+              focusedBorder: OutlineInputBorder(
+                borderSide: BorderSide(color: Colors.blue),
+              ),
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(),
+              child: const Text(
+                'Annuler',
+                style: TextStyle(color: Colors.white),
+              ),
+            ),
+            ElevatedButton(
+              onPressed: () async {
+                final comment = commentController.text.trim();
+                String commentKey;
+                
+                if (tabKey == 'rider_tab') {
+                  // Pour l'onglet rider, utiliser la clé unique du résultat
+                  commentKey = _currentRiderResult;
+                } else {
+                  // Pour les autres onglets, utiliser le système normal
+                  commentKey = tabKey;
+                }
+                
+                _comments[commentKey] = comment;
+                await _saveComments();
+                if (mounted) {
+                  setState(() {});
+                  Navigator.of(context).pop();
+                }
+              },
+              child: const Text('Sauvegarder'),
+            ),
+          ],
+        );
+      },
     );
   }
 }

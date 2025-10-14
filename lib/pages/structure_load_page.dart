@@ -1,6 +1,6 @@
 // lib/pages/structure_menu_page.dart
 import 'package:flutter/material.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:av_wallet_hive/l10n/app_localizations.dart';
 
 import 'home_page.dart';
 import 'catalogue_page.dart';
@@ -9,6 +9,8 @@ import 'sound_menu_page.dart';
 import 'video_menu_page.dart';
 import 'electricite_menu_page.dart';
 import 'divers_menu_page.dart';
+import '../widgets/uniform_bottom_nav_bar.dart';
+import '../widgets/border_labeled_dropdown.dart';
 
 class StructureMenuPage extends StatefulWidget {
   const StructureMenuPage({super.key});
@@ -22,7 +24,7 @@ class _StructureMenuPageState extends State<StructureMenuPage> {
   double distance = 6;
   String selectedCharge = '1 point d\'accroche au centre';
 
-  // Données constructeur SC300, SC390, SC500 (Charges préconisées 1/300)
+  // Données constructeur SC300, SC390, SC500, E20D (Charges préconisées 1/300)
   final Map<String, Map<int, Map<String, double>>> structureData = {
     'SC300': {
       1:  {'Q': 1543, 'P1': 1543, 'P2': 772, 'P3': 514, 'P4': 386, 'SW': 7,   'deflection': 3},
@@ -90,6 +92,26 @@ class _StructureMenuPageState extends State<StructureMenuPage> {
       19: {'Q': 320, 'P1': 200, 'P2': 120, 'P3': 80, 'P4': 60, 'SW': 351, 'deflection': 173},
       20: {'Q': 200, 'P1': 120, 'P2': 70, 'P3': 50, 'P4': 38, 'SW': 370, 'deflection': 200},
     },
+  'E20D': {
+    1:  {'Q': 400, 'P1': 180, 'P2': 130, 'P3': 100, 'P4': 80, 'SW': 1.6, 'deflection': 3}, // Extrapolé
+    2:  {'Q': 340, 'P1': 150, 'P2': 110, 'P3': 85, 'P4': 68, 'SW': 1.6, 'deflection': 6}, // Extrapolé
+    3:  {'Q': 292, 'P1': 126, 'P2': 88, 'P3': 68, 'P4': 54, 'SW': 1.6, 'deflection': 10},
+    4:  {'Q': 216, 'P1': 97,  'P2': 69, 'P3': 51, 'P4': 41, 'SW': 1.6, 'deflection': 18},
+    5:  {'Q': 170, 'P1': 78,  'P2': 56, 'P3': 41, 'P4': 33, 'SW': 1.6, 'deflection': 28},
+    6:  {'Q': 139, 'P1': 65,  'P2': 47, 'P3': 34, 'P4': 27, 'SW': 1.6, 'deflection': 40},
+    7:  {'Q': 117, 'P1': 55,  'P2': 40, 'P3': 28, 'P4': 23, 'SW': 1.6, 'deflection': 54},
+    8:  {'Q': 99,  'P1': 47,  'P2': 35, 'P3': 24, 'P4': 20, 'SW': 1.6, 'deflection': 71},
+    9:  {'Q': 86,  'P1': 41,  'P2': 30, 'P3': 21, 'P4': 17, 'SW': 1.6, 'deflection': 89},
+    10: {'Q': 74,  'P1': 36,  'P2': 27, 'P3': 18, 'P4': 15, 'SW': 1.6, 'deflection': 110},
+    11: {'Q': 65,  'P1': 31,  'P2': 24, 'P3': 16, 'P4': 13, 'SW': 1.6, 'deflection': 133},
+    12: {'Q': 56,  'P1': 28,  'P2': 21, 'P3': 14, 'P4': 12, 'SW': 1.6, 'deflection': 159},
+    13: {'Q': 49,  'P1': 24,  'P2': 18, 'P3': 12, 'P4': 10, 'SW': 1.6, 'deflection': 186},
+    14: {'Q': 43,  'P1': 21,  'P2': 16, 'P3': 11, 'P4': 9,  'SW': 1.6, 'deflection': 216},
+    15: {'Q': 38,  'P1': 18,  'P2': 14, 'P3': 9,  'P4': 8,  'SW': 1.6, 'deflection': 248},
+    16: {'Q': 32,  'P1': 16,  'P2': 12, 'P3': 8,  'P4': 7,  'SW': 1.6, 'deflection': 282},
+    17: {'Q': 27,  'P1': 14,  'P2': 10, 'P3': 7,  'P4': 6,  'SW': 1.6, 'deflection': 319},
+    18: {'Q': 23,  'P1': 12,  'P2': 9,  'P3': 6,  'P4': 5,  'SW': 1.6, 'deflection': 357},
+  },
   };
 
   final Map<String, double> coeffCharge = {
@@ -99,7 +121,7 @@ class _StructureMenuPageState extends State<StructureMenuPage> {
   };
 
   late final List<String> chargeOptions = coeffCharge.keys.toList();
-  late final List<String> structureOptions = structureData.keys.toList();
+  late final List<String> structureOptions = ['SC300', 'SC390', 'SC500', 'E20D'];
 
   // Obtenir les données pour la structure et la portée sélectionnées
   Map<String, double> get currentData {
@@ -186,7 +208,7 @@ Généré le: ${DateTime.now().toString().split('.')[0]}
         children: [
           // Background image
           Opacity(
-            opacity: 0.5,
+            opacity: 0.1,
             child: Container(
               decoration: const BoxDecoration(
                 image: DecorationImage(
@@ -238,7 +260,7 @@ Généré le: ${DateTime.now().toString().split('.')[0]}
                       border: Border.all(color: Colors.white, width: 2),
                       borderRadius: BorderRadius.circular(16),
                     ),
-                    child: Image.asset('assets/logo.png', height: 60),
+                    child: Image.asset('assets/Logo2.png', height: 60),
                   ),
                 ),
                 // Content
@@ -257,15 +279,14 @@ Généré le: ${DateTime.now().toString().split('.')[0]}
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             // Structure selector
-                            Text(loc.selectStructure, style: const TextStyle(color: Colors.white)),
-                            const SizedBox(height: 4),
-                            DropdownButton<String>(
+                            BorderLabeledDropdown<String>(
+                              label: loc.selectStructure,
                               value: selectedStructure,
-                              dropdownColor: Colors.blueGrey[900],
-                              style: const TextStyle(color: Colors.white),
-                              isExpanded: true,
                               items: structureOptions
-                                  .map((s) => DropdownMenuItem(value: s, child: Text(s)))
+                                  .map((s) => DropdownMenuItem(
+                                    value: s, 
+                                    child: Text(s, style: const TextStyle(fontSize: 11))
+                                  ))
                                   .toList(),
                               onChanged: (v) => setState(() => selectedStructure = v!),
                             ),
@@ -282,17 +303,38 @@ Généré le: ${DateTime.now().toString().split('.')[0]}
                             ),
                             const SizedBox(height: 12),
                             // Charge selector
-                            DropdownButton<String>(
+                            BorderLabeledDropdown<String>(
+                              label: 'Type de charge',
                               value: selectedCharge,
-                              dropdownColor: Colors.blueGrey[900],
-                              style: const TextStyle(color: Colors.white),
-                              isExpanded: true,
                               items: chargeOptions
-                                  .map((c) => DropdownMenuItem(value: c, child: Text(c)))
+                                  .map((c) => DropdownMenuItem(
+                                    value: c, 
+                                    child: Text(c, style: const TextStyle(fontSize: 11))
+                                  ))
                                   .toList(),
                               onChanged: (v) => setState(() => selectedCharge = v!),
                             ),
-                            const SizedBox(height: 12),
+                            const SizedBox(height: 16),
+                            // Bouton calcul
+                            Center(
+                              child: ElevatedButton(
+                                onPressed: () {
+                                  // Les calculs se font automatiquement, mais on peut forcer un rebuild
+                                  setState(() {});
+                                },
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: Colors.blueGrey[900],
+                                  foregroundColor: Colors.white,
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(8),
+                                  ),
+                                  padding: const EdgeInsets.all(12),
+                                ),
+                                child: const Icon(Icons.calculate,
+                                    color: Colors.white, size: 28),
+                              ),
+                            ),
+                            const SizedBox(height: 16),
                             // Results
                             Container(
                               padding: const EdgeInsets.all(12),
@@ -355,55 +397,7 @@ Généré le: ${DateTime.now().toString().split('.')[0]}
           ),
         ],
       ),
-      bottomNavigationBar: BottomNavigationBar(
-        type: BottomNavigationBarType.fixed,
-        backgroundColor: Colors.blueGrey[900],
-        selectedItemColor: Colors.white,
-        unselectedItemColor: Colors.grey,
-        currentIndex: 2,
-        onTap: (index) {
-          final pages = [
-            const CataloguePage(),
-            const LightMenuPage(),
-            const StructureMenuPage(),
-            const SoundMenuPage(),
-            const VideoMenuPage(),
-            const ElectriciteMenuPage(),
-            const DiversMenuPage(),
-          ];
-          Offset beginOffset;
-          if (index == 0 || index == 1) {
-            beginOffset = const Offset(-1.0, 0.0);
-          } else if (index == 5 || index == 6) {
-            beginOffset = const Offset(1.0, 0.0);
-          } else {
-            beginOffset = Offset.zero;
-          }
-          Navigator.push(
-            context,
-            PageRouteBuilder(
-              pageBuilder: (_, __, ___) => pages[index],
-              transitionsBuilder: (_, animation, __, child) {
-                if (beginOffset == Offset.zero) {
-                  return FadeTransition(opacity: animation, child: child);
-                }
-                final tween = Tween(begin: beginOffset, end: Offset.zero).chain(CurveTween(curve: Curves.easeInOut));
-                return SlideTransition(position: animation.drive(tween), child: child);
-              },
-              transitionDuration: const Duration(milliseconds: 400),
-            ),
-          );
-        },
-        items: const [
-          BottomNavigationBarItem(icon: Icon(Icons.list), label: "Catalogue"),
-          BottomNavigationBarItem(icon: Icon(Icons.lightbulb), label: "Lumière"),
-          BottomNavigationBarItem(icon: Icon(Icons.account_tree), label: "Structure"),
-          BottomNavigationBarItem(icon: Icon(Icons.volume_up), label: "Son"),
-          BottomNavigationBarItem(icon: Icon(Icons.videocam), label: "Vidéo"),
-          BottomNavigationBarItem(icon: Icon(Icons.bolt), label: "Électricité"),
-          BottomNavigationBarItem(icon: Icon(Icons.more_horiz), label: "Divers"),
-        ],
-      ),
+      bottomNavigationBar: const UniformBottomNavBar(currentIndex: 2),
     );
   }
 }

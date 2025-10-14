@@ -40,7 +40,7 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
       if (!mounted) return;
 
       // Vérifier l'état de l'authentification
-      final authState = ref.read(authStateProvider);
+      final authState = ref.read(authProvider);
 
       if (!mounted) return;
 
@@ -85,7 +85,7 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
   @override
   Widget build(BuildContext context) {
     // S'assurer que le thème est appliqué
-    final authState = ref.watch(authStateProvider);
+    final authState = ref.watch(authProvider);
     
     return Theme(
       data: Theme.of(context).copyWith(
@@ -108,7 +108,7 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Image.asset(
-                  'assets/logo.png',
+                  'assets/Logo2.png',
                   width: 200,
                   height: 200,
                 ),

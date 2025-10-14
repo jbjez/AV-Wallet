@@ -134,7 +134,7 @@ class _AmpliCalcPageState extends ConsumerState<AmpliCalcPage> {
       if (type != null && speakerPowerMap.containsKey(type)) {
         final power = speakerPowerMap[type]! * qty;
         totalPowerNeeded += power.round();
-        speakerBreakdown[type] = (speakerBreakdown[type] ?? 0) + qty.toInt();
+        speakerBreakdown[type] = (speakerBreakdown[type] ?? 0) + qty;
       }
     }
 

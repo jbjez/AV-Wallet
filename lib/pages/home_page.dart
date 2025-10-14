@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:av_wallet_hive/l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../providers/theme_provider.dart';
-import '../providers/auth_provider.dart';
 import '../providers/catalogue_provider.dart';
-import '../services/translation_service.dart';
+import '../providers/locale_provider.dart';
+import '../providers/usage_provider.dart';
+import '../services/auth_service.dart';
+import '../theme/colors.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import 'catalogue_page.dart';
 import 'light_menu_page.dart';
@@ -57,8 +60,7 @@ class _HomePageState extends ConsumerState<HomePage> {
   @override
   Widget build(BuildContext context) {
     final currentTheme = ref.watch(themeProvider);
-    final authState = ref.watch(authStateProvider);
-    final currentLocale = ref.watch(translationServiceProvider);
+    final currentLocale = ref.watch(localeProvider);
 
     return Localizations.override(
       context: context,
@@ -69,7 +71,7 @@ class _HomePageState extends ConsumerState<HomePage> {
 
           return Scaffold(
             appBar: AppBar(
-              backgroundColor: Colors.grey[800],
+              backgroundColor: AppColors.appBarColor,
               elevation: 0,
               leading: IconButton(
                 icon: AnimatedSwitcher(
@@ -142,7 +144,7 @@ class _HomePageState extends ConsumerState<HomePage> {
                       }
                     }
                   },
-                  icon: const Icon(Icons.refresh, color: Colors.white),
+                  icon: const Icon(Icons.refresh, color: Colors.white, size: 20),
                   tooltip: 'Recharger le catalogue',
                 ),
                 // Bouton de debug pour la migration SON
@@ -150,55 +152,61 @@ class _HomePageState extends ConsumerState<HomePage> {
                   onPressed: () {
                     Navigator.pushNamed(context, '/debug-son');
                   },
-                  icon: const Icon(Icons.bug_report, color: Colors.orange),
+                  icon: const Icon(Icons.bug_report, color: Colors.orange, size: 20),
                   tooltip: 'Debug Migration SON',
                 ),
-                DropdownButtonHideUnderline(
-                  child: DropdownButton<Locale>(
-                    icon: const Icon(Icons.language, color: Colors.white, size: 20),
-                    value: currentLocale,
-                    onChanged: (Locale? newLocale) {
-                      if (newLocale != null) {
-                        ref.read(translationServiceProvider.notifier).setLocale(newLocale);
-                      }
-                    },
-                    items: const [
-                      DropdownMenuItem(
-                        value: Locale('fr'),
-                        child: Image(image: AssetImage('assets/flag_fr_48.png'), height: 24),
-                      ),
-                      DropdownMenuItem(
-                        value: Locale('en'),
-                        child: Image(image: AssetImage('assets/flag_en_48.png'), height: 24),
-                      ),
-                      DropdownMenuItem(
-                        value: Locale('it'),
-                        child: Image(image: AssetImage('assets/flag_it_48.png'), height: 24),
-                      ),
-                      DropdownMenuItem(
-                        value: Locale('es'),
-                        child: Image(image: AssetImage('assets/flag_es_48.png'), height: 24),
-                      ),
-                      DropdownMenuItem(
-                        value: Locale('de'),
-                        child: Image(image: AssetImage('assets/flag_de_48.png'), height: 24),
-                      ),
-                    ],
+                // Dropdown de langue avec contrainte de taille
+                ConstrainedBox(
+                  constraints: const BoxConstraints(maxWidth: 60),
+                  child: DropdownButtonHideUnderline(
+                    child: DropdownButton<Locale>(
+                      icon: const Icon(Icons.language, color: Colors.white, size: 16),
+                      value: currentLocale,
+                      isDense: true,
+                      onChanged: (Locale? newLocale) {
+                        if (newLocale != null) {
+                          ref.read(localeProvider.notifier).setLocale(newLocale);
+                        }
+                      },
+                      items: const [
+                        DropdownMenuItem(
+                          value: Locale('fr'),
+                          child: Image(image: AssetImage('assets/flag_fr_48.png'), height: 20),
+                        ),
+                        DropdownMenuItem(
+                          value: Locale('en'),
+                          child: Image(image: AssetImage('assets/flag_en_48.png'), height: 20),
+                        ),
+                        DropdownMenuItem(
+                          value: Locale('it'),
+                          child: Image(image: AssetImage('assets/flag_it_48.png'), height: 20),
+                        ),
+                        DropdownMenuItem(
+                          value: Locale('es'),
+                          child: Image(image: AssetImage('assets/flag_es_48.png'), height: 20),
+                        ),
+                        DropdownMenuItem(
+                          value: Locale('de'),
+                          child: Image(image: AssetImage('assets/flag_de_48.png'), height: 20),
+                        ),
+                      ],
+                    ),
                   ),
                 ),
-                const SizedBox(width: 8),
+                const SizedBox(width: 4),
                 PopupMenuButton<String>(
-                  icon: const Icon(Icons.person, color: Colors.white),
+                  icon: const Icon(Icons.person, color: Colors.white, size: 24),
                   onSelected: (value) async {
                     switch (value) {
                       case 'account':
                         _navigateTo(const SettingsPage());
                         break;
                       case 'presets':
-                        // TODO: Naviguer vers la page des presets
+                        Navigator.pushNamed(context, '/project-selection');
                         break;
                       case 'logout':
-                        final authService = ref.read(authServiceProvider);
+                        final prefs = await SharedPreferences.getInstance();
+                        final authService = AuthService(prefs);
                         await authService.signOut();
                         if (mounted) {
                           _showLoginDialog();
@@ -207,33 +215,53 @@ class _HomePageState extends ConsumerState<HomePage> {
                     }
                   },
                   itemBuilder: (BuildContext context) => [
+                    // Indicateur d'utilisation (étoile 5) dans le menu
+                    PopupMenuItem<String>(
+                      value: 'usage',
+                      enabled: false,
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Icon(Icons.star, size: 18, color: Colors.amber),
+                          SizedBox(width: 6),
+                          Text('Utilisation: ${ref.watch(usageProvider).remainingUsage}', 
+                               style: TextStyle(fontSize: 10, color: Colors.white70)),
+                        ],
+                      ),
+                    ),
                     PopupMenuItem<String>(
                       value: 'account',
                       child: Row(
+                        mainAxisSize: MainAxisSize.min,
                         children: [
-                          Icon(Icons.settings, size: 20),
-                          SizedBox(width: 8),
-                          Text(loc.loginMenu_accountSettings),
+                          Icon(Icons.settings, size: 18),
+                          SizedBox(width: 6),
+                          Text(loc.loginMenu_accountSettings, 
+                               style: TextStyle(fontSize: 10, color: Colors.white)),
                         ],
                       ),
                     ),
                     PopupMenuItem<String>(
                       value: 'presets',
                       child: Row(
+                        mainAxisSize: MainAxisSize.min,
                         children: [
-                          Icon(Icons.save, size: 20),
-                          SizedBox(width: 8),
-                          Text(loc.loginMenu_myProjects),
+                          Icon(Icons.save, size: 18),
+                          SizedBox(width: 6),
+                          Text(loc.loginMenu_myProjects, 
+                               style: TextStyle(fontSize: 10, color: Colors.white)),
                         ],
                       ),
                     ),
                     PopupMenuItem<String>(
                       value: 'logout',
                       child: Row(
+                        mainAxisSize: MainAxisSize.min,
                         children: [
-                          Icon(Icons.logout, size: 20),
-                          SizedBox(width: 8),
-                          Text(loc.loginMenu_logout),
+                          Icon(Icons.logout, size: 18),
+                          SizedBox(width: 6),
+                          Text(loc.loginMenu_logout, 
+                               style: TextStyle(fontSize: 10, color: Colors.white)),
                         ],
                       ),
                     ),
@@ -245,7 +273,7 @@ class _HomePageState extends ConsumerState<HomePage> {
             body: Stack(
               children: [
                 Opacity(
-                  opacity: 0.5,
+                  opacity: 0.1,
                   child: Container(
                     decoration: const BoxDecoration(
                       image: DecorationImage(
@@ -265,11 +293,16 @@ class _HomePageState extends ConsumerState<HomePage> {
                           padding: const EdgeInsets.all(12),
                           margin: const EdgeInsets.symmetric(horizontal: 16),
                           decoration: BoxDecoration(
-                            color: Colors.white.withOpacity(0.5),
-                            border: Border.all(color: Colors.white, width: 2),
+                            color: AppColors.appBarColor.withValues(alpha: 0.5),
+                            border: Border.all(
+                              color: Theme.of(context).brightness == Brightness.dark 
+                                  ? Colors.white 
+                                  : darkBlue, 
+                              width: 2
+                            ),
                             borderRadius: BorderRadius.circular(16),
                           ),
-                          child: Image.asset('assets/logo.png', height: 100),
+                          child: Image.asset('assets/Logo2.png', height: 100),
                         ),
                       ),
                       const SizedBox(height: 24),
@@ -281,7 +314,12 @@ class _HomePageState extends ConsumerState<HomePage> {
                           margin: const EdgeInsets.symmetric(horizontal: 32),
                           decoration: BoxDecoration(
                             color: darkBlue.withOpacity(0.5),
-                            border: Border.all(color: darkBlue, width: 2),
+                            border: Border.all(
+                              color: Theme.of(context).brightness == Brightness.dark 
+                                  ? Colors.white 
+                                  : darkBlue, 
+                              width: 2
+                            ),
                             borderRadius: BorderRadius.circular(12),
                           ),
                           child: Row(
@@ -304,7 +342,12 @@ class _HomePageState extends ConsumerState<HomePage> {
                         margin: const EdgeInsets.symmetric(horizontal: 20),
                         decoration: BoxDecoration(
                           color: darkBlue.withOpacity(0.5),
-                          border: Border.all(color: darkBlue, width: 2),
+                          border: Border.all(
+                            color: Theme.of(context).brightness == Brightness.dark 
+                                ? Colors.white 
+                                : darkBlue, 
+                            width: 2
+                          ),
                           borderRadius: BorderRadius.circular(20),
                         ),
                         child: Column(

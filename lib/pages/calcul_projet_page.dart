@@ -1,5 +1,8 @@
 // Nouvelle page CalculProjetPage
+import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:av_wallet_hive/l10n/app_localizations.dart';
 import '../services/translation_service.dart';
 import 'catalogue_page.dart';
 import 'light_menu_page.dart';
@@ -17,9 +20,13 @@ import '../models/cart_item.dart';
 import '../models/preset.dart';
 import '../widgets/custom_app_bar.dart';
 import '../providers/project_provider.dart';
+import '../providers/usage_provider.dart';
+import '../services/usage_check_service.dart';
+import '../services/freemium_access_service.dart';
 import '../widgets/export_widget.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
-
+import '../widgets/action_button.dart';
+import '../widgets/comment_button.dart';
+import '../providers/imported_files_provider.dart';
 class CalculProjetPage extends ConsumerStatefulWidget {
   const CalculProjetPage({super.key});
 
@@ -31,6 +38,22 @@ class _CalculProjetPageState extends ConsumerState<CalculProjetPage> {
   String searchQuery = '';
   List<CatalogueItem> searchResults = [];
   bool showSearchResults = false;
+  
+  // Gestion des commentaires
+  Map<String, String> _comments = {}; // Clé: "projectId_tabKey", Valeur: commentaire
+  
+  @override
+  void initState() {
+    super.initState();
+    _loadComments();
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    // Recharger les commentaires quand on change de projet
+    _loadComments();
+  }
 
   void _navigateTo(int index) {
     final pages = [
@@ -69,6 +92,110 @@ class _CalculProjetPageState extends ConsumerState<CalculProjetPage> {
     );
   }
 
+  // Méthodes de gestion des commentaires
+  Future<void> _loadComments() async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final commentsJson = prefs.getString('calcul_projet_comments');
+      if (commentsJson != null) {
+        setState(() {
+          _comments = Map<String, String>.from(json.decode(commentsJson));
+        });
+      }
+    } catch (e) {
+      print('Error loading comments: $e');
+    }
+  }
+
+  Future<void> _saveComments() async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.setString('calcul_projet_comments', json.encode(_comments));
+      // Nettoyer les anciens commentaires (garder seulement les 20 plus récents)
+      _cleanupOldComments();
+    } catch (e) {
+      print('Error saving comments: $e');
+    }
+  }
+
+  void _cleanupOldComments() {
+    if (_comments.length > 20) {
+      // Garder seulement les 20 commentaires les plus récents
+      final sortedEntries = _comments.entries.toList()
+        ..sort((a, b) => a.key.compareTo(b.key));
+      
+      _comments.clear();
+      for (int i = 0; i < 20 && i < sortedEntries.length; i++) {
+        _comments[sortedEntries[i].key] = sortedEntries[i].value;
+      }
+    }
+  }
+
+  String _getCommentForTab(String tabKey) {
+    final projectId = ref.read(projectProvider).selectedProject.id;
+    final commentKey = '${projectId}_$tabKey';
+    return _comments[commentKey] ?? '';
+  }
+
+
+  Future<void> _showCommentDialog(String tabKey, String tabName) async {
+    final TextEditingController commentController = TextEditingController(
+      text: _getCommentForTab(tabKey),
+    );
+
+    return showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          backgroundColor: Theme.of(context).brightness == Brightness.dark
+              ? const Color(0xFF0A1128)
+              : Colors.white,
+          content: SizedBox(
+            width: 300, // Largeur fixe pour éviter le resserrement
+            child: TextField(
+              controller: commentController,
+              maxLines: 3,
+              minLines: 3,
+              decoration: InputDecoration(
+                hintText: 'Ajouter un commentaire pour $tabName...',
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                contentPadding: const EdgeInsets.all(12),
+              ),
+              autofocus: true,
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(),
+              child: const Text('Annuler'),
+            ),
+            ElevatedButton(
+              onPressed: () async {
+                final comment = commentController.text.trim();
+                final projectId = ref.read(projectProvider).selectedProject.id;
+                final commentKey = '${projectId}_$tabKey';
+                setState(() {
+                  if (comment.isEmpty) {
+                    _comments.remove(commentKey);
+                  } else {
+                    _comments[commentKey] = comment;
+                  }
+                });
+                await _saveComments();
+                Navigator.of(context).pop();
+              },
+              child: const Text('Sauvegarder'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+
+
   void _showQuantityDialog(CatalogueItem item, int initialQuantity) {
     int quantity = initialQuantity;
     bool isFirstInput = true;
@@ -104,14 +231,6 @@ class _CalculProjetPageState extends ConsumerState<CalculProjetPage> {
               backgroundColor: Theme.of(context).brightness == Brightness.dark
                   ? const Color(0xFF0A1128)
                   : Colors.white,
-              title: Text(
-                AppLocalizations.of(context)!.projectPage_enterQuantity,
-                style: Theme.of(context).textTheme.titleLarge!.copyWith(
-                  color: Theme.of(context).brightness == Brightness.dark
-                      ? Colors.white
-                      : Colors.black,
-                ),
-              ),
               content: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
@@ -327,12 +446,6 @@ class _CalculProjetPageState extends ConsumerState<CalculProjetPage> {
           builder: (context, setState) {
             return AlertDialog(
               backgroundColor: const Color(0xFF0A1128),
-              title: Text(
-                'Modifier la quantité',
-                style: Theme.of(context).textTheme.titleLarge!.copyWith(
-                  color: Colors.white,
-                ),
-              ),
               content: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
@@ -454,7 +567,7 @@ class _CalculProjetPageState extends ConsumerState<CalculProjetPage> {
       body: Stack(
         children: [
           Opacity(
-            opacity: Theme.of(context).brightness == Brightness.light ? 0.15 : 0.5,
+            opacity: 0.1,
             child: Container(
               decoration: const BoxDecoration(
                 image: DecorationImage(
@@ -481,28 +594,42 @@ class _CalculProjetPageState extends ConsumerState<CalculProjetPage> {
                             Tab(
                               child: Row(
                                 mainAxisAlignment: MainAxisAlignment.center,
+                                mainAxisSize: MainAxisSize.min,
                                 children: [
                                   Icon(
                                     Icons.bolt, 
-                                    size: 18, 
+                                    size: 16,
                                     color: Theme.of(context).brightness == Brightness.dark ? Colors.lightBlue[300] : const Color(0xFF1B3B5A),
                                   ),
-                                  SizedBox(width: 6),
-                                  Text('${loc.projectPage_powerTabShort} ${_getProjectName()}'),
+                                  const SizedBox(width: 4),
+                                  Flexible(
+                                    child: Text(
+                                      'Puiss.',
+                                      style: TextStyle(fontSize: 12),
+                                      overflow: TextOverflow.ellipsis,
+                                    ),
+                                  ),
                                 ],
                               ),
                             ),
                             Tab(
                               child: Row(
                                 mainAxisAlignment: MainAxisAlignment.center,
+                                mainAxisSize: MainAxisSize.min,
                                 children: [
                                   Icon(
                                     Icons.scale, 
-                                    size: 18, 
+                                    size: 16,
                                     color: Theme.of(context).brightness == Brightness.dark ? Colors.lightBlue[300] : const Color(0xFF1B3B5A),
                                   ),
-                                  SizedBox(width: 8),
-                                  Text('${loc.projectPage_weightTabShort} ${_getProjectName()}'),
+                                  const SizedBox(width: 4),
+                                  Flexible(
+                                    child: Text(
+                                      'Poids',
+                                      style: TextStyle(fontSize: 12),
+                                      overflow: TextOverflow.ellipsis,
+                                    ),
+                                  ),
                                 ],
                               ),
                             ),
@@ -1031,45 +1158,269 @@ class _CalculProjetPageState extends ConsumerState<CalculProjetPage> {
               ),
             ),
             
-            // Widget Export en bas de page
+            
+            // Commentaire utilisateur (au-dessus des boutons)
+            if (_getCommentForTab(showConso ? 'power_tab' : 'weight_tab').isNotEmpty) ...[
+              const SizedBox(height: 20),
+              Container(
+                width: double.infinity,
+                padding: const EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  color: Theme.of(context).brightness == Brightness.dark
+                      ? Colors.blue[900]?.withOpacity(0.3)
+                      : Colors.blue[50],
+                  borderRadius: BorderRadius.circular(8),
+                  border: Border.all(
+                    color: Theme.of(context).brightness == Brightness.dark
+                        ? Colors.lightBlue[300]!
+                        : Colors.blue[300]!,
+                    width: 1,
+                  ),
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Icon(
+                      Icons.chat_bubble_outline,
+                      size: 16,
+                      color: Theme.of(context).brightness == Brightness.dark
+                          ? Colors.lightBlue[300]
+                          : Colors.blue[700],
+                    ),
+                    const SizedBox(height: 6),
+                    Text(
+                      _getCommentForTab(showConso ? 'power_tab' : 'weight_tab'),
+                      style: TextStyle(
+                        fontSize: 13,
+                        color: Theme.of(context).brightness == Brightness.dark
+                            ? Colors.white
+                            : Colors.black87,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+            
+            // Cadre des fichiers importés (PDF et photos)
+            Consumer(
+              builder: (context, ref, child) {
+                final importedFiles = ref.watch(importedFilesProvider);
+                if (importedFiles.isEmpty) return const SizedBox.shrink();
+                
+                return Column(
+                  children: [
+                    const SizedBox(height: 20),
+                    Container(
+                      padding: const EdgeInsets.all(16),
+                      decoration: BoxDecoration(
+                        color: const Color(0xFF0A1128).withOpacity(0.3),
+                        border: Border.all(
+                          color: Colors.white.withOpacity(0.3),
+                          width: 1,
+                        ),
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Row(
+                            children: [
+                              Icon(
+                                Icons.folder_open,
+                                color: Colors.white.withOpacity(0.8),
+                                size: 20,
+                              ),
+                              const SizedBox(width: 8),
+                              Text(
+                                'Fichiers importés (${importedFiles.length})',
+                                style: TextStyle(
+                                  color: Colors.white.withOpacity(0.9),
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
+                            ],
+                          ),
+                          const SizedBox(height: 12),
+                          ...(importedFiles.map((fileName) {
+                            final isPdf = fileName.toLowerCase().endsWith('.pdf');
+                            final isImage = fileName.toLowerCase().endsWith('.jpg') || 
+                                           fileName.toLowerCase().endsWith('.jpeg') || 
+                                           fileName.toLowerCase().endsWith('.png');
+                            
+                            return Container(
+                              margin: const EdgeInsets.only(bottom: 8),
+                              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                              decoration: BoxDecoration(
+                                color: Colors.white.withOpacity(0.1),
+                                borderRadius: BorderRadius.circular(8),
+                                border: Border.all(
+                                  color: Colors.white.withOpacity(0.2),
+                                  width: 1,
+                                ),
+                              ),
+                              child: Row(
+                                children: [
+                                  Icon(
+                                    isPdf ? Icons.picture_as_pdf : 
+                                    isImage ? Icons.image : Icons.insert_drive_file,
+                                    color: isPdf ? Colors.red.withOpacity(0.8) : 
+                                           isImage ? Colors.blue.withOpacity(0.8) : 
+                                           Colors.grey.withOpacity(0.8),
+                                    size: 18,
+                                  ),
+                                  const SizedBox(width: 8),
+                                  Expanded(
+                                    child: Text(
+                                      fileName,
+                                      style: TextStyle(
+                                        color: Colors.white.withOpacity(0.9),
+                                        fontSize: 12,
+                                      ),
+                                      overflow: TextOverflow.ellipsis,
+                                    ),
+                                  ),
+                                  IconButton(
+                                    onPressed: () => ref.read(importedFilesProvider.notifier).removeFile(fileName),
+                                    icon: Icon(
+                                      Icons.delete_outline,
+                                      color: Colors.red.withOpacity(0.8),
+                                      size: 18,
+                                    ),
+                                    padding: EdgeInsets.zero,
+                                    constraints: const BoxConstraints(
+                                      minWidth: 24,
+                                      minHeight: 24,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            );
+                          }).toList()),
+                        ],
+                      ),
+                    ),
+                  ],
+                );
+              },
+            ),
+            
+            // Boutons d'action en bas de page
             const SizedBox(height: 20),
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                ExportWidget(
-                  title: '${AppLocalizations.of(context)!.defaultProjectName} ${ref.read(projectProvider).projects.isNotEmpty ? ref.read(projectProvider).getTranslatedProjectName(ref.read(projectProvider).selectedProject, AppLocalizations.of(context)!) : ""}',
-                  content: 'Résumé complet du projet avec tous les presets et articles',
-                  presetName: ref.read(projectProvider).projects.isNotEmpty ? ref.read(projectProvider).getTranslatedProjectName(ref.read(projectProvider).selectedProject, AppLocalizations.of(context)!) : AppLocalizations.of(context)!.defaultProjectName,
-                  exportDate: DateTime.now(),
-                  projectType: 'power',
-                  projectSummary: {
-                    'totalItems': totalItems.toString(),
-                    'totalExports': totalExports.toString(),
-                    'totalPower': showConso ? '${(totalProjet / 1000).toStringAsFixed(2)} kW' : '${totalProjet.toStringAsFixed(2)} kg',
-                    'presetCount': presets.length.toString(),
-                  },
-                  projectData: presets.map((preset) {
-                    double totalPreset = 0;
-                    int itemCount = 0;
-                    
-                    for (var item in preset.items) {
-                      final value = showConso
-                          ? (item.item.conso.contains('W')
-                              ? (double.tryParse(item.item.conso.replaceAll('W', '').trim()) ?? 0) * item.quantity
-                              : 0)
-                          : (item.item.poids.contains('kg')
-                              ? (double.tryParse(item.item.poids.replaceAll('kg', '').trim()) ?? 0) * item.quantity
-                              : 0);
-                      totalPreset += value;
-                      itemCount += item.quantity;
-                    }
-                    
-                    return {
-                      'presetName': preset.name,
-                      'totalPower': showConso ? '${(totalPreset / 1000).toStringAsFixed(2)} kW' : '${totalPreset.toStringAsFixed(2)} kg',
-                      'itemCount': itemCount.toString(),
-                    };
-                  }).toList(),
+                // Bouton Commentaire (icône uniquement)
+                ActionButton.comment(
+                  onPressed: () => _showCommentDialog(showConso ? 'power_tab' : 'weight_tab', showConso ? 'Puissance' : 'Poids'),
+                  iconSize: 28,
+                ),
+                const SizedBox(width: 20),
+                // Bouton Export (rotated) - Premium uniquement
+                Transform.rotate(
+                  angle: 3.14159, // 180° en radians
+                  child: Container(
+                    decoration: BoxDecoration(
+                      color: Colors.transparent,
+                    ),
+                    child: Consumer(
+                      builder: (context, ref, child) {
+                        return FutureBuilder<bool>(
+                          future: FreemiumAccessService.canExport(context, ref),
+                          builder: (context, snapshot) {
+                            if (snapshot.connectionState == ConnectionState.waiting) {
+                              return const CircularProgressIndicator();
+                            }
+                            
+                            final canExport = snapshot.data ?? false;
+                            
+                            if (!canExport) {
+                              // Afficher un bouton désactivé avec message premium
+                              return Tooltip(
+                                message: 'Export réservé aux utilisateurs Premium',
+                                child: Opacity(
+                                  opacity: 0.5,
+                                  child: ExportWidget(
+                                    title: '${AppLocalizations.of(context)!.defaultProjectName} ${ref.read(projectProvider).projects.isNotEmpty ? ref.read(projectProvider).getTranslatedProjectName(ref.read(projectProvider).selectedProject, AppLocalizations.of(context)!) : ""}',
+                                    content: _buildExportContent(showConso, totalProjet, totalItems, totalExports, presets),
+                                    presetName: ref.read(projectProvider).projects.isNotEmpty ? ref.read(projectProvider).getTranslatedProjectName(ref.read(projectProvider).selectedProject, AppLocalizations.of(context)!) : AppLocalizations.of(context)!.defaultProjectName,
+                                    exportDate: DateTime.now(),
+                                    projectType: 'power',
+                                    projectSummary: {
+                                      'totalItems': totalItems.toString(),
+                                      'totalExports': totalExports.toString(),
+                                      'totalPower': showConso ? '${(totalProjet / 1000).toStringAsFixed(2)} kW' : '${totalProjet.toStringAsFixed(2)} kg',
+                                      'presetCount': presets.length.toString(),
+                                    },
+                                    projectData: presets.map((preset) {
+                                      double totalPreset = 0;
+                                      int itemCount = 0;
+                                      
+                                      for (var item in preset.items) {
+                                        final value = showConso
+                                            ? (item.item.conso.contains('W')
+                                                ? (double.tryParse(item.item.conso.replaceAll('W', '').trim()) ?? 0) * item.quantity
+                                                : 0)
+                                            : (item.item.poids.contains('kg')
+                                                ? (double.tryParse(item.item.poids.replaceAll('kg', '').trim()) ?? 0) * item.quantity
+                                                : 0);
+                                        totalPreset += value;
+                                        itemCount += item.quantity;
+                                      }
+                                      
+                                      return {
+                                        'presetName': preset.name,
+                                        'totalPower': showConso ? '${(totalPreset / 1000).toStringAsFixed(2)} kW' : '${totalPreset.toStringAsFixed(2)} kg',
+                                        'itemCount': itemCount.toString(),
+                                      };
+                                    }).toList(),
+                                  ),
+                                ),
+                              );
+                            }
+                            
+                            // Bouton d'export normal pour les utilisateurs premium
+                            return ExportWidget(
+                              title: '${AppLocalizations.of(context)!.defaultProjectName} ${ref.read(projectProvider).projects.isNotEmpty ? ref.read(projectProvider).getTranslatedProjectName(ref.read(projectProvider).selectedProject, AppLocalizations.of(context)!) : ""}',
+                              content: _buildExportContent(showConso, totalProjet, totalItems, totalExports, presets),
+                              presetName: ref.read(projectProvider).projects.isNotEmpty ? ref.read(projectProvider).getTranslatedProjectName(ref.read(projectProvider).selectedProject, AppLocalizations.of(context)!) : AppLocalizations.of(context)!.defaultProjectName,
+                              exportDate: DateTime.now(),
+                              projectType: 'power',
+                              projectSummary: {
+                                'totalItems': totalItems.toString(),
+                                'totalExports': totalExports.toString(),
+                                'totalPower': showConso ? '${(totalProjet / 1000).toStringAsFixed(2)} kW' : '${totalProjet.toStringAsFixed(2)} kg',
+                                'presetCount': presets.length.toString(),
+                              },
+                              projectData: presets.map((preset) {
+                                double totalPreset = 0;
+                                int itemCount = 0;
+                                
+                                for (var item in preset.items) {
+                                  final value = showConso
+                                      ? (item.item.conso.contains('W')
+                                          ? (double.tryParse(item.item.conso.replaceAll('W', '').trim()) ?? 0) * item.quantity
+                                          : 0)
+                                      : (item.item.poids.contains('kg')
+                                          ? (double.tryParse(item.item.poids.replaceAll('kg', '').trim()) ?? 0) * item.quantity
+                                          : 0);
+                                  totalPreset += value;
+                                  itemCount += item.quantity;
+                                }
+                                
+                                return {
+                                  'presetName': preset.name,
+                                  'totalPower': showConso ? '${(totalPreset / 1000).toStringAsFixed(2)} kW' : '${totalPreset.toStringAsFixed(2)} kg',
+                                  'itemCount': itemCount.toString(),
+                                };
+                              }).toList(),
+                            );
+                          },
+                        );
+                      },
+                    ),
+                  ),
                 ),
               ],
             ),
@@ -1079,11 +1430,17 @@ class _CalculProjetPageState extends ConsumerState<CalculProjetPage> {
     );
   }
 
-  String _getProjectName() {
-    final project = ref.read(projectProvider).selectedProject;
-    if (project == null) return AppLocalizations.of(context)!.defaultProjectName;
+
+  // Méthode pour construire le contenu d'export
+  String _buildExportContent(bool showConso, double totalProjet, int totalItems, int totalExports, List<Preset> presets) {
+    String content = 'Résumé complet du projet avec tous les presets et articles\n\n';
     
-    // Utiliser la méthode de traduction du ProjectProvider
-    return ref.read(projectProvider).getTranslatedProjectName(project, AppLocalizations.of(context)!);
+    // Ajouter les détails du projet
+    content += 'Total: ${showConso ? (totalProjet / 1000).toStringAsFixed(2) : totalProjet.toStringAsFixed(2)} ${showConso ? 'kW' : 'kg'}\n';
+    content += 'Articles: $totalItems\n';
+    content += 'Exports: $totalExports\n';
+    content += 'Presets: ${presets.length}\n\n';
+    
+    return content;
   }
 }

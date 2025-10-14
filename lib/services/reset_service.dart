@@ -3,11 +3,40 @@ import 'package:hive_flutter/hive_flutter.dart';
 import 'package:logging/logging.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'hive_service.dart';
+import 'memory_cache_service.dart';
 
 /// Service pour effectuer un reset complet de l'application
 /// Simule une première visite en supprimant toutes les données locales
 class ResetService {
   static final _logger = Logger('ResetService');
+
+  /// Effectue un reset complet de l'application incluant langue et mémoire tampon
+  static Future<void> performCompleteResetWithLanguageAndCache() async {
+    try {
+      _logger.info('Starting complete app reset with language and cache...');
+      
+      // 1. Déconnexion Supabase (si connecté)
+      await _signOutFromSupabase();
+      
+      // 2. Nettoyer toutes les données Hive
+      await _clearAllHiveData();
+      
+      // 3. Nettoyer toutes les SharedPreferences (incluant la langue)
+      await _clearAllSharedPreferences();
+      
+      // 4. Nettoyer le cache mémoire
+      await _clearMemoryCache();
+      
+      // 5. Réinitialiser Hive
+      await HiveService.initialize();
+      
+      _logger.info('Complete app reset with language and cache completed successfully');
+      
+    } catch (e) {
+      _logger.severe('Error during complete reset: $e');
+      throw 'Erreur lors du reset: ${e.toString()}';
+    }
+  }
 
   /// Effectue un reset complet de l'application
   /// Supprime toutes les données locales (Hive + SharedPreferences)
@@ -105,10 +134,10 @@ class ResetService {
     }
   }
 
-  /// Nettoie toutes les SharedPreferences
+  /// Nettoie toutes les SharedPreferences (incluant la langue)
   static Future<void> _clearAllSharedPreferences() async {
     try {
-      _logger.info('Clearing all SharedPreferences...');
+      _logger.info('Clearing all SharedPreferences (including language)...');
       
       final prefs = await SharedPreferences.getInstance();
       
@@ -118,14 +147,19 @@ class ResetService {
         'user_id', 
         'user_email',
         'theme_mode',
-        'languageCode',
+        'languageCode',  // Réinitialise la langue
         'click_count',
         'first_launch',
         'onboarding_completed',
         'app_version',
         'last_sync',
         'user_preferences',
-        'app_settings'
+        'app_settings',
+        'sound_page_state',  // États des pages
+        'video_page_state',
+        'light_page_state',
+        'electricity_page_state',
+        'structure_page_state'
       ];
 
       // Supprimer toutes les clés connues
@@ -146,11 +180,27 @@ class ResetService {
         _logger.warning('Could not clear all SharedPreferences: $e');
       }
 
-      _logger.info('SharedPreferences cleared');
+      _logger.info('SharedPreferences cleared (language reset to default)');
       
     } catch (e) {
       _logger.warning('Error clearing SharedPreferences: $e');
       // Continue même si le nettoyage SharedPreferences échoue
+    }
+  }
+
+  /// Nettoie le cache mémoire
+  static Future<void> _clearMemoryCache() async {
+    try {
+      _logger.info('Clearing memory cache...');
+      
+      // Nettoyer le cache mémoire
+      MemoryCacheService().clear();
+      
+      _logger.info('Memory cache cleared');
+      
+    } catch (e) {
+      _logger.warning('Error clearing memory cache: $e');
+      // Continue même si le nettoyage du cache échoue
     }
   }
 

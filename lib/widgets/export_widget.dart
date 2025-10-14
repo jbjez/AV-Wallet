@@ -7,8 +7,15 @@ import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
 import 'dart:io';
 import '../providers/preset_provider.dart';
+import '../providers/project_provider.dart';
+import '../providers/project_calculation_provider.dart';
 import '../models/cart_item.dart';
 import '../models/catalogue_item.dart';
+import '../models/project_calculation.dart';
+import '../models/preset.dart';
+import '../models/project.dart';
+import '../widgets/action_button.dart';
+import '../theme/button_styles.dart';
 
 class ExportWidget extends ConsumerWidget {
   final String title;
@@ -30,6 +37,10 @@ class ExportWidget extends ConsumerWidget {
   final String? projectType; // 'weight', 'power', 'light', 'dmx', 'driver'
   final Map<String, dynamic>? projectSummary;
   final String? fileName; // Nom de fichier personnalisé
+  
+  // Propriétés pour les photos
+  final List<String>? photoPaths; // Chemins vers les photos à inclure
+  final String? projectName; // Nom du projet pour récupérer les photos
 
   const ExportWidget({
     super.key,
@@ -48,21 +59,28 @@ class ExportWidget extends ConsumerWidget {
     this.projectType,
     this.projectSummary,
     this.fileName,
+    this.photoPaths,
+    this.projectName,
   });
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final isDarkMode = Theme.of(context).brightness == Brightness.dark;
-    final buttonColor = isDarkMode ? Colors.grey[900] : Colors.white; // Blanc en mode jour
+    // Couleur adaptée au thème : Grey 900 opacité 0.5 en mode nuit, bleu nuit opacité 0.5 en mode jour
+    final buttonColor = isDarkMode 
+        ? Colors.grey[900]!.withOpacity(0.5)
+        : Colors.blue[900]!.withOpacity(0.5);
     
     return PopupMenuButton<String>(
-      icon: Icon(
-        customIcon ?? Icons.upload,
-        color: isDarkMode ? Colors.white : Colors.white, // Blanc dans tous les cas
-        size: 24,
+      child: ActionButton(
+        icon: customIcon ?? Icons.cloud_upload,
+        iconSize: 28,
+        color: Colors.white, // Toujours blanc pour la cohérence
+        style: ButtonStyles.actionButtonStyle,
+        enabled: true,
       ),
       tooltip: tooltip ?? 'Exporter',
-      color: buttonColor,
+      color: buttonColor, // Même couleur que ActionButton
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(8),
       ),
@@ -149,7 +167,7 @@ class ExportWidget extends ConsumerWidget {
       }
     } catch (e) {
       if (context.mounted) {
-        _showSnackBar(context, 'Erreur lors de la génération du PDF: $e', Colors.red);
+        // Erreur silencieuse - pas de SnackBar
       }
     }
   }
@@ -159,9 +177,42 @@ class ExportWidget extends ConsumerWidget {
     return '$title\n📅 ${date.toString().split('.')[0]}\n\nBy AVWallet®';
   }
 
+  Future<List<String>> _getProjectPhotos() async {
+    final List<String> photos = [];
+    
+    // Si des chemins de photos sont fournis directement
+    if (photoPaths != null && photoPaths!.isNotEmpty) {
+      photos.addAll(photoPaths!);
+    }
+    
+    // Si un nom de projet est fourni, récupérer les photos du projet
+    if (projectName != null) {
+      try {
+        final documentsDir = await getApplicationDocumentsDirectory();
+        final projectDir = Directory('${documentsDir.path}/projets/$projectName/photos_ar');
+        
+        if (await projectDir.exists()) {
+          final files = await projectDir.list().toList();
+          for (final file in files) {
+            if (file is File && file.path.toLowerCase().endsWith('.jpg')) {
+              photos.add(file.path);
+            }
+          }
+        }
+      } catch (e) {
+        debugPrint('Erreur lors de la récupération des photos: $e');
+      }
+    }
+    
+    return photos;
+  }
+
   Future<File> _generatePdf() async {
     // Créer le document PDF
     final pdf = pw.Document();
+    
+    // Récupérer les photos du projet
+    final photos = await _getProjectPhotos();
     
     // Ajouter la page avec pagination automatique
     pdf.addPage(
@@ -243,6 +294,14 @@ class ExportWidget extends ConsumerWidget {
               pw.Text('RÉSUMÉ', style: pw.TextStyle(fontSize: 18, fontWeight: pw.FontWeight.bold)),
               pw.SizedBox(height: 10),
               pw.Text(content, style: pw.TextStyle(fontSize: 12)),
+              pw.SizedBox(height: 20),
+            ],
+            
+            // Section Photos - toujours ajoutée si des photos existent
+            if (photos.isNotEmpty) ...[
+              pw.Text('PHOTOS DU PROJET', style: pw.TextStyle(fontSize: 18, fontWeight: pw.FontWeight.bold)),
+              pw.SizedBox(height: 10),
+              _buildPhotosSection(photos),
               pw.SizedBox(height: 20),
             ],
           ];
@@ -487,11 +546,11 @@ class ExportWidget extends ConsumerWidget {
       // Pour SMS, utiliser le même système que WhatsApp et Email avec fichier PDF
       await Share.shareXFiles([XFile(pdfFile.path)], text: message);
       if (context.mounted) {
-        _showSnackBar(context, 'Fichier PDF partagé via SMS', Colors.green);
+        // Export SMS réussi - pas de SnackBar
       }
     } catch (e) {
       if (context.mounted) {
-        _showSnackBar(context, 'Erreur lors de l\'export SMS: $e', Colors.red);
+        // Erreur SMS silencieuse - pas de SnackBar
       }
     }
   }
@@ -501,7 +560,7 @@ class ExportWidget extends ConsumerWidget {
       // Pour WhatsApp, on peut partager le fichier PDF
       await Share.shareXFiles([XFile(pdfFile.path)], text: message);
       if (context.mounted) {
-        _showSnackBar(context, 'Fichier PDF partagé via WhatsApp', Colors.green);
+        // Export WhatsApp réussi - pas de SnackBar
       }
     } catch (e) {
       // Fallback vers WhatsApp Web si l'app n'est pas disponible
@@ -511,14 +570,14 @@ class ExportWidget extends ConsumerWidget {
         
         if (launched) {
           if (context.mounted) {
-            _showSnackBar(context, 'WhatsApp Web ouvert avec le message pré-rempli', Colors.green);
+            // WhatsApp Web ouvert - pas de SnackBar
           }
         } else {
           throw Exception('Impossible d\'ouvrir WhatsApp Web');
         }
       } catch (e2) {
         if (context.mounted) {
-          _showSnackBar(context, 'Erreur lors de l\'export WhatsApp: $e2', Colors.red);
+          // Erreur WhatsApp silencieuse - pas de SnackBar
         }
       }
     }
@@ -529,7 +588,7 @@ class ExportWidget extends ConsumerWidget {
       // Pour Email, on peut partager le fichier PDF
       await Share.shareXFiles([XFile(pdfFile.path)], text: message);
       if (context.mounted) {
-        _showSnackBar(context, 'Fichier PDF partagé via Email', Colors.green);
+        // Export Email réussi - pas de SnackBar
       }
     } catch (e) {
       // Fallback vers l'app email si disponible
@@ -538,7 +597,7 @@ class ExportWidget extends ConsumerWidget {
         
         if (!canOpenEmail) {
           if (context.mounted) {
-            _showSnackBar(context, 'App email non disponible sur cet appareil', Colors.orange);
+            // App email non disponible - pas de SnackBar
           }
           return;
         }
@@ -552,66 +611,137 @@ class ExportWidget extends ConsumerWidget {
         
         if (launched) {
           if (context.mounted) {
-            _showSnackBar(context, 'App email ouverte avec le message pré-rempli', Colors.green);
+            // App email ouverte - pas de SnackBar
           }
         } else {
           throw Exception('Impossible d\'ouvrir l\'app email');
         }
       } catch (e2) {
         if (context.mounted) {
-          _showSnackBar(context, 'Erreur lors de l\'export email: $e2', Colors.red);
+          // Erreur email silencieuse - pas de SnackBar
         }
       }
     }
   }
 
-  void _exportToProject(BuildContext context, WidgetRef ref, String exportMessage, File pdfFile) {
+  void _exportToProject(BuildContext context, WidgetRef ref, String exportMessage, File pdfFile) async {
     try {
-      // Récupérer le preset actif
+      // Récupérer le preset actif et le projet
       final activePreset = ref.read(activePresetProvider);
+      final project = ref.read(projectProvider).selectedProject;
+      
+      // Si pas de preset actif, créer un preset par défaut
       if (activePreset == null) {
-        _showSnackBar(context, 'Aucun preset actif pour l\'export', Colors.orange);
-        return;
+        final defaultPreset = Preset(
+          id: 'default_${DateTime.now().millisecondsSinceEpoch}',
+          name: 'Preset par défaut',
+          items: [],
+        );
+        ref.read(presetProvider.notifier).addPreset(defaultPreset);
+        ref.read(presetProvider.notifier).setActivePresetIndex(0);
+      }
+      
+      // Si pas de projet sélectionné, créer un projet par défaut
+      if (project == null) {
+        final defaultProject = Project(
+          id: 'default_${DateTime.now().millisecondsSinceEpoch}',
+          name: 'Projet par défaut',
+        );
+        ref.read(projectProvider.notifier).addProject(defaultProject);
+        // Sélectionner le dernier projet ajouté (qui sera à la fin de la liste)
+        final projects = ref.read(projectProvider).projects;
+        ref.read(projectProvider.notifier).selectProject(projects.length - 1);
       }
 
-      // Ajouter le contenu exporté au preset actif
-      final updatedPreset = activePreset.copyWith(
-        items: [
-          ...activePreset.items,
-          // Créer un nouvel élément pour l'export
-          CartItem(
-            item: CatalogueItem(
-              id: DateTime.now().millisecondsSinceEpoch.toString(),
-              name: 'Export: $title',
-              description: exportMessage,
-              categorie: 'Export',
-              sousCategorie: 'Système',
-              marque: 'Système',
-              produit: 'Export: $title',
-              dimensions: '0x0x0',
-              poids: '0',
-              conso: '0',
-              imageUrl: '',
-            ),
-            quantity: 1,
-          ),
-        ],
+      // Récupérer à nouveau les valeurs après création si nécessaire
+      final finalPreset = ref.read(activePresetProvider) ?? Preset(
+        id: 'default_${DateTime.now().millisecondsSinceEpoch}',
+        name: 'Preset par défaut',
+        items: [],
+      );
+      
+      final finalProject = ref.read(projectProvider).selectedProject ?? Project(
+        id: 'default_${DateTime.now().millisecondsSinceEpoch}',
+        name: 'Projet par défaut',
       );
 
-      // Mettre à jour le preset
-      ref.read(presetProvider.notifier).updatePreset(updatedPreset);
+      // Ajouter seulement le calcul aux calculs du projet (PAS d'article au preset)
+      final calculationType = _getCalculationTypeFromProjectType(projectType);
+      final calculation = ProjectCalculation(
+        id: 'export_${DateTime.now().millisecondsSinceEpoch}',
+        projectId: finalProject.id,
+        name: _getCalculationDisplayName(calculationType, title),
+        totalPower: totalProjet,
+        totalWeight: 0.0, // TODO: à remplacer par la vraie valeur si on l'a plus tard
+        createdAt: DateTime.now(),
+        type: calculationType ?? 'general',
+        data: {
+          'exportType': projectType ?? 'general',
+          'presetName': finalPreset.name,
+          'fileName': pdfFile.path.split('/').last,
+          'summary': projectSummary?.toString() ?? '',
+          'description': 'Export généré le ${DateTime.now().toString().substring(0, 16)}',
+        },
+        filePath: pdfFile.path,
+      );
       
-      _showSnackBar(
-        context, 
-        'Export ajouté au preset "${activePreset.name}" avec fichier PDF', 
-        Colors.green
-      );
+      ref.read(projectCalculationProvider.notifier).addCalculation(calculation);
+      
     } catch (e) {
-      _showSnackBar(
-        context, 
-        'Erreur lors de l\'export vers le projet: $e', 
-        Colors.red
-      );
+      // Erreur silencieuse - pas de SnackBar
+    }
+  }
+
+  String? _getCalculationTypeFromProjectType(String? projectType) {
+    switch (projectType) {
+      case 'weight':
+        return 'poids';
+      case 'power':
+        return 'puissance';
+      case 'light':
+        return 'dmx';
+      case 'dmx':
+        return 'dmx';
+      case 'driver':
+        return 'led';
+      case 'led_wall':
+        return 'led';
+      case 'faisceau':
+        return 'faisceau';
+      case 'amp':
+        return 'son';
+      case 'proj':
+        return 'proj';
+      case 'video':
+        return 'video';
+      default:
+        return 'general'; // Type général pour les exports non spécifiques
+    }
+  }
+
+  String _getCalculationDisplayName(String? calculationType, String originalTitle) {
+    // Créer un nom court et descriptif basé sur le type de calcul
+    switch (calculationType) {
+      case 'dmx':
+        return 'Calcul DMX';
+      case 'faisceau':
+        return 'Calcul Faisceau';
+      case 'proj':
+        return 'Calcul Projection';
+      case 'video':
+        return 'Calcul Vidéo';
+      case 'son':
+        return 'Calcul Son';
+      case 'structure':
+        return 'Calcul Structure';
+      case 'puissance':
+        return 'Calcul Puissance';
+      case 'poids':
+        return 'Calcul Poids';
+      case 'general':
+        return 'Calcul Général';
+      default:
+        return 'Calcul ${calculationType ?? 'Export'}';
     }
   }
 
@@ -1183,7 +1313,7 @@ class ExportWidget extends ConsumerWidget {
         pw.Text('MUR LED - PLAN ET DÉTAILS', style: pw.TextStyle(fontSize: 18, fontWeight: pw.FontWeight.bold)),
         pw.SizedBox(height: 15),
         
-        // Résumé du mur LED
+        // Informations sur le matériel sélectionné
         if (projectSummary != null) ...[
           pw.Container(
             padding: const pw.EdgeInsets.all(15),
@@ -1194,12 +1324,12 @@ class ExportWidget extends ConsumerWidget {
             child: pw.Column(
               crossAxisAlignment: pw.CrossAxisAlignment.start,
               children: [
-                pw.Text('CONFIGURATION DU MUR', style: pw.TextStyle(fontSize: 14, fontWeight: pw.FontWeight.bold)),
+                pw.Text('MATÉRIEL SÉLECTIONNÉ', style: pw.TextStyle(fontSize: 14, fontWeight: pw.FontWeight.bold)),
                 pw.SizedBox(height: 8),
                 pw.Row(
                   mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
                   children: [
-                    pw.Text('Mur LED:', style: pw.TextStyle(fontSize: 12)),
+                    pw.Text('Modèle:', style: pw.TextStyle(fontSize: 12)),
                     pw.Text('${projectSummary!['mur_led'] ?? 'N/A'}', 
                            style: pw.TextStyle(fontSize: 12, fontWeight: pw.FontWeight.bold)),
                   ],
@@ -1217,8 +1347,8 @@ class ExportWidget extends ConsumerWidget {
                 pw.Row(
                   mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
                   children: [
-                    pw.Text('Dimensions:', style: pw.TextStyle(fontSize: 12)),
-                    pw.Text('${projectSummary!['dimensions'] ?? 'N/A'} dalles', 
+                    pw.Text('Produit:', style: pw.TextStyle(fontSize: 12)),
+                    pw.Text('${projectSummary!['produit'] ?? 'N/A'}', 
                            style: pw.TextStyle(fontSize: 12, fontWeight: pw.FontWeight.bold)),
                   ],
                 ),
@@ -1226,8 +1356,78 @@ class ExportWidget extends ConsumerWidget {
                 pw.Row(
                   mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
                   children: [
-                    pw.Text('Nombre de dalles:', style: pw.TextStyle(fontSize: 12)),
-                    pw.Text('${projectSummary!['nb_dalles'] ?? '0'}', 
+                    pw.Text('Dimensions par dalle:', style: pw.TextStyle(fontSize: 12)),
+                    pw.Text('${projectSummary!['dimensions_dalle'] ?? 'N/A'}', 
+                           style: pw.TextStyle(fontSize: 12, fontWeight: pw.FontWeight.bold)),
+                  ],
+                ),
+                pw.SizedBox(height: 4),
+                pw.Row(
+                  mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
+                  children: [
+                    pw.Text('Résolution par dalle:', style: pw.TextStyle(fontSize: 12)),
+                    pw.Text('${projectSummary!['resolution_dalle'] ?? 'N/A'}', 
+                           style: pw.TextStyle(fontSize: 12, fontWeight: pw.FontWeight.bold)),
+                  ],
+                ),
+                pw.SizedBox(height: 4),
+                pw.Row(
+                  mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
+                  children: [
+                    pw.Text('Poids par dalle:', style: pw.TextStyle(fontSize: 12)),
+                    pw.Text('${projectSummary!['poids_dalle'] ?? 'N/A'}', 
+                           style: pw.TextStyle(fontSize: 12, fontWeight: pw.FontWeight.bold)),
+                  ],
+                ),
+                pw.SizedBox(height: 4),
+                pw.Row(
+                  mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
+                  children: [
+                    pw.Text('Consommation par dalle:', style: pw.TextStyle(fontSize: 12)),
+                    pw.Text('${projectSummary!['consommation_dalle'] ?? 'N/A'}', 
+                           style: pw.TextStyle(fontSize: 12, fontWeight: pw.FontWeight.bold)),
+                  ],
+                ),
+              ],
+            ),
+          ),
+          pw.SizedBox(height: 15),
+          
+          // Configuration du mur
+          pw.Container(
+            padding: const pw.EdgeInsets.all(15),
+            decoration: pw.BoxDecoration(
+              border: pw.Border.all(color: PdfColors.grey300),
+              borderRadius: pw.BorderRadius.circular(8),
+            ),
+            child: pw.Column(
+              crossAxisAlignment: pw.CrossAxisAlignment.start,
+              children: [
+                pw.Text('CONFIGURATION DU MUR', style: pw.TextStyle(fontSize: 14, fontWeight: pw.FontWeight.bold)),
+                pw.SizedBox(height: 8),
+                pw.Row(
+                  mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
+                  children: [
+                    pw.Text('Dimensions (dalles):', style: pw.TextStyle(fontSize: 12)),
+                    pw.Text('${projectSummary!['dimensions'] ?? 'N/A'}', 
+                           style: pw.TextStyle(fontSize: 12, fontWeight: pw.FontWeight.bold)),
+                  ],
+                ),
+                pw.SizedBox(height: 4),
+                pw.Row(
+                  mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
+                  children: [
+                    pw.Text('Dimensions totales:', style: pw.TextStyle(fontSize: 12)),
+                    pw.Text('${projectSummary!['dimensions_totales'] ?? 'N/A'}', 
+                           style: pw.TextStyle(fontSize: 12, fontWeight: pw.FontWeight.bold)),
+                  ],
+                ),
+                pw.SizedBox(height: 4),
+                pw.Row(
+                  mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
+                  children: [
+                    pw.Text('Nombre total de dalles:', style: pw.TextStyle(fontSize: 12)),
+                    pw.Text('${projectSummary!['nb_dalles'] ?? 'N/A'}', 
                            style: pw.TextStyle(fontSize: 12, fontWeight: pw.FontWeight.bold)),
                   ],
                 ),
@@ -1244,7 +1444,16 @@ class ExportWidget extends ConsumerWidget {
                 pw.Row(
                   mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
                   children: [
-                    pw.Text('Ratio:', style: pw.TextStyle(fontSize: 12)),
+                    pw.Text('Mégapixels:', style: pw.TextStyle(fontSize: 12)),
+                    pw.Text('${projectSummary!['megapixels'] ?? 'N/A'}', 
+                           style: pw.TextStyle(fontSize: 12, fontWeight: pw.FontWeight.bold)),
+                  ],
+                ),
+                pw.SizedBox(height: 4),
+                pw.Row(
+                  mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
+                  children: [
+                    pw.Text('Ratio d\'aspect:', style: pw.TextStyle(fontSize: 12)),
                     pw.Text('${projectSummary!['ratio'] ?? 'N/A'}', 
                            style: pw.TextStyle(fontSize: 12, fontWeight: pw.FontWeight.bold)),
                   ],
@@ -1254,7 +1463,7 @@ class ExportWidget extends ConsumerWidget {
                   mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
                   children: [
                     pw.Text('Poids total:', style: pw.TextStyle(fontSize: 12)),
-                    pw.Text('${projectSummary!['poids_total'] ?? '0.0 kg'}', 
+                    pw.Text('${projectSummary!['poids_total'] ?? 'N/A'}', 
                            style: pw.TextStyle(fontSize: 12, fontWeight: pw.FontWeight.bold)),
                   ],
                 ),
@@ -1262,8 +1471,8 @@ class ExportWidget extends ConsumerWidget {
                 pw.Row(
                   mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
                   children: [
-                    pw.Text('Consommation:', style: pw.TextStyle(fontSize: 12)),
-                    pw.Text('${projectSummary!['consommation_total'] ?? '0 W'}', 
+                    pw.Text('Consommation totale:', style: pw.TextStyle(fontSize: 12)),
+                    pw.Text('${projectSummary!['consommation_total'] ?? 'N/A'}', 
                            style: pw.TextStyle(fontSize: 12, fontWeight: pw.FontWeight.bold)),
                   ],
                 ),
@@ -1366,10 +1575,8 @@ class ExportWidget extends ConsumerWidget {
           )),
         ],
         
-        // Plan schématique du mur avec dessin
+        // Schéma du mur avec quadrillage amélioré
         pw.SizedBox(height: 20),
-        pw.Text('PLAN SCHÉMATIQUE DU MUR', style: pw.TextStyle(fontSize: 16, fontWeight: pw.FontWeight.bold)),
-        pw.SizedBox(height: 10),
         pw.Container(
           padding: const pw.EdgeInsets.all(15),
           decoration: pw.BoxDecoration(
@@ -1378,12 +1585,14 @@ class ExportWidget extends ConsumerWidget {
           ),
           child: pw.Column(
             children: [
-              pw.Text('Représentation visuelle du mur LED', style: pw.TextStyle(fontSize: 14, fontWeight: pw.FontWeight.bold)),
+              pw.Text('SCHÉMA DU MUR LED', style: pw.TextStyle(fontSize: 14, fontWeight: pw.FontWeight.bold)),
               pw.SizedBox(height: 15),
               if (projectSummary != null) ...[
-                _buildWallDrawing(),
+                _buildEnhancedWallDrawing(),
                 pw.SizedBox(height: 15),
                 pw.Text('Dimensions: ${projectSummary!['dimensions'] ?? 'N/A'} dalles', style: pw.TextStyle(fontSize: 12)),
+                pw.SizedBox(height: 5),
+                pw.Text('Dimensions totales: ${projectSummary!['dimensions_totales'] ?? 'N/A'}', style: pw.TextStyle(fontSize: 12, fontWeight: pw.FontWeight.bold)),
                 pw.SizedBox(height: 5),
                 pw.Text('Résolution: ${projectSummary!['resolution_totale'] ?? 'N/A'}', style: pw.TextStyle(fontSize: 12)),
                 pw.SizedBox(height: 5),
@@ -1446,6 +1655,111 @@ class ExportWidget extends ConsumerWidget {
           );
         }),
       ),
+    );
+  }
+
+  pw.Widget _buildEnhancedWallDrawing() {
+    if (projectSummary == null) return pw.SizedBox.shrink();
+    
+    // Extraire les dimensions du mur
+    final width = projectSummary!['largeur_dalles'] ?? 1;
+    final height = projectSummary!['hauteur_dalles'] ?? 1;
+    final resX = projectSummary!['resX'] ?? 200;
+    final resY = projectSummary!['resY'] ?? 200;
+    
+    // Calculer la taille des carrés en respectant les proportions
+    final maxSize = 300.0; // Taille maximale du dessin
+    final tileSize = (maxSize / (width > height ? width : height)).clamp(12.0, 25.0);
+    
+    return pw.Container(
+      width: width * tileSize,
+      height: height * tileSize,
+      decoration: pw.BoxDecoration(
+        border: pw.Border.all(color: PdfColors.black, width: 2),
+      ),
+      child: pw.Table(
+        border: pw.TableBorder.all(color: PdfColors.grey400, width: 0.5),
+        children: List.generate(height, (rowIndex) {
+          return pw.TableRow(
+            children: List.generate(width, (colIndex) {
+              final index = colIndex * height + rowIndex;
+              return pw.Container(
+                width: tileSize,
+                height: tileSize,
+                decoration: pw.BoxDecoration(
+                  color: PdfColors.blue100,
+                ),
+                child: pw.Center(
+                  child: pw.Column(
+                    mainAxisAlignment: pw.MainAxisAlignment.center,
+                    children: [
+                      pw.Text(
+                        '${index + 1}',
+                        style: pw.TextStyle(
+                          fontSize: (tileSize * 0.25).clamp(6.0, 10.0),
+                          fontWeight: pw.FontWeight.bold,
+                          color: PdfColors.black,
+                        ),
+                      ),
+                      pw.SizedBox(height: 2),
+                      pw.Text(
+                        '${resX}x${resY}',
+                        style: pw.TextStyle(
+                          fontSize: (tileSize * 0.15).clamp(4.0, 8.0),
+                          color: PdfColors.grey700,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              );
+            }),
+          );
+        }),
+      ),
+    );
+  }
+
+  pw.Widget _buildPhotosSection(List<String> photos) {
+    if (photos.isEmpty) {
+      return pw.SizedBox.shrink();
+    }
+
+    return pw.Column(
+      crossAxisAlignment: pw.CrossAxisAlignment.start,
+      children: [
+        pw.Text('Photos capturées lors des mesures AR:', 
+               style: pw.TextStyle(fontSize: 14, fontWeight: pw.FontWeight.bold)),
+        pw.SizedBox(height: 10),
+        ...photos.map((photoPath) {
+          try {
+            final file = File(photoPath);
+            if (file.existsSync()) {
+              final imageBytes = file.readAsBytesSync();
+              return pw.Container(
+                margin: const pw.EdgeInsets.only(bottom: 15),
+                child: pw.Column(
+                  crossAxisAlignment: pw.CrossAxisAlignment.start,
+                  children: [
+                    pw.Text('Photo: ${photoPath.split('/').last}', 
+                           style: pw.TextStyle(fontSize: 12, fontWeight: pw.FontWeight.bold)),
+                    pw.SizedBox(height: 5),
+                    pw.Image(
+                      pw.MemoryImage(imageBytes),
+                      width: 200,
+                      height: 150,
+                      fit: pw.BoxFit.cover,
+                    ),
+                  ],
+                ),
+              );
+            }
+          } catch (e) {
+            debugPrint('Erreur lors du chargement de la photo $photoPath: $e');
+          }
+          return pw.SizedBox.shrink();
+        }).toList(),
+      ],
     );
   }
 }

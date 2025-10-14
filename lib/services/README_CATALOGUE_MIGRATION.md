@@ -108,3 +108,8 @@ Le service utilise le logger `CatalogueMigrationService` pour tracer :
 - **Performance optimisée** : Évite la duplication des données
 - **Maintenance simplifiée** : Un seul service pour toutes les catégories
 - **Flexibilité** : Facile d'ajouter de nouvelles catégories
+
+
+
+
+

@@ -2,7 +2,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import '../models/preset.dart';
 import '../models/catalogue_item.dart';
-import '../models/cart_data.dart';
 import '../models/cart_item.dart';
 import '../services/hive_service.dart';
 import '../models/project.dart';

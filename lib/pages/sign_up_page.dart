@@ -1,7 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../providers/auth_provider.dart';
+import '../providers/usage_provider.dart';
 import '../widgets/custom_dialog.dart';
+import '../widgets/premium_expired_dialog.dart';
+import '../widgets/premium_vip_dialog.dart';
+import 'email_code_verification_page.dart';
+import '../widgets/language_selector.dart';
+import '../services/translation_service.dart';
+import '../services/premium_email_service.dart';
 
 class SignUpPage extends ConsumerStatefulWidget {
   const SignUpPage({super.key});
@@ -28,13 +35,37 @@ class _SignUpPageState extends ConsumerState<SignUpPage> {
   }
 
   Future<void> _loadRememberMe() async {
-    final authState = ref.read(authStateProvider);
+    final authState = ref.read(authProvider);
     setState(() {
       _rememberMe = authState.rememberMe;
     });
   }
 
-  void _showWelcomeDialog() {
+  void _showPremiumWelcomeDialog(TranslationService translationService) {
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (context) => PremiumVIPDialog(
+        email: _emailController.text,
+        onContinue: () {
+          // Rediriger vers la page de vérification de code
+          Navigator.of(context).pushReplacement(
+            MaterialPageRoute(
+              builder: (context) => EmailCodeVerificationPage(
+                email: _emailController.text,
+              ),
+            ),
+          );
+        },
+      ),
+    );
+  }
+
+  void _showWelcomeDialog(TranslationService translationService) {
+    final usageState = ref.read(usageProvider);
+    final authState = ref.read(authProvider);
+    final userName = _getUserDisplayName(authState.user);
+    
     showDialog(
       context: context,
       barrierDismissible: false,
@@ -47,14 +78,16 @@ class _SignUpPageState extends ConsumerState<SignUpPage> {
           mainAxisSize: MainAxisSize.min,
           children: [
             Image.asset(
-              'assets/logo.png',
+              'assets/Logo2.png',
               height: 60,
               width: 60,
             ),
             const SizedBox(height: 20),
-            const Text(
-              'Bienvenu sur AVWallet',
-              style: TextStyle(
+            Text(
+              userName.isNotEmpty 
+                ? translationService.t('welcome_to_avwallet_with_name').replaceAll('{name}', userName)
+                : translationService.t('welcome_to_avwallet'),
+              style: const TextStyle(
                 color: Colors.white,
                 fontSize: 18,
                 fontWeight: FontWeight.bold,
@@ -62,9 +95,9 @@ class _SignUpPageState extends ConsumerState<SignUpPage> {
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: 10),
-            const Text(
-              'Votre compte a été créé avec succès !',
-              style: TextStyle(
+            Text(
+              translationService.t('premium_usage_remaining').replaceAll('{count}', usageState.remainingUsage.toString()),
+              style: const TextStyle(
                 color: Colors.white70,
                 fontSize: 14,
               ),
@@ -85,8 +118,8 @@ class _SignUpPageState extends ConsumerState<SignUpPage> {
                     borderRadius: BorderRadius.circular(8),
                   ),
                 ),
-                child: const Text(
-                  'Continuer',
+                child: Text(
+                  translationService.t('continue'),
                   style: TextStyle(
                     color: Color(0xFF0A1128),
                     fontSize: 14,
@@ -109,7 +142,8 @@ class _SignUpPageState extends ConsumerState<SignUpPage> {
     super.dispose();
   }
 
-  Future<void> _signUp() async {
+  Future<void> _signUp(TranslationService translationService) async {
+    print('DEBUG: _signUp function called');
     if (!_formKey.currentState!.validate()) return;
 
     setState(() {
@@ -118,30 +152,50 @@ class _SignUpPageState extends ConsumerState<SignUpPage> {
     });
 
     try {
-      final authService = ref.read(authServiceProvider);
-      await authService.signUp(
-        email: _emailController.text,
-        password: _passwordController.text,
+      final authServiceAsync = ref.read(authServiceProvider);
+      await authServiceAsync.when(
+        data: (authService) async {
+          await authService.signUp(
+            email: _emailController.text,
+            password: _passwordController.text,
+          );
+        },
+        loading: () async {
+          throw Exception(translationService.t('auth_service_loading'));
+        },
+        error: (error, stack) async {
+          throw Exception('${translationService.t('auth_service_error')}: $error');
+        },
       );
 
       if (mounted) {
-        _showWelcomeDialog();
+        print('DEBUG: Sign up successful, checking premium status');
+        // Vérifier si l'email est premium
+        print('DEBUG: Checking premium status for email: ${_emailController.text}');
+        final isPremium = await PremiumEmailService.isPremiumEmail(_emailController.text);
+        print('DEBUG: Is premium: $isPremium');
+        
+        if (isPremium) {
+          print('DEBUG: Showing premium welcome dialog');
+          // Afficher le dialog premium
+          _showPremiumWelcomeDialog(translationService);
+        } else {
+          print('DEBUG: Showing normal welcome dialog');
+          // Afficher le dialog normal
+          _showWelcomeDialog(translationService);
+        }
       }
     } catch (e) {
       if (mounted) {
         final errorMessage = e.toString();
         
-        if (errorMessage.contains('Un email de confirmation a été envoyé')) {
-          showDialog(
-            context: context,
-            barrierDismissible: false,
-            builder: (context) => CustomDialog(
-              title: 'Confirmation requise',
-              message: errorMessage,
-              onOkPressed: () {
-                Navigator.of(context).pop();
-                Navigator.of(context).pushReplacementNamed('/sign-in');
-              },
+        if (errorMessage.contains(translationService.t('verification_code_sent_message'))) {
+          // Rediriger vers la page de vérification de code
+          Navigator.of(context).pushReplacement(
+            MaterialPageRoute(
+              builder: (context) => EmailCodeVerificationPage(
+                email: _emailController.text,
+              ),
             ),
           );
         } else {
@@ -161,7 +215,25 @@ class _SignUpPageState extends ConsumerState<SignUpPage> {
 
   @override
   Widget build(BuildContext context) {
+    final translationService = ref.watch(translationServiceProvider.notifier);
+    ref.watch(translationServiceProvider); // Force la reconstruction quand la langue change
+    
     return Scaffold(
+      appBar: AppBar(
+        backgroundColor: const Color(0xFF0A1128),
+        elevation: 0,
+        centerTitle: true,
+        title: Image.asset(
+          'assets/Logo2.png',
+          height: 40,
+        ),
+        actions: [
+          Padding(
+            padding: const EdgeInsets.only(right: 16.0),
+            child: const LanguageSelector(),
+          ),
+        ],
+      ),
       body: Container(
         decoration: const BoxDecoration(
           image: DecorationImage(
@@ -182,8 +254,8 @@ class _SignUpPageState extends ConsumerState<SignUpPage> {
                     child: Column(
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        const Text(
-                          'Inscription',
+                        Text(
+                          translationService.t('signup'),
                           style: TextStyle(
                             fontSize: 17,
                             fontWeight: FontWeight.bold,
@@ -194,7 +266,7 @@ class _SignUpPageState extends ConsumerState<SignUpPage> {
                         TextFormField(
                           controller: _emailController,
                           decoration: InputDecoration(
-                            labelText: 'Email',
+                            labelText: translationService.t('email'),
                             labelStyle: const TextStyle(color: Colors.white70, fontSize: 12),
                             border: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(7),
@@ -215,10 +287,10 @@ class _SignUpPageState extends ConsumerState<SignUpPage> {
                           keyboardType: TextInputType.emailAddress,
                           validator: (value) {
                             if (value == null || value.isEmpty) {
-                              return 'Veuillez entrer votre email';
+                              return translationService.t('email_required');
                             }
                             if (!value.contains('@')) {
-                              return 'Veuillez entrer un email valide';
+                              return translationService.t('invalid_email');
                             }
                             return null;
                           },
@@ -228,7 +300,7 @@ class _SignUpPageState extends ConsumerState<SignUpPage> {
                           controller: _passwordController,
                           obscureText: !_isPasswordVisible,
                           decoration: InputDecoration(
-                            labelText: 'Mot de passe',
+                            labelText: translationService.t('password'),
                             labelStyle: const TextStyle(color: Colors.white70, fontSize: 12),
                             border: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(7),
@@ -260,10 +332,10 @@ class _SignUpPageState extends ConsumerState<SignUpPage> {
                           style: const TextStyle(color: Colors.white, fontSize: 12),
                           validator: (value) {
                             if (value == null || value.isEmpty) {
-                              return 'Veuillez entrer un mot de passe';
+                              return translationService.t('password_required');
                             }
                             if (value.length < 6) {
-                              return 'Le mot de passe doit contenir au moins 6 caractères';
+                              return translationService.t('password_too_short');
                             }
                             return null;
                           },
@@ -273,7 +345,7 @@ class _SignUpPageState extends ConsumerState<SignUpPage> {
                           controller: _confirmPasswordController,
                           obscureText: !_isConfirmPasswordVisible,
                           decoration: InputDecoration(
-                            labelText: 'Confirmer le mot de passe',
+                            labelText: translationService.t('confirm_password'),
                             labelStyle: const TextStyle(color: Colors.white70, fontSize: 12),
                             border: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(7),
@@ -305,10 +377,10 @@ class _SignUpPageState extends ConsumerState<SignUpPage> {
                           style: const TextStyle(color: Colors.white, fontSize: 12),
                           validator: (value) {
                             if (value == null || value.isEmpty) {
-                              return 'Veuillez confirmer votre mot de passe';
+                              return translationService.t('confirm_password_required');
                             }
                             if (value != _passwordController.text) {
-                              return 'Les mots de passe ne correspondent pas';
+                              return translationService.t('passwords_dont_match');
                             }
                             return null;
                           },
@@ -333,8 +405,8 @@ class _SignUpPageState extends ConsumerState<SignUpPage> {
                               ),
                               checkColor: const Color(0xFF0A1128),
                             ),
-                            const Text(
-                              'Se souvenir de moi',
+                            Text(
+                              translationService.t('remember_me'),
                               style: TextStyle(
                                 color: Colors.white,
                                 fontSize: 10,
@@ -354,15 +426,15 @@ class _SignUpPageState extends ConsumerState<SignUpPage> {
                         SizedBox(
                           width: double.infinity,
                           child: ElevatedButton(
-                            onPressed: _isLoading ? null : _signUp,
+                            onPressed: _isLoading ? null : () => _signUp(translationService),
                             style: ElevatedButton.styleFrom(
                               backgroundColor: Colors.white,
                               padding: const EdgeInsets.symmetric(vertical: 11),
                             ),
                             child: _isLoading
                                 ? const CircularProgressIndicator()
-                                : const Text(
-                                    'S\'inscrire',
+                                : Text(
+                                    translationService.t('sign_up'),
                                     style: TextStyle(
                                       color: Color(0xFF0A1128),
                                       fontSize: 11,
@@ -376,14 +448,14 @@ class _SignUpPageState extends ConsumerState<SignUpPage> {
                             Navigator.of(context)
                                 .pushReplacementNamed('/sign-in');
                           },
-                          child: const Text(
-                            'Déjà un compte ? Se connecter',
+                          child: Text(
+                            '${translationService.t('already_have_account')} ${translationService.t('sign_in')}',
                             style: TextStyle(color: Colors.white, fontSize: 12),
                           ),
                         ),
                         const SizedBox(height: 11),
-                        const Text(
-                          'Ou',
+                        Text(
+                          translationService.t('or_continue_with'),
                           style: TextStyle(color: Colors.white, fontSize: 12),
                         ),
                         const SizedBox(height: 11),
@@ -397,11 +469,21 @@ class _SignUpPageState extends ConsumerState<SignUpPage> {
                                       _isLoading = true;
                                     });
                                     try {
-                                      final authService = ref.read(authServiceProvider);
-                                      await authService.signInWithGoogle();
-                                      if (mounted) {
-                                        _showWelcomeDialog();
-                                      }
+                                      final authServiceAsync = ref.read(authServiceProvider);
+                                      await authServiceAsync.when(
+                                        data: (authService) async {
+                                          await authService.signInWithGoogle();
+                                          if (mounted) {
+                                            _showWelcomeDialog(translationService);
+                                          }
+                                        },
+                                        loading: () async {
+                                          throw Exception(translationService.t('auth_service_loading'));
+                                        },
+                                        error: (error, stack) async {
+                                          throw Exception('${translationService.t('auth_service_error')}: $error');
+                                        },
+                                      );
                                     } catch (e) {
                                       if (mounted) {
                                         setState(() {
@@ -426,8 +508,8 @@ class _SignUpPageState extends ConsumerState<SignUpPage> {
                               'assets/google_logo.png',
                               height: 17,
                             ),
-                            label: const Text(
-                              'Se connecter avec Google',
+                            label: Text(
+                              translationService.t('google_sign_in'),
                               style: TextStyle(
                                 color: Color(0xFF0A1128),
                                 fontSize: 11,
@@ -449,5 +531,28 @@ class _SignUpPageState extends ConsumerState<SignUpPage> {
         ),
       ),
     );
+  }
+
+  /// Obtient le nom d'affichage de l'utilisateur
+  String _getUserDisplayName(dynamic user) {
+    if (user == null) return '';
+    
+    // Utiliser directement le displayName de l'AppUser
+    if (user.displayName != null && user.displayName!.isNotEmpty) {
+      return user.displayName!;
+    }
+    
+    // Fallback sur l'email si pas de nom disponible
+    final email = user.email;
+    if (email != null && email.isNotEmpty) {
+      // Extraire la partie avant @ de l'email et la formater
+      final emailName = email.split('@').first;
+      // Capitaliser la première lettre
+      return emailName.isNotEmpty 
+          ? emailName[0].toUpperCase() + emailName.substring(1).toLowerCase()
+          : emailName;
+    }
+    
+    return '';
   }
 }

@@ -21,6 +21,7 @@ class _AuthWrapperState extends ConsumerState<AuthWrapper> {
   bool _isInitialized = false;
   User? _currentUser;
   bool _forceLogin = false;
+  bool _showSplash = true;
 
   @override
   void initState() {
@@ -48,34 +49,40 @@ class _AuthWrapperState extends ConsumerState<AuthWrapper> {
         // Nettoyer aussi les données Hive en arrière-plan
         _clearHiveDataInBackground();
       } else {
-        // Écouter les changements d'état d'authentification
-        Supabase.instance.client.auth.onAuthStateChange.listen((data) {
-          logger.info('Auth state changed: ${data.event}');
-          logger.info('User: ${data.session?.user?.email}');
-          
-          if (mounted) {
-            setState(() {
-              _currentUser = data.session?.user;
-            });
-          }
-        });
-
-        // Vérifier la session actuelle
-        final session = Supabase.instance.client.auth.currentSession;
-        _currentUser = session?.user;
-        logger.info('Current user: ${_currentUser?.email}');
+        // Essayer de récupérer l'utilisateur actuel
+        _currentUser = Supabase.instance.client.auth.currentUser;
+        logger.info('Current user: ${_currentUser?.email ?? 'null'}');
       }
       
+      // Écouter les changements d'authentification
+      Supabase.instance.client.auth.onAuthStateChange.listen((data) {
+        logger.info('Auth state changed: ${data.event}');
+        if (mounted) {
+          setState(() {
+            _currentUser = data.session?.user;
+            if (data.event == AuthChangeEvent.signedOut) {
+              _forceLogin = true;
+            }
+          });
+        }
+      });
+      
+    } catch (e) {
+      logger.severe('Error initializing auth: $e');
+      _forceLogin = true;
+    } finally {
       if (mounted) {
         setState(() {
           _isInitialized = true;
         });
-      }
-    } catch (e) {
-      logger.severe('Error initializing auth: $e');
-      if (mounted) {
-        setState(() {
-          _isInitialized = true;
+        
+        // Attendre 3 secondes avant de masquer le splash screen
+        Future.delayed(const Duration(seconds: 3), () {
+          if (mounted) {
+            setState(() {
+              _showSplash = false;
+            });
+          }
         });
       }
     }
@@ -109,186 +116,28 @@ class _AuthWrapperState extends ConsumerState<AuthWrapper> {
     });
   }
 
-  void _showWelcomeDialog() {
-    if (!mounted) return;
-    
-    showDialog(
-      context: context,
-      barrierDismissible: false,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: Row(
-            children: [
-              Icon(Icons.check_circle, color: Colors.green, size: 30),
-              SizedBox(width: 10),
-              Text('Connexion réussie !'),
-            ],
-          ),
-          content: Text(
-            'Bienvenue dans AV Wallet !\n\nVous êtes maintenant connecté avec Google.',
-            style: TextStyle(fontSize: 16),
-          ),
-          actions: [
-            ElevatedButton(
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-              child: Text('Continuer'),
-            ),
-          ],
-        );
-      },
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     // TOUJOURS AFFICHER LE SPLASH SCREEN AU DÉMARRAGE
-    if (!_isInitialized) {
-      logger.info('Showing splash screen (initialization)');
+    if (!_isInitialized || _showSplash) {
+      logger.info('Showing splash screen (initialization or delay)');
       return const SplashScreen();
     }
 
-    // Afficher le splash screen pendant 2 secondes après l'initialisation
-    return FutureBuilder<void>(
-      future: Future.delayed(const Duration(seconds: 2)),
-      builder: (context, snapshot) {
-        if (snapshot.connectionState == ConnectionState.waiting) {
-          logger.info('Showing splash screen (2 second delay)');
-          return const SplashScreen();
-        }
+    // Si on force la connexion (après reset), afficher la page de connexion
+    if (_forceLogin) {
+      logger.info('Forcing login after reset, showing sign in page');
+      return const SignInPage();
+    }
 
-        // Si on force la connexion (après reset), afficher la page de connexion
-        if (_forceLogin) {
-          logger.info('Forcing login after reset, showing sign in page');
-          return const SignInPage();
-        }
+    // Si l'utilisateur est connecté, afficher la page d'accueil
+    if (_currentUser != null) {
+      logger.info('User is authenticated, showing home page');
+      return const HomePage();
+    }
 
-        // Si l'utilisateur est connecté, afficher la page d'accueil
-        if (_currentUser != null) {
-          logger.info('User authenticated, showing home page');
-          return const HomePage();
-        }
-
-        // Sinon, afficher la page de connexion
-        logger.info('User not authenticated, showing sign in page');
-        return const SignInPage();
-      },
-    );
-  }
-}
-
-class _WelcomeScreen extends StatelessWidget {
-  final String userEmail;
-  final VoidCallback onContinue;
-
-  const _WelcomeScreen({
-    required this.userEmail,
-    required this.onContinue,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.blue[50],
-      body: Center(
-        child: Container(
-          margin: const EdgeInsets.all(20),
-          padding: const EdgeInsets.all(30),
-          decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(20),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black.withOpacity(0.1),
-                blurRadius: 20,
-                offset: const Offset(0, 10),
-              ),
-            ],
-          ),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              // Icône de succès
-              Container(
-                width: 80,
-                height: 80,
-                decoration: BoxDecoration(
-                  color: Colors.green[100],
-                  shape: BoxShape.circle,
-                ),
-                child: Icon(
-                  Icons.check_circle,
-                  color: Colors.green[600],
-                  size: 50,
-                ),
-              ),
-              
-              const SizedBox(height: 30),
-              
-              // Titre
-              Text(
-                'Connexion réussie !',
-                style: TextStyle(
-                  fontSize: 28,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.grey[800],
-                ),
-                textAlign: TextAlign.center,
-              ),
-              
-              const SizedBox(height: 20),
-              
-              // Message de bienvenue
-              Text(
-                'Bienvenue dans AV Wallet !',
-                style: TextStyle(
-                  fontSize: 20,
-                  color: Colors.grey[600],
-                ),
-                textAlign: TextAlign.center,
-              ),
-              
-              const SizedBox(height: 10),
-              
-              Text(
-                'Vous êtes connecté avec :\n$userEmail',
-                style: TextStyle(
-                  fontSize: 16,
-                  color: Colors.grey[500],
-                ),
-                textAlign: TextAlign.center,
-              ),
-              
-              const SizedBox(height: 40),
-              
-              // Bouton continuer
-              SizedBox(
-                width: double.infinity,
-                height: 50,
-                child: ElevatedButton(
-                  onPressed: onContinue,
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.blue[600],
-                    foregroundColor: Colors.white,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(25),
-                    ),
-                    elevation: 5,
-                  ),
-                  child: const Text(
-                    'Continuer',
-                    style: TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                ),
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
+    // Sinon, afficher la page de connexion
+    logger.info('User not authenticated, showing sign in page');
+    return const SignInPage();
   }
 }

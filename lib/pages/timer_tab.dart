@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:math';
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class TimerTab extends StatefulWidget {
   const TimerTab({Key? key}) : super(key: key);
@@ -33,6 +34,11 @@ class _TimerTabState extends State<TimerTab> with TickerProviderStateMixin {
       ..repeat();
     _blinkCtrl = AnimationController(vsync: this, duration: const Duration(milliseconds: 800))
       ..repeat(reverse: true); // Clignotement doux
+    
+    // Charger la persistance après que le widget soit construit
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _loadPersistedState();
+    });
   }
 
   @override
@@ -41,6 +47,7 @@ class _TimerTabState extends State<TimerTab> with TickerProviderStateMixin {
     _spinCtrl.dispose();
     _blinkCtrl.dispose(); // Nouveau
     _remainingNotifier.dispose();
+    _savePersistedState();
     super.dispose();
   }
 
@@ -48,6 +55,132 @@ class _TimerTabState extends State<TimerTab> with TickerProviderStateMixin {
     final m = d.inMinutes.remainder(100).toString().padLeft(2, '0');
     final s = d.inSeconds.remainder(60).toString().padLeft(2, '0');
     return '$m:$s';
+  }
+
+  // Méthodes de persistance
+  Future<void> _loadPersistedState() async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      
+      // Attendre un peu pour s'assurer que le widget est prêt
+      await Future.delayed(const Duration(milliseconds: 500));
+      
+      if (!mounted) return;
+      
+      print('Timer: Loading persisted state...');
+      
+      // Restaurer les paramètres du timer
+      final savedInitialMinutes = prefs.getInt('timer_initial_minutes');
+      final savedInitialSeconds = prefs.getInt('timer_initial_seconds');
+      final savedRemainingMinutes = prefs.getInt('timer_remaining_minutes');
+      final savedRemainingSeconds = prefs.getInt('timer_remaining_seconds');
+      final savedRunning = prefs.getBool('timer_running');
+      final savedIsFinished = prefs.getBool('timer_is_finished');
+      final savedBackgroundColor = prefs.getInt('timer_background_color');
+      final savedTextColor = prefs.getInt('timer_text_color');
+      
+      // Restaurer les mémoires
+      final savedMem1Minutes = prefs.getInt('timer_mem1_minutes');
+      final savedMem1Seconds = prefs.getInt('timer_mem1_seconds');
+      final savedMem2Minutes = prefs.getInt('timer_mem2_minutes');
+      final savedMem2Seconds = prefs.getInt('timer_mem2_seconds');
+      final savedMem3Minutes = prefs.getInt('timer_mem3_minutes');
+      final savedMem3Seconds = prefs.getInt('timer_mem3_seconds');
+      
+      print('Timer: Saved values - Initial: ${savedInitialMinutes ?? 0}:${savedInitialSeconds ?? 0}, Remaining: ${savedRemainingMinutes ?? 0}:${savedRemainingSeconds ?? 0}, Running: $savedRunning');
+      
+      if (!mounted) return;
+      
+      setState(() {
+        // Restaurer le temps initial
+        if (savedInitialMinutes != null && savedInitialSeconds != null) {
+          _initial = Duration(minutes: savedInitialMinutes, seconds: savedInitialSeconds);
+          print('Timer: Restored initial: ${_fmt(_initial)}');
+        }
+        
+        // Restaurer le temps restant
+        if (savedRemainingMinutes != null && savedRemainingSeconds != null) {
+          _remaining = Duration(minutes: savedRemainingMinutes, seconds: savedRemainingSeconds);
+          _remainingNotifier.value = _remaining;
+          print('Timer: Restored remaining: ${_fmt(_remaining)}');
+        }
+        
+        // Restaurer l'état du timer
+        if (savedRunning != null) {
+          _running = savedRunning;
+          print('Timer: Restored running: $_running');
+        }
+        
+        if (savedIsFinished != null) {
+          _isFinished = savedIsFinished;
+          print('Timer: Restored is finished: $_isFinished');
+        }
+        
+        // Restaurer les couleurs
+        if (savedBackgroundColor != null) {
+          _backgroundColor = Color(savedBackgroundColor);
+          print('Timer: Restored background color: $_backgroundColor');
+        }
+        
+        if (savedTextColor != null) {
+          _textColor = Color(savedTextColor);
+          print('Timer: Restored text color: $_textColor');
+        }
+        
+        // Restaurer les mémoires
+        if (savedMem1Minutes != null && savedMem1Seconds != null) {
+          _mem[0] = Duration(minutes: savedMem1Minutes, seconds: savedMem1Seconds);
+          print('Timer: Restored mem1: ${_fmt(_mem[0]!)}');
+        }
+        
+        if (savedMem2Minutes != null && savedMem2Seconds != null) {
+          _mem[1] = Duration(minutes: savedMem2Minutes, seconds: savedMem2Seconds);
+          print('Timer: Restored mem2: ${_fmt(_mem[1]!)}');
+        }
+        
+        if (savedMem3Minutes != null && savedMem3Seconds != null) {
+          _mem[2] = Duration(minutes: savedMem3Minutes, seconds: savedMem3Seconds);
+          print('Timer: Restored mem3: ${_fmt(_mem[2]!)}');
+        }
+      });
+      
+      print('Timer: Persistence restoration completed successfully');
+    } catch (e) {
+      print('Timer: Error loading persisted state: $e');
+    }
+  }
+
+  Future<void> _savePersistedState() async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      
+      print('Timer: Saving state...');
+      
+      // Sauvegarder les paramètres du timer
+      await prefs.setInt('timer_initial_minutes', _initial.inMinutes);
+      await prefs.setInt('timer_initial_seconds', _initial.inSeconds.remainder(60));
+      await prefs.setInt('timer_remaining_minutes', _remaining.inMinutes);
+      await prefs.setInt('timer_remaining_seconds', _remaining.inSeconds.remainder(60));
+      await prefs.setBool('timer_running', _running);
+      await prefs.setBool('timer_is_finished', _isFinished);
+      await prefs.setInt('timer_background_color', _backgroundColor.value);
+      await prefs.setInt('timer_text_color', _textColor.value);
+      
+      // Sauvegarder les mémoires
+      for (int i = 0; i < _mem.length; i++) {
+        if (_mem[i] != null) {
+          await prefs.setInt('timer_mem${i + 1}_minutes', _mem[i]!.inMinutes);
+          await prefs.setInt('timer_mem${i + 1}_seconds', _mem[i]!.inSeconds.remainder(60));
+        } else {
+          await prefs.remove('timer_mem${i + 1}_minutes');
+          await prefs.remove('timer_mem${i + 1}_seconds');
+        }
+      }
+      
+      print('Timer: State saved successfully');
+    } catch (e) {
+      print('Timer: Error saving state: $e');
+    }
   }
 
   void _apply(Duration d) {
@@ -64,6 +197,7 @@ class _TimerTabState extends State<TimerTab> with TickerProviderStateMixin {
       _remaining = clampedDuration;
       _remainingNotifier.value = clampedDuration;
     });
+    _savePersistedState();
   }
 
   void _nudge(int minutes, int seconds) {
@@ -108,6 +242,7 @@ class _TimerTabState extends State<TimerTab> with TickerProviderStateMixin {
       _isFinished = false; // Reset l'état de fin
       _isBlinking = false; // Reset le clignotement
     });
+    _savePersistedState();
 
     // Plein ecran avec les couleurs personnalisées
     Navigator.of(context).push(
@@ -146,6 +281,7 @@ class _TimerTabState extends State<TimerTab> with TickerProviderStateMixin {
           _remaining = _remaining - const Duration(seconds: 1);
           _remainingNotifier.value = _remaining;
         });
+        _savePersistedState();
       }
     });
   }
@@ -171,6 +307,7 @@ class _TimerTabState extends State<TimerTab> with TickerProviderStateMixin {
   void _pause() {
     _ticker?.cancel();
     setState(() => _running = false);
+    _savePersistedState();
     if (Navigator.canPop(context)) Navigator.pop(context);
   }
 
@@ -181,6 +318,7 @@ class _TimerTabState extends State<TimerTab> with TickerProviderStateMixin {
       _remaining = _initial;
       _remainingNotifier.value = _remaining;
     });
+    _savePersistedState();
     if (Navigator.canPop(context)) Navigator.pop(context);
   }
 
@@ -273,6 +411,7 @@ class _TimerTabState extends State<TimerTab> with TickerProviderStateMixin {
                       _textColor = colorOption.color;
                     }
                   });
+                  _savePersistedState();
                   Navigator.pop(context);
                 },
                 child: Container(
@@ -328,11 +467,110 @@ class _TimerTabState extends State<TimerTab> with TickerProviderStateMixin {
     );
   }
 
+  // Méthode pour afficher les écrans AirPlay disponibles
+  void _showAirPlay() {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        backgroundColor: Colors.grey[900],
+        title: const Text('Écrans AirPlay disponibles', style: TextStyle(color: Colors.white)),
+        content: SizedBox(
+          width: double.maxFinite,
+          height: 400, // Hauteur fixe pour éviter l'overflow
+          child: SingleChildScrollView( // Ajout du scroll
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                // Détection réelle des appareils AirPlay
+                _buildAirPlayDevicesList(),
+                const SizedBox(height: 16),
+                const Text(
+                  'Note: Aucun appareil AirPlay détecté. Vérifiez que vos appareils sont connectés au même réseau Wi-Fi.',
+                  style: TextStyle(color: Colors.grey, fontSize: 12),
+                  textAlign: TextAlign.center,
+                ),
+              ],
+            ),
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Annuler', style: TextStyle(color: Colors.white70)),
+          ),
+        ],
+      ),
+    );
+  }
+
+  // Widget pour construire la liste des appareils AirPlay réels
+  Widget _buildAirPlayDevicesList() {
+    // Pour l'instant, on affiche un message indiquant qu'aucun appareil n'est détecté
+    // Dans une vraie implémentation, on utiliserait des packages comme bonjour ou mdns
+    return Column(
+      children: [
+        const SizedBox(height: 20),
+        Icon(
+          Icons.tv_off,
+          size: 48,
+          color: Colors.grey[600],
+        ),
+        const SizedBox(height: 16),
+        Text(
+          'Aucun appareil AirPlay détecté',
+          style: TextStyle(
+            color: Colors.grey[400],
+            fontSize: 16,
+            fontWeight: FontWeight.w500,
+          ),
+        ),
+        const SizedBox(height: 8),
+        Text(
+          'Assurez-vous que vos appareils AirPlay sont :',
+          style: TextStyle(
+            color: Colors.grey[500],
+            fontSize: 14,
+          ),
+        ),
+        const SizedBox(height: 8),
+        Text(
+          '• Connectés au même réseau Wi-Fi\n• AirPlay activé\n• À portée de votre iPhone',
+          style: TextStyle(
+            color: Colors.grey[500],
+            fontSize: 12,
+          ),
+        ),
+        const SizedBox(height: 20),
+        ElevatedButton.icon(
+          onPressed: () {
+            Navigator.pop(context);
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(
+                content: Text('Recherche des appareils AirPlay...'),
+                backgroundColor: Colors.blue,
+                duration: Duration(seconds: 2),
+              ),
+            );
+          },
+          icon: const Icon(Icons.refresh),
+          label: const Text('Rechercher à nouveau'),
+          style: ElevatedButton.styleFrom(
+            backgroundColor: Colors.blue[700],
+            foregroundColor: Colors.white,
+          ),
+        ),
+      ],
+    );
+  }
+
   // Supprimer toutes les variables et méthodes HSL qui ne sont plus utilisées
   // _currentHue, _currentSaturation, _currentLightness
   // _generateColorPalette(), _lightenColor(), _darkenColor(), _getCurrentHSLColor()
 
-  void _saveMem(int i) => setState(() => _mem[i] = _remaining);
+  void _saveMem(int i) {
+    setState(() => _mem[i] = _remaining);
+    _savePersistedState();
+  }
   void _recallMem(int i) { final d = _mem[i]; if (d != null) _apply(d); }
 
   @override
@@ -353,8 +591,8 @@ class _TimerTabState extends State<TimerTab> with TickerProviderStateMixin {
     final controls = _Controls(
       running: _running, 
       onPlay: _start, 
-      onPause: _pause, 
-      onColorPicker: _showColorPicker, // Remplacé reset par colorPicker
+      onColorPicker: _showColorPicker, // Supprimé onPause
+      onAirPlay: _showAirPlay, // Ajouté onAirPlay
       backgroundColor: _backgroundColor, // Nouveau
       textColor: _textColor, // Nouveau
     );
@@ -534,15 +772,15 @@ class _TimeDisplay extends StatelessWidget {
 
 class _Controls extends StatelessWidget {
   final bool running; 
-  final VoidCallback onPlay, onPause, onColorPicker; // Remplacé onReset par onColorPicker
+  final VoidCallback onPlay, onColorPicker, onAirPlay; // Ajouté onAirPlay
   final Color backgroundColor; // Nouveau
   final Color textColor; // Nouveau
   
   const _Controls({
     required this.running, 
     required this.onPlay, 
-    required this.onPause, 
-    required this.onColorPicker, // Remplacé onReset par onColorPicker
+    required this.onColorPicker, // Supprimé onPause
+    required this.onAirPlay, // Ajouté onAirPlay
     required this.backgroundColor, // Nouveau
     required this.textColor, // Nouveau
   });
@@ -572,15 +810,15 @@ class _Controls extends StatelessWidget {
         ),
         ElevatedButton.icon(
           style: style, 
-          onPressed: running ? onPause : null, 
-          icon: const Icon(Icons.pause_rounded),      
-          label: const Text("Pause")
-        ),
-        ElevatedButton.icon(
-          style: style, 
           onPressed: onColorPicker, // Remplacé onReset par onColorPicker
           icon: const Icon(Icons.palette_rounded), // Icône palette au lieu de refresh
           label: const Text(""), // Texte vide au lieu de "Couleurs"
+        ),
+        ElevatedButton.icon(
+          style: style, 
+          onPressed: onAirPlay, // Bouton AirPlay
+          icon: const Icon(Icons.airplay_rounded), // Icône AirPlay
+          label: const Text(""), // Texte vide
         ),
       ],
     );

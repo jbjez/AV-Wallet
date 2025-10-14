@@ -1,54 +1,64 @@
-import 'dart:convert';
 import 'package:flutter/material.dart';
-// import 'package:flutter_unity_widget/flutter_unity_widget.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'generated/l10n/app_localizations.dart';
+import '../services/unity_service.dart';
+import '../widgets/uniform_bottom_nav_bar.dart';
 
-class ArMeasureUnityPage extends StatefulWidget {
+class ArMeasureUnityPage extends ConsumerStatefulWidget {
   const ArMeasureUnityPage({Key? key}) : super(key: key);
   @override
-  State<ArMeasureUnityPage> createState() => _ArMeasureUnityPageState();
+  ConsumerState<ArMeasureUnityPage> createState() => _ArMeasureUnityPageState();
 }
 
-class _ArMeasureUnityPageState extends State<ArMeasureUnityPage> with SingleTickerProviderStateMixin {
-  // UnityWidgetController? _unityCtrl;
+class _ArMeasureUnityPageState extends ConsumerState<ArMeasureUnityPage> with SingleTickerProviderStateMixin {
   double? _distanceM;
   Offset? _focusPos;
   late final AnimationController _focusCtrl;
   late final Animation<double> _focusAnim;
   String _selectedObjectType = "measure_point";
+  bool _isUnityVisible = false;
+  late UnityService _unityService;
 
   @override
   void initState() {
     super.initState();
     _focusCtrl = AnimationController(vsync: this, duration: const Duration(milliseconds: 250));
     _focusAnim = CurvedAnimation(parent: _focusCtrl, curve: Curves.easeOut);
+    _unityService = UnityService();
   }
 
   @override
   void dispose() {
-    // _unityCtrl?.dispose();
     _focusCtrl.dispose();
     super.dispose();
   }
 
-  void _onUnityCreated(dynamic controller) {
-    // _unityCtrl = controller;
-    print('AR Measure Unity - Unity créé avec succès');
+  /// Affiche Unity en plein écran
+  Future<void> _showUnity() async {
+    try {
+      setState(() {
+        _isUnityVisible = true;
+      });
+      await _unityService.showUnity();
+      print('AR Measure Unity - Unity affiché avec succès');
+    } catch (e) {
+      print('AR Measure Unity - Erreur lors de l\'affichage Unity: $e');
+      setState(() {
+        _isUnityVisible = false;
+      });
+    }
   }
 
-  void _onUnityMessage(dynamic msg) {
+  /// Cache Unity et retourne à Flutter
+  Future<void> _hideUnity() async {
     try {
-      final map = json.decode(msg.toString());
-      if (map['type'] == 'distance') {
-        setState(() {
-          _distanceM = (map['value'] as num?)?.toDouble();
-        });
-        print('AR Measure Unity - Distance reçue: ${_distanceM?.toStringAsFixed(3)} m');
-      } else if (map['type'] == 'object_placed') {
-        print('AR Measure Unity - Objet placé: ${map['objectType']} at ${map['position']}');
-      }
+      await _unityService.hideUnity();
+      setState(() {
+        _isUnityVisible = false;
+      });
+      print('AR Measure Unity - Unity masqué avec succès');
     } catch (e) {
-      print('AR Measure Unity - Erreur parsing message: $e');
+      print('AR Measure Unity - Erreur lors du masquage Unity: $e');
     }
   }
 
@@ -60,48 +70,96 @@ class _ArMeasureUnityPageState extends State<ArMeasureUnityPage> with SingleTick
     });
   }
 
-  void _resetUnity() {
-    // _unityCtrl?.postMessage(
-    //   'ObjectManager',
-    //   'ResetMeasure',
-    //   '',
-    // );
-    setState(() => _distanceM = null);
-    print('AR Measure Unity - Reset demandé');
+  /// Reset la mesure AR
+  Future<void> _resetUnity() async {
+    try {
+      await _unityService.resetARMeasurement();
+      setState(() {
+        _distanceM = null;
+      });
+      print('AR Measure Unity - Reset demandé');
+    } catch (e) {
+      print('AR Measure Unity - Erreur lors du reset: $e');
+    }
   }
 
-  void _selectObject(String objectType) {
-    setState(() {
-      _selectedObjectType = objectType;
-    });
-    // _unityCtrl?.postMessage(
-    //   'ObjectManager',
-    //   'PlaceObject',
-    //   objectType,
-    // );
-    print('AR Measure Unity - Objet sélectionné: $objectType');
+  /// Sélectionne un type d'objet
+  Future<void> _selectObject(String objectType) async {
+    try {
+      setState(() {
+        _selectedObjectType = objectType;
+      });
+      await _unityService.selectObjectType(objectType);
+      print('AR Measure Unity - Objet sélectionné: $objectType');
+    } catch (e) {
+      print('AR Measure Unity - Erreur lors de la sélection: $e');
+    }
   }
 
   @override
   Widget build(BuildContext context) {
-    final loc = AppLocalizations.of(context)!;
     final title = (_distanceM == null) ? 'AR Measure' : '${_distanceM!.toStringAsFixed(2)} m';
     
     return Scaffold(
       backgroundColor: Colors.black,
+      appBar: AppBar(
+        title: Text(title),
+        backgroundColor: Colors.black87,
+        foregroundColor: Colors.white,
+        actions: [
+          IconButton(
+            icon: Icon(_isUnityVisible ? Icons.close : Icons.play_arrow),
+            onPressed: _isUnityVisible ? _hideUnity : _showUnity,
+            tooltip: _isUnityVisible ? 'Fermer Unity' : 'Ouvrir Unity',
+          ),
+        ],
+      ),
       body: Stack(
         children: [
-          // UnityWidget temporairement désactivé
-          Container(
-            color: Colors.black,
-            child: const Center(
-              child: Text(
-                'Unity AR Measure\n(Unity temporairement désactivé)',
-                style: TextStyle(color: Colors.white, fontSize: 18),
-                textAlign: TextAlign.center,
+          // Interface Flutter pour contrôler Unity
+          if (!_isUnityVisible) ...[
+            // Écran d'accueil avec bouton pour ouvrir Unity
+            Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(
+                    Icons.view_in_ar,
+                    size: 100,
+                    color: Colors.white70,
+                  ),
+                  const SizedBox(height: 20),
+                  Text(
+                    'Mesure AR Unity',
+                    style: TextStyle(
+                      fontSize: 24,
+                      color: Colors.white,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  const SizedBox(height: 10),
+                  Text(
+                    'Appuyez sur le bouton pour ouvrir Unity',
+                    style: TextStyle(
+                      fontSize: 16,
+                      color: Colors.white70,
+                    ),
+                  ),
+                  const SizedBox(height: 30),
+                  ElevatedButton.icon(
+                    onPressed: _showUnity,
+                    icon: Icon(Icons.play_arrow),
+                    label: Text('Ouvrir Unity AR'),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.blue,
+                      foregroundColor: Colors.white,
+                      padding: EdgeInsets.symmetric(horizontal: 30, vertical: 15),
+                    ),
+                  ),
+                ],
               ),
             ),
-          ),
+          ],
           // Capture pour focus ring
           Positioned.fill(
             child: Listener(
@@ -167,7 +225,7 @@ class _ArMeasureUnityPageState extends State<ArMeasureUnityPage> with SingleTick
                   children: [
                     FloatingActionButton(
                       heroTag: 'select_measure',
-                      onPressed: () => _selectObject("measure_point"),
+                      onPressed: () {}, // _selectObject("measure_point"),
                       backgroundColor: _selectedObjectType == "measure_point" ? Colors.orange : Colors.white,
                       child: const Icon(Icons.straighten, color: Colors.black),
                       tooltip: 'Mesurer',
@@ -175,7 +233,7 @@ class _ArMeasureUnityPageState extends State<ArMeasureUnityPage> with SingleTick
                     const SizedBox(width: 16),
                     FloatingActionButton(
                       heroTag: 'select_projector',
-                      onPressed: () => _selectObject("projector"),
+                      onPressed: () {}, // _selectObject("projector"),
                       backgroundColor: _selectedObjectType == "projector" ? Colors.blue : Colors.white,
                       child: const Icon(Icons.videocam, color: Colors.black),
                       tooltip: 'Projecteur',
@@ -183,7 +241,7 @@ class _ArMeasureUnityPageState extends State<ArMeasureUnityPage> with SingleTick
                     const SizedBox(width: 16),
                     FloatingActionButton(
                       heroTag: 'select_screen',
-                      onPressed: () => _selectObject("screen"),
+                      onPressed: () {}, // _selectObject("screen"),
                       backgroundColor: _selectedObjectType == "screen" ? Colors.grey : Colors.white,
                       child: const Icon(Icons.tv, color: Colors.black),
                       tooltip: 'Écran',
@@ -191,7 +249,7 @@ class _ArMeasureUnityPageState extends State<ArMeasureUnityPage> with SingleTick
                     const SizedBox(width: 16),
                     FloatingActionButton(
                       heroTag: 'select_speaker',
-                      onPressed: () => _selectObject("speaker"),
+                      onPressed: () {}, // _selectObject("speaker"),
                       backgroundColor: _selectedObjectType == "speaker" ? Colors.brown : Colors.white,
                       child: const Icon(Icons.volume_up, color: Colors.black),
                       tooltip: 'Haut-parleur',
@@ -201,7 +259,7 @@ class _ArMeasureUnityPageState extends State<ArMeasureUnityPage> with SingleTick
                 const SizedBox(height: 16),
                 FloatingActionButton(
                   heroTag: 'reset',
-                  onPressed: _resetUnity,
+                  onPressed: () {}, // _resetUnity,
                   backgroundColor: Colors.white,
                   child: const Icon(Icons.refresh, color: Colors.black),
                   tooltip: 'Reset',
@@ -211,6 +269,7 @@ class _ArMeasureUnityPageState extends State<ArMeasureUnityPage> with SingleTick
           ),
         ],
       ),
+      bottomNavigationBar: const UniformBottomNavBar(currentIndex: 6),
     );
   }
 }

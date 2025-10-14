@@ -1,14 +1,13 @@
 import 'dart:async';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../models/app_user.dart';
-import '../config/supabase_config.dart';
 import 'package:logging/logging.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter/widgets.dart';
-import 'package:http/http.dart' as http;
 import 'package:hive_flutter/hive_flutter.dart';
 import 'hive_service.dart';
 import 'reset_service.dart';
+import 'session_usage_service.dart';
 
 class AuthService with WidgetsBindingObserver {
   final _supabase = Supabase.instance.client;
@@ -118,7 +117,7 @@ class AuthService with WidgetsBindingObserver {
       }
 
       if (response.session == null) {
-        throw 'Un email de confirmation a été envoyé à $email. Veuillez vérifier votre boîte de réception et vos spams.';
+        throw 'Un code de vérification a été envoyé à $email. Veuillez vérifier votre boîte de réception et vos spams.';
       }
     } catch (e) {
       if (e.toString().contains('User already registered')) {
@@ -141,6 +140,51 @@ class AuthService with WidgetsBindingObserver {
     }
   }
 
+  Future<void> resendConfirmationEmail(String email) async {
+    try {
+      _logger.info('Resending confirmation code to: $email');
+      
+      await _supabase.auth.resend(
+        type: OtpType.signup,
+        email: email,
+        emailRedirectTo: 'io.supabase.avwallet://login-callback/',
+      );
+      
+      _logger.info('Confirmation code sent successfully to: $email');
+    } catch (e) {
+      _logger.warning('Error resending confirmation code: $e');
+      rethrow;
+    }
+  }
+
+  Future<void> verifyEmailCode(String email, String code) async {
+    try {
+      _logger.info('Verifying email code for: $email');
+      
+      final response = await _supabase.auth.verifyOTP(
+        type: OtpType.signup,
+        token: code,
+        email: email,
+      );
+
+      if (response.user == null) {
+        throw 'Code de vérification invalide.';
+      }
+
+      if (response.session == null) {
+        throw 'Erreur lors de la vérification du code.';
+      }
+
+      _logger.info('Email code verified successfully for: $email');
+    } catch (e) {
+      _logger.warning('Error verifying email code: $e');
+      if (e.toString().contains('Invalid token')) {
+        throw 'Code de vérification invalide ou expiré.';
+      }
+      rethrow;
+    }
+  }
+
   Future<void> signIn({required String email, required String password}) async {
     try {
       final response = await _supabase.auth.signInWithPassword(
@@ -151,11 +195,25 @@ class AuthService with WidgetsBindingObserver {
       if (response.user == null) {
         throw 'Email ou mot de passe incorrect.';
       }
+
+      // Vérifier si l'email est confirmé
+      if (response.user!.emailConfirmedAt == null) {
+        throw 'Veuillez vérifier votre email avant de vous connecter. Un email de confirmation a été envoyé à $email.';
+      }
+
+      if (response.session == null) {
+        throw 'Veuillez vérifier votre email avant de vous connecter.';
+      }
+      
+      // Démarrer une nouvelle session
+      await SessionUsageService.instance.startNewSession();
+      _logger.info('New session started after email sign in');
+      
     } catch (e) {
       if (e.toString().contains('Invalid login credentials')) {
         throw 'Email ou mot de passe incorrect.';
       } else if (e.toString().contains('Email not confirmed')) {
-        throw 'Veuillez confirmer votre email avant de vous connecter.';
+        throw 'Veuillez vérifier votre email avant de vous connecter. Un email de confirmation a été envoyé à $email.';
       }
       rethrow;
     }
@@ -173,11 +231,15 @@ class AuthService with WidgetsBindingObserver {
       await setRememberMe(false);
       _logger.info('Remember me disabled');
       
-      // 3. Vider toutes les données locales Hive
+      // 3. Reset de la session
+      await SessionUsageService.instance.resetSession();
+      _logger.info('Session reset completed');
+      
+      // 4. Vider toutes les données locales Hive
       await _clearAllLocalData();
       _logger.info('All local data cleared');
       
-      // 4. Le changement d'état sera géré automatiquement par Supabase
+      // 5. Le changement d'état sera géré automatiquement par Supabase
       _logger.info('Sign out completed, state will be updated by Supabase');
       
     } catch (e) {
@@ -235,12 +297,13 @@ class AuthService with WidgetsBindingObserver {
       _logger.info('Starting Google sign-in process');
       
       // Deep link de ton app mobile
-      const mobileRedirect = 'io.supabase.avwallet://login-callback';
+      const mobileRedirect = 'io.supabase.avwallet://login-callback/';
       
       _logger.info('Attempting Supabase OAuth with PKCE...');
       await _supabase.auth.signInWithOAuth(
         OAuthProvider.google,
         redirectTo: mobileRedirect,
+        authScreenLaunchMode: LaunchMode.externalApplication,
         queryParams: {
           'access_type': 'offline',
           'prompt': 'consent',
@@ -248,6 +311,9 @@ class AuthService with WidgetsBindingObserver {
       );
       
       _logger.info('OAuth flow initiated successfully');
+      
+      // Note: La session sera démarrée automatiquement quand l'utilisateur sera connecté
+      // via l'écouteur d'état d'authentification dans DeepLinkService
       
     } catch (e) {
       _logger.severe('Error during Google sign-in: $e');
@@ -295,11 +361,33 @@ class AuthService with WidgetsBindingObserver {
       throw Exception('Email is required for user creation');
     }
 
+    // Extraire le nom d'affichage depuis les métadonnées
+    String? displayName;
+    final userMetadata = user.userMetadata;
+    if (userMetadata != null && userMetadata.isNotEmpty) {
+      // Google OAuth fournit souvent 'full_name' ou 'name'
+      displayName = userMetadata['full_name'] as String? ?? 
+                   userMetadata['name'] as String? ??
+                   userMetadata['display_name'] as String?;
+      
+      // Si pas de nom complet, essayer de construire à partir de given_name et family_name
+      if (displayName == null || displayName.isEmpty) {
+        final givenName = userMetadata['given_name'] as String?;
+        final familyName = userMetadata['family_name'] as String?;
+        if (givenName != null && givenName.isNotEmpty) {
+          displayName = familyName != null && familyName.isNotEmpty 
+              ? '$givenName $familyName' 
+              : givenName;
+        }
+      }
+    }
+
     return AppUser(
       id: user.id,
       email: user.email!,
-      displayName: user.userMetadata?['display_name'] as String? ?? '',
-      photoURL: user.userMetadata?['photo_url'] as String?,
+      displayName: displayName ?? '',
+      photoURL: user.userMetadata?['photo_url'] as String? ?? 
+                user.userMetadata?['picture'] as String?,
       createdAt: user.createdAt != null
           ? DateTime.parse(user.createdAt)
           : DateTime.now(),
