@@ -1,6 +1,6 @@
 // lib/pages/structure_menu_page.dart
 import 'package:flutter/material.dart';
-import 'package:av_wallet_hive/l10n/app_localizations.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import '../data/asd_data.dart';
 import '../widgets/custom_app_bar.dart';
 import '../widgets/border_labeled_dropdown.dart';

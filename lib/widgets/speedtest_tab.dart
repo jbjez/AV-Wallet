@@ -9,7 +9,7 @@ import 'dart:math';                                    // [L02]
 import 'dart:typed_data';                              // [L03]
 import 'package:flutter/material.dart';                // [L04]
 import 'package:http/http.dart' as http;               // [L05]
-import 'package:av_wallet_hive/l10n/app_localizations.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class SpeedtestTab extends StatefulWidget {    // [L07]
   const SpeedtestTab({super.key});             // [L08]

@@ -532,36 +532,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get soundPage_preferredAmplifier => 'Preferred amplifier';
 
   @override
-  String get soundPage_noSpeakersSelected => 'No speakers selected';
-
-  @override
-  String get soundPage_power => 'Power';
-
-  @override
-  String get soundPage_amplifier => 'Amplifier';
-
-  @override
-  String get soundPage_capacity => 'Capacity';
-
-  @override
-  String get soundPage_speakersPerChannel => 'speakers/channel';
-
-  @override
-  String get soundPage_speakersPerAmp => 'speakers/amp';
-
-  @override
-  String get soundPage_amplifiersRequired => 'Amplifiers required';
-
-  @override
-  String get soundPage_with => 'with';
-
-  @override
-  String get soundPage_noPresetSelected => 'No preset selected';
-
-  @override
-  String get rider_technical_title => 'Technical Rider';
-
-  @override
   String get videoPage_title => 'Video Equipment';
 
   @override
@@ -608,6 +578,51 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get soundPage_ampConfigTitle => 'Recommended amp config:';
+
+  @override
+  String get soundPage_quantityEnter => 'Entrer la quantité';
+
+  @override
+  String get soundPage_amplifier => 'Amplifier';
+
+  @override
+  String get soundPage_searchHint => 'Rechercher un produit...';
+
+  @override
+  String get soundPage_add => 'Ajouter';
+
+  @override
+  String get soundPage_noSpeakersSelected => 'No speakers selected';
+
+  @override
+  String get soundPage_power => 'Power';
+
+  @override
+  String get soundPage_capacity => 'Capacity';
+
+  @override
+  String get soundPage_speakersPerChannel => 'speakers/channel';
+
+  @override
+  String get soundPage_speakersPerAmp => 'speakers/amp';
+
+  @override
+  String get soundPage_amplifiersRequired => 'Amplifiers required';
+
+  @override
+  String get soundPage_with => 'with';
+
+  @override
+  String get soundPage_noPresetSelected => 'No preset selected';
+
+  @override
+  String get rider_technical_title => 'Technical Rider';
+
+  @override
+  String get ok => 'OK';
+
+  @override
+  String get add => 'Ajouter';
 
   @override
   String get reset => 'Reset';

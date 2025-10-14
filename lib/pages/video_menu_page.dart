@@ -6,7 +6,7 @@ import '../providers/page_state_provider.dart';
 import '../models/catalogue_item.dart';
 import '../widgets/preset_widget.dart';
 import '../widgets/export_widget.dart';
-import 'package:av_wallet_hive/l10n/app_localizations.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import '../widgets/custom_app_bar.dart';
 import '../widgets/border_labeled_dropdown.dart';
 import '../providers/preset_provider.dart';

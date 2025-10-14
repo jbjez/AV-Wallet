@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../providers/catalogue_provider.dart';
 import '../providers/preset_provider.dart';
-import 'package:av_wallet_hive/l10n/app_localizations.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class CalculProjectTab extends ConsumerWidget {
   const CalculProjectTab({super.key});

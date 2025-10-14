@@ -346,7 +346,7 @@ class AppLocalizationsIt extends AppLocalizations {
   String get lightPage_reset => 'Reimposta';
 
   @override
-  String get button_add => 'Add';
+  String get button_add => 'Ajouter';
 
   @override
   String get button_reset => 'Reset';
@@ -412,29 +412,30 @@ class AppLocalizationsIt extends AppLocalizations {
   String get arMeasurePage_title => 'Photo/AR';
 
   @override
-  String get arMeasurePage_tapFirstPoint => 'Tap the 1st point, then the 2nd';
+  String get arMeasurePage_tapFirstPoint => 'Tapez le 1er point, puis le 2ème';
 
   @override
   String get arMeasurePage_tapSecondPoint =>
-      'Tap the 2nd point to measure distance';
+      'Tapez le 2ème point pour mesurer la distance';
 
   @override
-  String get arMeasurePage_tapObject => 'Tap on an object to measure distance';
+  String get arMeasurePage_tapObject =>
+      'Tapez sur un objet pour mesurer la distance';
 
   @override
   String get arMeasurePage_tapDistance => 'Tap/Distance';
 
   @override
-  String get arMeasurePage_modeSimple => 'Simple mode';
+  String get arMeasurePage_modeSimple => 'Mode simple';
 
   @override
-  String get arMeasurePage_modeTwoPoints => '2-point mode';
+  String get arMeasurePage_modeTwoPoints => 'Mode 2 points';
 
   @override
   String get arMeasurePage_reset => 'Reset';
 
   @override
-  String get arMeasurePage_home => 'Home';
+  String get arMeasurePage_home => 'Accueil';
 
   @override
   String get lightPage_universe => 'UNIVERSO';
@@ -532,36 +533,6 @@ class AppLocalizationsIt extends AppLocalizations {
   String get soundPage_preferredAmplifier => 'Amplificatore preferito';
 
   @override
-  String get soundPage_noSpeakersSelected => 'Nessun altoparlante selezionato';
-
-  @override
-  String get soundPage_power => 'Potenza';
-
-  @override
-  String get soundPage_amplifier => 'Amplificatore';
-
-  @override
-  String get soundPage_capacity => 'Capacità';
-
-  @override
-  String get soundPage_speakersPerChannel => 'altoparlanti/canale';
-
-  @override
-  String get soundPage_speakersPerAmp => 'altoparlanti/ampli';
-
-  @override
-  String get soundPage_amplifiersRequired => 'Amplificatori richiesti';
-
-  @override
-  String get soundPage_with => 'con';
-
-  @override
-  String get soundPage_noPresetSelected => 'Nessun preset selezionato';
-
-  @override
-  String get rider_technical_title => 'Rider tecnico';
-
-  @override
   String get videoPage_title => 'Attrezzatura Video';
 
   @override
@@ -608,6 +579,51 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get soundPage_ampConfigTitle => 'Config ampli consigliata:';
+
+  @override
+  String get soundPage_quantityEnter => 'Entrer la quantité';
+
+  @override
+  String get soundPage_amplifier => 'Amplificatore';
+
+  @override
+  String get soundPage_searchHint => 'Rechercher un produit...';
+
+  @override
+  String get soundPage_add => 'Ajouter';
+
+  @override
+  String get soundPage_noSpeakersSelected => 'Nessun altoparlante selezionato';
+
+  @override
+  String get soundPage_power => 'Potenza';
+
+  @override
+  String get soundPage_capacity => 'Capacità';
+
+  @override
+  String get soundPage_speakersPerChannel => 'altoparlanti/canale';
+
+  @override
+  String get soundPage_speakersPerAmp => 'altoparlanti/ampli';
+
+  @override
+  String get soundPage_amplifiersRequired => 'Amplificatori richiesti';
+
+  @override
+  String get soundPage_with => 'con';
+
+  @override
+  String get soundPage_noPresetSelected => 'Nessun preset selezionato';
+
+  @override
+  String get rider_technical_title => 'Rider tecnico';
+
+  @override
+  String get ok => 'OK';
+
+  @override
+  String get add => 'Ajouter';
 
   @override
   String get reset => 'Reset';
@@ -1081,35 +1097,35 @@ class AppLocalizationsIt extends AppLocalizations {
   String get signOut => 'Disconnetti';
 
   @override
-  String get resetApp => 'Reset Application';
+  String get resetApp => 'Réinitialiser l\'application';
 
   @override
   String get resetAppDescription =>
-      'Removes all local data and simulates first visit';
+      'Supprime toutes les données locales et simule une première visite';
 
   @override
-  String get resetUserData => 'Reset User Data';
+  String get resetUserData => 'Réinitialiser les données utilisateur';
 
   @override
   String get resetUserDataDescription =>
-      'Removes only user data (projects, cart, etc.)';
+      'Supprime uniquement les données utilisateur (projets, panier, etc.)';
 
   @override
-  String get resetConfirmTitle => 'Confirm Reset';
+  String get resetConfirmTitle => 'Confirmer la réinitialisation';
 
   @override
   String get resetConfirmMessage =>
-      'Are you sure you want to reset the application? This action is irreversible.';
+      'Êtes-vous sûr de vouloir réinitialiser l\'application ? Cette action est irréversible.';
 
   @override
   String get resetUserDataConfirmMessage =>
-      'Are you sure you want to delete all your user data? This action is irreversible.';
+      'Êtes-vous sûr de vouloir supprimer toutes vos données utilisateur ? Cette action est irréversible.';
 
   @override
-  String get resetComplete => 'Reset completed';
+  String get resetComplete => 'Réinitialisation terminée';
 
   @override
-  String get resetError => 'Error during reset';
+  String get resetError => 'Erreur lors de la réinitialisation';
 
   @override
   String get patchScenePage_title => 'Patch Scena';
@@ -1693,52 +1709,52 @@ class AppLocalizationsIt extends AppLocalizations {
   String get dmxPage_wired => 'Cablato';
 
   @override
-  String get driverTab_title => 'LED Driver Configuration';
+  String get driverTab_title => 'Configuration Driver LED';
 
   @override
-  String get driverTab_ledLength => 'LED strip length';
+  String get driverTab_ledLength => 'Longueur LED strip';
 
   @override
-  String get driverTab_ledType => 'LED strip type';
+  String get driverTab_ledType => 'Type de LED strip';
 
   @override
-  String get driverTab_ledPower => 'LED strip power';
+  String get driverTab_ledPower => 'Puissance LED strip';
 
   @override
-  String get driverTab_driverChoice => 'Driver choice';
+  String get driverTab_driverChoice => 'Choix Driver';
 
   @override
-  String get driverTab_ledType_white => 'White (W)';
+  String get driverTab_ledType_white => 'Blanc (W)';
 
   @override
-  String get driverTab_ledType_biWhite => 'Bi-White (WW)';
+  String get driverTab_ledType_biWhite => 'Bi-Blanc (WW)';
 
   @override
-  String get driverTab_ledType_rgb => 'RGB';
+  String get driverTab_ledType_rgb => 'RVB';
 
   @override
-  String get driverTab_ledType_rgbw => 'RGBW';
+  String get driverTab_ledType_rgbw => 'RVBW';
 
   @override
-  String get driverTab_ledType_rgbww => 'RGBWW';
+  String get driverTab_ledType_rgbww => 'RVBWW';
 
   @override
   String get driverTab_customDriver => 'Custom';
 
   @override
-  String get driverTab_customDriverTitle => 'Custom Driver Configuration';
+  String get driverTab_customDriverTitle => 'Configuration Driver Personnalisé';
 
   @override
-  String get driverTab_customDriverChannels => 'Number of channels';
+  String get driverTab_customDriverChannels => 'Nombre de voies';
 
   @override
-  String get driverTab_customDriverIntensity => 'Intensity per channel (A)';
+  String get driverTab_customDriverIntensity => 'Intensité par voie (A)';
 
   @override
-  String get driverTab_calculate => 'Calculate';
+  String get driverTab_calculate => 'Calculer';
 
   @override
-  String get driverTab_result => 'Calculation result';
+  String get driverTab_result => 'Résultat du calcul';
 
   @override
   String get structurePage_chargesTab => 'Carichi';
@@ -1870,7 +1886,7 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get arMeasurePage_description =>
-      'Take reference photos and launch AR measurements';
+      'Prenez des photos de référence et lancez les mesures AR';
 
   @override
   String get arMeasurePage_photoButton => 'Photo';
@@ -1879,44 +1895,44 @@ class AppLocalizationsIt extends AppLocalizations {
   String get arMeasurePage_unityButton => 'Unity';
 
   @override
-  String get arMeasurePage_captureInProgress => 'Capturing...';
+  String get arMeasurePage_captureInProgress => 'Capture...';
 
   @override
   String get arMeasurePage_cameraPermissionRequired =>
-      'Camera permissions required';
+      'Permissions caméra requises';
 
   @override
-  String get arMeasurePage_photoSaved => 'Photo saved in project!';
+  String get arMeasurePage_photoSaved => 'Photo sauvegardée dans le projet !';
 
   @override
-  String get arMeasurePage_errorMessage => 'Error occurred';
+  String get arMeasurePage_errorMessage => 'Une erreur s\'est produite';
 
   @override
   String get arMeasurePage_photosAutoSaved =>
-      'Photos are automatically saved in the active project folder';
+      'Les photos sont automatiquement sauvegardées dans le dossier du projet actif';
 
   @override
   String get arMeasurePage_takeReferencePhotos =>
-      'Take reference photos and launch AR measurements';
+      'Prenez des photos de référence et lancez les mesures AR';
 
   @override
   String get arMeasurePage_photosAutoSavedInfo =>
-      'Photos are automatically saved in the active project folder';
+      'Les photos sont automatiquement sauvegardées dans le dossier du projet actif';
 
   @override
-  String get settingsPage_title => 'Settings';
+  String get settingsPage_title => 'Paramètres';
 
   @override
-  String get settingsPage_userInfo => 'User Information';
+  String get settingsPage_userInfo => 'Informations utilisateur';
 
   @override
   String get settingsPage_email => 'Email';
 
   @override
-  String get settingsPage_name => 'Name';
+  String get settingsPage_name => 'Nom';
 
   @override
-  String get settingsPage_status => 'Status';
+  String get settingsPage_status => 'Statut';
 
   @override
   String get settingsPage_premium => 'Premium';
@@ -1925,98 +1941,99 @@ class AppLocalizationsIt extends AppLocalizations {
   String get settingsPage_standard => 'Standard';
 
   @override
-  String get settingsPage_notAvailable => 'Not available';
+  String get settingsPage_notAvailable => 'Non disponible';
 
   @override
-  String get settingsPage_notDefined => 'Not defined';
+  String get settingsPage_notDefined => 'Non défini';
 
   @override
-  String get settingsPage_security => 'Security';
+  String get settingsPage_security => 'Sécurité';
 
   @override
-  String get settingsPage_changePassword => 'Change password';
+  String get settingsPage_changePassword => 'Changer le mot de passe';
 
   @override
-  String get settingsPage_biometricAuth => 'Biometric authentication';
+  String get settingsPage_biometricAuth => 'Authentification biométrique';
 
   @override
-  String get settingsPage_subscription => 'Subscription';
+  String get settingsPage_subscription => 'Abonnement';
 
   @override
-  String get settingsPage_premiumSubscription => 'Premium Subscription';
+  String get settingsPage_premiumSubscription => 'Abonnement Premium';
 
   @override
-  String get settingsPage_freemiumTest => 'Freemium Test';
+  String get settingsPage_freemiumTest => 'Test Freemium';
 
   @override
-  String get settingsPage_subscribeToPremium => 'Subscribe to Premium';
+  String get settingsPage_subscribeToPremium => 'S\'abonner au Premium';
 
   @override
-  String get settingsPage_unsubscribe => 'Unsubscribe';
+  String get settingsPage_unsubscribe => 'Se désabonner';
 
   @override
-  String get settingsPage_account => 'Account';
+  String get settingsPage_account => 'Compte';
 
   @override
-  String get settingsPage_signOut => 'Sign out';
+  String get settingsPage_signOut => 'Se déconnecter';
 
   @override
-  String get settingsPage_subscribeDialogTitle => 'Subscribe to Premium';
+  String get settingsPage_subscribeDialogTitle => 'S\'abonner au Premium';
 
   @override
   String get settingsPage_subscribeDialogContent =>
-      'Do you want to subscribe to Premium?';
+      'Voulez-vous vous abonner au Premium ?';
 
   @override
-  String get settingsPage_cancel => 'Cancel';
+  String get settingsPage_cancel => 'Annuler';
 
   @override
-  String get settingsPage_subscribe => 'Subscribe';
+  String get settingsPage_subscribe => 'S\'abonner';
 
   @override
-  String get settingsPage_premiumActivated => 'Premium subscription activated!';
+  String get settingsPage_premiumActivated => 'Abonnement Premium activé !';
 
   @override
-  String get settingsPage_subscriptionError => 'Subscription error';
+  String get settingsPage_subscriptionError => 'Erreur lors de l\'abonnement';
 
   @override
-  String get settingsPage_error => 'Error';
+  String get settingsPage_error => 'Erreur';
 
   @override
-  String get settingsPage_success => 'Success';
+  String get settingsPage_success => 'Succès';
 
   @override
   String get settingsPage_ok => 'OK';
 
   @override
-  String get settingsPage_unsubscribeDialogTitle => 'Unsubscribe';
+  String get settingsPage_unsubscribeDialogTitle => 'Se désabonner';
 
   @override
   String get settingsPage_unsubscribeDialogContent =>
-      'Do you really want to unsubscribe? You will lose access to Premium features.';
+      'Voulez-vous vraiment vous désabonner ? Vous perdrez l\'accès aux fonctionnalités Premium.';
 
   @override
-  String get settingsPage_confirmUnsubscribe => 'Confirm unsubscribe';
+  String get settingsPage_confirmUnsubscribe => 'Confirmer le désabonnement';
 
   @override
-  String get settingsPage_signOutDialogTitle => 'Sign out';
+  String get settingsPage_signOutDialogTitle => 'Se déconnecter';
 
   @override
   String get settingsPage_signOutDialogContent =>
-      'Do you really want to sign out?';
+      'Voulez-vous vraiment vous déconnecter ?';
 
   @override
-  String get settingsPage_confirmSignOut => 'Sign out';
+  String get settingsPage_confirmSignOut => 'Se déconnecter';
 
   @override
-  String get settingsPage_featureNotImplemented => 'Feature not implemented';
+  String get settingsPage_featureNotImplemented =>
+      'Fonctionnalité à implémenter';
 
   @override
-  String get premiumExpiredDialog_title => 'Premium usage ended';
+  String get premiumExpiredDialog_title => 'Utilisation premium terminée';
 
   @override
   String get premiumExpiredDialog_message =>
-      'You have used all your free uses. Upgrade to Premium to continue using all AV Wallet features.';
+      'Vous avez utilisé toutes vos utilisations gratuites. Passez à Premium pour continuer à utiliser toutes les fonctionnalités d\'AV Wallet.';
 
   @override
   String get premiumExpiredDialog_ok => 'OK';
@@ -2025,135 +2042,139 @@ class AppLocalizationsIt extends AppLocalizations {
   String get premiumExpiredDialog_premium => 'Premium';
 
   @override
-  String get paymentPage_title => 'Premium Subscription';
+  String get paymentPage_title => 'Abonnement Premium';
 
   @override
-  String get paymentPage_monthlyPlan => 'Monthly';
+  String get paymentPage_monthlyPlan => 'Mensuel';
 
   @override
-  String get paymentPage_yearlyPlan => 'Yearly';
+  String get paymentPage_yearlyPlan => 'Annuel';
 
   @override
-  String get paymentPage_monthlyPrice => '€2.49/month';
+  String get paymentPage_monthlyPrice => '2,49€/mois';
 
   @override
-  String get paymentPage_yearlyPrice => '€19.99/year';
+  String get paymentPage_yearlyPrice => '19,99€/an';
 
   @override
-  String get paymentPage_securePayment => 'Secure payment';
+  String get paymentPage_securePayment => 'Paiement sécurisé';
 
   @override
   String get paymentPage_visaMastercardAccepted =>
-      'Visa and Mastercard accepted';
+      'Visa et Mastercard acceptés';
 
   @override
-  String get paymentPage_paymentInfo => 'Payment information';
+  String get paymentPage_paymentInfo => 'Informations de paiement';
 
   @override
-  String get paymentPage_cardholderName => 'Cardholder name';
+  String get paymentPage_cardholderName => 'Nom du titulaire de la carte';
 
   @override
-  String get paymentPage_cardNumber => 'Card number';
+  String get paymentPage_cardNumber => 'Numéro de carte';
 
   @override
-  String get paymentPage_expiryDate => 'MM/YY';
+  String get paymentPage_expiryDate => 'MM/AA';
 
   @override
   String get paymentPage_cvc => 'CVC';
 
   @override
-  String get paymentPage_payButton => 'Pay';
+  String get paymentPage_payButton => 'Payer';
 
   @override
-  String get paymentPage_processing => 'Processing...';
+  String get paymentPage_processing => 'Traitement en cours...';
 
   @override
-  String get paymentPage_paymentSuccess => 'Payment Successful!';
+  String get paymentPage_paymentSuccess => 'Paiement Réussi !';
 
   @override
   String get paymentPage_subscriptionActivated =>
-      'Your premium subscription has been successfully activated!';
+      'Votre abonnement premium a été activé avec succès !';
 
   @override
   String get paymentPage_plan => 'Plan';
 
   @override
-  String get paymentPage_price => 'Price';
+  String get paymentPage_price => 'Prix';
 
   @override
-  String get paymentPage_continue => 'Continue';
+  String get paymentPage_continue => 'Continuer';
 
   @override
   String get paymentPage_premiumFeatures =>
-      'You can now enjoy all premium features!';
+      'Vous pouvez maintenant profiter de toutes les fonctionnalités premium !';
 
   @override
-  String get paymentPage_paymentError => 'Payment error';
+  String get paymentPage_paymentError => 'Erreur de paiement';
 
   @override
   String get paymentPage_selectPaymentMethod =>
-      'Please select a payment method';
+      'Veuillez sélectionner un moyen de paiement';
 
   @override
-  String get paymentPage_fillAllFields => 'Please fill in all card fields';
+  String get paymentPage_fillAllFields =>
+      'Veuillez remplir tous les champs de la carte';
 
   @override
-  String get paymentPage_paymentFailed => 'Payment failed. Please try again.';
+  String get paymentPage_paymentFailed =>
+      'Le paiement a échoué. Veuillez réessayer.';
 
   @override
   String get paymentPage_legalText =>
-      'By proceeding with payment, you accept our terms of use and privacy policy. Payment will be processed securely by Stripe.';
+      'En procédant au paiement, vous acceptez nos conditions d\'utilisation et notre politique de confidentialité. Le paiement sera traité de manière sécurisée par Stripe.';
 
   @override
-  String get freemiumTestPage_title => 'Freemium Test';
+  String get freemiumTestPage_title => 'Test Freemium';
 
   @override
-  String get freemiumTestPage_remainingUsage => 'Remaining uses';
+  String get freemiumTestPage_remainingUsage => 'Utilisations restantes';
 
   @override
-  String get freemiumTestPage_maxUsage => 'Maximum uses';
+  String get freemiumTestPage_maxUsage => 'Utilisations maximum';
 
   @override
-  String get freemiumTestPage_resetUsage => 'Reset uses';
+  String get freemiumTestPage_resetUsage => 'Réinitialiser les utilisations';
 
   @override
   String get freemiumTestPage_resetConfirm =>
-      'Do you really want to reset uses?';
+      'Voulez-vous vraiment réinitialiser les utilisations ?';
 
   @override
-  String get freemiumTestPage_resetSuccess => 'Uses reset successfully!';
+  String get freemiumTestPage_resetSuccess =>
+      'Utilisations réinitialisées avec succès !';
 
   @override
-  String get freemiumTestPage_resetError => 'Error resetting uses';
+  String get freemiumTestPage_resetError =>
+      'Erreur lors de la réinitialisation';
 
   @override
-  String get biometricSettingsPage_title => 'Biometric authentication';
+  String get biometricSettingsPage_title => 'Authentification biométrique';
 
   @override
   String get biometricSettingsPage_enableBiometric =>
-      'Enable biometric authentication';
+      'Activer l\'authentification biométrique';
 
   @override
   String get biometricSettingsPage_biometricDescription =>
-      'Use your fingerprint or face recognition to secure app access';
+      'Utilisez votre empreinte digitale ou reconnaissance faciale pour sécuriser l\'accès à l\'application';
 
   @override
   String get biometricSettingsPage_biometricNotAvailable =>
-      'Biometric authentication is not available on this device';
+      'L\'authentification biométrique n\'est pas disponible sur cet appareil';
 
   @override
   String get biometricSettingsPage_biometricNotEnrolled =>
-      'No fingerprints or facial data enrolled';
+      'Aucune empreinte digitales ou données faciales enregistrées';
 
   @override
   String get biometricSettingsPage_biometricNotSupported =>
-      'Biometric authentication is not supported';
+      'L\'authentification biométrique n\'est pas supportée';
 
   @override
   String get biometricSettingsPage_biometricSuccess =>
-      'Biometric authentication enabled successfully!';
+      'Authentification biométrique activée avec succès !';
 
   @override
   String get biometricSettingsPage_biometricError =>
-      'Error enabling biometric authentication';
+      'Erreur lors de l\'activation de l\'authentification biométrique';
 }

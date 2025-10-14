@@ -533,36 +533,6 @@ class AppLocalizationsFr extends AppLocalizations {
   String get soundPage_preferredAmplifier => 'Amplificateur préféré';
 
   @override
-  String get soundPage_noSpeakersSelected => 'Aucune enceinte sélectionnée';
-
-  @override
-  String get soundPage_power => 'Puissance';
-
-  @override
-  String get soundPage_amplifier => 'Amplificateur';
-
-  @override
-  String get soundPage_capacity => 'Capacité';
-
-  @override
-  String get soundPage_speakersPerChannel => 'enceintes/canal';
-
-  @override
-  String get soundPage_speakersPerAmp => 'enceintes/ampli';
-
-  @override
-  String get soundPage_amplifiersRequired => 'Amplificateurs requis';
-
-  @override
-  String get soundPage_with => 'avec';
-
-  @override
-  String get soundPage_noPresetSelected => 'Aucun preset sélectionné';
-
-  @override
-  String get rider_technical_title => 'Rider technique';
-
-  @override
   String get videoPage_title => 'Équipement Vidéo';
 
   @override
@@ -609,6 +579,51 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get soundPage_ampConfigTitle => 'Config ampli recommandée :';
+
+  @override
+  String get soundPage_quantityEnter => 'Entrer la quantité';
+
+  @override
+  String get soundPage_amplifier => 'Amplificateur';
+
+  @override
+  String get soundPage_searchHint => 'Rechercher un produit...';
+
+  @override
+  String get soundPage_add => 'Ajouter';
+
+  @override
+  String get soundPage_noSpeakersSelected => 'Aucune enceinte sélectionnée';
+
+  @override
+  String get soundPage_power => 'Puissance';
+
+  @override
+  String get soundPage_capacity => 'Capacité';
+
+  @override
+  String get soundPage_speakersPerChannel => 'enceintes/canal';
+
+  @override
+  String get soundPage_speakersPerAmp => 'enceintes/ampli';
+
+  @override
+  String get soundPage_amplifiersRequired => 'Amplificateurs requis';
+
+  @override
+  String get soundPage_with => 'avec';
+
+  @override
+  String get soundPage_noPresetSelected => 'Aucun preset sélectionné';
+
+  @override
+  String get rider_technical_title => 'Rider technique';
+
+  @override
+  String get ok => 'OK';
+
+  @override
+  String get add => 'Ajouter';
 
   @override
   String get reset => 'Reset';

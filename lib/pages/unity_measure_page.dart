@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:av_wallet_hive/l10n/app_localizations.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import '../widgets/custom_app_bar.dart';
 import '../widgets/uniform_bottom_nav_bar.dart';
 

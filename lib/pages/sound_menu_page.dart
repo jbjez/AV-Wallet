@@ -13,7 +13,7 @@ import '../models/sound_page_state.dart';
 import '../widgets/uniform_bottom_nav_bar.dart';
 import '../widgets/export_widget.dart';
 import '../widgets/action_button.dart';
-import 'package:av_wallet_hive/l10n/app_localizations.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:convert';
 import 'patch_scene_page.dart';

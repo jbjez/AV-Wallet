@@ -12,7 +12,7 @@ import '../providers/project_provider.dart';
 import '../pages/calcul_projet_page.dart';
 import '../services/translation_service.dart';
 import '../services/freemium_access_service.dart';
-import 'package:av_wallet_hive/l10n/app_localizations.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class PresetWidget extends ConsumerStatefulWidget {
   final bool loadOnInit;

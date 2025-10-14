@@ -346,7 +346,7 @@ class AppLocalizationsEs extends AppLocalizations {
   String get lightPage_reset => 'Reiniciar';
 
   @override
-  String get button_add => 'Add';
+  String get button_add => 'Ajouter';
 
   @override
   String get button_reset => 'Reset';
@@ -534,36 +534,6 @@ class AppLocalizationsEs extends AppLocalizations {
   String get soundPage_preferredAmplifier => 'Amplificador preferido';
 
   @override
-  String get soundPage_noSpeakersSelected => 'Ningún altavoz seleccionado';
-
-  @override
-  String get soundPage_power => 'Potencia';
-
-  @override
-  String get soundPage_amplifier => 'Amplificador';
-
-  @override
-  String get soundPage_capacity => 'Capacidad';
-
-  @override
-  String get soundPage_speakersPerChannel => 'altavoces/canal';
-
-  @override
-  String get soundPage_speakersPerAmp => 'altavoces/ampli';
-
-  @override
-  String get soundPage_amplifiersRequired => 'Amplificadores requeridos';
-
-  @override
-  String get soundPage_with => 'con';
-
-  @override
-  String get soundPage_noPresetSelected => 'Ningún preajuste seleccionado';
-
-  @override
-  String get rider_technical_title => 'Rider técnico';
-
-  @override
   String get videoPage_title => 'Equipo de Vídeo';
 
   @override
@@ -610,6 +580,51 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get soundPage_ampConfigTitle => 'Config ampli recomendada:';
+
+  @override
+  String get soundPage_quantityEnter => 'Entrer la quantité';
+
+  @override
+  String get soundPage_amplifier => 'Amplificador';
+
+  @override
+  String get soundPage_searchHint => 'Rechercher un produit...';
+
+  @override
+  String get soundPage_add => 'Ajouter';
+
+  @override
+  String get soundPage_noSpeakersSelected => 'Ningún altavoz seleccionado';
+
+  @override
+  String get soundPage_power => 'Potencia';
+
+  @override
+  String get soundPage_capacity => 'Capacidad';
+
+  @override
+  String get soundPage_speakersPerChannel => 'altavoces/canal';
+
+  @override
+  String get soundPage_speakersPerAmp => 'altavoces/ampli';
+
+  @override
+  String get soundPage_amplifiersRequired => 'Amplificadores requeridos';
+
+  @override
+  String get soundPage_with => 'con';
+
+  @override
+  String get soundPage_noPresetSelected => 'Ningún preajuste seleccionado';
+
+  @override
+  String get rider_technical_title => 'Rider técnico';
+
+  @override
+  String get ok => 'OK';
+
+  @override
+  String get add => 'Ajouter';
 
   @override
   String get reset => 'Reset';
@@ -1084,35 +1099,35 @@ class AppLocalizationsEs extends AppLocalizations {
   String get signOut => 'Cerrar sesión';
 
   @override
-  String get resetApp => 'Reset Application';
+  String get resetApp => 'Réinitialiser l\'application';
 
   @override
   String get resetAppDescription =>
-      'Removes all local data and simulates first visit';
+      'Supprime toutes les données locales et simule une première visite';
 
   @override
-  String get resetUserData => 'Reset User Data';
+  String get resetUserData => 'Réinitialiser les données utilisateur';
 
   @override
   String get resetUserDataDescription =>
-      'Removes only user data (projects, cart, etc.)';
+      'Supprime uniquement les données utilisateur (projets, panier, etc.)';
 
   @override
-  String get resetConfirmTitle => 'Confirm Reset';
+  String get resetConfirmTitle => 'Confirmer la réinitialisation';
 
   @override
   String get resetConfirmMessage =>
-      'Are you sure you want to reset the application? This action is irreversible.';
+      'Êtes-vous sûr de vouloir réinitialiser l\'application ? Cette action est irréversible.';
 
   @override
   String get resetUserDataConfirmMessage =>
-      'Are you sure you want to delete all your user data? This action is irreversible.';
+      'Êtes-vous sûr de vouloir supprimer toutes vos données utilisateur ? Cette action est irréversible.';
 
   @override
-  String get resetComplete => 'Reset completed';
+  String get resetComplete => 'Réinitialisation terminée';
 
   @override
-  String get resetError => 'Error during reset';
+  String get resetError => 'Erreur lors de la réinitialisation';
 
   @override
   String get patchScenePage_title => 'Patch Escena';
@@ -1697,52 +1712,52 @@ class AppLocalizationsEs extends AppLocalizations {
   String get dmxPage_wired => 'Cableado';
 
   @override
-  String get driverTab_title => 'LED Driver Configuration';
+  String get driverTab_title => 'Configuration Driver LED';
 
   @override
-  String get driverTab_ledLength => 'LED strip length';
+  String get driverTab_ledLength => 'Longueur LED strip';
 
   @override
-  String get driverTab_ledType => 'LED strip type';
+  String get driverTab_ledType => 'Type de LED strip';
 
   @override
-  String get driverTab_ledPower => 'LED strip power';
+  String get driverTab_ledPower => 'Puissance LED strip';
 
   @override
-  String get driverTab_driverChoice => 'Driver choice';
+  String get driverTab_driverChoice => 'Choix Driver';
 
   @override
-  String get driverTab_ledType_white => 'White (W)';
+  String get driverTab_ledType_white => 'Blanc (W)';
 
   @override
-  String get driverTab_ledType_biWhite => 'Bi-White (WW)';
+  String get driverTab_ledType_biWhite => 'Bi-Blanc (WW)';
 
   @override
-  String get driverTab_ledType_rgb => 'RGB';
+  String get driverTab_ledType_rgb => 'RVB';
 
   @override
-  String get driverTab_ledType_rgbw => 'RGBW';
+  String get driverTab_ledType_rgbw => 'RVBW';
 
   @override
-  String get driverTab_ledType_rgbww => 'RGBWW';
+  String get driverTab_ledType_rgbww => 'RVBWW';
 
   @override
   String get driverTab_customDriver => 'Custom';
 
   @override
-  String get driverTab_customDriverTitle => 'Custom Driver Configuration';
+  String get driverTab_customDriverTitle => 'Configuration Driver Personnalisé';
 
   @override
-  String get driverTab_customDriverChannels => 'Number of channels';
+  String get driverTab_customDriverChannels => 'Nombre de voies';
 
   @override
-  String get driverTab_customDriverIntensity => 'Intensity per channel (A)';
+  String get driverTab_customDriverIntensity => 'Intensité par voie (A)';
 
   @override
-  String get driverTab_calculate => 'Calculate';
+  String get driverTab_calculate => 'Calculer';
 
   @override
-  String get driverTab_result => 'Calculation result';
+  String get driverTab_result => 'Résultat du calcul';
 
   @override
   String get structurePage_chargesTab => 'Cargas';
@@ -1774,28 +1789,28 @@ class AppLocalizationsEs extends AppLocalizations {
   String get structurePage_noPresetSelected => 'Ningún preset seleccionado';
 
   @override
-  String get structurePage_structure => 'Structure:';
+  String get structurePage_structure => 'Structure :';
 
   @override
-  String get structurePage_length => 'Length:';
+  String get structurePage_length => 'Longueur :';
 
   @override
-  String get structurePage_chargeType => 'Load type:';
+  String get structurePage_chargeType => 'Type de charge :';
 
   @override
-  String get structurePage_maxLoadTitle => 'Maximum load';
+  String get structurePage_maxLoadTitle => 'Charge maximale';
 
   @override
-  String get structurePage_structureWeightTitle => 'Structure weight';
+  String get structurePage_structureWeightTitle => 'Poids de la structure';
 
   @override
-  String get structurePage_maxDeflectionTitle => 'Maximum deflection';
+  String get structurePage_maxDeflectionTitle => 'Flèche maximale';
 
   @override
-  String get structurePage_deflectionRatioTitle => 'Deflection ratio';
+  String get structurePage_deflectionRatioTitle => 'Ratio de flèche';
 
   @override
-  String get catalogue_brand => 'Brand';
+  String get catalogue_brand => 'Marque';
 
   @override
   String get catalogue_description => 'Description';
@@ -1804,13 +1819,13 @@ class AppLocalizationsEs extends AppLocalizations {
   String get catalogue_dimensions => 'Dimensions';
 
   @override
-  String get catalogue_weight => 'Weight';
+  String get catalogue_weight => 'Poids';
 
   @override
-  String get catalogue_consumption => 'Consumption';
+  String get catalogue_consumption => 'Consommation';
 
   @override
-  String get catalogue_angle => 'Projection angle';
+  String get catalogue_angle => 'Angle de projection';
 
   @override
   String get catalogue_lux => 'Lux';
@@ -1819,10 +1834,10 @@ class AppLocalizationsEs extends AppLocalizations {
   String get catalogue_lumens => 'Lumens';
 
   @override
-  String get catalogue_definition => 'Definition';
+  String get catalogue_definition => 'Définition';
 
   @override
-  String get catalogue_resolution => 'Resolution';
+  String get catalogue_resolution => 'Résolution';
 
   @override
   String get catalogue_pitch => 'Pitch';
@@ -1834,47 +1849,47 @@ class AppLocalizationsEs extends AppLocalizations {
   String get catalogue_dmxMini => 'DMX Mini';
 
   @override
-  String get catalogue_powerAdmissible => 'Admissible power';
+  String get catalogue_powerAdmissible => 'Puissance admissible';
 
   @override
-  String get catalogue_impedanceNominal => 'Nominal impedance';
+  String get catalogue_impedanceNominal => 'Impédance nominale';
 
   @override
-  String get catalogue_impedance => 'Impedance';
+  String get catalogue_impedance => 'Impédance';
 
   @override
-  String get catalogue_powerRms => 'RMS Power';
+  String get catalogue_powerRms => 'Puissance RMS';
 
   @override
-  String get catalogue_powerProgram => 'Program Power';
+  String get catalogue_powerProgram => 'Puissance Program';
 
   @override
-  String get catalogue_powerPeak => 'Peak Power';
+  String get catalogue_powerPeak => 'Puissance Peak';
 
   @override
-  String get catalogue_maxVoltage => 'Max voltage';
+  String get catalogue_maxVoltage => 'Tension max';
 
   @override
-  String get catalogue_lensesAvailable => 'Available projection lenses';
+  String get catalogue_lensesAvailable => 'Lentilles de projection disponibles';
 
   @override
-  String get catalogue_projectionRatio => 'Projection ratio';
+  String get catalogue_projectionRatio => 'Ratio de projection';
 
   @override
-  String get videoLedResult_dalles => 'panels';
+  String get videoLedResult_dalles => 'dalles';
 
   @override
-  String get videoLedResult_espacePixellaire => 'Pixel space';
+  String get videoLedResult_espacePixellaire => 'Espace pixellaire';
 
   @override
-  String get videoLedResult_poidsTotal => 'Total weight';
+  String get videoLedResult_poidsTotal => 'Poids total';
 
   @override
-  String get videoLedResult_consommationTotale => 'Total consumption';
+  String get videoLedResult_consommationTotale => 'Consommation totale';
 
   @override
   String get arMeasurePage_description =>
-      'Take reference photos and launch AR measurements';
+      'Prenez des photos de référence et lancez les mesures AR';
 
   @override
   String get arMeasurePage_photoButton => 'Photo';
@@ -1883,29 +1898,29 @@ class AppLocalizationsEs extends AppLocalizations {
   String get arMeasurePage_unityButton => 'Unity';
 
   @override
-  String get arMeasurePage_captureInProgress => 'Capturing...';
+  String get arMeasurePage_captureInProgress => 'Capture...';
 
   @override
   String get arMeasurePage_cameraPermissionRequired =>
-      'Camera permissions required';
+      'Permissions caméra requises';
 
   @override
-  String get arMeasurePage_photoSaved => 'Photo saved in project!';
+  String get arMeasurePage_photoSaved => 'Photo sauvegardée dans le projet !';
 
   @override
-  String get arMeasurePage_errorMessage => 'Error occurred';
+  String get arMeasurePage_errorMessage => 'Une erreur s\'est produite';
 
   @override
   String get arMeasurePage_photosAutoSaved =>
-      'Photos are automatically saved in the active project folder';
+      'Les photos sont automatiquement sauvegardées dans le dossier du projet actif';
 
   @override
   String get arMeasurePage_takeReferencePhotos =>
-      'Take reference photos and launch AR measurements';
+      'Prenez des photos de référence et lancez les mesures AR';
 
   @override
   String get arMeasurePage_photosAutoSavedInfo =>
-      'Photos are automatically saved in the active project folder';
+      'Les photos sont automatiquement sauvegardées dans le dossier du projet actif';
 
   @override
   String get settingsPage_title => 'Configuración';

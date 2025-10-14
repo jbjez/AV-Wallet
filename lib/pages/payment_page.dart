@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:av_wallet_hive/l10n/app_localizations.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import '../services/secure_usage_service.dart';
 import '../services/device_fingerprint_service.dart';
 import '../config/supabase_config.dart';

@@ -132,7 +132,7 @@ class AppLocalizationsDe extends AppLocalizations {
   String get dmxTab => 'DMX';
 
   @override
-  String get searchProduct => 'Search for a product...';
+  String get searchProduct => 'Rechercher un produit...';
 
   @override
   String get search_speaker => 'Nach einem Lautsprecher suchen...';
@@ -147,22 +147,22 @@ class AppLocalizationsDe extends AppLocalizations {
   String get delete_preset => 'Preset löschen';
 
   @override
-  String get selectedProducts => 'Selected products:';
+  String get selectedProducts => 'Produits sélectionnés:';
 
   @override
-  String get dmxChannels => 'channels';
+  String get dmxChannels => 'canaux';
 
   @override
-  String get calculateDmxUniverse => 'Calculate DMX Universe';
+  String get calculateDmxUniverse => 'Calculer Univers DMX';
 
   @override
-  String get dmxConfiguration => 'DMX Configuration:';
+  String get dmxConfiguration => 'Configuration DMX:';
 
   @override
-  String get universe => 'Universe';
+  String get universe => 'Univers';
 
   @override
-  String get exportConfiguration => 'Export Configuration';
+  String get exportConfiguration => 'Exporter Configuration';
 
   @override
   String get enterQuantity => 'Menge eingeben';
@@ -177,110 +177,110 @@ class AppLocalizationsDe extends AppLocalizations {
   String get driverTab => 'Driver';
 
   @override
-  String get driverConfiguration => 'Driver Configuration:';
+  String get driverConfiguration => 'Configuration Driver:';
 
   @override
-  String get channels => 'Channels';
+  String get channels => 'Voies';
 
   @override
-  String get channel => 'channel';
+  String get channel => 'voie';
 
   @override
-  String get channelsPlural => 'channels';
+  String get channelsPlural => 'voies';
 
   @override
-  String get amperePerChannel => 'Amperes/Channel';
+  String get amperePerChannel => 'Ampères/Voie';
 
   @override
-  String get driverType => 'Driver Type';
+  String get driverType => 'Type Driver';
 
   @override
-  String get stripLedConfiguration => 'Strip LED Configuration:';
+  String get stripLedConfiguration => 'Configuration Strip LED:';
 
   @override
-  String get stripLedType => 'Strip LED Type';
+  String get stripLedType => 'Type Strip LED';
 
   @override
-  String get length => 'Length';
+  String get length => 'Longueur';
 
   @override
-  String get consumption => 'Consumption';
+  String get consumption => 'Consommation';
 
   @override
-  String get calculateDriverConfig => 'Calculate Driver Configuration';
+  String get calculateDriverConfig => 'Calculer Configuration Driver';
 
   @override
-  String get recommendedConfiguration => 'Recommended Configuration:';
+  String get recommendedConfiguration => 'Configuration Recommandée:';
 
   @override
   String get totalPower => 'Gesamtleistung';
 
   @override
-  String get totalCurrent => 'Total current';
+  String get totalCurrent => 'Courant total';
 
   @override
-  String get availableCurrent => 'Available current';
+  String get availableCurrent => 'Courant disponible';
 
   @override
-  String get safetyMargin => 'Safety margin';
+  String get safetyMargin => 'Marge de sécurité';
 
   @override
-  String get beamTab => 'Beam';
+  String get beamTab => 'Faisceau';
 
   @override
-  String get beamCalculation => 'Beam Calculation:';
+  String get beamCalculation => 'Calcul de Faisceau:';
 
   @override
-  String get angleRange => 'Beam angle';
+  String get angleRange => 'Angle du faisceau';
 
   @override
-  String get heightRange => 'Height';
+  String get heightRange => 'Hauteur';
 
   @override
   String get distanceRange => 'Distance';
 
   @override
-  String get beamDiameter => 'Beam diameter';
+  String get beamDiameter => 'Diamètre du faisceau';
 
   @override
-  String get meters => 'meters';
+  String get meters => 'mètres';
 
   @override
-  String get calculate => 'Calculate';
+  String get calculate => 'Calculer';
 
   @override
-  String get calculationResult => 'Calculation Result:';
+  String get calculationResult => 'Résultat du Calcul:';
 
   @override
-  String get accessoriesTab => 'Accessories';
+  String get accessoriesTab => 'Accessoires';
 
   @override
-  String get lightAccessories => 'Light Accessories:';
+  String get lightAccessories => 'Accessoires Lumière:';
 
   @override
   String get thisSectionWillBeDeveloped =>
-      'This section will be developed to include:';
+      'Cette section sera développée pour inclure:';
 
   @override
-  String get trussesAndStructures => 'Trusses and Structures';
+  String get trussesAndStructures => 'Trusses et Structures';
 
   @override
-  String get dmxCables => 'DMX Cables';
+  String get dmxCables => 'Câbles DMX';
 
   @override
-  String get connectors => 'Connectors';
+  String get connectors => 'Connecteurs';
 
   @override
   String get protections => 'Protections';
 
   @override
-  String get mountingTools => 'Mounting Tools';
+  String get mountingTools => 'Outils de montage';
 
   @override
-  String get safetyAccessories => 'Safety Accessories';
+  String get safetyAccessories => 'Accessoires de sécurité';
 
   @override
-  String get all => 'All';
+  String get all => 'Toutes';
 
   @override
   String get rgb => 'RGB';
@@ -307,10 +307,10 @@ class AppLocalizationsDe extends AppLocalizations {
   String get amperes => 'A';
 
   @override
-  String get price => 'Price';
+  String get price => 'Prix';
 
   @override
-  String get availability => 'Availability';
+  String get availability => 'Disponibilité';
 
   @override
   String get lightPage_title => 'Lichtausrüstung';
@@ -346,7 +346,7 @@ class AppLocalizationsDe extends AppLocalizations {
   String get lightPage_reset => 'Zurücksetzen';
 
   @override
-  String get button_add => 'Add';
+  String get button_add => 'Ajouter';
 
   @override
   String get button_reset => 'Reset';
@@ -466,7 +466,7 @@ class AppLocalizationsDe extends AppLocalizations {
   String get soundPage_decibelMeterTab => 'Schallpegelmesser';
 
   @override
-  String get soundPage_decibelMeterShort => 'Decibel';
+  String get soundPage_decibelMeterShort => 'Décibel';
 
   @override
   String get soundPage_patchSceneShort => 'Patch';
@@ -533,36 +533,6 @@ class AppLocalizationsDe extends AppLocalizations {
   String get soundPage_preferredAmplifier => 'Bevorzugter Verstärker';
 
   @override
-  String get soundPage_noSpeakersSelected => 'Keine Lautsprecher ausgewählt';
-
-  @override
-  String get soundPage_power => 'Leistung';
-
-  @override
-  String get soundPage_amplifier => 'Verstärker';
-
-  @override
-  String get soundPage_capacity => 'Kapazität';
-
-  @override
-  String get soundPage_speakersPerChannel => 'Lautsprecher/Kanal';
-
-  @override
-  String get soundPage_speakersPerAmp => 'Lautsprecher/Verstärker';
-
-  @override
-  String get soundPage_amplifiersRequired => 'Verstärker erforderlich';
-
-  @override
-  String get soundPage_with => 'mit';
-
-  @override
-  String get soundPage_noPresetSelected => 'Kein Preset ausgewählt';
-
-  @override
-  String get rider_technical_title => 'Technischer Rider';
-
-  @override
   String get videoPage_title => 'Videoausrüstung';
 
   @override
@@ -605,10 +575,55 @@ class AppLocalizationsDe extends AppLocalizations {
   String get videoPage_ar => 'AR';
 
   @override
-  String get videoPage_calculate => 'Calculate';
+  String get videoPage_calculate => 'Calcul';
 
   @override
-  String get soundPage_ampConfigTitle => 'Recommended amp config:';
+  String get soundPage_ampConfigTitle => 'Config ampli recommandée :';
+
+  @override
+  String get soundPage_quantityEnter => 'Entrer la quantité';
+
+  @override
+  String get soundPage_amplifier => 'Verstärker';
+
+  @override
+  String get soundPage_searchHint => 'Rechercher un produit...';
+
+  @override
+  String get soundPage_add => 'Ajouter';
+
+  @override
+  String get soundPage_noSpeakersSelected => 'Keine Lautsprecher ausgewählt';
+
+  @override
+  String get soundPage_power => 'Leistung';
+
+  @override
+  String get soundPage_capacity => 'Kapazität';
+
+  @override
+  String get soundPage_speakersPerChannel => 'Lautsprecher/Kanal';
+
+  @override
+  String get soundPage_speakersPerAmp => 'Lautsprecher/Verstärker';
+
+  @override
+  String get soundPage_amplifiersRequired => 'Verstärker erforderlich';
+
+  @override
+  String get soundPage_with => 'mit';
+
+  @override
+  String get soundPage_noPresetSelected => 'Kein Preset ausgewählt';
+
+  @override
+  String get rider_technical_title => 'Technischer Rider';
+
+  @override
+  String get ok => 'OK';
+
+  @override
+  String get add => 'Ajouter';
 
   @override
   String get reset => 'Reset';
@@ -1084,35 +1099,35 @@ class AppLocalizationsDe extends AppLocalizations {
   String get signOut => 'Abmelden';
 
   @override
-  String get resetApp => 'Reset Application';
+  String get resetApp => 'Réinitialiser l\'application';
 
   @override
   String get resetAppDescription =>
-      'Removes all local data and simulates first visit';
+      'Supprime toutes les données locales et simule une première visite';
 
   @override
-  String get resetUserData => 'Reset User Data';
+  String get resetUserData => 'Réinitialiser les données utilisateur';
 
   @override
   String get resetUserDataDescription =>
-      'Removes only user data (projects, cart, etc.)';
+      'Supprime uniquement les données utilisateur (projets, panier, etc.)';
 
   @override
-  String get resetConfirmTitle => 'Confirm Reset';
+  String get resetConfirmTitle => 'Confirmer la réinitialisation';
 
   @override
   String get resetConfirmMessage =>
-      'Are you sure you want to reset the application? This action is irreversible.';
+      'Êtes-vous sûr de vouloir réinitialiser l\'application ? Cette action est irréversible.';
 
   @override
   String get resetUserDataConfirmMessage =>
-      'Are you sure you want to delete all your user data? This action is irreversible.';
+      'Êtes-vous sûr de vouloir supprimer toutes vos données utilisateur ? Cette action est irréversible.';
 
   @override
-  String get resetComplete => 'Reset completed';
+  String get resetComplete => 'Réinitialisation terminée';
 
   @override
-  String get resetError => 'Error during reset';
+  String get resetError => 'Erreur lors de la réinitialisation';
 
   @override
   String get patchScenePage_title => 'Patch Szene';
@@ -1596,10 +1611,10 @@ class AppLocalizationsDe extends AppLocalizations {
   String get loginMenu_logout => 'Abmelden';
 
   @override
-  String get dmxPage_searchHint => 'Search for a product...';
+  String get dmxPage_searchHint => 'Rechercher un produit...';
 
   @override
-  String get dmxPage_dmxType => 'DMX Type';
+  String get dmxPage_dmxType => 'Type DMX';
 
   @override
   String get dmxPage_dmxMini => 'DMX Mini';
@@ -1608,22 +1623,22 @@ class AppLocalizationsDe extends AppLocalizations {
   String get dmxPage_dmxMax => 'DMX Max';
 
   @override
-  String get dmxPage_quantityEnter => 'Enter quantity';
+  String get dmxPage_quantityEnter => 'Entrez la quantité';
 
   @override
-  String get dmxPage_cancel => 'Cancel';
+  String get dmxPage_cancel => 'Annuler';
 
   @override
   String get dmxPage_ok => 'OK';
 
   @override
-  String get dmxPage_confirm => 'Confirm';
+  String get dmxPage_confirm => 'Confirmer';
 
   @override
-  String get dmxPage_selectedProducts => 'Selected products:';
+  String get dmxPage_selectedProducts => 'Articles sélectionnés :';
 
   @override
-  String get dmxPage_calculate => 'Calculate';
+  String get dmxPage_calculate => 'Calcul';
 
   @override
   String get dmxPage_add => 'ADD';
@@ -1635,46 +1650,46 @@ class AppLocalizationsDe extends AppLocalizations {
   String get dmxPage_importPreset => 'Import Preset';
 
   @override
-  String get dmxPage_noProductsSelected => 'No products selected';
+  String get dmxPage_noProductsSelected => 'Aucun produit sélectionné';
 
   @override
-  String get dmxPage_noPresetSelected => 'No preset selected';
+  String get dmxPage_noPresetSelected => 'Aucun preset sélectionné';
 
   @override
-  String get dmxPage_noPresetAvailable => 'No presets available to import';
+  String get dmxPage_noPresetAvailable => 'Aucun preset disponible à importer';
 
   @override
-  String get dmxPage_productsAddedToPreset => 'product(s) added to preset';
+  String get dmxPage_productsAddedToPreset => 'produit(s) ajouté(s) au preset';
 
   @override
-  String get dmxPage_selectPreset => 'Select a preset';
+  String get dmxPage_selectPreset => 'Sélectionner un preset';
 
   @override
-  String get dmxPage_lightDevices => 'light device(s)';
+  String get dmxPage_lightDevices => 'appareil(s) lumière';
 
   @override
-  String get dmxPage_importedFromPreset => 'device(s) imported from';
+  String get dmxPage_importedFromPreset => 'appareil(s) importé(s) depuis';
 
   @override
-  String get dmxPage_universesNeeded => 'universes required';
+  String get dmxPage_universesNeeded => 'univers requis';
 
   @override
-  String get dmxPage_universe => 'Universe';
+  String get dmxPage_universe => 'Univers';
 
   @override
-  String get dmxPage_channelsUsed => 'Used';
+  String get dmxPage_channelsUsed => 'Utilisé';
 
   @override
-  String get dmxPage_channelsTotal => 'channels';
+  String get dmxPage_channelsTotal => 'canaux';
 
   @override
-  String get dmxPage_mapDmx => 'DMX Map';
+  String get dmxPage_mapDmx => 'Map DMX';
 
   @override
-  String get dmxPage_lightCategory => 'Light';
+  String get dmxPage_lightCategory => 'Lumière';
 
   @override
-  String get dmxPage_allCategories => 'All';
+  String get dmxPage_allCategories => 'Toutes';
 
   @override
   String get dmxPage_movingHead => 'Moving Head';
@@ -1692,55 +1707,55 @@ class AppLocalizationsDe extends AppLocalizations {
   String get dmxPage_wash => 'Wash';
 
   @override
-  String get dmxPage_wired => 'Wired';
+  String get dmxPage_wired => 'Câblé';
 
   @override
-  String get driverTab_title => 'LED Driver Configuration';
+  String get driverTab_title => 'Configuration Driver LED';
 
   @override
-  String get driverTab_ledLength => 'LED strip length';
+  String get driverTab_ledLength => 'Longueur LED strip';
 
   @override
-  String get driverTab_ledType => 'LED strip type';
+  String get driverTab_ledType => 'Type de LED strip';
 
   @override
-  String get driverTab_ledPower => 'LED strip power';
+  String get driverTab_ledPower => 'Puissance LED strip';
 
   @override
-  String get driverTab_driverChoice => 'Driver choice';
+  String get driverTab_driverChoice => 'Choix Driver';
 
   @override
-  String get driverTab_ledType_white => 'White (W)';
+  String get driverTab_ledType_white => 'Blanc (W)';
 
   @override
-  String get driverTab_ledType_biWhite => 'Bi-White (WW)';
+  String get driverTab_ledType_biWhite => 'Bi-Blanc (WW)';
 
   @override
-  String get driverTab_ledType_rgb => 'RGB';
+  String get driverTab_ledType_rgb => 'RVB';
 
   @override
-  String get driverTab_ledType_rgbw => 'RGBW';
+  String get driverTab_ledType_rgbw => 'RVBW';
 
   @override
-  String get driverTab_ledType_rgbww => 'RGBWW';
+  String get driverTab_ledType_rgbww => 'RVBWW';
 
   @override
   String get driverTab_customDriver => 'Custom';
 
   @override
-  String get driverTab_customDriverTitle => 'Custom Driver Configuration';
+  String get driverTab_customDriverTitle => 'Configuration Driver Personnalisé';
 
   @override
-  String get driverTab_customDriverChannels => 'Number of channels';
+  String get driverTab_customDriverChannels => 'Nombre de voies';
 
   @override
-  String get driverTab_customDriverIntensity => 'Intensity per channel (A)';
+  String get driverTab_customDriverIntensity => 'Intensité par voie (A)';
 
   @override
-  String get driverTab_calculate => 'Calculate';
+  String get driverTab_calculate => 'Calculer';
 
   @override
-  String get driverTab_result => 'Calculation result';
+  String get driverTab_result => 'Résultat du calcul';
 
   @override
   String get structurePage_chargesTab => 'Lasten';
@@ -1906,19 +1921,19 @@ class AppLocalizationsDe extends AppLocalizations {
       'Fotos werden automatisch im aktiven Projektordner gespeichert';
 
   @override
-  String get settingsPage_title => 'Settings';
+  String get settingsPage_title => 'Paramètres';
 
   @override
-  String get settingsPage_userInfo => 'User Information';
+  String get settingsPage_userInfo => 'Informations utilisateur';
 
   @override
   String get settingsPage_email => 'Email';
 
   @override
-  String get settingsPage_name => 'Name';
+  String get settingsPage_name => 'Nom';
 
   @override
-  String get settingsPage_status => 'Status';
+  String get settingsPage_status => 'Statut';
 
   @override
   String get settingsPage_premium => 'Premium';
@@ -1927,98 +1942,99 @@ class AppLocalizationsDe extends AppLocalizations {
   String get settingsPage_standard => 'Standard';
 
   @override
-  String get settingsPage_notAvailable => 'Not available';
+  String get settingsPage_notAvailable => 'Non disponible';
 
   @override
-  String get settingsPage_notDefined => 'Not defined';
+  String get settingsPage_notDefined => 'Non défini';
 
   @override
-  String get settingsPage_security => 'Security';
+  String get settingsPage_security => 'Sécurité';
 
   @override
-  String get settingsPage_changePassword => 'Change password';
+  String get settingsPage_changePassword => 'Changer le mot de passe';
 
   @override
-  String get settingsPage_biometricAuth => 'Biometric authentication';
+  String get settingsPage_biometricAuth => 'Authentification biométrique';
 
   @override
-  String get settingsPage_subscription => 'Subscription';
+  String get settingsPage_subscription => 'Abonnement';
 
   @override
-  String get settingsPage_premiumSubscription => 'Premium Subscription';
+  String get settingsPage_premiumSubscription => 'Abonnement Premium';
 
   @override
-  String get settingsPage_freemiumTest => 'Freemium Test';
+  String get settingsPage_freemiumTest => 'Test Freemium';
 
   @override
-  String get settingsPage_subscribeToPremium => 'Subscribe to Premium';
+  String get settingsPage_subscribeToPremium => 'S\'abonner au Premium';
 
   @override
-  String get settingsPage_unsubscribe => 'Unsubscribe';
+  String get settingsPage_unsubscribe => 'Se désabonner';
 
   @override
-  String get settingsPage_account => 'Account';
+  String get settingsPage_account => 'Compte';
 
   @override
-  String get settingsPage_signOut => 'Sign out';
+  String get settingsPage_signOut => 'Se déconnecter';
 
   @override
-  String get settingsPage_subscribeDialogTitle => 'Subscribe to Premium';
+  String get settingsPage_subscribeDialogTitle => 'S\'abonner au Premium';
 
   @override
   String get settingsPage_subscribeDialogContent =>
-      'Do you want to subscribe to Premium?';
+      'Voulez-vous vous abonner au Premium ?';
 
   @override
-  String get settingsPage_cancel => 'Cancel';
+  String get settingsPage_cancel => 'Annuler';
 
   @override
-  String get settingsPage_subscribe => 'Subscribe';
+  String get settingsPage_subscribe => 'S\'abonner';
 
   @override
-  String get settingsPage_premiumActivated => 'Premium subscription activated!';
+  String get settingsPage_premiumActivated => 'Abonnement Premium activé !';
 
   @override
-  String get settingsPage_subscriptionError => 'Subscription error';
+  String get settingsPage_subscriptionError => 'Erreur lors de l\'abonnement';
 
   @override
-  String get settingsPage_error => 'Error';
+  String get settingsPage_error => 'Erreur';
 
   @override
-  String get settingsPage_success => 'Success';
+  String get settingsPage_success => 'Succès';
 
   @override
   String get settingsPage_ok => 'OK';
 
   @override
-  String get settingsPage_unsubscribeDialogTitle => 'Unsubscribe';
+  String get settingsPage_unsubscribeDialogTitle => 'Se désabonner';
 
   @override
   String get settingsPage_unsubscribeDialogContent =>
-      'Do you really want to unsubscribe? You will lose access to Premium features.';
+      'Voulez-vous vraiment vous désabonner ? Vous perdrez l\'accès aux fonctionnalités Premium.';
 
   @override
-  String get settingsPage_confirmUnsubscribe => 'Confirm unsubscribe';
+  String get settingsPage_confirmUnsubscribe => 'Confirmer le désabonnement';
 
   @override
-  String get settingsPage_signOutDialogTitle => 'Sign out';
+  String get settingsPage_signOutDialogTitle => 'Se déconnecter';
 
   @override
   String get settingsPage_signOutDialogContent =>
-      'Do you really want to sign out?';
+      'Voulez-vous vraiment vous déconnecter ?';
 
   @override
-  String get settingsPage_confirmSignOut => 'Sign out';
+  String get settingsPage_confirmSignOut => 'Se déconnecter';
 
   @override
-  String get settingsPage_featureNotImplemented => 'Feature not implemented';
+  String get settingsPage_featureNotImplemented =>
+      'Fonctionnalité à implémenter';
 
   @override
-  String get premiumExpiredDialog_title => 'Premium usage ended';
+  String get premiumExpiredDialog_title => 'Utilisation premium terminée';
 
   @override
   String get premiumExpiredDialog_message =>
-      'You have used all your free uses. Upgrade to Premium to continue using all AV Wallet features.';
+      'Vous avez utilisé toutes vos utilisations gratuites. Passez à Premium pour continuer à utiliser toutes les fonctionnalités d\'AV Wallet.';
 
   @override
   String get premiumExpiredDialog_ok => 'OK';
@@ -2027,135 +2043,139 @@ class AppLocalizationsDe extends AppLocalizations {
   String get premiumExpiredDialog_premium => 'Premium';
 
   @override
-  String get paymentPage_title => 'Premium Subscription';
+  String get paymentPage_title => 'Abonnement Premium';
 
   @override
-  String get paymentPage_monthlyPlan => 'Monthly';
+  String get paymentPage_monthlyPlan => 'Mensuel';
 
   @override
-  String get paymentPage_yearlyPlan => 'Yearly';
+  String get paymentPage_yearlyPlan => 'Annuel';
 
   @override
-  String get paymentPage_monthlyPrice => '€2.49/month';
+  String get paymentPage_monthlyPrice => '2,49€/mois';
 
   @override
-  String get paymentPage_yearlyPrice => '€19.99/year';
+  String get paymentPage_yearlyPrice => '19,99€/an';
 
   @override
-  String get paymentPage_securePayment => 'Secure payment';
+  String get paymentPage_securePayment => 'Paiement sécurisé';
 
   @override
   String get paymentPage_visaMastercardAccepted =>
-      'Visa and Mastercard accepted';
+      'Visa et Mastercard acceptés';
 
   @override
-  String get paymentPage_paymentInfo => 'Payment information';
+  String get paymentPage_paymentInfo => 'Informations de paiement';
 
   @override
-  String get paymentPage_cardholderName => 'Cardholder name';
+  String get paymentPage_cardholderName => 'Nom du titulaire de la carte';
 
   @override
-  String get paymentPage_cardNumber => 'Card number';
+  String get paymentPage_cardNumber => 'Numéro de carte';
 
   @override
-  String get paymentPage_expiryDate => 'MM/YY';
+  String get paymentPage_expiryDate => 'MM/AA';
 
   @override
   String get paymentPage_cvc => 'CVC';
 
   @override
-  String get paymentPage_payButton => 'Pay';
+  String get paymentPage_payButton => 'Payer';
 
   @override
-  String get paymentPage_processing => 'Processing...';
+  String get paymentPage_processing => 'Traitement en cours...';
 
   @override
-  String get paymentPage_paymentSuccess => 'Payment Successful!';
+  String get paymentPage_paymentSuccess => 'Paiement Réussi !';
 
   @override
   String get paymentPage_subscriptionActivated =>
-      'Your premium subscription has been successfully activated!';
+      'Votre abonnement premium a été activé avec succès !';
 
   @override
   String get paymentPage_plan => 'Plan';
 
   @override
-  String get paymentPage_price => 'Price';
+  String get paymentPage_price => 'Prix';
 
   @override
-  String get paymentPage_continue => 'Continue';
+  String get paymentPage_continue => 'Continuer';
 
   @override
   String get paymentPage_premiumFeatures =>
-      'You can now enjoy all premium features!';
+      'Vous pouvez maintenant profiter de toutes les fonctionnalités premium !';
 
   @override
-  String get paymentPage_paymentError => 'Payment error';
+  String get paymentPage_paymentError => 'Erreur de paiement';
 
   @override
   String get paymentPage_selectPaymentMethod =>
-      'Please select a payment method';
+      'Veuillez sélectionner un moyen de paiement';
 
   @override
-  String get paymentPage_fillAllFields => 'Please fill in all card fields';
+  String get paymentPage_fillAllFields =>
+      'Veuillez remplir tous les champs de la carte';
 
   @override
-  String get paymentPage_paymentFailed => 'Payment failed. Please try again.';
+  String get paymentPage_paymentFailed =>
+      'Le paiement a échoué. Veuillez réessayer.';
 
   @override
   String get paymentPage_legalText =>
-      'By proceeding with payment, you accept our terms of use and privacy policy. Payment will be processed securely by Stripe.';
+      'En procédant au paiement, vous acceptez nos conditions d\'utilisation et notre politique de confidentialité. Le paiement sera traité de manière sécurisée par Stripe.';
 
   @override
-  String get freemiumTestPage_title => 'Freemium Test';
+  String get freemiumTestPage_title => 'Test Freemium';
 
   @override
-  String get freemiumTestPage_remainingUsage => 'Remaining uses';
+  String get freemiumTestPage_remainingUsage => 'Utilisations restantes';
 
   @override
-  String get freemiumTestPage_maxUsage => 'Maximum uses';
+  String get freemiumTestPage_maxUsage => 'Utilisations maximum';
 
   @override
-  String get freemiumTestPage_resetUsage => 'Reset uses';
+  String get freemiumTestPage_resetUsage => 'Réinitialiser les utilisations';
 
   @override
   String get freemiumTestPage_resetConfirm =>
-      'Do you really want to reset uses?';
+      'Voulez-vous vraiment réinitialiser les utilisations ?';
 
   @override
-  String get freemiumTestPage_resetSuccess => 'Uses reset successfully!';
+  String get freemiumTestPage_resetSuccess =>
+      'Utilisations réinitialisées avec succès !';
 
   @override
-  String get freemiumTestPage_resetError => 'Error resetting uses';
+  String get freemiumTestPage_resetError =>
+      'Erreur lors de la réinitialisation';
 
   @override
-  String get biometricSettingsPage_title => 'Biometric authentication';
+  String get biometricSettingsPage_title => 'Authentification biométrique';
 
   @override
   String get biometricSettingsPage_enableBiometric =>
-      'Enable biometric authentication';
+      'Activer l\'authentification biométrique';
 
   @override
   String get biometricSettingsPage_biometricDescription =>
-      'Use your fingerprint or face recognition to secure app access';
+      'Utilisez votre empreinte digitale ou reconnaissance faciale pour sécuriser l\'accès à l\'application';
 
   @override
   String get biometricSettingsPage_biometricNotAvailable =>
-      'Biometric authentication is not available on this device';
+      'L\'authentification biométrique n\'est pas disponible sur cet appareil';
 
   @override
   String get biometricSettingsPage_biometricNotEnrolled =>
-      'No fingerprints or facial data enrolled';
+      'Aucune empreinte digitales ou données faciales enregistrées';
 
   @override
   String get biometricSettingsPage_biometricNotSupported =>
-      'Biometric authentication is not supported';
+      'L\'authentification biométrique n\'est pas supportée';
 
   @override
   String get biometricSettingsPage_biometricSuccess =>
-      'Biometric authentication enabled successfully!';
+      'Authentification biométrique activée avec succès !';
 
   @override
   String get biometricSettingsPage_biometricError =>
-      'Error enabling biometric authentication';
+      'Erreur lors de l\'activation de l\'authentification biométrique';
 }
