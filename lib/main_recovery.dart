@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart'; // tu utilises Riverpod
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:av_wallet_hive/l10n/app_localizations.dart';
 import 'package:av_wallet_hive/pages/home_page.dart';
 // 👉 Si ta page d'accueil est bien à lib/pages/home_page.dart, décommente la ligne suivante :
 // import 'package:av_wallet_hive/pages/home_page.dart';

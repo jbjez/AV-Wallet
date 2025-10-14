@@ -7,7 +7,7 @@ import '../widgets/export_widget.dart';
 import '../widgets/preset_widget.dart';
 import '../widgets/border_labeled_dropdown.dart';
 import '../widgets/action_button.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:av_wallet_hive/l10n/app_localizations.dart';
 import '../services/translation_service.dart';
 import '../theme/app_theme.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';

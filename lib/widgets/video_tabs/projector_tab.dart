@@ -3,7 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../providers/catalogue_provider.dart';
 import '../../providers/page_state_provider.dart';
 import '../../models/catalogue_item.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:av_wallet_hive/l10n/app_localizations.dart';
 import '../uniform_dropdown.dart';
 import '../unified_search_widget.dart';
 import '../unified_quantity_dialog.dart';

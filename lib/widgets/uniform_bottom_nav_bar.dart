@@ -6,7 +6,7 @@ import '../pages/sound_menu_page.dart';
 import '../pages/video_menu_page.dart';
 import '../pages/electricite_menu_page.dart';
 import '../pages/divers_menu_page.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:av_wallet_hive/l10n/app_localizations.dart';
 
 class UniformBottomNavBar extends StatelessWidget {
   final int currentIndex;

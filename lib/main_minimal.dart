@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:av_wallet_hive/l10n/app_localizations.dart';
 import 'package:av_wallet_hive/pages/home_page.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:logging/logging.dart';

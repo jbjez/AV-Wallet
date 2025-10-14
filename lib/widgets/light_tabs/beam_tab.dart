@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:av_wallet_hive/l10n/app_localizations.dart';
 import '../../pages/ar_measure_page.dart';
 import '../action_button.dart';
 import '../comment_button.dart';
