@@ -671,7 +671,7 @@ class ExportWidget extends ConsumerWidget {
         id: 'export_${DateTime.now().millisecondsSinceEpoch}',
         projectId: finalProject.id,
         name: _getCalculationDisplayName(calculationType, title),
-        totalPower: totalProjet,
+        totalPower: (projectSummary?['totalPower'] as num?)?.toDouble() ?? 0.0,
         totalWeight: 0.0, // TODO: à remplacer par la vraie valeur si on l'a plus tard
         createdAt: DateTime.now(),
         type: calculationType ?? 'general',

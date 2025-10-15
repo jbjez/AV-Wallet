@@ -178,5 +178,521 @@
   "unitKilowatt": "Unitkilowatt",
   "unitWatt": "Unitwatt",
   "view_preset": "View Preset",
-  "weight": "Weight"
+  "weight": "Weight",
+  "amperePerChannel": "ampere Per Channel",
+  "@amperePerChannel": {
+    "description": "auto-added from code scan"
+  },
+  "amperes": "amperes",
+  "@amperes": {
+    "description": "auto-added from code scan"
+  },
+  "beamCalculation": "beam Calculation",
+  "@beamCalculation": {
+    "description": "auto-added from code scan"
+  },
+  "bottomNav_catalogue": "bottom Nav catalogue",
+  "@bottomNav_catalogue": {
+    "description": "auto-added from code scan"
+  },
+  "bottomNav_electricity": "bottom Nav electricity",
+  "@bottomNav_electricity": {
+    "description": "auto-added from code scan"
+  },
+  "bottomNav_light": "bottom Nav light",
+  "@bottomNav_light": {
+    "description": "auto-added from code scan"
+  },
+  "bottomNav_misc": "bottom Nav misc",
+  "@bottomNav_misc": {
+    "description": "auto-added from code scan"
+  },
+  "bottomNav_sound": "bottom Nav sound",
+  "@bottomNav_sound": {
+    "description": "auto-added from code scan"
+  },
+  "bottomNav_structure": "bottom Nav structure",
+  "@bottomNav_structure": {
+    "description": "auto-added from code scan"
+  },
+  "bottomNav_video": "bottom Nav video",
+  "@bottomNav_video": {
+    "description": "auto-added from code scan"
+  },
+  "button_reset": "button reset",
+  "@button_reset": {
+    "description": "auto-added from code scan"
+  },
+  "calculateDriverConfig": "calculate Driver Config",
+  "@calculateDriverConfig": {
+    "description": "auto-added from code scan"
+  },
+  "calculationResult": "calculation Result",
+  "@calculationResult": {
+    "description": "auto-added from code scan"
+  },
+  "catalogAccess": "catalog Access",
+  "@catalogAccess": {
+    "description": "auto-added from code scan"
+  },
+  "catalogPage_cancel": "catalog Page cancel",
+  "@catalogPage_cancel": {
+    "description": "auto-added from code scan"
+  },
+  "catalogPage_confirm": "catalog Page confirm",
+  "@catalogPage_confirm": {
+    "description": "auto-added from code scan"
+  },
+  "catalogue_lensesAvailable": "catalogue lenses Available",
+  "@catalogue_lensesAvailable": {
+    "description": "auto-added from code scan"
+  },
+  "catalogue_projectionRatio": "catalogue projection Ratio",
+  "@catalogue_projectionRatio": {
+    "description": "auto-added from code scan"
+  },
+  "channel": "channel",
+  "@channel": {
+    "description": "auto-added from code scan"
+  },
+  "channels": "channels",
+  "@channels": {
+    "description": "auto-added from code scan"
+  },
+  "channelsPlural": "channels Plural",
+  "@channelsPlural": {
+    "description": "auto-added from code scan"
+  },
+  "connectors": "connectors",
+  "@connectors": {
+    "description": "auto-added from code scan"
+  },
+  "consumption": "consumption",
+  "@consumption": {
+    "description": "auto-added from code scan"
+  },
+  "distance_label": "distance label",
+  "@distance_label": {
+    "description": "auto-added from code scan"
+  },
+  "dmxCables": "dmx Cables",
+  "@dmxCables": {
+    "description": "auto-added from code scan"
+  },
+  "driverConfiguration": "driver Configuration",
+  "@driverConfiguration": {
+    "description": "auto-added from code scan"
+  },
+  "driverTab_result": "driver Tab result",
+  "@driverTab_result": {
+    "description": "auto-added from code scan"
+  },
+  "driverType": "driver Type",
+  "@driverType": {
+    "description": "auto-added from code scan"
+  },
+  "electricityMenu": "electricity Menu",
+  "@electricityMenu": {
+    "description": "auto-added from code scan"
+  },
+  "ledWallSchemaPage_calculate": "led Wall Schema Page calculate",
+  "@ledWallSchemaPage_calculate": {
+    "description": "auto-added from code scan"
+  },
+  "ledWallSchemaPage_dimensions": "led Wall Schema Page dimensions",
+  "@ledWallSchemaPage_dimensions": {
+    "description": "auto-added from code scan"
+  },
+  "ledWallSchemaPage_height": "led Wall Schema Page height",
+  "@ledWallSchemaPage_height": {
+    "description": "auto-added from code scan"
+  },
+  "ledWallSchemaPage_panelSelection": "led Wall Schema Page panel Selection",
+  "@ledWallSchemaPage_panelSelection": {
+    "description": "auto-added from code scan"
+  },
+  "ledWallSchemaPage_selectPanel": "led Wall Schema Page select Panel",
+  "@ledWallSchemaPage_selectPanel": {
+    "description": "auto-added from code scan"
+  },
+  "ledWallSchemaPage_title": "led Wall Schema Page title",
+  "@ledWallSchemaPage_title": {
+    "description": "auto-added from code scan"
+  },
+  "ledWallSchemaPage_width": "led Wall Schema Page width",
+  "@ledWallSchemaPage_width": {
+    "description": "auto-added from code scan"
+  },
+  "length": "length",
+  "@length": {
+    "description": "auto-added from code scan"
+  },
+  "lightAccessories": "light Accessories",
+  "@lightAccessories": {
+    "description": "auto-added from code scan"
+  },
+  "lightMenu": "light Menu",
+  "@lightMenu": {
+    "description": "auto-added from code scan"
+  },
+  "lightPage_angleRange": "light Page angle Range",
+  "@lightPage_angleRange": {
+    "description": "auto-added from code scan"
+  },
+  "lightPage_calculate": "light Page calculate",
+  "@lightPage_calculate": {
+    "description": "auto-added from code scan"
+  },
+  "lightPage_channel": "light Page channel",
+  "@lightPage_channel": {
+    "description": "auto-added from code scan"
+  },
+  "lightPage_channels": "light Page channels",
+  "@lightPage_channels": {
+    "description": "auto-added from code scan"
+  },
+  "lightPage_distanceRange": "light Page distance Range",
+  "@lightPage_distanceRange": {
+    "description": "auto-added from code scan"
+  },
+  "lightPage_heightRange": "light Page height Range",
+  "@lightPage_heightRange": {
+    "description": "auto-added from code scan"
+  },
+  "lightPage_ledLength": "light Page led Length",
+  "@lightPage_ledLength": {
+    "description": "auto-added from code scan"
+  },
+  "lightPage_meters": "light Page meters",
+  "@lightPage_meters": {
+    "description": "auto-added from code scan"
+  },
+  "lightPage_title": "light Page title",
+  "@lightPage_title": {
+    "description": "auto-added from code scan"
+  },
+  "lightPage_total": "light Page total",
+  "@lightPage_total": {
+    "description": "auto-added from code scan"
+  },
+  "mountingTools": "mounting Tools",
+  "@mountingTools": {
+    "description": "auto-added from code scan"
+  },
+  "networkMenu": "network Menu",
+  "@networkMenu": {
+    "description": "auto-added from code scan"
+  },
+  "patch_input": "patch input",
+  "@patch_input": {
+    "description": "auto-added from code scan"
+  },
+  "patch_output": "patch output",
+  "@patch_output": {
+    "description": "auto-added from code scan"
+  },
+  "paymentPage_monthlyPlan": "payment Page monthly Plan",
+  "@paymentPage_monthlyPlan": {
+    "description": "auto-added from code scan"
+  },
+  "paymentPage_yearlyPlan": "payment Page yearly Plan",
+  "@paymentPage_yearlyPlan": {
+    "description": "auto-added from code scan"
+  },
+  "projectCalculationPage_globalTotal": "project Calculation Page global Total",
+  "@projectCalculationPage_globalTotal": {
+    "description": "auto-added from code scan"
+  },
+  "projectCalculationPage_noPresetSelected": "project Calculation Page no Preset Selected",
+  "@projectCalculationPage_noPresetSelected": {
+    "description": "auto-added from code scan"
+  },
+  "projectCalculationPage_powerConsumption": "project Calculation Page power Consumption",
+  "@projectCalculationPage_powerConsumption": {
+    "description": "auto-added from code scan"
+  },
+  "projectCalculationPage_powerProject": "project Calculation Page power Project",
+  "@projectCalculationPage_powerProject": {
+    "description": "auto-added from code scan"
+  },
+  "projectCalculationPage_total": "project Calculation Page total",
+  "@projectCalculationPage_total": {
+    "description": "auto-added from code scan"
+  },
+  "projectCalculationPage_weight": "project Calculation Page weight",
+  "@projectCalculationPage_weight": {
+    "description": "auto-added from code scan"
+  },
+  "protections": "protections",
+  "@protections": {
+    "description": "auto-added from code scan"
+  },
+  "recommendedConfiguration": "recommended Configuration",
+  "@recommendedConfiguration": {
+    "description": "auto-added from code scan"
+  },
+  "safetyAccessories": "safety Accessories",
+  "@safetyAccessories": {
+    "description": "auto-added from code scan"
+  },
+  "selectStructure": "select Structure",
+  "@selectStructure": {
+    "description": "auto-added from code scan"
+  },
+  "soundMenu": "sound Menu",
+  "@soundMenu": {
+    "description": "auto-added from code scan"
+  },
+  "soundPage_quantity": "sound Page quantity",
+  "@soundPage_quantity": {
+    "description": "auto-added from code scan"
+  },
+  "soundPage_title": "sound Page title",
+  "@soundPage_title": {
+    "description": "auto-added from code scan"
+  },
+  "speedtest_completed": "speedtest completed",
+  "@speedtest_completed": {
+    "description": "auto-added from code scan"
+  },
+  "speedtest_download": "speedtest download",
+  "@speedtest_download": {
+    "description": "auto-added from code scan"
+  },
+  "speedtest_downloading": "speedtest downloading",
+  "@speedtest_downloading": {
+    "description": "auto-added from code scan"
+  },
+  "speedtest_mbps": "speedtest mbps",
+  "@speedtest_mbps": {
+    "description": "auto-added from code scan"
+  },
+  "speedtest_ready": "speedtest ready",
+  "@speedtest_ready": {
+    "description": "auto-added from code scan"
+  },
+  "speedtest_running": "speedtest running",
+  "@speedtest_running": {
+    "description": "auto-added from code scan"
+  },
+  "speedtest_start": "speedtest start",
+  "@speedtest_start": {
+    "description": "auto-added from code scan"
+  },
+  "speedtest_upload": "speedtest upload",
+  "@speedtest_upload": {
+    "description": "auto-added from code scan"
+  },
+  "speedtest_uploading": "speedtest uploading",
+  "@speedtest_uploading": {
+    "description": "auto-added from code scan"
+  },
+  "stripLedConfiguration": "strip Led Configuration",
+  "@stripLedConfiguration": {
+    "description": "auto-added from code scan"
+  },
+  "stripLedType": "strip Led Type",
+  "@stripLedType": {
+    "description": "auto-added from code scan"
+  },
+  "structureMenu": "structure Menu",
+  "@structureMenu": {
+    "description": "auto-added from code scan"
+  },
+  "structurePage_3pointsAccroche": "structure Page 3 points Accroche",
+  "@structurePage_3pointsAccroche": {
+    "description": "auto-added from code scan"
+  },
+  "structurePage_4pointsAccroche": "structure Page 4 points Accroche",
+  "@structurePage_4pointsAccroche": {
+    "description": "auto-added from code scan"
+  },
+  "structurePage_chargeRepartie": "structure Page charge Repartie",
+  "@structurePage_chargeRepartie": {
+    "description": "auto-added from code scan"
+  },
+  "structurePage_chargeType": "structure Page charge Type",
+  "@structurePage_chargeType": {
+    "description": "auto-added from code scan"
+  },
+  "structurePage_chargesTab": "structure Page charges Tab",
+  "@structurePage_chargesTab": {
+    "description": "auto-added from code scan"
+  },
+  "structurePage_deflectionRatioTitle": "structure Page deflection Ratio Title",
+  "@structurePage_deflectionRatioTitle": {
+    "description": "auto-added from code scan"
+  },
+  "structurePage_distance": "structure Page distance",
+  "@structurePage_distance": {
+    "description": "auto-added from code scan"
+  },
+  "structurePage_length": "structure Page length",
+  "@structurePage_length": {
+    "description": "auto-added from code scan"
+  },
+  "structurePage_maxDeflectionTitle": "structure Page max Deflection Title",
+  "@structurePage_maxDeflectionTitle": {
+    "description": "auto-added from code scan"
+  },
+  "structurePage_maxLoadTitle": "structure Page max Load Title",
+  "@structurePage_maxLoadTitle": {
+    "description": "auto-added from code scan"
+  },
+  "structurePage_modifier": "structure Page modifier",
+  "@structurePage_modifier": {
+    "description": "auto-added from code scan"
+  },
+  "structurePage_pointAccrocheCentre": "structure Page point Accroche Centre",
+  "@structurePage_pointAccrocheCentre": {
+    "description": "auto-added from code scan"
+  },
+  "structurePage_pointsAccrocheExtremites": "structure Page points Accroche Extremites",
+  "@structurePage_pointsAccrocheExtremites": {
+    "description": "auto-added from code scan"
+  },
+  "structurePage_projectWeightTab": "structure Page project Weight Tab",
+  "@structurePage_projectWeightTab": {
+    "description": "auto-added from code scan"
+  },
+  "structurePage_selectCharge": "structure Page select Charge",
+  "@structurePage_selectCharge": {
+    "description": "auto-added from code scan"
+  },
+  "structurePage_structure": "structure Page structure",
+  "@structurePage_structure": {
+    "description": "auto-added from code scan"
+  },
+  "structurePage_structureWeightTitle": "structure Page structure Weight Title",
+  "@structurePage_structureWeightTitle": {
+    "description": "auto-added from code scan"
+  },
+  "structurePage_title": "structure Page title",
+  "@structurePage_title": {
+    "description": "auto-added from code scan"
+  },
+  "subscription_choose_plan": "subscription choose plan",
+  "@subscription_choose_plan": {
+    "description": "auto-added from code scan"
+  },
+  "subscription_description": "subscription description",
+  "@subscription_description": {
+    "description": "auto-added from code scan"
+  },
+  "subscription_free_trial": "subscription free trial",
+  "@subscription_free_trial": {
+    "description": "auto-added from code scan"
+  },
+  "subscription_popular": "subscription popular",
+  "@subscription_popular": {
+    "description": "auto-added from code scan"
+  },
+  "subscription_premium": "subscription premium",
+  "@subscription_premium": {
+    "description": "auto-added from code scan"
+  },
+  "subscription_security": "subscription security",
+  "@subscription_security": {
+    "description": "auto-added from code scan"
+  },
+  "subscription_security_description": "subscription security description",
+  "@subscription_security_description": {
+    "description": "auto-added from code scan"
+  },
+  "subscription_subscribe": "subscription subscribe",
+  "@subscription_subscribe": {
+    "description": "auto-added from code scan"
+  },
+  "thisSectionWillBeDeveloped": "this Section Will Be Developed",
+  "@thisSectionWillBeDeveloped": {
+    "description": "auto-added from code scan"
+  },
+  "trussesAndStructures": "trusses And Structures",
+  "@trussesAndStructures": {
+    "description": "auto-added from code scan"
+  },
+  "videoLedResult_consommationTotale": "video Led Result consommation Totale",
+  "@videoLedResult_consommationTotale": {
+    "description": "auto-added from code scan"
+  },
+  "videoLedResult_dalles": "video Led Result dalles",
+  "@videoLedResult_dalles": {
+    "description": "auto-added from code scan"
+  },
+  "videoLedResult_espacePixellaire": "video Led Result espace Pixellaire",
+  "@videoLedResult_espacePixellaire": {
+    "description": "auto-added from code scan"
+  },
+  "videoLedResult_poidsTotal": "video Led Result poids Total",
+  "@videoLedResult_poidsTotal": {
+    "description": "auto-added from code scan"
+  },
+  "videoMenu": "video Menu",
+  "@videoMenu": {
+    "description": "auto-added from code scan"
+  },
+  "videoPage_brand": "video Page brand",
+  "@videoPage_brand": {
+    "description": "auto-added from code scan"
+  },
+  "videoPage_format": "video Page format",
+  "@videoPage_format": {
+    "description": "auto-added from code scan"
+  },
+  "videoPage_imageWidth": "video Page image Width",
+  "@videoPage_imageWidth": {
+    "description": "auto-added from code scan"
+  },
+  "videoPage_model": "video Page model",
+  "@videoPage_model": {
+    "description": "auto-added from code scan"
+  },
+  "videoPage_overlap": "video Page overlap",
+  "@videoPage_overlap": {
+    "description": "auto-added from code scan"
+  },
+  "videoPage_projectorCount": "video Page projector Count",
+  "@videoPage_projectorCount": {
+    "description": "auto-added from code scan"
+  },
+  "videoPage_projectorDistance": "video Page projector Distance",
+  "@videoPage_projectorDistance": {
+    "description": "auto-added from code scan"
+  },
+  "videoPage_schema": "video Page schema",
+  "@videoPage_schema": {
+    "description": "auto-added from code scan"
+  },
+  "videoPage_selectLedWall": "video Page select Led Wall",
+  "@videoPage_selectLedWall": {
+    "description": "auto-added from code scan"
+  },
+  "videoPage_selectProduct": "video Page select Product",
+  "@videoPage_selectProduct": {
+    "description": "auto-added from code scan"
+  },
+  "videoPage_title": "video Page title",
+  "@videoPage_title": {
+    "description": "auto-added from code scan"
+  },
+  "voltage": "voltage",
+  "@voltage": {
+    "description": "auto-added from code scan"
+  },
+  "volts": "volts",
+  "@volts": {
+    "description": "auto-added from code scan"
+  },
+  "defaultProject1": "Default Project 1",
+  "@defaultProject1": {
+    "description": "auto-added"
+  },
+  "defaultProject2": "Default Project 2",
+  "@defaultProject2": {
+    "description": "auto-added"
+  },
+  "defaultProject3": "Default Project 3",
+  "@defaultProject3": {
+    "description": "auto-added"
+  }
 }

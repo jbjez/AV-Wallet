@@ -554,4 +554,410 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get weight => 'Weight';
+
+  @override
+  String get amperePerChannel => 'ampere Per Channel';
+
+  @override
+  String get amperes => 'amperes';
+
+  @override
+  String get beamCalculation => 'beam Calculation';
+
+  @override
+  String get bottomNav_catalogue => 'bottom Nav catalogue';
+
+  @override
+  String get bottomNav_electricity => 'bottom Nav electricity';
+
+  @override
+  String get bottomNav_light => 'bottom Nav light';
+
+  @override
+  String get bottomNav_misc => 'bottom Nav misc';
+
+  @override
+  String get bottomNav_sound => 'bottom Nav sound';
+
+  @override
+  String get bottomNav_structure => 'bottom Nav structure';
+
+  @override
+  String get bottomNav_video => 'bottom Nav video';
+
+  @override
+  String get button_reset => 'button reset';
+
+  @override
+  String get calculateDriverConfig => 'calculate Driver Config';
+
+  @override
+  String get calculationResult => 'calculation Result';
+
+  @override
+  String get catalogAccess => 'catalog Access';
+
+  @override
+  String get catalogPage_cancel => 'catalog Page cancel';
+
+  @override
+  String get catalogPage_confirm => 'catalog Page confirm';
+
+  @override
+  String get catalogue_lensesAvailable => 'catalogue lenses Available';
+
+  @override
+  String get catalogue_projectionRatio => 'catalogue projection Ratio';
+
+  @override
+  String get channel => 'channel';
+
+  @override
+  String get channels => 'channels';
+
+  @override
+  String get channelsPlural => 'channels Plural';
+
+  @override
+  String get connectors => 'connectors';
+
+  @override
+  String get consumption => 'consumption';
+
+  @override
+  String get distance_label => 'distance label';
+
+  @override
+  String get dmxCables => 'dmx Cables';
+
+  @override
+  String get driverConfiguration => 'driver Configuration';
+
+  @override
+  String get driverTab_result => 'driver Tab result';
+
+  @override
+  String get driverType => 'driver Type';
+
+  @override
+  String get electricityMenu => 'electricity Menu';
+
+  @override
+  String get ledWallSchemaPage_calculate => 'led Wall Schema Page calculate';
+
+  @override
+  String get ledWallSchemaPage_dimensions => 'led Wall Schema Page dimensions';
+
+  @override
+  String get ledWallSchemaPage_height => 'led Wall Schema Page height';
+
+  @override
+  String get ledWallSchemaPage_panelSelection =>
+      'led Wall Schema Page panel Selection';
+
+  @override
+  String get ledWallSchemaPage_selectPanel =>
+      'led Wall Schema Page select Panel';
+
+  @override
+  String get ledWallSchemaPage_title => 'led Wall Schema Page title';
+
+  @override
+  String get ledWallSchemaPage_width => 'led Wall Schema Page width';
+
+  @override
+  String get length => 'length';
+
+  @override
+  String get lightAccessories => 'light Accessories';
+
+  @override
+  String get lightMenu => 'light Menu';
+
+  @override
+  String get lightPage_angleRange => 'light Page angle Range';
+
+  @override
+  String get lightPage_calculate => 'light Page calculate';
+
+  @override
+  String get lightPage_channel => 'light Page channel';
+
+  @override
+  String get lightPage_channels => 'light Page channels';
+
+  @override
+  String get lightPage_distanceRange => 'light Page distance Range';
+
+  @override
+  String get lightPage_heightRange => 'light Page height Range';
+
+  @override
+  String get lightPage_ledLength => 'light Page led Length';
+
+  @override
+  String get lightPage_meters => 'light Page meters';
+
+  @override
+  String get lightPage_title => 'light Page title';
+
+  @override
+  String get lightPage_total => 'light Page total';
+
+  @override
+  String get mountingTools => 'mounting Tools';
+
+  @override
+  String get networkMenu => 'network Menu';
+
+  @override
+  String get patch_input => 'patch input';
+
+  @override
+  String get patch_output => 'patch output';
+
+  @override
+  String get paymentPage_monthlyPlan => 'payment Page monthly Plan';
+
+  @override
+  String get paymentPage_yearlyPlan => 'payment Page yearly Plan';
+
+  @override
+  String get projectCalculationPage_globalTotal =>
+      'project Calculation Page global Total';
+
+  @override
+  String get projectCalculationPage_noPresetSelected =>
+      'project Calculation Page no Preset Selected';
+
+  @override
+  String get projectCalculationPage_powerConsumption =>
+      'project Calculation Page power Consumption';
+
+  @override
+  String get projectCalculationPage_powerProject =>
+      'project Calculation Page power Project';
+
+  @override
+  String get projectCalculationPage_total => 'project Calculation Page total';
+
+  @override
+  String get projectCalculationPage_weight => 'project Calculation Page weight';
+
+  @override
+  String get protections => 'protections';
+
+  @override
+  String get recommendedConfiguration => 'recommended Configuration';
+
+  @override
+  String get safetyAccessories => 'safety Accessories';
+
+  @override
+  String get selectStructure => 'select Structure';
+
+  @override
+  String get soundMenu => 'sound Menu';
+
+  @override
+  String get soundPage_quantity => 'sound Page quantity';
+
+  @override
+  String get soundPage_title => 'sound Page title';
+
+  @override
+  String get speedtest_completed => 'speedtest completed';
+
+  @override
+  String get speedtest_download => 'speedtest download';
+
+  @override
+  String get speedtest_downloading => 'speedtest downloading';
+
+  @override
+  String get speedtest_mbps => 'speedtest mbps';
+
+  @override
+  String get speedtest_ready => 'speedtest ready';
+
+  @override
+  String get speedtest_running => 'speedtest running';
+
+  @override
+  String get speedtest_start => 'speedtest start';
+
+  @override
+  String get speedtest_upload => 'speedtest upload';
+
+  @override
+  String get speedtest_uploading => 'speedtest uploading';
+
+  @override
+  String get stripLedConfiguration => 'strip Led Configuration';
+
+  @override
+  String get stripLedType => 'strip Led Type';
+
+  @override
+  String get structureMenu => 'structure Menu';
+
+  @override
+  String get structurePage_3pointsAccroche =>
+      'structure Page 3 points Accroche';
+
+  @override
+  String get structurePage_4pointsAccroche =>
+      'structure Page 4 points Accroche';
+
+  @override
+  String get structurePage_chargeRepartie => 'structure Page charge Repartie';
+
+  @override
+  String get structurePage_chargeType => 'structure Page charge Type';
+
+  @override
+  String get structurePage_chargesTab => 'structure Page charges Tab';
+
+  @override
+  String get structurePage_deflectionRatioTitle =>
+      'structure Page deflection Ratio Title';
+
+  @override
+  String structurePage_distance(Object distance) {
+    return 'structure Page distance';
+  }
+
+  @override
+  String get structurePage_length => 'structure Page length';
+
+  @override
+  String get structurePage_maxDeflectionTitle =>
+      'structure Page max Deflection Title';
+
+  @override
+  String get structurePage_maxLoadTitle => 'structure Page max Load Title';
+
+  @override
+  String get structurePage_modifier => 'structure Page modifier';
+
+  @override
+  String get structurePage_pointAccrocheCentre =>
+      'structure Page point Accroche Centre';
+
+  @override
+  String get structurePage_pointsAccrocheExtremites =>
+      'structure Page points Accroche Extremites';
+
+  @override
+  String get structurePage_projectWeightTab =>
+      'structure Page project Weight Tab';
+
+  @override
+  String get structurePage_selectCharge => 'structure Page select Charge';
+
+  @override
+  String get structurePage_structure => 'structure Page structure';
+
+  @override
+  String get structurePage_structureWeightTitle =>
+      'structure Page structure Weight Title';
+
+  @override
+  String get structurePage_title => 'structure Page title';
+
+  @override
+  String get subscription_choose_plan => 'subscription choose plan';
+
+  @override
+  String get subscription_description => 'subscription description';
+
+  @override
+  String get subscription_free_trial => 'subscription free trial';
+
+  @override
+  String get subscription_popular => 'subscription popular';
+
+  @override
+  String get subscription_premium => 'subscription premium';
+
+  @override
+  String get subscription_security => 'subscription security';
+
+  @override
+  String get subscription_security_description =>
+      'subscription security description';
+
+  @override
+  String get subscription_subscribe => 'subscription subscribe';
+
+  @override
+  String get thisSectionWillBeDeveloped => 'this Section Will Be Developed';
+
+  @override
+  String get trussesAndStructures => 'trusses And Structures';
+
+  @override
+  String get videoLedResult_consommationTotale =>
+      'video Led Result consommation Totale';
+
+  @override
+  String get videoLedResult_dalles => 'video Led Result dalles';
+
+  @override
+  String get videoLedResult_espacePixellaire =>
+      'video Led Result espace Pixellaire';
+
+  @override
+  String get videoLedResult_poidsTotal => 'video Led Result poids Total';
+
+  @override
+  String get videoMenu => 'video Menu';
+
+  @override
+  String get videoPage_brand => 'video Page brand';
+
+  @override
+  String get videoPage_format => 'video Page format';
+
+  @override
+  String get videoPage_imageWidth => 'video Page image Width';
+
+  @override
+  String get videoPage_model => 'video Page model';
+
+  @override
+  String get videoPage_overlap => 'video Page overlap';
+
+  @override
+  String get videoPage_projectorCount => 'video Page projector Count';
+
+  @override
+  String get videoPage_projectorDistance => 'video Page projector Distance';
+
+  @override
+  String get videoPage_schema => 'video Page schema';
+
+  @override
+  String get videoPage_selectLedWall => 'video Page select Led Wall';
+
+  @override
+  String get videoPage_selectProduct => 'video Page select Product';
+
+  @override
+  String get videoPage_title => 'video Page title';
+
+  @override
+  String get voltage => 'voltage';
+
+  @override
+  String get volts => 'volts';
+
+  @override
+  String get defaultProject1 => 'Default Project 1';
+
+  @override
+  String get defaultProject2 => 'Default Project 2';
+
+  @override
+  String get defaultProject3 => 'Default Project 3';
 }

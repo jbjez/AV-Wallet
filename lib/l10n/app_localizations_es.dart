@@ -552,4 +552,403 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get weight => 'Peso';
+
+  @override
+  String get amperePerChannel => 'Amperios/Canal';
+
+  @override
+  String get amperes => 'A';
+
+  @override
+  String get beamCalculation => 'Cálculo de Haz:';
+
+  @override
+  String get bottomNav_catalogue => 'Catálogo';
+
+  @override
+  String get bottomNav_electricity => 'Electricidad';
+
+  @override
+  String get bottomNav_light => 'Luz';
+
+  @override
+  String get bottomNav_misc => 'Varios';
+
+  @override
+  String get bottomNav_sound => 'Sonido';
+
+  @override
+  String get bottomNav_structure => 'Estructura';
+
+  @override
+  String get bottomNav_video => 'Video';
+
+  @override
+  String get button_reset => 'button reset';
+
+  @override
+  String get calculateDriverConfig => 'Calcular Configuración Driver';
+
+  @override
+  String get calculationResult => 'Resultado del Cálculo:';
+
+  @override
+  String get catalogAccess => 'Catálogo';
+
+  @override
+  String get catalogPage_cancel => 'Cancelar';
+
+  @override
+  String get catalogPage_confirm => 'Confirmar';
+
+  @override
+  String get catalogue_lensesAvailable => 'catalogue lenses Available';
+
+  @override
+  String get catalogue_projectionRatio => 'catalogue projection Ratio';
+
+  @override
+  String get channel => 'canal';
+
+  @override
+  String get channels => 'Canales';
+
+  @override
+  String get channelsPlural => 'canales';
+
+  @override
+  String get connectors => 'Conectores';
+
+  @override
+  String get consumption => 'Consumo';
+
+  @override
+  String get distance_label => 'null m';
+
+  @override
+  String get dmxCables => 'Cables DMX';
+
+  @override
+  String get driverConfiguration => 'Configuración Driver:';
+
+  @override
+  String get driverTab_result => 'driver Tab result';
+
+  @override
+  String get driverType => 'Tipo Driver';
+
+  @override
+  String get electricityMenu => 'Elec.';
+
+  @override
+  String get ledWallSchemaPage_calculate => 'Calcular';
+
+  @override
+  String get ledWallSchemaPage_dimensions => 'Dimensiones';
+
+  @override
+  String get ledWallSchemaPage_height => 'Alto';
+
+  @override
+  String get ledWallSchemaPage_panelSelection => 'Selección de paneles';
+
+  @override
+  String get ledWallSchemaPage_selectPanel => 'Seleccionar panel';
+
+  @override
+  String get ledWallSchemaPage_title => 'Esquema de Pared LED';
+
+  @override
+  String get ledWallSchemaPage_width => 'Ancho';
+
+  @override
+  String get length => 'Longitud';
+
+  @override
+  String get lightAccessories => 'Accesorios de Luz:';
+
+  @override
+  String get lightMenu => 'Luz';
+
+  @override
+  String get lightPage_angleRange => 'Ángulo (1° a 70°)';
+
+  @override
+  String get lightPage_calculate => 'Calcular';
+
+  @override
+  String get lightPage_channel => 'canal';
+
+  @override
+  String get lightPage_channels => 'canales';
+
+  @override
+  String get lightPage_distanceRange => 'Distancia (1m a 40m)';
+
+  @override
+  String get lightPage_heightRange => 'Altura (1m a 20m)';
+
+  @override
+  String get lightPage_ledLength => 'Longitud LED (en metros)';
+
+  @override
+  String get lightPage_meters => 'metros';
+
+  @override
+  String get lightPage_title => 'Equipo de Iluminación';
+
+  @override
+  String get lightPage_total => 'Total';
+
+  @override
+  String get mountingTools => 'Herramientas de Montaje';
+
+  @override
+  String get networkMenu => 'Red';
+
+  @override
+  String get patch_input => 'ENTRADA';
+
+  @override
+  String get patch_output => 'SALIDA';
+
+  @override
+  String get paymentPage_monthlyPlan => 'Mensual';
+
+  @override
+  String get paymentPage_yearlyPlan => 'Anual';
+
+  @override
+  String get projectCalculationPage_globalTotal => 'Total global';
+
+  @override
+  String get projectCalculationPage_noPresetSelected =>
+      'Ningún preajuste seleccionado';
+
+  @override
+  String get projectCalculationPage_powerConsumption => 'Consumo de energía';
+
+  @override
+  String get projectCalculationPage_powerProject => 'Proyecto de Potencia';
+
+  @override
+  String get projectCalculationPage_total => 'Total';
+
+  @override
+  String get projectCalculationPage_weight => 'Peso';
+
+  @override
+  String get protections => 'Protecciones';
+
+  @override
+  String get recommendedConfiguration => 'Configuración Recomendada:';
+
+  @override
+  String get safetyAccessories => 'Accesorios de Seguridad';
+
+  @override
+  String get selectStructure => 'Seleccionar estructura';
+
+  @override
+  String get soundMenu => 'Sonido';
+
+  @override
+  String get soundPage_quantity => 'Cantidad';
+
+  @override
+  String get soundPage_title => 'Equipo de Sonido';
+
+  @override
+  String get speedtest_completed => 'Completado';
+
+  @override
+  String get speedtest_download => 'Descarga';
+
+  @override
+  String get speedtest_downloading => 'Descargando...';
+
+  @override
+  String get speedtest_mbps => 'Mbps';
+
+  @override
+  String get speedtest_ready => 'Listo';
+
+  @override
+  String get speedtest_running => 'En curso...';
+
+  @override
+  String get speedtest_start => 'Iniciar (8s)';
+
+  @override
+  String get speedtest_upload => 'Subida';
+
+  @override
+  String get speedtest_uploading => 'Subiendo...';
+
+  @override
+  String get stripLedConfiguration => 'Configuración Tira LED:';
+
+  @override
+  String get stripLedType => 'Tipo Tira LED';
+
+  @override
+  String get structureMenu => 'Estructura';
+
+  @override
+  String get structurePage_3pointsAccroche => '3 puntos de anclaje';
+
+  @override
+  String get structurePage_4pointsAccroche => '4 puntos de anclaje';
+
+  @override
+  String get structurePage_chargeRepartie => 'Carga distribuida uniformemente';
+
+  @override
+  String get structurePage_chargeType => 'structure Page charge Type';
+
+  @override
+  String get structurePage_chargesTab => 'Cargas';
+
+  @override
+  String get structurePage_deflectionRatioTitle =>
+      'structure Page deflection Ratio Title';
+
+  @override
+  String structurePage_distance(Object distance) {
+    return 'Distancia: $distance m';
+  }
+
+  @override
+  String get structurePage_length => 'structure Page length';
+
+  @override
+  String get structurePage_maxDeflectionTitle =>
+      'structure Page max Deflection Title';
+
+  @override
+  String get structurePage_maxLoadTitle => 'structure Page max Load Title';
+
+  @override
+  String get structurePage_modifier => 'Modificar';
+
+  @override
+  String get structurePage_pointAccrocheCentre =>
+      '1 punto de anclaje en el centro';
+
+  @override
+  String get structurePage_pointsAccrocheExtremites =>
+      '2 puntos de anclaje en los extremos';
+
+  @override
+  String get structurePage_projectWeightTab => 'Peso Proyecto';
+
+  @override
+  String get structurePage_selectCharge => 'Tipo de carga';
+
+  @override
+  String get structurePage_structure => 'structure Page structure';
+
+  @override
+  String get structurePage_structureWeightTitle =>
+      'structure Page structure Weight Title';
+
+  @override
+  String get structurePage_title => 'Estructura';
+
+  @override
+  String get subscription_choose_plan => 'Elige tu plan';
+
+  @override
+  String get subscription_description => 'Desbloquea todas las funciones';
+
+  @override
+  String get subscription_free_trial => 'Disfruta de 30 días gratis';
+
+  @override
+  String get subscription_popular => 'Popular';
+
+  @override
+  String get subscription_premium => 'Premium';
+
+  @override
+  String get subscription_security => 'Pago seguro';
+
+  @override
+  String get subscription_security_description =>
+      'Tus datos están protegidos con cifrado de nivel bancario';
+
+  @override
+  String get subscription_subscribe => 'Suscribirse';
+
+  @override
+  String get thisSectionWillBeDeveloped =>
+      'Esta sección será desarrollada para incluir:';
+
+  @override
+  String get trussesAndStructures => 'Trusses y Estructuras';
+
+  @override
+  String get videoLedResult_consommationTotale =>
+      'video Led Result consommation Totale';
+
+  @override
+  String get videoLedResult_dalles => 'video Led Result dalles';
+
+  @override
+  String get videoLedResult_espacePixellaire =>
+      'video Led Result espace Pixellaire';
+
+  @override
+  String get videoLedResult_poidsTotal => 'video Led Result poids Total';
+
+  @override
+  String get videoMenu => 'Vídeo';
+
+  @override
+  String get videoPage_brand => 'Marca';
+
+  @override
+  String get videoPage_format => 'Formato';
+
+  @override
+  String get videoPage_imageWidth => 'Ancho imagen';
+
+  @override
+  String get videoPage_model => 'Modelo';
+
+  @override
+  String get videoPage_overlap => 'Solapamiento';
+
+  @override
+  String get videoPage_projectorCount => 'Nº Proyector';
+
+  @override
+  String get videoPage_projectorDistance => 'Distancia proyector';
+
+  @override
+  String get videoPage_schema => 'Esquema';
+
+  @override
+  String get videoPage_selectLedWall => 'Seleccionar Panel LED';
+
+  @override
+  String get videoPage_selectProduct => 'Seleccionar producto';
+
+  @override
+  String get videoPage_title => 'Equipo de Vídeo';
+
+  @override
+  String get voltage => 'Voltaje';
+
+  @override
+  String get volts => 'V';
+
+  @override
+  String get defaultProject1 => 'Proyecto 1';
+
+  @override
+  String get defaultProject2 => 'Proyecto 2';
+
+  @override
+  String get defaultProject3 => 'Proyecto 3';
 }
