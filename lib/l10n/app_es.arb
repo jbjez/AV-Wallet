@@ -6,7 +6,6 @@
   "appTitle": "AV Wallet",
   "welcomeMessage": "Bienvenido a AV Wallet",
   "catalogAccess": "Catálogo",
-  
   "lightMenu": "Luz",
   "structureMenu": "Estructura",
   "soundMenu": "Sonido",
@@ -14,7 +13,6 @@
   "electricityMenu": "Elec.",
   "networkMenu": "Red",
   "advancedMenu": "Avanzado",
-
   "@_lightPage": {
     "description": "Sección de la página de Luz"
   },
@@ -48,7 +46,6 @@
   "lightPage_recommendedConfig": "Configuración recomendada",
   "lightPage_total": "Total",
   "lightPage_dmxUniverses": "UNIVERSOS DMX",
-
   "@_arMeasurePage": {
     "description": "Sección de la página de Medida AR"
   },
@@ -66,7 +63,6 @@
   "lightPage_dmxChannelsUsed": "canales DMX utilizados",
   "lightPage_channel": "canal",
   "lightPage_channels": "canales",
-
   "@_soundPage": {
     "description": "Sección de la página de Sonido"
   },
@@ -106,7 +102,6 @@
   "soundPage_with": "con",
   "soundPage_noPresetSelected": "Ningún preajuste seleccionado",
   "rider_technical_title": "Rider técnico",
-
   "@_videoPage": {
     "description": "Sección de la página de Vídeo"
   },
@@ -135,9 +130,8 @@
   "videoPage_recommendedRatio": "Relación recomendada",
   "videoPage_noOpticsAvailable": "No hay óptica disponible para esta relación",
   "videoPage_schema": "Esquema",
-
   "@_structurePage": {
-    "description": "Sección de la página de Estructura"
+    "description": "Traducciones de la página estructura"
   },
   "structurePage_title": "Estructura",
   "selectStructure": "Seleccionar estructura",
@@ -178,7 +172,7 @@
   },
   "deflection_rate": "Tasa de deflexión considerada: 1/200",
   "structurePage_selectCharge": "Tipo de carga",
-  "structurePage_distance": "Distancia",
+  "structurePage_distance": "Distancia: {distance} m",
   "structurePage_chargeRepartie": "Carga distribuida uniformemente",
   "structurePage_pointAccrocheCentre": "1 punto de anclaje en el centro",
   "structurePage_pointsAccrocheExtremites": "2 puntos de anclaje en los extremos",
@@ -265,7 +259,7 @@
   "weight": "Peso",
   "totalPreset": "Total Preset",
   "totalProject": "Total Proyecto",
-  "totalPower": "Potencia Total",
+  "totalPower": "Potencia total",
   "totalWeight": "Peso Total",
   "unitWatt": "W",
   "unitKilowatt": "kW",
@@ -292,7 +286,6 @@
   "success": "Éxito",
   "warning": "Advertencia",
   "info": "Información",
-
   "@_catalogPage": {
     "description": "Sección de la página de Catálogo"
   },
@@ -317,7 +310,6 @@
   "catalogPage_selectCategory": "Seleccionar categoría",
   "catalogPage_selectSubCategory": "Seleccionar subcategoría",
   "catalogPage_noItems": "No se encontraron artículos",
-
   "@_presetWidget": {
     "description": "Sección del widget de Preajustes"
   },
@@ -338,7 +330,6 @@
   "presetWidget_confirm": "Confirmar",
   "presetWidget_addToCart": "Añadir al carrito",
   "presetWidget_preferredAmplifier": "Amplificador preferido",
-
   "@_projectCalculationPage": {
     "description": "Sección de la página de Cálculo de Proyecto"
   },
@@ -353,7 +344,6 @@
   "projectCalculationPage_total": "Total",
   "projectCalculationPage_presetTotal": "Total del preajuste",
   "projectCalculationPage_globalTotal": "Total global",
-
   "@_ledWallSchemaPage": {
     "description": "Sección de la página de Esquema de Pared LED"
   },
@@ -364,7 +354,6 @@
   "ledWallSchemaPage_panelSelection": "Selección de paneles",
   "ledWallSchemaPage_selectPanel": "Seleccionar panel",
   "ledWallSchemaPage_calculate": "Calcular",
-
   "@_electricityPage": {
     "description": "Sección de la página de Electricidad"
   },
@@ -388,7 +377,6 @@
   "electricityPage_kw": "Potencia activa (kW)",
   "electricityPage_kva": "Potencia aparente (kVA)",
   "electricityPage_powerFactor": "Factor de potencia",
-
   "@_networkPage": {
     "description": "Sección de la página de Red"
   },
@@ -407,7 +395,6 @@
   "networkPage_noNetworksFound": "No se encontraron redes",
   "networkPage_signalStrength": "Intensidad de señal",
   "networkPage_frequency": "Frecuencia",
-
   "@_speedtest": {
     "description": "Sección de prueba de velocidad"
   },
@@ -421,7 +408,6 @@
   "speedtest_start": "Iniciar (8s)",
   "speedtest_mbps": "Mbps",
   "speedtest_speed": "Velocidad",
-
   "@_arMeasure": {
     "description": "Sección de medición AR"
   },
@@ -436,7 +422,6 @@
   "arMeasure_saveError": "Error durante el guardado",
   "arMeasure_defaultProject": "Proyecto",
   "arMeasure_photoFileName": "Foto_AR_{projectName}_{timestamp}.jpg",
-
   "@_bottomNavigation": {
     "description": "Barra de navegación inferior"
   },
@@ -448,7 +433,6 @@
   "bottomNav_electricity": "Electricidad",
   "bottomNav_misc": "Varios",
   "bottomNav_arMeasure": "AR Medida",
-
   "@_subscription": {
     "description": "Sección de suscripciones y pagos"
   },
@@ -462,7 +446,6 @@
   "subscription_free_trial_error": "Error al iniciar la prueba gratuita",
   "subscription_security": "Pago seguro",
   "subscription_security_description": "Tus datos están protegidos con cifrado de nivel bancario",
-
   "@_settings": {
     "description": "Sección de Ajustes"
   },
@@ -470,7 +453,6 @@
   "language": "Idioma",
   "theme": "Tema",
   "signOut": "Cerrar sesión",
-
   "@_patchScenePage": {
     "description": "Sección de la página Patch Escena"
   },
@@ -494,7 +476,6 @@
   "patchScenePage_newName": "Nuevo nombre",
   "patchScenePage_confirm": "Confirmar",
   "patchScenePage_cancel": "Cancelar",
-
   "@_patch": {
     "description": "Sección de la página Patch Escena"
   },
@@ -522,14 +503,12 @@
   "patch_microphone": "Micrófono",
   "patch_output_dest": "Destino",
   "patch_output_kind": "Tipo",
-  
   "@_loginMenu": {
     "description": "Sección del menú desplegable de inicio de sesión"
   },
   "loginMenu_accountSettings": "Configuración de la cuenta",
   "loginMenu_myProjects": "Mis proyectos",
   "loginMenu_logout": "Cerrar sesión",
-
   "@_dropdownLabels": {
     "description": "Etiquetas para menús desplegables"
   },
@@ -539,7 +518,6 @@
   "subcategory": "Subcategoría",
   "model": "Modelo",
   "type": "Tipo",
-  "quantity": "Cantidad",
   "amplifier": "Amplificador",
   "speaker": "Altavoz",
   "microphone": "Micrófono",
@@ -551,19 +529,16 @@
   "screen": "Pantalla",
   "cable": "Cable",
   "connector": "Conector",
-  "power": "Potencia",
   "voltage": "Voltaje",
   "current": "Corriente",
   "frequency": "Frecuencia",
   "impedance": "Impedancia",
   "sensitivity": "Sensibilidad",
-  "weight": "Peso",
   "dimensions": "Dimensiones",
   "color": "Color",
   "material": "Material",
   "manufacturer": "Fabricante",
   "country": "País",
-
   "@_dmxTab": {
     "description": "Traducciones para la pestaña DMX"
   },
@@ -579,8 +554,6 @@
   "dmxConfiguration": "Configuración DMX:",
   "universe": "Universo",
   "exportConfiguration": "Exportar Configuración",
-  "enterQuantity": "Introducir cantidad",
-
   "@_driverTab": {
     "description": "Traducciones para la pestaña Driver"
   },
@@ -597,11 +570,9 @@
   "consumption": "Consumo",
   "calculateDriverConfig": "Calcular Configuración Driver",
   "recommendedConfiguration": "Configuración Recomendada:",
-  "totalPower": "Potencia total",
   "totalCurrent": "Corriente total",
   "availableCurrent": "Corriente disponible",
   "safetyMargin": "Margen de seguridad",
-
   "@_beamTab": {
     "description": "Traducciones para la pestaña Haz"
   },
@@ -614,7 +585,6 @@
   "meters": "metros",
   "calculate": "Calcular",
   "calculationResult": "Resultado del Cálculo:",
-
   "@_accessoriesTab": {
     "description": "Traducciones para la pestaña Accesorios"
   },
@@ -627,7 +597,6 @@
   "protections": "Protecciones",
   "mountingTools": "Herramientas de Montaje",
   "safetyAccessories": "Accesorios de Seguridad",
-
   "@_dropdownValues": {
     "description": "Valores para menús desplegables"
   },
@@ -642,7 +611,6 @@
   "amperes": "A",
   "price": "Precio",
   "availability": "Disponibilidad",
-
   "@_dmxPage": {
     "description": "Traducciones para la página DMX"
   },
@@ -679,19 +647,13 @@
   "dmxPage_scanner": "Escáner",
   "dmxPage_wash": "Wash",
   "dmxPage_wired": "Cableado",
-
-  "@_structurePage": {
-    "description": "Traducciones de la página estructura"
-  },
   "structurePage_chargesTab": "Cargas",
   "structurePage_projectWeightTab": "Peso Proyecto",
-  "structurePage_distance": "Distancia: {distance} m",
   "structurePage_maxLoad": "Carga máxima: {value} kg{unit}",
   "structurePage_structureWeight": "Peso de la estructura: {value} kg/m",
   "structurePage_maxDeflection": "Deflexión máxima: {value} mm",
   "structurePage_deflectionRatio": "Ratio de deflexión: 1/{ratio}",
   "structurePage_noPresetSelected": "Ningún preset seleccionado",
-
   "@_settingsPage": {
     "description": "Página de configuración"
   },
@@ -730,7 +692,6 @@
   "settingsPage_signOutDialogContent": "¿Realmente quieres cerrar sesión?",
   "settingsPage_confirmSignOut": "Cerrar sesión",
   "settingsPage_featureNotImplemented": "Función no implementada",
-
   "@_premiumExpiredDialog": {
     "description": "Diálogo de expiración premium"
   },
@@ -738,7 +699,6 @@
   "premiumExpiredDialog_message": "Has usado todos tus usos gratuitos. Actualiza a Premium para continuar usando todas las funciones de AV Wallet.",
   "premiumExpiredDialog_ok": "OK",
   "premiumExpiredDialog_premium": "Premium",
-
   "@_paymentPage": {
     "description": "Página de pago"
   },
@@ -767,7 +727,6 @@
   "paymentPage_fillAllFields": "Por favor completa todos los campos de la tarjeta",
   "paymentPage_paymentFailed": "El pago falló. Por favor intenta de nuevo.",
   "paymentPage_legalText": "Al proceder con el pago, aceptas nuestros términos de uso y política de privacidad. El pago será procesado de forma segura por Stripe.",
-
   "@_freemiumTestPage": {
     "description": "Página de prueba freemium"
   },
@@ -778,7 +737,6 @@
   "freemiumTestPage_resetConfirm": "¿Realmente quieres restablecer los usos?",
   "freemiumTestPage_resetSuccess": "¡Usos restablecidos con éxito!",
   "freemiumTestPage_resetError": "Error al restablecer usos",
-
   "@_biometricSettingsPage": {
     "description": "Página de configuración biométrica"
   },
@@ -789,5 +747,175 @@
   "biometricSettingsPage_biometricNotEnrolled": "No hay huellas dactilares o datos faciales registrados",
   "biometricSettingsPage_biometricNotSupported": "La autenticación biométrica no es compatible",
   "biometricSettingsPage_biometricSuccess": "¡Autenticación biométrica activada con éxito!",
-  "biometricSettingsPage_biometricError": "Error al activar la autenticación biométrica"
+  "biometricSettingsPage_biometricError": "Error al activar la autenticación biométrica",
+  "button_reset": "button reset",
+  "@button_reset": {
+    "description": "auto-added from code scan"
+  },
+  "catalogue_angle": "catalogue angle",
+  "@catalogue_angle": {
+    "description": "auto-added from code scan"
+  },
+  "catalogue_brand": "catalogue brand",
+  "@catalogue_brand": {
+    "description": "auto-added from code scan"
+  },
+  "catalogue_consumption": "catalogue consumption",
+  "@catalogue_consumption": {
+    "description": "auto-added from code scan"
+  },
+  "catalogue_definition": "catalogue definition",
+  "@catalogue_definition": {
+    "description": "auto-added from code scan"
+  },
+  "catalogue_description": "catalogue description",
+  "@catalogue_description": {
+    "description": "auto-added from code scan"
+  },
+  "catalogue_dimensions": "catalogue dimensions",
+  "@catalogue_dimensions": {
+    "description": "auto-added from code scan"
+  },
+  "catalogue_dmxMax": "catalogue dmx Max",
+  "@catalogue_dmxMax": {
+    "description": "auto-added from code scan"
+  },
+  "catalogue_dmxMini": "catalogue dmx Mini",
+  "@catalogue_dmxMini": {
+    "description": "auto-added from code scan"
+  },
+  "catalogue_impedance": "catalogue impedance",
+  "@catalogue_impedance": {
+    "description": "auto-added from code scan"
+  },
+  "catalogue_impedanceNominal": "catalogue impedance Nominal",
+  "@catalogue_impedanceNominal": {
+    "description": "auto-added from code scan"
+  },
+  "catalogue_lensesAvailable": "catalogue lenses Available",
+  "@catalogue_lensesAvailable": {
+    "description": "auto-added from code scan"
+  },
+  "catalogue_lumens": "catalogue lumens",
+  "@catalogue_lumens": {
+    "description": "auto-added from code scan"
+  },
+  "catalogue_lux": "catalogue lux",
+  "@catalogue_lux": {
+    "description": "auto-added from code scan"
+  },
+  "catalogue_maxVoltage": "catalogue max Voltage",
+  "@catalogue_maxVoltage": {
+    "description": "auto-added from code scan"
+  },
+  "catalogue_pitch": "catalogue pitch",
+  "@catalogue_pitch": {
+    "description": "auto-added from code scan"
+  },
+  "catalogue_powerAdmissible": "catalogue power Admissible",
+  "@catalogue_powerAdmissible": {
+    "description": "auto-added from code scan"
+  },
+  "catalogue_powerPeak": "catalogue power Peak",
+  "@catalogue_powerPeak": {
+    "description": "auto-added from code scan"
+  },
+  "catalogue_powerProgram": "catalogue power Program",
+  "@catalogue_powerProgram": {
+    "description": "auto-added from code scan"
+  },
+  "catalogue_powerRms": "catalogue power Rms",
+  "@catalogue_powerRms": {
+    "description": "auto-added from code scan"
+  },
+  "catalogue_projectionRatio": "catalogue projection Ratio",
+  "@catalogue_projectionRatio": {
+    "description": "auto-added from code scan"
+  },
+  "catalogue_resolution": "catalogue resolution",
+  "@catalogue_resolution": {
+    "description": "auto-added from code scan"
+  },
+  "catalogue_weight": "catalogue weight",
+  "@catalogue_weight": {
+    "description": "auto-added from code scan"
+  },
+  "driverTab_customDriverChannels": "driver Tab custom Driver Channels",
+  "@driverTab_customDriverChannels": {
+    "description": "auto-added from code scan"
+  },
+  "driverTab_customDriverIntensity": "driver Tab custom Driver Intensity",
+  "@driverTab_customDriverIntensity": {
+    "description": "auto-added from code scan"
+  },
+  "driverTab_customDriverTitle": "driver Tab custom Driver Title",
+  "@driverTab_customDriverTitle": {
+    "description": "auto-added from code scan"
+  },
+  "driverTab_driverChoice": "driver Tab driver Choice",
+  "@driverTab_driverChoice": {
+    "description": "auto-added from code scan"
+  },
+  "driverTab_ledLength": "driver Tab led Length",
+  "@driverTab_ledLength": {
+    "description": "auto-added from code scan"
+  },
+  "driverTab_ledPower": "driver Tab led Power",
+  "@driverTab_ledPower": {
+    "description": "auto-added from code scan"
+  },
+  "driverTab_result": "driver Tab result",
+  "@driverTab_result": {
+    "description": "auto-added from code scan"
+  },
+  "structurePage_chargeType": "structure Page charge Type",
+  "@structurePage_chargeType": {
+    "description": "auto-added from code scan"
+  },
+  "structurePage_deflectionRatioTitle": "structure Page deflection Ratio Title",
+  "@structurePage_deflectionRatioTitle": {
+    "description": "auto-added from code scan"
+  },
+  "@structurePage_distance": {
+    "description": "auto-added placeholders",
+    "placeholders": {
+      "arg1": {}
+    }
+  },
+  "structurePage_length": "structure Page length",
+  "@structurePage_length": {
+    "description": "auto-added from code scan"
+  },
+  "structurePage_maxDeflectionTitle": "structure Page max Deflection Title",
+  "@structurePage_maxDeflectionTitle": {
+    "description": "auto-added from code scan"
+  },
+  "structurePage_maxLoadTitle": "structure Page max Load Title",
+  "@structurePage_maxLoadTitle": {
+    "description": "auto-added from code scan"
+  },
+  "structurePage_structure": "structure Page structure",
+  "@structurePage_structure": {
+    "description": "auto-added from code scan"
+  },
+  "structurePage_structureWeightTitle": "structure Page structure Weight Title",
+  "@structurePage_structureWeightTitle": {
+    "description": "auto-added from code scan"
+  },
+  "videoLedResult_consommationTotale": "video Led Result consommation Totale",
+  "@videoLedResult_consommationTotale": {
+    "description": "auto-added from code scan"
+  },
+  "videoLedResult_dalles": "video Led Result dalles",
+  "@videoLedResult_dalles": {
+    "description": "auto-added from code scan"
+  },
+  "videoLedResult_espacePixellaire": "video Led Result espace Pixellaire",
+  "@videoLedResult_espacePixellaire": {
+    "description": "auto-added from code scan"
+  },
+  "videoLedResult_poidsTotal": "video Led Result poids Total",
+  "@videoLedResult_poidsTotal": {
+    "description": "auto-added from code scan"
+  }
 }

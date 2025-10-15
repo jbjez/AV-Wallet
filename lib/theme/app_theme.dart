@@ -303,9 +303,15 @@ class AppTheme {
     return ThemeData(
       useMaterial3: true,
       brightness: Brightness.dark,
-      primaryColor: AppColors.mainBlue,
-      scaffoldBackgroundColor: AppColors.darkBackground,
-      canvasColor: AppColors.darkBackground,
+      colorScheme: ColorScheme.dark(
+        primary: const Color(0xFF1E3A8A),      // bleu nuit
+        secondary: const Color(0xFF0EA5E9),    // accent cyan doux
+        surface: const Color(0xFF0B152B),
+        background: const Color(0xFF0B152B),
+      ),
+      primaryColor: const Color(0xFF1E3A8A),
+      scaffoldBackgroundColor: const Color(0xFF0B152B),
+      canvasColor: const Color(0xFF0B152B),
       cardColor: AppColors.cardBlue,
 
       textTheme: const TextTheme(

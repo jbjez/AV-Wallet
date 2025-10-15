@@ -14,6 +14,27 @@ class AVWalletApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'AV Wallet (recovery)',
+      themeMode: ThemeMode.dark,
+      theme: ThemeData(
+        colorScheme: ColorScheme.fromSeed(seedColor: const Color(0xFF1E3A8A)), // bleu
+        useMaterial3: true,
+        brightness: Brightness.light,
+      ),
+      darkTheme: ThemeData(
+        colorScheme: ColorScheme.dark(
+          primary: const Color(0xFF1E3A8A),      // bleu nuit
+          secondary: const Color(0xFF0EA5E9),    // accent cyan doux
+          surface: const Color(0xFF0B152B),
+          background: const Color(0xFF0B152B),
+        ),
+        scaffoldBackgroundColor: const Color(0xFF0B152B),
+        appBarTheme: const AppBarTheme(
+          backgroundColor: Color(0xFF0B152B),
+          foregroundColor: Color(0xFFE2E8F0),
+        ),
+        useMaterial3: true,
+        brightness: Brightness.dark,
+      ),
       localizationsDelegates: AppLocalizations.localizationsDelegates,
       supportedLocales: AppLocalizations.supportedLocales,
       // 👉 Si tu as importé HomePage ci-dessus, remplace _RecoveryHome() par HomePage()

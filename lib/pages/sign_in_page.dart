@@ -556,7 +556,7 @@ class _SignInPageState extends ConsumerState<SignInPage> {
         elevation: 0,
         centerTitle: true,
         title: Image.asset(
-          'assets/Logo2.png',
+          'assets/images/logo2.png',
           height: 40,
         ),
         actions: [

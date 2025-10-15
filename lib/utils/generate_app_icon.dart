@@ -8,7 +8,7 @@ Future<void> generateAppIcon() async {
   print('Génération de l\'icône de l\'application...');
   
   // Charger l'image du logo
-  final ByteData logoData = await rootBundle.load('assets/Logo2.png');
+  final ByteData logoData = await rootBundle.load('assets/images/logo2.png');
   final Uint8List logoBytes = logoData.buffer.asUint8List();
   final ui.Codec logoCodec = await ui.instantiateImageCodec(logoBytes);
   final ui.FrameInfo logoFrame = await logoCodec.getNextFrame();

@@ -53,64 +53,64 @@ class AppLocalizationsEs extends AppLocalizations {
   String get catalogPage_subCategory => 'Subcategoría';
 
   @override
-  String get catalogue_angle => 'Catalogue Angle';
+  String get catalogue_angle => 'catalogue angle';
 
   @override
-  String get catalogue_brand => 'Catalogue Brand';
+  String get catalogue_brand => 'catalogue brand';
 
   @override
-  String get catalogue_consumption => 'Catalogue Consumption';
+  String get catalogue_consumption => 'catalogue consumption';
 
   @override
-  String get catalogue_definition => 'Catalogue Definition';
+  String get catalogue_definition => 'catalogue definition';
 
   @override
-  String get catalogue_description => 'Catalogue Description';
+  String get catalogue_description => 'catalogue description';
 
   @override
-  String get catalogue_dimensions => 'Catalogue Dimensions';
+  String get catalogue_dimensions => 'catalogue dimensions';
 
   @override
-  String get catalogue_dmxMax => 'Catalogue Dmxmax';
+  String get catalogue_dmxMax => 'catalogue dmx Max';
 
   @override
-  String get catalogue_dmxMini => 'Catalogue Dmxmini';
+  String get catalogue_dmxMini => 'catalogue dmx Mini';
 
   @override
-  String get catalogue_impedance => 'Catalogue Impedance';
+  String get catalogue_impedance => 'catalogue impedance';
 
   @override
-  String get catalogue_impedanceNominal => 'Catalogue Impedancenominal';
+  String get catalogue_impedanceNominal => 'catalogue impedance Nominal';
 
   @override
-  String get catalogue_lumens => 'Catalogue Lumens';
+  String get catalogue_lumens => 'catalogue lumens';
 
   @override
-  String get catalogue_lux => 'Catalogue Lux';
+  String get catalogue_lux => 'catalogue lux';
 
   @override
-  String get catalogue_maxVoltage => 'Catalogue Maxvoltage';
+  String get catalogue_maxVoltage => 'catalogue max Voltage';
 
   @override
-  String get catalogue_pitch => 'Catalogue Pitch';
+  String get catalogue_pitch => 'catalogue pitch';
 
   @override
-  String get catalogue_powerAdmissible => 'Catalogue Poweradmissible';
+  String get catalogue_powerAdmissible => 'catalogue power Admissible';
 
   @override
-  String get catalogue_powerPeak => 'Catalogue Powerpeak';
+  String get catalogue_powerPeak => 'catalogue power Peak';
 
   @override
-  String get catalogue_powerProgram => 'Catalogue Powerprogram';
+  String get catalogue_powerProgram => 'catalogue power Program';
 
   @override
-  String get catalogue_powerRms => 'Catalogue Powerrms';
+  String get catalogue_powerRms => 'catalogue power Rms';
 
   @override
-  String get catalogue_resolution => 'Catalogue Resolution';
+  String get catalogue_resolution => 'catalogue resolution';
 
   @override
-  String get catalogue_weight => 'Catalogue Weight';
+  String get catalogue_weight => 'catalogue weight';
 
   @override
   String get category => 'Categoría';
@@ -223,23 +223,24 @@ class AppLocalizationsEs extends AppLocalizations {
   String get dmxPage_wired => 'Cableado';
 
   @override
-  String get driverTab_customDriverChannels => 'Drivertab Customdriverchannels';
+  String get driverTab_customDriverChannels =>
+      'driver Tab custom Driver Channels';
 
   @override
   String get driverTab_customDriverIntensity =>
-      'Drivertab Customdriverintensity';
+      'driver Tab custom Driver Intensity';
 
   @override
-  String get driverTab_customDriverTitle => 'Drivertab Customdrivertitle';
+  String get driverTab_customDriverTitle => 'driver Tab custom Driver Title';
 
   @override
-  String get driverTab_driverChoice => 'Drivertab Driverchoice';
+  String get driverTab_driverChoice => 'driver Tab driver Choice';
 
   @override
-  String get driverTab_ledLength => 'Drivertab Ledlength';
+  String get driverTab_ledLength => 'driver Tab led Length';
 
   @override
-  String get driverTab_ledPower => 'Drivertab Ledpower';
+  String get driverTab_ledPower => 'driver Tab led Power';
 
   @override
   String get enterProjectName => 'Nuevo nombre del proyecto';

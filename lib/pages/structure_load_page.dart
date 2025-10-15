@@ -260,7 +260,7 @@ Généré le: ${DateTime.now().toString().split('.')[0]}
                       border: Border.all(color: Colors.white, width: 2),
                       borderRadius: BorderRadius.circular(16),
                     ),
-                    child: Image.asset('assets/Logo2.png', height: 60),
+                    child: Image.asset('assets/images/logo2.png', height: 60),
                   ),
                 ),
                 // Content

@@ -68,6 +68,7 @@ flutter:
 
   assets:
     - assets/
+    - assets/images/logo2.png
     - assets/logo.png
     - assets/flag_fr_48.png
     - assets/flag_en_48.png

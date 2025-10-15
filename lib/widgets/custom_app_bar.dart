@@ -92,7 +92,7 @@ class CustomAppBar extends ConsumerWidget implements PreferredSizeWidget {
                     MaterialPageRoute(builder: (context) => const HomePage()),
                   ),
                   child: Image.asset(
-                    'assets/Logo2.png', // Utilise Logo2 comme demandé
+                    'assets/images/logo2.png', // Utilise Logo2 comme demandé
                     width: 50,
                     height: 50,
                     fit: BoxFit.contain,

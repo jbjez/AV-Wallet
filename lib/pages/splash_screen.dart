@@ -108,7 +108,7 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Image.asset(
-                  'assets/Logo2.png',
+                  'assets/images/logo2.png',
                   width: 200,
                   height: 200,
                 ),

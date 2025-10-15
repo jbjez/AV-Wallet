@@ -78,7 +78,7 @@ class _SignUpPageState extends ConsumerState<SignUpPage> {
           mainAxisSize: MainAxisSize.min,
           children: [
             Image.asset(
-              'assets/Logo2.png',
+              'assets/images/logo2.png',
               height: 60,
               width: 60,
             ),
@@ -224,7 +224,7 @@ class _SignUpPageState extends ConsumerState<SignUpPage> {
         elevation: 0,
         centerTitle: true,
         title: Image.asset(
-          'assets/Logo2.png',
+          'assets/images/logo2.png',
           height: 40,
         ),
         actions: [

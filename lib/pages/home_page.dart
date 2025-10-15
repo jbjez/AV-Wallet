@@ -302,7 +302,7 @@ class _HomePageState extends ConsumerState<HomePage> {
                             ),
                             borderRadius: BorderRadius.circular(16),
                           ),
-                          child: Image.asset('assets/Logo2.png', height: 100),
+                          child: Image.asset('assets/images/logo2.png', height: 100),
                         ),
                       ),
                       const SizedBox(height: 24),

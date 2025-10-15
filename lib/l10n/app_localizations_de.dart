@@ -134,110 +134,112 @@ class AppLocalizationsDe extends AppLocalizations {
   String get destination => 'Ziel';
 
   @override
-  String get dmxPage_allCategories => 'Dmx Page Allcategories';
+  String get dmxPage_allCategories => 'dmx Page all Categories';
 
   @override
-  String get dmxPage_cancel => 'Dmx Page Cancel';
+  String get dmxPage_cancel => 'dmx Page cancel';
 
   @override
-  String get dmxPage_channelsTotal => 'Dmx Page Channelstotal';
+  String get dmxPage_channelsTotal => 'dmx Page channels Total';
 
   @override
-  String get dmxPage_channelsUsed => 'Dmx Page Channelsused';
+  String get dmxPage_channelsUsed => 'dmx Page channels Used';
 
   @override
-  String get dmxPage_confirm => 'Dmx Page Confirm';
+  String get dmxPage_confirm => 'dmx Page confirm';
 
   @override
-  String get dmxPage_dmxMax => 'Dmx Page Dmxmax';
+  String get dmxPage_dmxMax => 'dmx Page dmx Max';
 
   @override
-  String get dmxPage_dmxMini => 'Dmx Page Dmxmini';
+  String get dmxPage_dmxMini => 'dmx Page dmx Mini';
 
   @override
-  String get dmxPage_dmxType => 'Dmx Page Dmxtype';
+  String get dmxPage_dmxType => 'dmx Page dmx Type';
 
   @override
-  String get dmxPage_importPreset => 'Dmx Page Importpreset';
+  String get dmxPage_importPreset => 'dmx Page import Preset';
 
   @override
-  String get dmxPage_importedFromPreset => 'Dmx Page Importedfrompreset';
+  String get dmxPage_importedFromPreset => 'dmx Page imported From Preset';
 
   @override
-  String get dmxPage_ledBar => 'Dmx Page Ledbar';
+  String get dmxPage_ledBar => 'dmx Page led Bar';
 
   @override
-  String get dmxPage_lightDevices => 'Dmx Page Lightdevices';
+  String get dmxPage_lightDevices => 'dmx Page light Devices';
 
   @override
-  String get dmxPage_mapDmx => 'Dmx Page Mapdmx';
+  String get dmxPage_mapDmx => 'dmx Page map Dmx';
 
   @override
-  String get dmxPage_movingHead => 'Dmx Page Movinghead';
+  String get dmxPage_movingHead => 'dmx Page moving Head';
 
   @override
-  String get dmxPage_noPresetAvailable => 'Dmx Page Nopresetavailable';
+  String get dmxPage_noPresetAvailable => 'dmx Page no Preset Available';
 
   @override
-  String get dmxPage_noPresetSelected => 'Dmx Page Nopresetselected';
+  String get dmxPage_noPresetSelected => 'dmx Page no Preset Selected';
 
   @override
-  String get dmxPage_noProductsSelected => 'Dmx Page Noproductsselected';
+  String get dmxPage_noProductsSelected => 'dmx Page no Products Selected';
 
   @override
-  String get dmxPage_ok => 'Dmx Page Ok';
+  String get dmxPage_ok => 'dmx Page ok';
 
   @override
-  String get dmxPage_productsAddedToPreset => 'Dmx Page Productsaddedtopreset';
+  String get dmxPage_productsAddedToPreset =>
+      'dmx Page products Added To Preset';
 
   @override
-  String get dmxPage_quantityEnter => 'Dmx Page Quantityenter';
+  String get dmxPage_quantityEnter => 'dmx Page quantity Enter';
 
   @override
-  String get dmxPage_scanner => 'Dmx Page Scanner';
+  String get dmxPage_scanner => 'dmx Page scanner';
 
   @override
-  String get dmxPage_searchHint => 'Dmx Page Searchhint';
+  String get dmxPage_searchHint => 'dmx Page search Hint';
 
   @override
-  String get dmxPage_selectPreset => 'Dmx Page Selectpreset';
+  String get dmxPage_selectPreset => 'dmx Page select Preset';
 
   @override
-  String get dmxPage_selectedProducts => 'Dmx Page Selectedproducts';
+  String get dmxPage_selectedProducts => 'dmx Page selected Products';
 
   @override
-  String get dmxPage_strobe => 'Dmx Page Strobe';
+  String get dmxPage_strobe => 'dmx Page strobe';
 
   @override
-  String get dmxPage_universe => 'Dmx Page Universe';
+  String get dmxPage_universe => 'dmx Page universe';
 
   @override
-  String get dmxPage_universesNeeded => 'Dmx Page Universesneeded';
+  String get dmxPage_universesNeeded => 'dmx Page universes Needed';
 
   @override
-  String get dmxPage_wash => 'Dmx Page Wash';
+  String get dmxPage_wash => 'dmx Page wash';
 
   @override
-  String get dmxPage_wired => 'Dmx Page Wired';
+  String get dmxPage_wired => 'dmx Page wired';
 
   @override
-  String get driverTab_customDriverChannels => 'Drivertab Customdriverchannels';
+  String get driverTab_customDriverChannels =>
+      'driver Tab custom Driver Channels';
 
   @override
   String get driverTab_customDriverIntensity =>
-      'Drivertab Customdriverintensity';
+      'driver Tab custom Driver Intensity';
 
   @override
-  String get driverTab_customDriverTitle => 'Drivertab Customdrivertitle';
+  String get driverTab_customDriverTitle => 'driver Tab custom Driver Title';
 
   @override
-  String get driverTab_driverChoice => 'Drivertab Driverchoice';
+  String get driverTab_driverChoice => 'driver Tab driver Choice';
 
   @override
-  String get driverTab_ledLength => 'Drivertab Ledlength';
+  String get driverTab_ledLength => 'driver Tab led Length';
 
   @override
-  String get driverTab_ledPower => 'Drivertab Ledpower';
+  String get driverTab_ledPower => 'driver Tab led Power';
 
   @override
   String get enterProjectName => 'Neuer Projektname';
@@ -291,16 +293,16 @@ class AppLocalizationsDe extends AppLocalizations {
   String get power => 'Leistung';
 
   @override
-  String get premiumExpiredDialog_message => 'Premiumexpireddialog Message';
+  String get premiumExpiredDialog_message => 'premium Expired Dialog message';
 
   @override
-  String get premiumExpiredDialog_ok => 'Premiumexpireddialog Ok';
+  String get premiumExpiredDialog_ok => 'premium Expired Dialog ok';
 
   @override
-  String get premiumExpiredDialog_premium => 'Premiumexpireddialog Premium';
+  String get premiumExpiredDialog_premium => 'premium Expired Dialog premium';
 
   @override
-  String get premiumExpiredDialog_title => 'Premiumexpireddialog Title';
+  String get premiumExpiredDialog_title => 'premium Expired Dialog title';
 
   @override
   String get presetCount => 'Preset-Anzahl';
@@ -377,127 +379,127 @@ class AppLocalizationsDe extends AppLocalizations {
   String get search_speaker => 'Nach einem Lautsprecher suchen...';
 
   @override
-  String get settingsPage_account => 'Settings Page Account';
+  String get settingsPage_account => 'settings Page account';
 
   @override
-  String get settingsPage_biometricAuth => 'Settings Page Biometricauth';
+  String get settingsPage_biometricAuth => 'settings Page biometric Auth';
 
   @override
-  String get settingsPage_cancel => 'Settings Page Cancel';
+  String get settingsPage_cancel => 'settings Page cancel';
 
   @override
-  String get settingsPage_changePassword => 'Settings Page Changepassword';
+  String get settingsPage_changePassword => 'settings Page change Password';
 
   @override
-  String get settingsPage_confirmSignOut => 'Settings Page Confirmsignout';
+  String get settingsPage_confirmSignOut => 'settings Page confirm Sign Out';
 
   @override
   String get settingsPage_confirmUnsubscribe =>
-      'Settings Page Confirmunsubscribe';
+      'settings Page confirm Unsubscribe';
 
   @override
-  String get settingsPage_email => 'Settings Page Email';
+  String get settingsPage_email => 'settings Page email';
 
   @override
-  String get settingsPage_error => 'Settings Page Error';
+  String get settingsPage_error => 'settings Page error';
 
   @override
   String get settingsPage_featureNotImplemented =>
-      'Settings Page Featurenotimplemented';
+      'settings Page feature Not Implemented';
 
   @override
-  String get settingsPage_freemiumTest => 'Settings Page Freemiumtest';
+  String get settingsPage_freemiumTest => 'settings Page freemium Test';
 
   @override
-  String get settingsPage_name => 'Settings Page Name';
+  String get settingsPage_name => 'settings Page name';
 
   @override
-  String get settingsPage_notAvailable => 'Settings Page Notavailable';
+  String get settingsPage_notAvailable => 'settings Page not Available';
 
   @override
-  String get settingsPage_notDefined => 'Settings Page Notdefined';
+  String get settingsPage_notDefined => 'settings Page not Defined';
 
   @override
-  String get settingsPage_ok => 'Settings Page Ok';
+  String get settingsPage_ok => 'settings Page ok';
 
   @override
-  String get settingsPage_premium => 'Settings Page Premium';
+  String get settingsPage_premium => 'settings Page premium';
 
   @override
-  String get settingsPage_premiumActivated => 'Settings Page Premiumactivated';
+  String get settingsPage_premiumActivated => 'settings Page premium Activated';
 
   @override
   String get settingsPage_premiumSubscription =>
-      'Settings Page Premiumsubscription';
+      'settings Page premium Subscription';
 
   @override
-  String get settingsPage_security => 'Settings Page Security';
+  String get settingsPage_security => 'settings Page security';
 
   @override
-  String get settingsPage_signOut => 'Settings Page Signout';
+  String get settingsPage_signOut => 'settings Page sign Out';
 
   @override
   String get settingsPage_signOutDialogContent =>
-      'Settings Page Signoutdialogcontent';
+      'settings Page sign Out Dialog Content';
 
   @override
   String get settingsPage_signOutDialogTitle =>
-      'Settings Page Signoutdialogtitle';
+      'settings Page sign Out Dialog Title';
 
   @override
-  String get settingsPage_standard => 'Settings Page Standard';
+  String get settingsPage_standard => 'settings Page standard';
 
   @override
-  String get settingsPage_status => 'Settings Page Status';
+  String get settingsPage_status => 'settings Page status';
 
   @override
-  String get settingsPage_subscribe => 'Settings Page Subscribe';
+  String get settingsPage_subscribe => 'settings Page subscribe';
 
   @override
   String get settingsPage_subscribeDialogContent =>
-      'Settings Page Subscribedialogcontent';
+      'settings Page subscribe Dialog Content';
 
   @override
   String get settingsPage_subscribeDialogTitle =>
-      'Settings Page Subscribedialogtitle';
+      'settings Page subscribe Dialog Title';
 
   @override
   String get settingsPage_subscribeToPremium =>
-      'Settings Page Subscribetopremium';
+      'settings Page subscribe To Premium';
 
   @override
-  String get settingsPage_subscription => 'Settings Page Subscription';
+  String get settingsPage_subscription => 'settings Page subscription';
 
   @override
   String get settingsPage_subscriptionError =>
-      'Settings Page Subscriptionerror';
+      'settings Page subscription Error';
 
   @override
-  String get settingsPage_success => 'Settings Page Success';
+  String get settingsPage_success => 'settings Page success';
 
   @override
-  String get settingsPage_title => 'Settings Page Title';
+  String get settingsPage_title => 'settings Page title';
 
   @override
-  String get settingsPage_unsubscribe => 'Settings Page Unsubscribe';
+  String get settingsPage_unsubscribe => 'settings Page unsubscribe';
 
   @override
   String get settingsPage_unsubscribeDialogContent =>
-      'Settings Page Unsubscribedialogcontent';
+      'settings Page unsubscribe Dialog Content';
 
   @override
   String get settingsPage_unsubscribeDialogTitle =>
-      'Settings Page Unsubscribedialogtitle';
+      'settings Page unsubscribe Dialog Title';
 
   @override
-  String get settingsPage_userInfo => 'Settings Page Userinfo';
+  String get settingsPage_userInfo => 'settings Page user Info';
 
   @override
-  String get soundPage_ampConfigTitle => 'Sound Page Ampconfigtitle';
+  String get soundPage_ampConfigTitle => 'sound Page amp Config Title';
 
   @override
   String get soundPage_amplificationTabShort =>
-      'Sound Page Amplificationtabshort';
+      'sound Page amplification Tab Short';
 
   @override
   String get soundPage_amplifier => 'Verstärker';

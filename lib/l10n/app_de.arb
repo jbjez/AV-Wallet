@@ -6,7 +6,6 @@
   "appTitle": "AV Wallet",
   "welcomeMessage": "Willkommen bei AV Wallet",
   "catalogAccess": "Katalog",
-  
   "lightMenu": "Licht",
   "structureMenu": "Struktur",
   "soundMenu": "Ton",
@@ -14,7 +13,6 @@
   "electricityMenu": "Elekt.",
   "networkMenu": "Netzwerk",
   "advancedMenu": "Erweitert",
-
   "@_lightPage": {
     "description": "Lichtseite Abschnitt"
   },
@@ -48,11 +46,10 @@
   "lightPage_recommendedConfig": "Empfohlene Konfiguration",
   "lightPage_total": "Gesamt",
   "lightPage_dmxUniverses": "DMX-UNIVERSEN",
-
   "@_arMeasurePage": {
-    "description": "AR-Messseite Abschnitt"
+    "description": "Übersetzungen für die AR-Messseite"
   },
-  "arMeasurePage_title": "AR Messen",
+  "arMeasurePage_title": "Foto/AR",
   "arMeasurePage_tapFirstPoint": "Tippen Sie auf den 1. Punkt, dann den 2.",
   "arMeasurePage_tapSecondPoint": "Tippen Sie auf den 2. Punkt, um die Entfernung zu messen",
   "arMeasurePage_tapObject": "Tippen Sie auf ein Objekt, um die Entfernung zu messen",
@@ -70,7 +67,6 @@
   "delete_preset": "Preset löschen",
   "lightPage_channel": "Kanal",
   "lightPage_channels": "Kanäle",
-
   "@_soundPage": {
     "description": "Tonseite Abschnitt"
   },
@@ -107,7 +103,6 @@
   "soundPage_with": "mit",
   "soundPage_noPresetSelected": "Kein Preset ausgewählt",
   "rider_technical_title": "Technischer Rider",
-
   "@_videoPage": {
     "description": "Videoseite Abschnitt"
   },
@@ -132,12 +127,11 @@
   "videoPage_recommendedRatio": "Empfohlenes Verhältnis",
   "videoPage_noOpticsAvailable": "Keine Optik für dieses Verhältnis verfügbar",
   "videoPage_schema": "Schema",
-
   "@_structurePage": {
-    "description": "Strukturseite Abschnitt"
+    "description": "Übersetzungen der Strukturseite"
   },
   "structurePage_title": "Struktur",
-  "structurePage_projectWeightTab": "Gewicht Projekt",
+  "structurePage_projectWeightTab": "Projektgewicht",
   "selectStructure": "Struktur auswählen",
   "distance_label": "{distance} m",
   "@distance_label": {
@@ -176,7 +170,6 @@
   },
   "deflection_rate": "Berücksichtigte Durchbiegungsrate: 1/200",
   "structurePage_selectCharge": "Lasttyp",
-
   "@_catalogPage": {
     "description": "Katalogseite Abschnitt"
   },
@@ -201,7 +194,6 @@
   "catalogPage_selectCategory": "Kategorie auswählen",
   "catalogPage_selectSubCategory": "Unterkategorie auswählen",
   "catalogPage_noItems": "Keine Artikel gefunden",
-
   "@_presetWidget": {
     "description": "Voreinstellungen Widget Abschnitt"
   },
@@ -222,7 +214,6 @@
   "presetWidget_confirm": "Bestätigen",
   "presetWidget_addToCart": "In den Warenkorb",
   "presetWidget_preferredAmplifier": "Bevorzugter Verstärker",
-
   "@_projectCalculationPage": {
     "description": "Projektberechnungsseite Abschnitt"
   },
@@ -237,7 +228,6 @@
   "projectCalculationPage_total": "Gesamt",
   "projectCalculationPage_presetTotal": "Voreinstellungsgesamt",
   "projectCalculationPage_globalTotal": "Gesamtsumme",
-
   "@_ledWallSchemaPage": {
     "description": "LED-Wandschema Seite Abschnitt"
   },
@@ -248,7 +238,6 @@
   "ledWallSchemaPage_panelSelection": "Panelauswahl",
   "ledWallSchemaPage_selectPanel": "Panel auswählen",
   "ledWallSchemaPage_calculate": "Berechnen",
-
   "@_electricityPage": {
     "description": "Elektrizitätsseite Abschnitt"
   },
@@ -272,7 +261,6 @@
   "electricityPage_kw": "Wirkleistung (kW)",
   "electricityPage_kva": "Scheinleistung (kVA)",
   "electricityPage_powerFactor": "Leistungsfaktor",
-
   "@_networkPage": {
     "description": "Netzwerkseite Abschnitt"
   },
@@ -291,7 +279,6 @@
   "networkPage_noNetworksFound": "Keine Netzwerke gefunden",
   "networkPage_signalStrength": "Signalstärke",
   "networkPage_frequency": "Frequenz",
-
   "@_speedtest": {
     "description": "Geschwindigkeitstest Abschnitt"
   },
@@ -305,7 +292,6 @@
   "speedtest_start": "Starten (8s)",
   "speedtest_mbps": "Mbps",
   "speedtest_speed": "Geschwindigkeit",
-
   "@_arMeasure": {
     "description": "AR-Messung Abschnitt"
   },
@@ -320,7 +306,6 @@
   "arMeasure_saveError": "Fehler beim Speichern",
   "arMeasure_defaultProject": "Projekt",
   "arMeasure_photoFileName": "Foto_AR_{projectName}_{timestamp}.jpg",
-
   "@_bottomNavigation": {
     "description": "Untere Navigationsleiste"
   },
@@ -332,7 +317,6 @@
   "bottomNav_electricity": "Elektrizität",
   "bottomNav_misc": "Verschiedenes",
   "bottomNav_arMeasure": "AR Messung",
-
   "@_subscription": {
     "description": "Abonnement- und Zahlungsbereich"
   },
@@ -346,7 +330,6 @@
   "subscription_free_trial_error": "Fehler beim Starten der kostenlosen Testversion",
   "subscription_security": "Sichere Zahlung",
   "subscription_security_description": "Ihre Daten sind durch Bank-Level-Verschlüsselung geschützt",
-
   "@_settings": {
     "description": "Einstellungen Abschnitt"
   },
@@ -354,7 +337,6 @@
   "language": "Sprache",
   "theme": "Design",
   "signOut": "Abmelden",
-
   "@_patchScenePage": {
     "description": "Patch-Szene-Seite Abschnitt"
   },
@@ -378,7 +360,6 @@
   "patchScenePage_newName": "Neuer Name",
   "patchScenePage_confirm": "Bestätigen",
   "patchScenePage_cancel": "Abbrechen",
-
   "@_patch": {
     "description": "Patch-Szene-Seite Abschnitt"
   },
@@ -406,7 +387,7 @@
   "patch_microphone": "Mikrofon",
   "patch_output_dest": "Ziel",
   "patch_output_kind": "Typ",
-  "structurePage_distance": "Entfernung",
+  "structurePage_distance": "Entfernung: {distance} m",
   "structurePage_chargeRepartie": "Gleichmäßig verteilte Last",
   "structurePage_pointAccrocheCentre": "1 Befestigungspunkt in der Mitte",
   "structurePage_pointsAccrocheExtremites": "2 Befestigungspunkte an den Enden",
@@ -520,14 +501,12 @@
   "success": "Erfolg",
   "warning": "Warnung",
   "info": "Information",
-  
   "@_loginMenu": {
     "description": "Abschnitt Dropdown-Menü für Anmeldung"
   },
   "loginMenu_accountSettings": "Kontoeinstellungen",
   "loginMenu_myProjects": "Meine Projekte",
   "loginMenu_logout": "Abmelden",
-
   "@_dropdownLabels": {
     "description": "Labels für Dropdown-Menüs"
   },
@@ -537,7 +516,6 @@
   "subcategory": "Unterkategorie",
   "model": "Modell",
   "type": "Typ",
-  "quantity": "Menge",
   "amplifier": "Verstärker",
   "speaker": "Lautsprecher",
   "microphone": "Mikrofon",
@@ -549,25 +527,17 @@
   "screen": "Bildschirm",
   "cable": "Kabel",
   "connector": "Stecker",
-  "power": "Leistung",
   "voltage": "Spannung",
   "current": "Strom",
   "frequency": "Frequenz",
   "impedance": "Impedanz",
   "sensitivity": "Empfindlichkeit",
-  "weight": "Gewicht",
   "dimensions": "Abmessungen",
   "color": "Farbe",
   "material": "Material",
   "manufacturer": "Hersteller",
   "country": "Land",
-
-  "@_structurePage": {
-    "description": "Übersetzungen der Strukturseite"
-  },
   "structurePage_chargesTab": "Lasten",
-  "structurePage_projectWeightTab": "Projektgewicht",
-  "structurePage_distance": "Entfernung: {distance} m",
   "structurePage_maxLoad": "Maximale Last: {value} kg{unit}",
   "structurePage_structureWeight": "Strukturgewicht: {value} kg/m",
   "structurePage_maxDeflection": "Maximale Durchbiegung: {value} mm",
@@ -580,7 +550,6 @@
   "structurePage_structureWeightTitle": "Strukturgewicht",
   "structurePage_maxDeflectionTitle": "Maximale Durchbiegung",
   "structurePage_deflectionRatioTitle": "Durchbiegungsverhältnis",
-  
   "@_catalogueCharacteristics": {
     "description": "Katalogproduktmerkmale"
   },
@@ -606,7 +575,6 @@
   "catalogue_maxVoltage": "Max. Spannung",
   "catalogue_lensesAvailable": "Verfügbare Projektionslinsen",
   "catalogue_projectionRatio": "Projektionsverhältnis",
-  
   "@_videoLedResult": {
     "description": "Übersetzungen für das LED-Tab-Ergebnis auf der Video-Seite"
   },
@@ -614,11 +582,6 @@
   "videoLedResult_espacePixellaire": "Pixel-Raum",
   "videoLedResult_poidsTotal": "Gesamtgewicht",
   "videoLedResult_consommationTotale": "Gesamtverbrauch",
-
-  "@_arMeasurePage": {
-    "description": "Übersetzungen für die AR-Messseite"
-  },
-  "arMeasurePage_title": "Foto/AR",
   "arMeasurePage_description": "Nehmen Sie Referenzfotos auf und starten Sie AR-Messungen",
   "arMeasurePage_photoButton": "Foto",
   "arMeasurePage_unityButton": "Unity",
@@ -628,5 +591,427 @@
   "arMeasurePage_errorMessage": "Ein Fehler ist aufgetreten",
   "arMeasurePage_photosAutoSaved": "Fotos werden automatisch im aktiven Projektordner gespeichert",
   "arMeasurePage_takeReferencePhotos": "Nehmen Sie Referenzfotos auf und starten Sie AR-Messungen",
-  "arMeasurePage_photosAutoSavedInfo": "Fotos werden automatisch im aktiven Projektordner gespeichert"
+  "arMeasurePage_photosAutoSavedInfo": "Fotos werden automatisch im aktiven Projektordner gespeichert",
+  "amperePerChannel": "ampere Per Channel",
+  "@amperePerChannel": {
+    "description": "auto-added from code scan"
+  },
+  "amperes": "amperes",
+  "@amperes": {
+    "description": "auto-added from code scan"
+  },
+  "beamCalculation": "beam Calculation",
+  "@beamCalculation": {
+    "description": "auto-added from code scan"
+  },
+  "button_reset": "button reset",
+  "@button_reset": {
+    "description": "auto-added from code scan"
+  },
+  "calculateDriverConfig": "calculate Driver Config",
+  "@calculateDriverConfig": {
+    "description": "auto-added from code scan"
+  },
+  "calculationResult": "calculation Result",
+  "@calculationResult": {
+    "description": "auto-added from code scan"
+  },
+  "channel": "channel",
+  "@channel": {
+    "description": "auto-added from code scan"
+  },
+  "channels": "channels",
+  "@channels": {
+    "description": "auto-added from code scan"
+  },
+  "channelsPlural": "channels Plural",
+  "@channelsPlural": {
+    "description": "auto-added from code scan"
+  },
+  "connectors": "connectors",
+  "@connectors": {
+    "description": "auto-added from code scan"
+  },
+  "consumption": "consumption",
+  "@consumption": {
+    "description": "auto-added from code scan"
+  },
+  "dmxCables": "dmx Cables",
+  "@dmxCables": {
+    "description": "auto-added from code scan"
+  },
+  "dmxPage_allCategories": "dmx Page all Categories",
+  "@dmxPage_allCategories": {
+    "description": "auto-added from code scan"
+  },
+  "dmxPage_cancel": "dmx Page cancel",
+  "@dmxPage_cancel": {
+    "description": "auto-added from code scan"
+  },
+  "dmxPage_channelsTotal": "dmx Page channels Total",
+  "@dmxPage_channelsTotal": {
+    "description": "auto-added from code scan"
+  },
+  "dmxPage_channelsUsed": "dmx Page channels Used",
+  "@dmxPage_channelsUsed": {
+    "description": "auto-added from code scan"
+  },
+  "dmxPage_confirm": "dmx Page confirm",
+  "@dmxPage_confirm": {
+    "description": "auto-added from code scan"
+  },
+  "dmxPage_dmxMax": "dmx Page dmx Max",
+  "@dmxPage_dmxMax": {
+    "description": "auto-added from code scan"
+  },
+  "dmxPage_dmxMini": "dmx Page dmx Mini",
+  "@dmxPage_dmxMini": {
+    "description": "auto-added from code scan"
+  },
+  "dmxPage_dmxType": "dmx Page dmx Type",
+  "@dmxPage_dmxType": {
+    "description": "auto-added from code scan"
+  },
+  "dmxPage_importPreset": "dmx Page import Preset",
+  "@dmxPage_importPreset": {
+    "description": "auto-added from code scan"
+  },
+  "dmxPage_importedFromPreset": "dmx Page imported From Preset",
+  "@dmxPage_importedFromPreset": {
+    "description": "auto-added from code scan"
+  },
+  "dmxPage_ledBar": "dmx Page led Bar",
+  "@dmxPage_ledBar": {
+    "description": "auto-added from code scan"
+  },
+  "dmxPage_lightDevices": "dmx Page light Devices",
+  "@dmxPage_lightDevices": {
+    "description": "auto-added from code scan"
+  },
+  "dmxPage_mapDmx": "dmx Page map Dmx",
+  "@dmxPage_mapDmx": {
+    "description": "auto-added from code scan"
+  },
+  "dmxPage_movingHead": "dmx Page moving Head",
+  "@dmxPage_movingHead": {
+    "description": "auto-added from code scan"
+  },
+  "dmxPage_noPresetAvailable": "dmx Page no Preset Available",
+  "@dmxPage_noPresetAvailable": {
+    "description": "auto-added from code scan"
+  },
+  "dmxPage_noPresetSelected": "dmx Page no Preset Selected",
+  "@dmxPage_noPresetSelected": {
+    "description": "auto-added from code scan"
+  },
+  "dmxPage_noProductsSelected": "dmx Page no Products Selected",
+  "@dmxPage_noProductsSelected": {
+    "description": "auto-added from code scan"
+  },
+  "dmxPage_ok": "dmx Page ok",
+  "@dmxPage_ok": {
+    "description": "auto-added from code scan"
+  },
+  "dmxPage_productsAddedToPreset": "dmx Page products Added To Preset",
+  "@dmxPage_productsAddedToPreset": {
+    "description": "auto-added from code scan"
+  },
+  "dmxPage_quantityEnter": "dmx Page quantity Enter",
+  "@dmxPage_quantityEnter": {
+    "description": "auto-added from code scan"
+  },
+  "dmxPage_scanner": "dmx Page scanner",
+  "@dmxPage_scanner": {
+    "description": "auto-added from code scan"
+  },
+  "dmxPage_searchHint": "dmx Page search Hint",
+  "@dmxPage_searchHint": {
+    "description": "auto-added from code scan"
+  },
+  "dmxPage_selectPreset": "dmx Page select Preset",
+  "@dmxPage_selectPreset": {
+    "description": "auto-added from code scan"
+  },
+  "dmxPage_selectedProducts": "dmx Page selected Products",
+  "@dmxPage_selectedProducts": {
+    "description": "auto-added from code scan"
+  },
+  "dmxPage_strobe": "dmx Page strobe",
+  "@dmxPage_strobe": {
+    "description": "auto-added from code scan"
+  },
+  "dmxPage_universe": "dmx Page universe",
+  "@dmxPage_universe": {
+    "description": "auto-added from code scan"
+  },
+  "dmxPage_universesNeeded": "dmx Page universes Needed",
+  "@dmxPage_universesNeeded": {
+    "description": "auto-added from code scan"
+  },
+  "dmxPage_wash": "dmx Page wash",
+  "@dmxPage_wash": {
+    "description": "auto-added from code scan"
+  },
+  "dmxPage_wired": "dmx Page wired",
+  "@dmxPage_wired": {
+    "description": "auto-added from code scan"
+  },
+  "driverConfiguration": "driver Configuration",
+  "@driverConfiguration": {
+    "description": "auto-added from code scan"
+  },
+  "driverTab_customDriverChannels": "driver Tab custom Driver Channels",
+  "@driverTab_customDriverChannels": {
+    "description": "auto-added from code scan"
+  },
+  "driverTab_customDriverIntensity": "driver Tab custom Driver Intensity",
+  "@driverTab_customDriverIntensity": {
+    "description": "auto-added from code scan"
+  },
+  "driverTab_customDriverTitle": "driver Tab custom Driver Title",
+  "@driverTab_customDriverTitle": {
+    "description": "auto-added from code scan"
+  },
+  "driverTab_driverChoice": "driver Tab driver Choice",
+  "@driverTab_driverChoice": {
+    "description": "auto-added from code scan"
+  },
+  "driverTab_ledLength": "driver Tab led Length",
+  "@driverTab_ledLength": {
+    "description": "auto-added from code scan"
+  },
+  "driverTab_ledPower": "driver Tab led Power",
+  "@driverTab_ledPower": {
+    "description": "auto-added from code scan"
+  },
+  "driverTab_result": "driver Tab result",
+  "@driverTab_result": {
+    "description": "auto-added from code scan"
+  },
+  "driverType": "driver Type",
+  "@driverType": {
+    "description": "auto-added from code scan"
+  },
+  "length": "length",
+  "@length": {
+    "description": "auto-added from code scan"
+  },
+  "lightAccessories": "light Accessories",
+  "@lightAccessories": {
+    "description": "auto-added from code scan"
+  },
+  "mountingTools": "mounting Tools",
+  "@mountingTools": {
+    "description": "auto-added from code scan"
+  },
+  "paymentPage_monthlyPlan": "payment Page monthly Plan",
+  "@paymentPage_monthlyPlan": {
+    "description": "auto-added from code scan"
+  },
+  "paymentPage_yearlyPlan": "payment Page yearly Plan",
+  "@paymentPage_yearlyPlan": {
+    "description": "auto-added from code scan"
+  },
+  "premiumExpiredDialog_message": "premium Expired Dialog message",
+  "@premiumExpiredDialog_message": {
+    "description": "auto-added from code scan"
+  },
+  "premiumExpiredDialog_ok": "premium Expired Dialog ok",
+  "@premiumExpiredDialog_ok": {
+    "description": "auto-added from code scan"
+  },
+  "premiumExpiredDialog_premium": "premium Expired Dialog premium",
+  "@premiumExpiredDialog_premium": {
+    "description": "auto-added from code scan"
+  },
+  "premiumExpiredDialog_title": "premium Expired Dialog title",
+  "@premiumExpiredDialog_title": {
+    "description": "auto-added from code scan"
+  },
+  "protections": "protections",
+  "@protections": {
+    "description": "auto-added from code scan"
+  },
+  "recommendedConfiguration": "recommended Configuration",
+  "@recommendedConfiguration": {
+    "description": "auto-added from code scan"
+  },
+  "safetyAccessories": "safety Accessories",
+  "@safetyAccessories": {
+    "description": "auto-added from code scan"
+  },
+  "settingsPage_account": "settings Page account",
+  "@settingsPage_account": {
+    "description": "auto-added from code scan"
+  },
+  "settingsPage_biometricAuth": "settings Page biometric Auth",
+  "@settingsPage_biometricAuth": {
+    "description": "auto-added from code scan"
+  },
+  "settingsPage_cancel": "settings Page cancel",
+  "@settingsPage_cancel": {
+    "description": "auto-added from code scan"
+  },
+  "settingsPage_changePassword": "settings Page change Password",
+  "@settingsPage_changePassword": {
+    "description": "auto-added from code scan"
+  },
+  "settingsPage_confirmSignOut": "settings Page confirm Sign Out",
+  "@settingsPage_confirmSignOut": {
+    "description": "auto-added from code scan"
+  },
+  "settingsPage_confirmUnsubscribe": "settings Page confirm Unsubscribe",
+  "@settingsPage_confirmUnsubscribe": {
+    "description": "auto-added from code scan"
+  },
+  "settingsPage_email": "settings Page email",
+  "@settingsPage_email": {
+    "description": "auto-added from code scan"
+  },
+  "settingsPage_error": "settings Page error",
+  "@settingsPage_error": {
+    "description": "auto-added from code scan"
+  },
+  "settingsPage_featureNotImplemented": "settings Page feature Not Implemented",
+  "@settingsPage_featureNotImplemented": {
+    "description": "auto-added from code scan"
+  },
+  "settingsPage_freemiumTest": "settings Page freemium Test",
+  "@settingsPage_freemiumTest": {
+    "description": "auto-added from code scan"
+  },
+  "settingsPage_name": "settings Page name",
+  "@settingsPage_name": {
+    "description": "auto-added from code scan"
+  },
+  "settingsPage_notAvailable": "settings Page not Available",
+  "@settingsPage_notAvailable": {
+    "description": "auto-added from code scan"
+  },
+  "settingsPage_notDefined": "settings Page not Defined",
+  "@settingsPage_notDefined": {
+    "description": "auto-added from code scan"
+  },
+  "settingsPage_ok": "settings Page ok",
+  "@settingsPage_ok": {
+    "description": "auto-added from code scan"
+  },
+  "settingsPage_premium": "settings Page premium",
+  "@settingsPage_premium": {
+    "description": "auto-added from code scan"
+  },
+  "settingsPage_premiumActivated": "settings Page premium Activated",
+  "@settingsPage_premiumActivated": {
+    "description": "auto-added from code scan"
+  },
+  "settingsPage_premiumSubscription": "settings Page premium Subscription",
+  "@settingsPage_premiumSubscription": {
+    "description": "auto-added from code scan"
+  },
+  "settingsPage_security": "settings Page security",
+  "@settingsPage_security": {
+    "description": "auto-added from code scan"
+  },
+  "settingsPage_signOut": "settings Page sign Out",
+  "@settingsPage_signOut": {
+    "description": "auto-added from code scan"
+  },
+  "settingsPage_signOutDialogContent": "settings Page sign Out Dialog Content",
+  "@settingsPage_signOutDialogContent": {
+    "description": "auto-added from code scan"
+  },
+  "settingsPage_signOutDialogTitle": "settings Page sign Out Dialog Title",
+  "@settingsPage_signOutDialogTitle": {
+    "description": "auto-added from code scan"
+  },
+  "settingsPage_standard": "settings Page standard",
+  "@settingsPage_standard": {
+    "description": "auto-added from code scan"
+  },
+  "settingsPage_status": "settings Page status",
+  "@settingsPage_status": {
+    "description": "auto-added from code scan"
+  },
+  "settingsPage_subscribe": "settings Page subscribe",
+  "@settingsPage_subscribe": {
+    "description": "auto-added from code scan"
+  },
+  "settingsPage_subscribeDialogContent": "settings Page subscribe Dialog Content",
+  "@settingsPage_subscribeDialogContent": {
+    "description": "auto-added from code scan"
+  },
+  "settingsPage_subscribeDialogTitle": "settings Page subscribe Dialog Title",
+  "@settingsPage_subscribeDialogTitle": {
+    "description": "auto-added from code scan"
+  },
+  "settingsPage_subscribeToPremium": "settings Page subscribe To Premium",
+  "@settingsPage_subscribeToPremium": {
+    "description": "auto-added from code scan"
+  },
+  "settingsPage_subscription": "settings Page subscription",
+  "@settingsPage_subscription": {
+    "description": "auto-added from code scan"
+  },
+  "settingsPage_subscriptionError": "settings Page subscription Error",
+  "@settingsPage_subscriptionError": {
+    "description": "auto-added from code scan"
+  },
+  "settingsPage_success": "settings Page success",
+  "@settingsPage_success": {
+    "description": "auto-added from code scan"
+  },
+  "settingsPage_title": "settings Page title",
+  "@settingsPage_title": {
+    "description": "auto-added from code scan"
+  },
+  "settingsPage_unsubscribe": "settings Page unsubscribe",
+  "@settingsPage_unsubscribe": {
+    "description": "auto-added from code scan"
+  },
+  "settingsPage_unsubscribeDialogContent": "settings Page unsubscribe Dialog Content",
+  "@settingsPage_unsubscribeDialogContent": {
+    "description": "auto-added from code scan"
+  },
+  "settingsPage_unsubscribeDialogTitle": "settings Page unsubscribe Dialog Title",
+  "@settingsPage_unsubscribeDialogTitle": {
+    "description": "auto-added from code scan"
+  },
+  "settingsPage_userInfo": "settings Page user Info",
+  "@settingsPage_userInfo": {
+    "description": "auto-added from code scan"
+  },
+  "soundPage_ampConfigTitle": "sound Page amp Config Title",
+  "@soundPage_ampConfigTitle": {
+    "description": "auto-added from code scan"
+  },
+  "soundPage_amplificationTabShort": "sound Page amplification Tab Short",
+  "@soundPage_amplificationTabShort": {
+    "description": "auto-added from code scan"
+  },
+  "stripLedConfiguration": "strip Led Configuration",
+  "@stripLedConfiguration": {
+    "description": "auto-added from code scan"
+  },
+  "stripLedType": "strip Led Type",
+  "@stripLedType": {
+    "description": "auto-added from code scan"
+  },
+  "@structurePage_distance": {
+    "description": "auto-added placeholders",
+    "placeholders": {
+      "arg1": {}
+    }
+  },
+  "thisSectionWillBeDeveloped": "this Section Will Be Developed",
+  "@thisSectionWillBeDeveloped": {
+    "description": "auto-added from code scan"
+  },
+  "trussesAndStructures": "trusses And Structures",
+  "@trussesAndStructures": {
+    "description": "auto-added from code scan"
+  },
+  "volts": "volts",
+  "@volts": {
+    "description": "auto-added from code scan"
+  }
 }
