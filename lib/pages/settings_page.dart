@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:av_wallet_hive/l10n/app_localizations.dart';
 import '../providers/auth_provider.dart';
 import '../services/subscription_service.dart';
+import '../theme/theme_controller.dart';
 import 'biometric_settings_page.dart';
 
 class SettingsPage extends ConsumerStatefulWidget {
@@ -71,6 +72,8 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   _buildUserInfoSection(user),
+                  const SizedBox(height: 24),
+                  _buildThemeSection(),
                   const SizedBox(height: 24),
                   _buildSecuritySection(),
                   const SizedBox(height: 24),
@@ -449,5 +452,24 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
 
   void _navigateToFreemiumTest() {
     Navigator.of(context).pushNamed('/freemium-test');
+  }
+
+  Widget _buildThemeSection() {
+    return _buildSection(
+      'Apparence',
+      [
+        Consumer(
+          builder: (context, ref, _) {
+            final mode = ref.watch(themeModeProvider);
+            return SwitchListTile(
+              title: const Text('Mode sombre'),
+              subtitle: Text(mode == ThemeMode.dark ? 'Activé' : 'Désactivé'),
+              value: mode == ThemeMode.dark,
+              onChanged: (_) => ref.read(themeModeProvider.notifier).toggle(),
+            );
+          },
+        ),
+      ],
+    );
   }
 }
