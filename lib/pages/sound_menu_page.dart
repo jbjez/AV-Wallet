@@ -9,11 +9,13 @@ import '../widgets/custom_app_bar.dart';
 import '../widgets/border_labeled_dropdown.dart';
 import '../providers/preset_provider.dart';
 import '../providers/sound_page_provider.dart';
+import '../providers/project_provider.dart';
 import '../models/sound_page_state.dart';
+import '../models/project.dart';
 import '../widgets/uniform_bottom_nav_bar.dart';
 import '../widgets/export_widget.dart';
 import '../widgets/action_button.dart';
-import 'package:av_wallet_hive/l10n/app_localizations.dart';
+import 'package:av_wallet/l10n/app_localizations.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:convert';
 import 'patch_scene_page.dart';
@@ -218,18 +220,26 @@ class _SoundMenuPageState extends ConsumerState<SoundMenuPage>
                   padding: const EdgeInsets.symmetric(vertical: 2),
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(12),
+                    border: Border(
+                      bottom: BorderSide(
+                        color: Theme.of(context).brightness == Brightness.dark
+                            ? Colors.lightBlue[300]!
+                            : const Color(0xFF0A1128),
+                        width: 2,
+                      ),
+                    ),
                   ),
-                  child: TabBar(
-                    controller: _tabController,
-                    indicatorColor: Theme.of(context).brightness == Brightness.dark 
-                        ? Colors.lightBlue 
-                        : const Color(0xFF0A1128),
-                    indicatorWeight: 3,
-                    labelColor: Theme.of(context).brightness == Brightness.dark 
-                        ? Colors.lightBlue 
-                        : const Color(0xFF0A1128),
-                    unselectedLabelColor: Colors.grey,
-                    tabs: [
+         child: TabBar(
+           controller: _tabController,
+           dividerColor: Colors.transparent, // Supprime la ligne de séparation
+           indicatorColor: Colors.transparent, // Supprime l'indicateur bleu
+           labelColor: Theme.of(context).brightness == Brightness.dark
+               ? Colors.lightBlue[300]  // Bleu ciel en mode nuit
+               : const Color(0xFF0A1128),  // Bleu nuit en mode jour
+           unselectedLabelColor: Colors.white.withOpacity(0.7), // Blanc transparent pour les onglets non sélectionnés
+           labelStyle: TextStyle(fontSize: 12, fontWeight: FontWeight.bold),
+           unselectedLabelStyle: TextStyle(fontSize: 12, fontWeight: FontWeight.bold),
+           tabs: [
                       Tab(
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.center,
@@ -277,7 +287,9 @@ class _SoundMenuPageState extends ConsumerState<SoundMenuPage>
                       // Logique de changement d'onglet si nécessaire
                     },
                   ),
-                  ),
+                ),
+                const SizedBox(height: 6),
+                const PresetWidget(),
                 const SizedBox(height: 6),
                 Expanded(
                   child: TabBarView(
@@ -725,7 +737,7 @@ class _AmplificationLATabState extends ConsumerState<AmplificationLATab> {
             
             // Vérifier la compatibilité d'impédance
             if (speakerImpedance < ampSpec['impedance']) {
-              resultMessage += '⚠️ Impédance incompatible: $speakerName (${speakerImpedance}Ω) avec $amplifier (min ${ampSpec['impedance']}Ω)\n';
+              resultMessage += '⚠️ Impédance incompatible: $speakerName ($speakerImpedanceΩ) avec $amplifier (min ${ampSpec['impedance']}Ω)\n';
               continue;
             }
             
@@ -745,7 +757,7 @@ class _AmplificationLATabState extends ConsumerState<AmplificationLATab> {
             final amplifiersNeeded = (totalSpeakers / speakersPerAmplifier).ceil();
             
             resultMessage += '🔊 $speakerName (x$quantity)\n';
-            resultMessage += '   ${AppLocalizations.of(context)!.soundPage_power}: ${speakerPower}W AES @ ${speakerImpedance}Ω\n';
+            resultMessage += '   ${AppLocalizations.of(context)!.soundPage_power}: ${speakerPower}W AES @ $speakerImpedanceΩ\n';
             resultMessage += '   ${AppLocalizations.of(context)!.soundPage_amplifier}: $amplifier (${ampPower}W @ ${ampSpec['impedance']}Ω)\n';
             resultMessage += '   ${AppLocalizations.of(context)!.soundPage_capacity}: $speakersPerChannel ${AppLocalizations.of(context)!.soundPage_speakersPerChannel}, $speakersPerAmplifier ${AppLocalizations.of(context)!.soundPage_speakersPerAmp}\n';
             resultMessage += '   **${AppLocalizations.of(context)!.soundPage_amplifiersRequired}: $amplifiersNeeded**\n\n';
@@ -1014,27 +1026,52 @@ class _AmplificationLATabState extends ConsumerState<AmplificationLATab> {
                     ],
                   ),
                   const SizedBox(height: 16),
-                  BorderLabeledDropdown<String>(
-                    label: AppLocalizations.of(context)!.amplifier,
-                    value: selectedAmplifier,
-                    items: availableAmplifiers.map((type) => DropdownMenuItem(
-                      value: type,
-                      child: Text(type, style: const TextStyle(fontSize: 11)),
-                    )).toList(),
-                    onChanged: (String? newValue) {
-                      setDialogState(() {
-                        selectedAmplifier = newValue;
-                      });
-                    },
-                  ),
+                  
+                  // Boutons switch ampli préférentiel (comme dans la page catalogue)
+                  if (availableAmplifiers.isNotEmpty) ...[
+                    Text(
+                      AppLocalizations.of(context)!.amplifier,
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 14,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                    Row(
+                      children: availableAmplifiers.map((amp) {
+                        return Padding(
+                          padding: const EdgeInsets.only(right: 8),
+                          child: GestureDetector(
+                            onTap: () => setDialogState(() => selectedAmplifier = amp),
+                            child: Container(
+                              padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 3),
+                              decoration: BoxDecoration(
+                                color: selectedAmplifier == amp ? Colors.lightBlue[300] : Colors.grey[600],
+                                borderRadius: BorderRadius.circular(6),
+                              ),
+                              child: Text(
+                                amp, 
+                                style: const TextStyle(
+                                  color: Colors.white, 
+                                  fontSize: 10, 
+                                  fontWeight: FontWeight.bold
+                                ),
+                              ),
+                            ),
+                          ),
+                        );
+                      }).toList(),
+                    ),
+                  ],
                 ],
               ),
               actions: [
                 TextButton(
                   onPressed: () => Navigator.pop(context),
                   child: Text(loc.catalogPage_cancel,
-                      style: TextStyle(
-                        color: Theme.of(context).brightness == Brightness.light ? Colors.white : null,
+                      style: const TextStyle(
+                        color: Colors.lightBlue,
                       )),
                 ),
                 TextButton(
@@ -1064,8 +1101,8 @@ class _AmplificationLATabState extends ConsumerState<AmplificationLATab> {
                     });
                   },
                   child: Text(loc.catalogPage_confirm,
-                      style: TextStyle(
-                        color: Theme.of(context).brightness == Brightness.light ? Colors.white : null,
+                      style: const TextStyle(
+                        color: Colors.lightBlue,
                       )),
                 ),
               ],
@@ -1143,23 +1180,12 @@ class _AmplificationLATabState extends ConsumerState<AmplificationLATab> {
   Widget build(BuildContext context) {
     return Column(
       children: [
-        PresetWidget(
-          onPresetSelected: (preset) {
-            setState(() {
-              final presets = ref.read(presetProvider);
-              final index = presets.indexWhere((p) => p.id == preset.id);
-              if (index != -1) {
-                ref.read(presetProvider.notifier).selectPreset(index);
-              }
-            });
-          },
-        ),
         Expanded(
           child: Container(
             margin: const EdgeInsets.all(16),
             decoration: BoxDecoration(
               color: const Color(0xFF0A1128).withOpacity(0.3),
-                border: Border.all(color: Colors.white, width: 1),
+              border: Border.all(color: Colors.white, width: 1),
               borderRadius: BorderRadius.circular(12),
             ),
             child: SingleChildScrollView(
@@ -1263,7 +1289,7 @@ class _AmplificationLATabState extends ConsumerState<AmplificationLATab> {
                   Center(
                     child: ElevatedButton(
                           onPressed: () {
-                            // Logique d'import preset
+                            _importPresetToSoundList();
                           },
                       style: ElevatedButton.styleFrom(
                         backgroundColor: const Color(0xFF1565C0),
@@ -1505,15 +1531,18 @@ class _AmplificationLATabState extends ConsumerState<AmplificationLATab> {
                                 iconSize: 28,
                               ),
                               const SizedBox(width: 20),
-                              // Bouton Export (rotated)
-                              ExportWidget(
-                                title: 'Configuration Amplification',
-                                content: calculationResult!,
-                                projectType: 'sound',
-                                fileName: 'configuration_amplification',
-                                customIcon: Icons.cloud_upload,
-                                backgroundColor: Colors.blueGrey[900],
-                                tooltip: 'Exporter la configuration',
+                              // Bouton Export (rotated 180°)
+                              Transform.rotate(
+                                angle: 3.14159, // 180° en radians
+                                child: ExportWidget(
+                                  title: 'Amplification 1',
+                                  content: _buildAmplificationExportContent(),
+                                  projectType: 'sound',
+                                  fileName: 'configuration_amplification',
+                                  customIcon: Icons.cloud_upload,
+                                  backgroundColor: Colors.blueGrey[900],
+                                  tooltip: 'Exporter la configuration',
+                                ),
                               ),
                             ],
                           ),
@@ -1632,7 +1661,7 @@ class _AmplificationLATabState extends ConsumerState<AmplificationLATab> {
     final quantities = selectedSpeakers.map((s) => s['quantity'] as int).join('_');
     final category = soundState.selectedCategory ?? 'none';
     final brand = soundState.selectedBrand ?? 'none';
-    return 'sound_${speakerNames}_${quantities}_${category}_${brand}';
+    return 'sound_${speakerNames}_${quantities}_${category}_$brand';
   }
 
   Future<void> _showCommentDialog(String tabKey, String tabName) async {
@@ -1696,5 +1725,201 @@ class _AmplificationLATabState extends ConsumerState<AmplificationLATab> {
         );
       },
     );
+  }
+
+  // Méthodes pour l'import de preset
+  void _importPresetToSoundList() {
+    final presets = ref.read(presetProvider);
+    
+    if (presets.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Aucun preset disponible à importer'),
+          backgroundColor: Colors.orange,
+        ),
+      );
+      return;
+    }
+
+    _showPresetSelectionDialog();
+  }
+
+  void _showPresetSelectionDialog() {
+    final presets = ref.read(presetProvider);
+    
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          backgroundColor: const Color(0xFF0A1128),
+          title: Text(
+            'Importer depuis un preset',
+            style: const TextStyle(color: Colors.white, fontSize: 18),
+          ),
+          content: SizedBox(
+            width: double.maxFinite,
+            height: 300,
+            child: ListView.builder(
+              itemCount: presets.length,
+              itemBuilder: (context, index) {
+                final preset = presets[index];
+                final soundItemsCount = preset.items
+                    .where((item) => item.item.categorie == 'Son')
+                    .length;
+                
+                return ListTile(
+                  title: Text(
+                    preset.name,
+                    style: const TextStyle(color: Colors.white),
+                  ),
+                  subtitle: Text(
+                    '$soundItemsCount appareil(s) son',
+                    style: const TextStyle(color: Colors.white70),
+                  ),
+                  trailing: const Icon(Icons.arrow_forward_ios, size: 16, color: Colors.white),
+                  onTap: () {
+                    Navigator.of(context).pop();
+                    _importSoundItemsFromPreset(preset);
+                  },
+                );
+              },
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(),
+              child: const Text(
+                'Annuler',
+                style: TextStyle(color: Colors.white),
+              ),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  void _importSoundItemsFromPreset(preset) {
+    ref.read(soundPageProvider.notifier).updateSelectedSpeakers([]);
+    
+    int importedCount = 0;
+    final newSpeakers = <Map<String, dynamic>>[];
+    for (var item in preset.items) {
+      if (item.item.categorie == 'Son') {
+        // Obtenir l'amplificateur par défaut pour cette enceinte
+        final defaultAmplifier = getDefaultAmplifier(item.item.produit, item.item.sousCategorie);
+        
+        newSpeakers.add({
+          'name': item.item.produit,
+          'quantity': item.quantity,
+          'amplifier': defaultAmplifier,
+        });
+        importedCount++;
+      }
+    }
+
+    ref.read(soundPageProvider.notifier).updateSelectedSpeakers(newSpeakers);
+
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text('$importedCount appareil(s) importé(s) depuis "${preset.name}"'),
+        backgroundColor: Colors.green,
+      ),
+    );
+  }
+
+  // Méthode pour générer le contenu complet de l'export d'amplification
+  String _buildAmplificationExportContent() {
+    final loc = AppLocalizations.of(context)!;
+    final projectState = ref.read(projectProvider);
+    final project = projectState.selectedProject;
+    
+    // Fonction helper pour traduire le nom du projet
+    String getTranslatedProjectName(Project project) {
+      switch (project.name) {
+        case 'default_project_1':
+          return loc.defaultProject1;
+        case 'default_project_2':
+          return loc.defaultProject2;
+        case 'default_project_3':
+          return loc.defaultProject3;
+        default:
+          return project.name;
+      }
+    }
+    
+    String content = '''
+CALCUL D'AMPLIFICATION - CONFIGURATION COMPLÈTE
+==============================================
+
+DÉTAILS DU PROJET:
+------------------
+Nom du projet: ${getTranslatedProjectName(project)}
+Lieu: ${project.location?.isNotEmpty == true ? project.location : 'Non défini'}
+Date de montage: ${project.mountingDate?.isNotEmpty == true ? project.mountingDate : 'Non définie'}
+Période: ${project.period?.isNotEmpty == true ? project.period : 'Non définie'}
+
+ENCEINTES SÉLECTIONNÉES POUR LE CALCUL:
+--------------------------------------
+''';
+
+    if (selectedSpeakers.isEmpty) {
+      content += 'Aucune enceinte sélectionnée\n\n';
+    } else {
+      int totalSpeakers = 0;
+      for (int i = 0; i < selectedSpeakers.length; i++) {
+        final speaker = selectedSpeakers[i];
+        final speakerName = speaker['name'] as String;
+        final quantity = speaker['quantity'] as int;
+        final amplifier = speaker['amplifier'] as String;
+        
+        totalSpeakers += quantity;
+        
+        content += '''
+${i + 1}. $speakerName
+   Quantité: $quantity enceinte(s)
+   Amplificateur: $amplifier
+''';
+      }
+      
+      content += '''
+\nRÉSUMÉ DES ENCEINTES:
+---------------------
+Nombre total d'enceintes: $totalSpeakers
+Nombre de modèles différents: ${selectedSpeakers.length}
+''';
+    }
+
+    // Ajouter le résultat du calcul s'il existe
+    if (calculationResult != null && calculationResult!.isNotEmpty) {
+      content += '''
+
+RÉSULTAT DU CALCUL D'AMPLIFICATION:
+==================================
+$calculationResult
+''';
+    } else {
+      content += '''
+
+RÉSULTAT DU CALCUL D'AMPLIFICATION:
+==================================
+Aucun calcul effectué. Veuillez sélectionner des enceintes et cliquer sur "Calculer".
+''';
+    }
+
+    content += '''
+
+RECOMMANDATIONS TECHNIQUES:
+---------------------------
+• Vérifier la compatibilité d'impédance entre enceintes et amplificateurs
+• Considérer les marges de sécurité pour éviter la saturation
+• Prévoir des amplificateurs de réserve pour les pannes
+• Vérifier la capacité électrique disponible
+• Tester la configuration avant l'événement
+
+Généré le: ${DateTime.now().toString().split('.')[0]}
+''';
+
+    return content;
   }
 }

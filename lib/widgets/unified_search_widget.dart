@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../models/catalogue_item.dart';
 import '../providers/catalogue_provider.dart';
-import 'package:av_wallet_hive/l10n/app_localizations.dart';
+import 'package:av_wallet/l10n/app_localizations.dart';
 
 class UnifiedSearchWidget extends ConsumerStatefulWidget {
   final String hintText;
@@ -260,8 +260,8 @@ class _UnifiedSearchWidgetState extends ConsumerState<UnifiedSearchWidget> {
                 ),
               ),
             ),
-            ),
           ),
+        ),
         ],
       ),
     );

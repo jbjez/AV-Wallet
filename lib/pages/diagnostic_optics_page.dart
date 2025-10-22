@@ -16,7 +16,7 @@ class _DiagnosticOpticsPageState extends ConsumerState<DiagnosticOpticsPage> {
   double largeurProjection = 5.0;
   String selectedFormat = '16/9';
   CatalogueItem? selectedProjector;
-  List<String> _logs = [];
+  final List<String> _logs = [];
 
   void _addLog(String message) {
     setState(() {

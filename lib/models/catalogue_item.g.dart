@@ -46,13 +46,14 @@ class CatalogueItemAdapter extends TypeAdapter<CatalogueItem> {
       powerProgramW: fields[26] as int?,
       powerPeakW: fields[27] as int?,
       maxVoltageVrms: fields[28] as double?,
+      isWifiByDefault: fields[29] as bool?,
     );
   }
 
   @override
   void write(BinaryWriter writer, CatalogueItem obj) {
     writer
-      ..writeByte(29)
+      ..writeByte(30)
       ..writeByte(0)
       ..write(obj.id)
       ..writeByte(1)
@@ -110,7 +111,9 @@ class CatalogueItemAdapter extends TypeAdapter<CatalogueItem> {
       ..writeByte(27)
       ..write(obj.powerPeakW)
       ..writeByte(28)
-      ..write(obj.maxVoltageVrms);
+      ..write(obj.maxVoltageVrms)
+      ..writeByte(29)
+      ..write(obj.isWifiByDefault);
   }
 
   @override

@@ -27,7 +27,7 @@ class CustomDialog extends StatelessWidget {
             Text(
               title,
               style: const TextStyle(
-                color: Color(0xFF0A1128),
+                color: Colors.lightBlue,
                 fontSize: 20,
                 fontWeight: FontWeight.bold,
               ),

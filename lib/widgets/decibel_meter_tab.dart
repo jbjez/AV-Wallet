@@ -15,7 +15,7 @@ enum DbWeighting { flat, A, C }                          // [8]
 enum DbResponse { fast, slow }                           // [9]
 
 class DecibelMeterTab extends StatefulWidget {           // [11]
-  const DecibelMeterTab({Key? key}) : super(key: key);   // [12]
+  const DecibelMeterTab({super.key});   // [12]
   @override
   State<DecibelMeterTab> createState() => _DecibelMeterTabState(); // [14]
 }
@@ -61,9 +61,6 @@ class _DecibelMeterTabState extends State<DecibelMeterTab> {  // [16]
     super.dispose();                                                         // [41]
   }
 
-  Future<bool> _ensureMicPermission() async {                                // [43]
-    return await AppPermissions.ensureMicrophone();                          // [44]
-  }
 
   void _buildFilter({int sampleRate = 44100}) {                              // [53]
     switch (_weighting) {
@@ -86,7 +83,7 @@ class _DecibelMeterTabState extends State<DecibelMeterTab> {  // [16]
     final micStatus = await Permission.microphone.status;
     debugPrint('MIC status iOS: $micStatus');
     
-    if (!await _ensureMicPermission()) return;                               // [66]
+    if (!await AppPermissions.ensureMicrophone()) return;                               // [66]
     _buildFilter(sampleRate: 44100);                                         // [67]
     _dbInstant = -120;                                                       // [68]
     _dbPeakHold = -120;                                                      // [69]
@@ -94,7 +91,7 @@ class _DecibelMeterTabState extends State<DecibelMeterTab> {  // [16]
     _leqSamples = 0;                                                         // [71]
 
     // Démarre le stream micro (16-bit PCM mono, 44.1kHz si possible)        // [73]
-    final stream = await MicStream.microphone(                               // [74]
+    final stream = MicStream.microphone(                               // [74]
       audioSource: AudioSource.DEFAULT,                                      // [75]
       sampleRate: 44100,                                                     // [76]
       channelConfig: ChannelConfig.CHANNEL_IN_MONO,                          // [77]
@@ -103,7 +100,7 @@ class _DecibelMeterTabState extends State<DecibelMeterTab> {  // [16]
 
 
     _running = true;                                                         // [80]
-    _micSub = stream?.listen(_onAudioData, onError: (e) {                     // [81]
+    _micSub = stream.listen(_onAudioData, onError: (e) {                     // [81]
       debugPrint('Mic error: $e');                                           // [82]
       _stop();                                                               // [83]
     });

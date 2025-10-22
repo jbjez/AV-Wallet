@@ -9,7 +9,7 @@ import 'electricite_menu_page.dart';
 import 'divers_menu_page.dart';
 import 'ar_measure_page.dart';
 import 'dmx_tab.dart';
-import 'package:av_wallet_hive/l10n/app_localizations.dart';
+import 'package:av_wallet/l10n/app_localizations.dart';
 import '../models/catalogue_item.dart';
 import '../models/cart_item.dart';
 import '../widgets/preset_widget.dart';

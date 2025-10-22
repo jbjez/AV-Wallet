@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:av_wallet_hive/l10n/app_localizations.dart';
+import 'package:av_wallet/l10n/app_localizations.dart';
 import '../../models/catalogue_item.dart';
 import '../../models/cart_item.dart';
 import '../../providers/catalogue_provider.dart';
@@ -812,7 +812,7 @@ class _AmpTabState extends ConsumerState<AmpTab> {
               fontWeight: FontWeight.bold,
             ),
           ),
-          content: Container(
+          content: SizedBox(
             width: double.maxFinite,
             height: 300,
             child: ListView.builder(

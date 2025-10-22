@@ -6,11 +6,36 @@ import '../models/lens.dart';
 import '../models/cart_item.dart';
 import '../models/project.dart';
 import '../models/project_calculation.dart';
+import '../models/pdf_data.dart';
 import 'catalogue_dmx_migration_service.dart';
+import 'supabase_service.dart';
 
 class HiveService {
   static final _logger = Logger('HiveService');
   static bool _isInitialized = false;
+
+  /// Obtenir l'email de l'utilisateur connecté pour la persistance
+  static String? _getCurrentUserEmail() {
+    try {
+      final user = SB.user;
+      return user?.email;
+    } catch (e) {
+      _logger.warning('Erreur lors de la récupération de l\'utilisateur: $e');
+      return null;
+    }
+  }
+
+  /// Générer un nom de box spécifique à l'utilisateur
+  static String _getUserSpecificBoxName(String baseName) {
+    final userEmail = _getCurrentUserEmail();
+    if (userEmail != null) {
+      // Utiliser l'email comme suffixe pour le nom de la box
+      final emailHash = userEmail.hashCode.abs().toString();
+      return '${baseName}_user_$emailHash';
+    }
+    // Si pas d'utilisateur connecté, utiliser une box générique
+    return '${baseName}_guest';
+  }
 
   static Future<void> initialize() async {
     if (_isInitialized) {
@@ -52,11 +77,18 @@ class HiveService {
           _logger.info('CartItemAdapter registered');
         }
         
-        if (Hive.isAdapterRegistered(4)) {
+        if (Hive.isAdapterRegistered(2)) {
           _logger.info('ProjectAdapter already registered, skipping');
         } else {
           Hive.registerAdapter(ProjectAdapter());
           _logger.info('ProjectAdapter registered');
+        }
+        
+        if (Hive.isAdapterRegistered(10)) {
+          _logger.info('PdfDataHiveAdapter already registered, skipping');
+        } else {
+          Hive.registerAdapter(PdfDataHiveAdapter());
+          _logger.info('PdfDataHiveAdapter registered');
         }
       } catch (e) {
         _logger.warning('Error registering adapters: $e');
@@ -72,6 +104,7 @@ class HiveService {
           _openBoxWithMigration<CartItem>('cart'),
           _openBoxWithMigration<Project>('projects'),
           _openBoxWithMigration<ProjectCalculation>('project_calculations'),
+          _openBoxWithMigration<PdfDataHive>('pdf_storage'),
         ]);
       } catch (e) {
         _logger.warning('Error opening boxes, attempting to recover...', e);
@@ -82,6 +115,7 @@ class HiveService {
         await _openBoxWithMigration<CartItem>('cart');
         await _openBoxWithMigration<Project>('projects');
         await _openBoxWithMigration<ProjectCalculation>('project_calculations');
+        await _openBoxWithMigration<PdfDataHive>('pdf_storage');
       }
 
       _isInitialized = true;
@@ -190,6 +224,81 @@ class HiveService {
       }
     } catch (e, stackTrace) {
       _logger.severe('Error getting presets box', e, stackTrace);
+      rethrow;
+    }
+  }
+
+  /// Obtenir la box des presets spécifique à l'utilisateur connecté
+  static Future<Box<Preset>> getUserPresetsBox() async {
+    if (!_isInitialized) {
+      await initialize();
+    }
+    try {
+      final boxName = _getUserSpecificBoxName('presets');
+      _logger.info('Getting user-specific presets box: $boxName');
+      
+      if (!Hive.isBoxOpen(boxName)) {
+        final box = await Hive.openBox<Preset>(boxName);
+        _logger.info('User presets box opened successfully: $boxName');
+        return box;
+      } else {
+        final box = Hive.box<Preset>(boxName);
+        _logger.info('User presets box already open: $boxName');
+        return box;
+      }
+    } catch (e, stackTrace) {
+      _logger.severe('Error getting user presets box', e, stackTrace);
+      rethrow;
+    }
+  }
+
+  static Future<Box<Project>> getProjectsBox() async {
+    if (!_isInitialized) {
+      await initialize();
+    }
+    try {
+      _logger.info('Getting projects box...');
+      if (!Hive.isBoxOpen('projects')) {
+        final box = await Hive.openBox<Project>('projects');
+        _logger.info('Projects box opened successfully');
+        return box;
+      } else {
+        final box = Hive.box<Project>('projects');
+        _logger.info('Projects box already open');
+        return box;
+      }
+    } catch (e, stackTrace) {
+      _logger.severe('Error getting projects box', e, stackTrace);
+      rethrow;
+    }
+  }
+
+  /// Obtenir la box des projets spécifique à l'utilisateur connecté
+  static Future<Box<Project>> getUserProjectsBox() async {
+    if (!_isInitialized) {
+      await initialize();
+    }
+    try {
+      final boxName = _getUserSpecificBoxName('projects');
+      _logger.info('Getting user-specific projects box: $boxName');
+      
+      // S'assurer que l'adapter Project est enregistré
+      if (!Hive.isAdapterRegistered(2)) {
+        _logger.info('Registering ProjectAdapter for user-specific box');
+        Hive.registerAdapter(ProjectAdapter());
+      }
+      
+      if (!Hive.isBoxOpen(boxName)) {
+        final box = await Hive.openBox<Project>(boxName);
+        _logger.info('User projects box opened successfully: $boxName');
+        return box;
+      } else {
+        final box = Hive.box<Project>(boxName);
+        _logger.info('User projects box already open: $boxName');
+        return box;
+      }
+    } catch (e, stackTrace) {
+      _logger.severe('Error getting user projects box', e, stackTrace);
       rethrow;
     }
   }

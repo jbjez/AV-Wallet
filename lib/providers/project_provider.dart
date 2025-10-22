@@ -1,8 +1,11 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:hive/hive.dart';
-import 'package:av_wallet_hive/l10n/app_localizations.dart';
+import 'package:av_wallet/l10n/app_localizations.dart';
 import '../models/project.dart';
 import '../models/preset.dart';
+import '../services/hive_service.dart';
+import 'package:flutter/foundation.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class ProjectState {
   final List<Project> projects;
@@ -89,7 +92,6 @@ class ProjectState {
 }
 
 class ProjectNotifier extends StateNotifier<ProjectState> {
-  static const String boxName = 'projects';
   late Box<Project> _box;
   bool _isInitializing = false;
 
@@ -97,6 +99,7 @@ class ProjectNotifier extends StateNotifier<ProjectState> {
       : super(ProjectState(projects: [], selectedProjectIndex: 0, isLoading: true)) {
     _initAsync();
   }
+
 
   // Initialisation asynchrone non-bloquante
   Future<void> _initAsync() async {
@@ -106,21 +109,66 @@ class ProjectNotifier extends StateNotifier<ProjectState> {
     try {
       state = state.copyWith(isLoading: true);
       
-      // Ouvrir la box Hive
-      _box = await Hive.openBox<Project>(boxName);
+      // Attendre que HiveService soit complètement initialisé
+      debugPrint('DEBUG ProjectProvider - Attente de l\'initialisation de HiveService...');
+      await HiveService.initialize();
+      debugPrint('DEBUG ProjectProvider - HiveService initialisé');
+      
+      // Attendre un peu plus pour s'assurer que tous les adapters sont enregistrés
+      await Future.delayed(const Duration(milliseconds: 100));
+      
+      // S'assurer que l'adapter Project est enregistré
+      if (!Hive.isAdapterRegistered(2)) {
+        debugPrint('DEBUG ProjectProvider - Enregistrement de l\'adapter Project');
+        Hive.registerAdapter(ProjectAdapter());
+      } else {
+        debugPrint('DEBUG ProjectProvider - Adapter Project déjà enregistré');
+      }
+      
+      // Utiliser la box globale 'projects' qui a l'adapter Project enregistré
+      debugPrint('DEBUG ProjectProvider - Ouverture de la box projects...');
+      _box = await Hive.openBox<Project>('projects');
+      debugPrint('DEBUG ProjectProvider - Box projects ouverte avec succès');
       
       // Initialiser les projets par défaut si nécessaire
       await _initializeDefaultProjects();
       
-      // Charger les projets
-      final projects = _box.values.toList();
+      // Charger les projets depuis SharedPreferences (contournement Hive)
+      final prefs = await SharedPreferences.getInstance();
+      final updatedProjects = <Project>[];
+      
+      // Créer un projet par défaut avec les paramètres de SharedPreferences
+      final defaultProject = Project(id: '1', name: 'default_project_1');
+      final location = prefs.getString('project_1_location');
+      final mountingDate = prefs.getString('project_1_mounting_date');
+      final period = prefs.getString('project_1_period');
+      
+      debugPrint('DEBUG ProjectProvider - Paramètres SharedPreferences (init):');
+      debugPrint('  - Location: $location');
+      debugPrint('  - Mounting Date: $mountingDate');
+      debugPrint('  - Period: $period');
+      
+      // Créer un projet mis à jour avec les paramètres de SharedPreferences
+      final updatedProject = defaultProject.copyWith(
+        location: location?.isNotEmpty == true ? location : defaultProject.location,
+        mountingDate: mountingDate?.isNotEmpty == true ? mountingDate : defaultProject.mountingDate,
+        period: period?.isNotEmpty == true ? period : defaultProject.period,
+      );
+      
+      updatedProjects.add(updatedProject);
+      
+      debugPrint('DEBUG ProjectProvider - Projets chargés depuis SharedPreferences: ${updatedProjects.length}');
       
       state = state.copyWith(
-        projects: projects,
+        projects: updatedProjects,
         isLoading: false,
         isInitialized: true,
       );
+      
+      // Essayer de sauvegarder dans Hive en arrière-plan (sans bloquer)
+      _trySaveToHiveInBackground(updatedProject);
     } catch (e) {
+      debugPrint('DEBUG ProjectProvider - Erreur lors de l\'initialisation: $e');
       // En cas d'erreur, créer des projets par défaut en mémoire
       final fallbackProjects = [
         Project(id: '1', name: 'default_project_1'),
@@ -139,13 +187,20 @@ class ProjectNotifier extends StateNotifier<ProjectState> {
   }
 
   Future<void> _initializeDefaultProjects() async {
+    debugPrint('DEBUG ProjectProvider - Initialisation des projets par défaut');
+    debugPrint('DEBUG ProjectProvider - Box vide: ${_box.isEmpty}');
+    debugPrint('DEBUG ProjectProvider - Nombre de projets dans la box: ${_box.length}');
+    
     if (_box.isEmpty) {
+      debugPrint('DEBUG ProjectProvider - Création des projets par défaut');
       // Créer des projets par défaut avec des noms génériques
       // Ces noms seront remplacés par des traductions dans l'UI
       await _box.add(Project(id: '1', name: 'default_project_1'));
       await _box.add(Project(id: '2', name: 'default_project_2'));
       await _box.add(Project(id: '3', name: 'default_project_3'));
+      debugPrint('DEBUG ProjectProvider - Projets par défaut créés: ${_box.length}');
     } else {
+      debugPrint('DEBUG ProjectProvider - Migration des projets existants');
       // Migrer les projets existants si nécessaire
       await _migrateExistingProjects();
     }
@@ -186,16 +241,70 @@ class ProjectNotifier extends StateNotifier<ProjectState> {
     
     try {
       state = state.copyWith(isLoading: true);
-      final projects = _box.values.toList();
-      state = state.copyWith(projects: projects, isLoading: false);
+      
+      // Charger les paramètres depuis SharedPreferences directement (contournement Hive)
+      final prefs = await SharedPreferences.getInstance();
+      final updatedProjects = <Project>[];
+      
+      // Créer un projet par défaut avec les paramètres de SharedPreferences
+      final defaultProject = Project(id: '1', name: 'default_project_1');
+      final name = prefs.getString('project_1_name');
+      final location = prefs.getString('project_1_location');
+      final mountingDate = prefs.getString('project_1_mounting_date');
+      final period = prefs.getString('project_1_period');
+      
+      debugPrint('DEBUG ProjectProvider - Paramètres SharedPreferences:');
+      debugPrint('  - Name: $name');
+      debugPrint('  - Location: $location');
+      debugPrint('  - Mounting Date: $mountingDate');
+      debugPrint('  - Period: $period');
+      
+      // Créer un projet mis à jour avec les paramètres de SharedPreferences
+      final updatedProject = defaultProject.copyWith(
+        name: name?.isNotEmpty == true ? name : defaultProject.name,
+        location: location?.isNotEmpty == true ? location : defaultProject.location,
+        mountingDate: mountingDate?.isNotEmpty == true ? mountingDate : defaultProject.mountingDate,
+        period: period?.isNotEmpty == true ? period : defaultProject.period,
+      );
+      
+      updatedProjects.add(updatedProject);
+      
+      debugPrint('DEBUG ProjectProvider - Projet mis à jour avec SharedPreferences: ${updatedProjects.length}');
+      state = state.copyWith(projects: updatedProjects, isLoading: false);
+      
+      // Essayer de sauvegarder dans Hive en arrière-plan (sans bloquer)
+      _trySaveToHiveInBackground(updatedProject);
+      
     } catch (e) {
+      debugPrint('DEBUG ProjectProvider - Erreur lors du rafraîchissement: $e');
       state = state.copyWith(isLoading: false);
+    }
+  }
+  
+  // Sauvegarder dans Hive en arrière-plan sans bloquer
+  Future<void> _trySaveToHiveInBackground(Project project) async {
+    try {
+      if (!_box.isOpen) {
+        _box = await Hive.openBox<Project>('projects');
+      }
+      
+      final existingIndex = _box.values.toList().indexWhere((p) => p.id == project.id);
+      if (existingIndex != -1) {
+        await _box.putAt(existingIndex, project);
+      } else {
+        await _box.add(project);
+      }
+      debugPrint('DEBUG ProjectProvider - Projet aussi sauvegardé dans Hive');
+    } catch (e) {
+      debugPrint('DEBUG ProjectProvider - Erreur Hive ignorée (SharedPreferences OK): $e');
     }
   }
 
   void selectProject(int index) {
     if (index >= 0 && index < state.projects.length) {
       state = state.copyWith(selectedProjectIndex: index);
+    } else {
+      debugPrint('DEBUG ProjectProvider - Index invalide: $index (projets disponibles: ${state.projects.length})');
     }
   }
 
@@ -213,17 +322,30 @@ class ProjectNotifier extends StateNotifier<ProjectState> {
     );
   }
 
-  void renameProject(int index, String newName) async {
-    if (index < 0 || index >= state.projects.length) return;
+  void updateProject(Project updatedProject) async {
+    // Trouver l'index du projet à mettre à jour
+    final index = state.projects.indexWhere((p) => p.id == updatedProject.id);
+    if (index == -1) {
+      debugPrint('DEBUG ProjectProvider - Projet non trouvé avec ID: ${updatedProject.id}');
+      debugPrint('DEBUG ProjectProvider - Projets disponibles: ${state.projects.map((p) => '${p.id}: ${p.name}').join(', ')}');
+      return;
+    }
     
-    final project = state.projects[index];
-    project.name = newName;
-    await project.save();
+    // Vérifier si la box est vide
+    if (_box.isEmpty) {
+      debugPrint('DEBUG ProjectProvider - Box vide, création d\'un projet par défaut');
+      await _box.add(updatedProject);
+    } else {
+      // Sauvegarder dans la box spécifique à l'utilisateur en utilisant l'index
+      await _box.putAt(index, updatedProject);
+    }
     
     // Mettre à jour seulement le projet modifié
     final newProjects = List<Project>.from(state.projects);
-    newProjects[index] = project;
+    newProjects[index] = updatedProject;
     state = state.copyWith(projects: newProjects);
+    
+    debugPrint('DEBUG ProjectProvider - Projet mis à jour avec succès: ${updatedProject.name}');
   }
 
   void deleteProject(int index) async {
@@ -246,13 +368,14 @@ class ProjectNotifier extends StateNotifier<ProjectState> {
     if (state.projects.isEmpty) return;
     
     final project = state.selectedProject;
-    project.presets.add(preset);
-    await project.save();
+    final updatedProject = project.copyWith(presets: [...project.presets, preset]);
+    
+    // Sauvegarder dans la box spécifique à l'utilisateur en utilisant l'index
+    await _box.putAt(state.selectedProjectIndex, updatedProject);
     
     // Mettre à jour seulement le projet modifié
     final newProjects = List<Project>.from(state.projects);
-    final currentIndex = state.selectedProjectIndex;
-    newProjects[currentIndex] = project;
+    newProjects[state.selectedProjectIndex] = updatedProject;
     state = state.copyWith(projects: newProjects);
   }
 
@@ -261,13 +384,16 @@ class ProjectNotifier extends StateNotifier<ProjectState> {
     
     final project = state.selectedProject;
     if (presetIndex >= 0 && presetIndex < project.presets.length) {
-      project.presets.removeAt(presetIndex);
-      await project.save();
+      final updatedPresets = List<Preset>.from(project.presets);
+      updatedPresets.removeAt(presetIndex);
+      final updatedProject = project.copyWith(presets: updatedPresets);
+      
+      // Sauvegarder dans la box spécifique à l'utilisateur en utilisant l'index
+      await _box.putAt(state.selectedProjectIndex, updatedProject);
       
       // Mettre à jour seulement le projet modifié
       final newProjects = List<Project>.from(state.projects);
-      final currentIndex = state.selectedProjectIndex;
-      newProjects[currentIndex] = project;
+      newProjects[state.selectedProjectIndex] = updatedProject;
       state = state.copyWith(projects: newProjects);
     }
   }
@@ -283,19 +409,38 @@ class ProjectNotifier extends StateNotifier<ProjectState> {
     final toProject = state.projects[toProjectIndex];
     
     if (presetIndex >= 0 && presetIndex < fromProject.presets.length) {
-      final preset = fromProject.presets.removeAt(presetIndex);
-      await fromProject.save();
-      toProject.presets.add(preset);
-      await toProject.save();
+      final preset = fromProject.presets[presetIndex];
+      
+      // Créer les projets mis à jour
+      final updatedFromPresets = List<Preset>.from(fromProject.presets);
+      updatedFromPresets.removeAt(presetIndex);
+      final updatedFromProject = fromProject.copyWith(presets: updatedFromPresets);
+      
+      final updatedToPresets = List<Preset>.from(toProject.presets);
+      updatedToPresets.add(preset);
+      final updatedToProject = toProject.copyWith(presets: updatedToPresets);
+      
+      // Sauvegarder dans la box spécifique à l'utilisateur en utilisant l'index
+      await _box.putAt(fromProjectIndex, updatedFromProject);
+      await _box.putAt(toProjectIndex, updatedToProject);
       
       // Mettre à jour seulement les projets modifiés
       final newProjects = List<Project>.from(state.projects);
-      newProjects[fromProjectIndex] = fromProject;
-      newProjects[toProjectIndex] = toProject;
+      newProjects[fromProjectIndex] = updatedFromProject;
+      newProjects[toProjectIndex] = updatedToProject;
       state = state.copyWith(projects: newProjects);
     }
   }
+
 }
 
 final projectProvider = StateNotifierProvider<ProjectNotifier, ProjectState>(
-    (ref) => ProjectNotifier());
+    (ref) {
+  final notifier = ProjectNotifier();
+  // Initialisation automatique comme pour CatalogueProvider
+  Future.delayed(const Duration(milliseconds: 200), () {
+    debugPrint('ProjectProvider: Starting delayed initialization');
+    notifier._initAsync();
+  });
+  return notifier;
+});

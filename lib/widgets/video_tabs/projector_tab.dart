@@ -3,10 +3,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../providers/catalogue_provider.dart';
 import '../../providers/page_state_provider.dart';
 import '../../models/catalogue_item.dart';
-import 'package:av_wallet_hive/l10n/app_localizations.dart';
-import '../uniform_dropdown.dart';
+import 'package:av_wallet/l10n/app_localizations.dart';
 import '../unified_search_widget.dart';
-import '../unified_quantity_dialog.dart';
 
 class ProjectorTab extends ConsumerStatefulWidget {
   const ProjectorTab({super.key});
@@ -63,32 +61,34 @@ class _ProjectorTabState extends ConsumerState<ProjectorTab> {
                 Row(
                   children: [
                     Expanded(
-                      child: BrandDropdown(
-                        selectedBrand: videoState.selectedBrand,
-                        brands: projectors.map((item) => item.marque).toSet().toList()..sort(),
-                        onChanged: (brand) {
-                          ref.read(videoPageStateProvider.notifier).updateSelectedBrand(brand);
-                          setState(() {
-                            selectedProjector = null;
-                          });
-                        },
-                        fontSize: 14,
-                      ),
+                      child: SizedBox.shrink(), // Placeholder temporaire
+                      // child: BrandDropdown(
+                      //   selectedBrand: videoState.selectedBrand,
+                      //   brands: projectors.map((item) => item.marque).toSet().toList()..sort(),
+                      //   onChanged: (brand) {
+                      //     ref.read(videoPageStateProvider.notifier).updateSelectedBrand(brand);
+                      //     setState(() {
+                      //       selectedProjector = null;
+                      //     });
+                      //   },
+                      //   fontSize: 14,
+                      // ),
                     ),
                     const SizedBox(width: 8),
                     Expanded(
-                      child: ProjectorModelDropdownWithFirstSelect(
-                        selectedProjector: selectedProjector,
-                        projectors: projectors,
-                        selectedBrand: videoState.selectedBrand,
-                        onChanged: (item) {
-                          setState(() {
-                            selectedProjector = item;
-                          });
-                        },
-                        fontSize: 14,
-                        firstSelectText: 'Sélectionnez une marque d\'abord',
-                      ),
+                      child: SizedBox.shrink(), // Placeholder temporaire
+                      // child: ProjectorModelDropdownWithFirstSelect(
+                      //   selectedProjector: selectedProjector,
+                      //   projectors: projectors,
+                      //   selectedBrand: videoState.selectedBrand,
+                      //   onChanged: (item) {
+                      //     setState(() {
+                      //       selectedProjector = item;
+                      //     });
+                      //   },
+                      //   fontSize: 14,
+                      //   firstSelectText: 'Sélectionnez une marque d\'abord',
+                      // ),
                     ),
                   ],
                 ),
@@ -96,49 +96,52 @@ class _ProjectorTabState extends ConsumerState<ProjectorTab> {
                 Row(
                   children: [
                     Expanded(
-                      child: FormatDropdown(
-                        selectedFormat: selectedFormat,
-                        formats: ['16/9', '4/3', '1/1'],
-                        onChanged: (value) {
-                          if (value != null) {
-                            setState(() {
-                              selectedFormat = value;
-                            });
-                          }
-                        },
-                        fontSize: 14,
-                      ),
+                      child: SizedBox.shrink(), // Placeholder temporaire
+                      // child: FormatDropdown(
+                      //   selectedFormat: selectedFormat,
+                      //   formats: ['16/9', '4/3', '1/1'],
+                      //   onChanged: (value) {
+                      //     if (value != null) {
+                      //       setState(() {
+                      //         selectedFormat = value;
+                      //       });
+                      //     }
+                      //   },
+                      //   fontSize: 14,
+                      // ),
                     ),
                     const SizedBox(width: 8),
                     Expanded(
-                      child: ProjectorCountDropdown(
-                        selectedCount: nbProjecteurs,
-                        maxCount: 6,
-                        onChanged: (value) {
-                          if (value != null) {
-                            setState(() {
-                              nbProjecteurs = value;
-                            });
-                          }
-                        },
-                        fontSize: 14,
-                      ),
+                      child: SizedBox.shrink(), // Placeholder temporaire
+                      // child: ProjectorCountDropdown(
+                      //   selectedCount: nbProjecteurs,
+                      //   maxCount: 6,
+                      //   onChanged: (value) {
+                      //     if (value != null) {
+                      //       setState(() {
+                      //         nbProjecteurs = value;
+                      //       });
+                      //     }
+                      //   },
+                      //   fontSize: 14,
+                      // ),
                     ),
                     const SizedBox(width: 8),
                     Expanded(
-                      child: OverlapDropdown(
-                        selectedOverlap: chevauchement,
-                        overlapValues: [10.0, 15.0, 20.0],
-                        onChanged: (value) {
-                          if (value != null) {
-                            setState(() {
-                              chevauchement = value;
-                            });
-                          }
-                        },
-                        enabled: nbProjecteurs > 1,
-                        fontSize: 14,
-                      ),
+                      child: SizedBox.shrink(), // Placeholder temporaire
+                      // child: OverlapDropdown(
+                      //   selectedOverlap: chevauchement,
+                      //   overlapValues: [10.0, 15.0, 20.0],
+                      //   onChanged: (value) {
+                      //     if (value != null) {
+                      //       setState(() {
+                      //         chevauchement = value;
+                      //       });
+                      //     }
+                      //   },
+                      //   enabled: nbProjecteurs > 1,
+                      //   fontSize: 14,
+                      // ),
                     ),
                   ],
                 ),
@@ -250,7 +253,10 @@ class _ProjectorTabState extends ConsumerState<ProjectorTab> {
                               onPressed: () {
                                 // Action pour exporter
                               },
-                              icon: const Icon(Icons.download),
+                              icon: Transform.rotate(
+                                angle: 3.14159, // 180° en radians
+                                child: const Icon(Icons.download),
+                              ),
                               label: Text(loc.export),
                               style: ElevatedButton.styleFrom(
                                 backgroundColor: Colors.blueGrey[900],

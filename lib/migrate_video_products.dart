@@ -1,4 +1,3 @@
-import 'package:flutter/material.dart';
 import 'package:logging/logging.dart';
 import 'services/hive_service.dart';
 import 'services/catalogue_migration_service.dart';

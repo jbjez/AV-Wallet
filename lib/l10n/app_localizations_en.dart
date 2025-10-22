@@ -12,31 +12,36 @@ class AppLocalizationsEn extends AppLocalizations {
   String get amplifier => 'Amplifier';
 
   @override
-  String get arMeasure_captureError => 'Armeasure Captureerror';
+  String get arMeasure_photoAr => 'Photo/AR';
 
   @override
-  String get arMeasure_capturing => 'Armeasure Capturing';
+  String get arMeasure_captureError => 'Capture error';
 
   @override
-  String get arMeasure_defaultProject => 'Armeasure Defaultproject';
+  String get arMeasure_capturing => 'Capturing...';
 
   @override
-  String get arMeasure_photo => 'Armeasure Photo';
+  String get arMeasure_defaultProject => 'Default project';
 
   @override
-  String get arMeasure_photoSaved => 'Armeasure Photosaved';
+  String get arMeasure_photo => 'Photo';
 
   @override
-  String get arMeasure_photosAutoSaved => 'Armeasure Photosautosaved';
+  String get arMeasure_photoSaved => 'Photo saved in project!';
 
   @override
-  String get arMeasure_saveError => 'Armeasure Saveerror';
+  String get arMeasure_photosAutoSaved =>
+      'Photos are automatically saved in the active project folder';
 
   @override
-  String get arMeasure_takePhotosAndMeasure => 'Armeasure Takephotosandmeasure';
+  String get arMeasure_saveError => 'Save error';
 
   @override
-  String get arMeasure_unity => 'Armeasure Unity';
+  String get arMeasure_takePhotosAndMeasure =>
+      'Take reference photos and start AR measurements';
+
+  @override
+  String get arMeasure_unity => 'Unity';
 
   @override
   String get brand => 'Brand';
@@ -45,10 +50,10 @@ class AppLocalizationsEn extends AppLocalizations {
   String get cancel => 'Cancel';
 
   @override
-  String get catalogPage_search => 'Catalog Page Search';
+  String get catalogPage_search => 'Search';
 
   @override
-  String get catalogPage_subCategory => 'Catalog Page Subcategory';
+  String get catalogPage_subCategory => 'Subcategory';
 
   @override
   String get catalogue_angle => 'Catalogue Angle';
@@ -120,7 +125,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get create => 'Create';
 
   @override
-  String get defaultProjectName => 'Defaultprojectname';
+  String get defaultProjectName => 'Project1';
 
   @override
   String get delete => 'Delete';
@@ -132,137 +137,165 @@ class AppLocalizationsEn extends AppLocalizations {
   String get destination => 'Destination';
 
   @override
-  String get dmxPage_allCategories => 'Dmx Page Allcategories';
+  String get dmxPage_allCategories => 'All Categories';
 
   @override
-  String get dmxPage_cancel => 'Dmx Page Cancel';
+  String get dmxPage_cancel => 'Cancel';
 
   @override
-  String get dmxPage_channelsTotal => 'Dmx Page Channelstotal';
+  String get dmxPage_channelsTotal => 'Total Channels';
 
   @override
-  String get dmxPage_channelsUsed => 'Dmx Page Channelsused';
+  String get dmxPage_channelsUsed => 'Channels Used';
 
   @override
-  String get dmxPage_confirm => 'Dmx Page Confirm';
+  String get dmxPage_confirm => 'Confirm';
 
   @override
-  String get dmxPage_dmxMax => 'Dmx Page Dmxmax';
+  String get dmxPage_dmxMax => 'DMX Max';
 
   @override
-  String get dmxPage_dmxMini => 'Dmx Page Dmxmini';
+  String get dmxPage_dmxMini => 'DMX Mini';
 
   @override
-  String get dmxPage_dmxType => 'Dmx Page Dmxtype';
+  String get dmxPage_dmxType => 'DMX Type';
 
   @override
-  String get dmxPage_importPreset => 'Dmx Page Importpreset';
+  String get dmxPage_importPreset => 'Import Preset';
 
   @override
-  String get dmxPage_importedFromPreset => 'Dmx Page Importedfrompreset';
+  String get dmxPage_importedFromPreset => 'Imported from Preset';
 
   @override
-  String get dmxPage_ledBar => 'Dmx Page Ledbar';
+  String get dmxPage_ledBar => 'LED Bar';
 
   @override
-  String get dmxPage_lightDevices => 'Dmx Page Lightdevices';
+  String get dmxPage_lightDevices => 'Light Devices';
 
   @override
-  String get dmxPage_mapDmx => 'Dmx Page Mapdmx';
+  String get dmxPage_mapDmx => 'Map DMX';
 
   @override
-  String get dmxPage_movingHead => 'Dmx Page Movinghead';
+  String get dmxPage_movingHead => 'Moving Head';
 
   @override
-  String get dmxPage_noPresetAvailable => 'Dmx Page Nopresetavailable';
+  String get dmxPage_noPresetAvailable => 'No Preset Available';
 
   @override
-  String get dmxPage_noPresetSelected => 'Dmx Page Nopresetselected';
+  String get dmxPage_noPresetSelected => 'No Preset Selected';
 
   @override
-  String get dmxPage_noProductsSelected => 'Dmx Page Noproductsselected';
+  String get dmxPage_noProductsSelected => 'No Products Selected';
 
   @override
-  String get dmxPage_ok => 'Dmx Page Ok';
+  String get dmxPage_ok => 'OK';
 
   @override
-  String get dmxPage_productsAddedToPreset => 'Dmx Page Productsaddedtopreset';
+  String get dmxPage_productsAddedToPreset => 'Products Added to Preset';
 
   @override
-  String get dmxPage_quantityEnter => 'Dmx Page Quantityenter';
+  String get dmxPage_quantityEnter => 'Enter Quantity';
 
   @override
-  String get dmxPage_scanner => 'Dmx Page Scanner';
+  String get dmxPage_scanner => 'Scanner';
 
   @override
-  String get dmxPage_searchHint => 'Dmx Page Searchhint';
+  String get dmxPage_searchHint => 'Search Hint';
 
   @override
-  String get dmxPage_selectPreset => 'Dmx Page Selectpreset';
+  String get dmxPage_selectPreset => 'Select Preset';
 
   @override
-  String get dmxPage_selectedProducts => 'Dmx Page Selectedproducts';
+  String get dmxPage_selectedProducts => 'Selected Products';
 
   @override
-  String get dmxPage_strobe => 'Dmx Page Strobe';
+  String get dmxPage_strobe => 'Strobe';
 
   @override
-  String get dmxPage_universe => 'Dmx Page Universe';
+  String get dmxPage_universe => 'Universe';
 
   @override
-  String get dmxPage_universesNeeded => 'Dmx Page Universesneeded';
+  String get dmxPage_universesNeeded => 'Universes Needed';
 
   @override
-  String get dmxPage_wash => 'Dmx Page Wash';
+  String get dmxPage_wash => 'Wash';
 
   @override
-  String get dmxPage_wired => 'Dmx Page Wired';
+  String get dmxPage_wired => 'Wired';
 
   @override
-  String get driverTab_customDriverChannels => 'Drivertab Customdriverchannels';
+  String get driverTab_customDriverChannels => 'Custom Driver Channels';
 
   @override
-  String get driverTab_customDriverIntensity =>
-      'Drivertab Customdriverintensity';
+  String get driverTab_customDriverIntensity => 'Custom Driver Intensity';
 
   @override
-  String get driverTab_customDriverTitle => 'Drivertab Customdrivertitle';
+  String get driverTab_customDriverTitle => 'Custom Driver Title';
 
   @override
-  String get driverTab_driverChoice => 'Drivertab Driverchoice';
+  String get driverTab_driverChoice => 'Driver Choice';
 
   @override
-  String get driverTab_ledLength => 'Drivertab Ledlength';
+  String get driverTab_ledLength => 'LED Length';
 
   @override
-  String get driverTab_ledPower => 'Drivertab Ledpower';
+  String get driverTab_ledPower => 'LED Power';
 
   @override
-  String get enterProjectName => 'Enterprojectname';
+  String get enterProjectName => 'Enter Project Name';
 
   @override
   String get export => 'Export';
 
   @override
-  String get exportCount => 'Exportcount';
+  String get exportCount => 'Export Count';
 
   @override
-  String get exportProject => 'Exportproject';
+  String get exportProject => 'Export Project';
 
   @override
-  String get lightPage_beamDiameter => 'Light Page Beamdiameter';
+  String get lightPage_beamDiameter => 'Beam Diameter';
 
   @override
-  String get loadProject => 'Loadproject';
+  String get lightPage_beamTab => 'Beam';
 
   @override
-  String get loginMenu_accountSettings => 'Loginmenu Accountsettings';
+  String get lightPage_ledDriverTab => 'Led driver';
 
   @override
-  String get loginMenu_logout => 'Loginmenu Logout';
+  String get loadProject => 'Load Project';
 
   @override
-  String get loginMenu_myProjects => 'Loginmenu Myprojects';
+  String get loadProject_selectProject => 'Select a project to load:';
+
+  @override
+  String standard_welcome_title(String username) {
+    return 'Welcome to AVWallet';
+  }
+
+  @override
+  String get premium_benefit_catalogue => 'Catalogue +220 Products';
+
+  @override
+  String get premium_benefit_calculations => 'Unlimited Calculations';
+
+  @override
+  String get premium_benefit_project_management => 'Project/Preset Management';
+
+  @override
+  String get premium_benefit_pdf_export => 'PDF Export';
+
+  @override
+  String get loginMenu_accountSettings => 'Account Settings';
+
+  @override
+  String get loginMenu_logout => 'Logout';
+
+  @override
+  String get loginMenu_myProjects => 'My Projects';
+
+  @override
+  String get loginMenu_usage => 'Usage';
 
   @override
   String get noPresetSelected => 'Nopresetselected';
@@ -319,13 +352,28 @@ class AppLocalizationsEn extends AppLocalizations {
   String get presetRenamed => 'Presetrenamed';
 
   @override
-  String get presetWidget_confirmDelete => 'Preset Widget Confirmdelete';
+  String get presetWidget_confirmDelete => 'Confirm Delete';
 
   @override
-  String get presetWidget_create => 'Preset Widget Create';
+  String get presetWidget_create => 'Create';
 
   @override
-  String get presetWidget_newPreset => 'Preset Widget Newpreset';
+  String get new_preset => 'New Preset';
+
+  @override
+  String get view_project => 'View Project';
+
+  @override
+  String get new_project => 'New Project';
+
+  @override
+  String get save_project => 'Save Project';
+
+  @override
+  String get load_project => 'Load Project';
+
+  @override
+  String get export_project => 'Export Project';
 
   @override
   String get product => 'Product';
@@ -340,19 +388,16 @@ class AppLocalizationsEn extends AppLocalizations {
   String get projectNameLabel => 'Projectnamelabel';
 
   @override
+  String get project_name => 'Project Name';
+
+  @override
   String get projectPage_addToPreset => 'Project Page Addtopreset';
 
   @override
   String get projectPage_cancel => 'Project Page Cancel';
 
   @override
-  String get projectRenamed => 'Projectrenamed';
-
-  @override
   String get quantity => 'Quantity';
-
-  @override
-  String get renameProject => 'Renameproject';
 
   @override
   String get rename_preset => 'Rename Preset';
@@ -373,154 +418,145 @@ class AppLocalizationsEn extends AppLocalizations {
   String get search_speaker => 'Search Speaker';
 
   @override
-  String get settingsPage_account => 'Settings Page Account';
+  String get settingsPage_account => 'Account';
 
   @override
-  String get settingsPage_biometricAuth => 'Settings Page Biometricauth';
+  String get settingsPage_biometricAuth => 'Biometric Authentication';
 
   @override
-  String get settingsPage_cancel => 'Settings Page Cancel';
+  String get settingsPage_cancel => 'Cancel';
 
   @override
-  String get settingsPage_changePassword => 'Settings Page Changepassword';
+  String get settingsPage_changePassword => 'Change Password';
 
   @override
-  String get settingsPage_confirmSignOut => 'Settings Page Confirmsignout';
+  String get settingsPage_confirmSignOut => 'Confirm Sign Out';
 
   @override
-  String get settingsPage_confirmUnsubscribe =>
-      'Settings Page Confirmunsubscribe';
+  String get settingsPage_confirmUnsubscribe => 'Confirm Unsubscribe';
 
   @override
-  String get settingsPage_email => 'Settings Page Email';
+  String get settingsPage_email => 'Email';
 
   @override
-  String get settingsPage_error => 'Settings Page Error';
+  String get settingsPage_error => 'Error';
 
   @override
-  String get settingsPage_featureNotImplemented =>
-      'Settings Page Featurenotimplemented';
+  String get settingsPage_featureNotImplemented => 'Feature Not Implemented';
 
   @override
-  String get settingsPage_freemiumTest => 'Settings Page Freemiumtest';
+  String get settingsPage_freemiumTest => 'Freemium Test';
 
   @override
-  String get settingsPage_name => 'Settings Page Name';
+  String get settingsPage_name => 'Name';
 
   @override
-  String get settingsPage_notAvailable => 'Settings Page Notavailable';
+  String get settingsPage_notAvailable => 'Not Available';
 
   @override
-  String get settingsPage_notDefined => 'Settings Page Notdefined';
+  String get settingsPage_notDefined => 'Not Defined';
 
   @override
-  String get settingsPage_ok => 'Settings Page Ok';
+  String get settingsPage_ok => 'OK';
 
   @override
-  String get settingsPage_premium => 'Settings Page Premium';
+  String get settingsPage_premium => 'Premium';
 
   @override
-  String get settingsPage_premiumActivated => 'Settings Page Premiumactivated';
+  String get settingsPage_premiumActivated => 'Premium Activated';
 
   @override
-  String get settingsPage_premiumSubscription =>
-      'Settings Page Premiumsubscription';
+  String get settingsPage_premiumSubscription => 'Premium Subscription';
 
   @override
-  String get settingsPage_security => 'Settings Page Security';
+  String get settingsPage_security => 'Security';
 
   @override
-  String get settingsPage_signOut => 'Settings Page Signout';
+  String get settingsPage_signOut => 'Sign Out';
 
   @override
   String get settingsPage_signOutDialogContent =>
-      'Settings Page Signoutdialogcontent';
+      'Are you sure you want to sign out?';
 
   @override
-  String get settingsPage_signOutDialogTitle =>
-      'Settings Page Signoutdialogtitle';
+  String get settingsPage_signOutDialogTitle => 'Sign Out';
 
   @override
-  String get settingsPage_standard => 'Settings Page Standard';
+  String get settingsPage_standard => 'Standard';
 
   @override
-  String get settingsPage_status => 'Settings Page Status';
+  String get settingsPage_status => 'Status';
 
   @override
-  String get settingsPage_subscribe => 'Settings Page Subscribe';
+  String get settingsPage_subscribe => 'Subscribe';
 
   @override
   String get settingsPage_subscribeDialogContent =>
-      'Settings Page Subscribedialogcontent';
+      'Do you want to subscribe to the premium plan?';
 
   @override
-  String get settingsPage_subscribeDialogTitle =>
-      'Settings Page Subscribedialogtitle';
+  String get settingsPage_subscribeDialogTitle => 'Premium Subscription';
 
   @override
-  String get settingsPage_subscribeToPremium =>
-      'Settings Page Subscribetopremium';
+  String get settingsPage_subscribeToPremium => 'Subscribe to Premium';
 
   @override
-  String get settingsPage_subscription => 'Settings Page Subscription';
+  String get settingsPage_subscription => 'Subscription';
 
   @override
-  String get settingsPage_subscriptionError =>
-      'Settings Page Subscriptionerror';
+  String get settingsPage_subscriptionError => 'Subscription Error';
 
   @override
-  String get settingsPage_success => 'Settings Page Success';
+  String get settingsPage_success => 'Success';
 
   @override
-  String get settingsPage_title => 'Settings Page Title';
+  String get settingsPage_title => 'Account Settings';
 
   @override
-  String get settingsPage_unsubscribe => 'Settings Page Unsubscribe';
+  String get settingsPage_unsubscribe => 'Unsubscribe';
 
   @override
   String get settingsPage_unsubscribeDialogContent =>
-      'Settings Page Unsubscribedialogcontent';
+      'Are you sure you want to unsubscribe?';
 
   @override
-  String get settingsPage_unsubscribeDialogTitle =>
-      'Settings Page Unsubscribedialogtitle';
+  String get settingsPage_unsubscribeDialogTitle => 'Unsubscribe';
 
   @override
-  String get settingsPage_userInfo => 'Settings Page Userinfo';
+  String get settingsPage_userInfo => 'User Information';
 
   @override
-  String get soundPage_ampConfigTitle => 'Sound Page Ampconfigtitle';
+  String get soundPage_ampConfigTitle => 'Amp Config Title';
 
   @override
-  String get soundPage_amplificationTabShort =>
-      'Sound Page Amplificationtabshort';
+  String get soundPage_amplificationTabShort => 'Amp';
 
   @override
-  String get soundPage_amplifier => 'Sound Page Amplifier';
+  String get soundPage_amplifier => 'Amplifier';
 
   @override
-  String get soundPage_amplifiersRequired => 'Sound Page Amplifiersrequired';
+  String get soundPage_amplifiersRequired => 'Amplifiers Required';
 
   @override
-  String get soundPage_capacity => 'Sound Page Capacity';
+  String get soundPage_capacity => 'Capacity';
 
   @override
-  String get soundPage_noPresetSelected => 'Sound Page Nopresetselected';
+  String get soundPage_noPresetSelected => 'No Preset Selected';
 
   @override
-  String get soundPage_noSpeakersSelected => 'Sound Page Nospeakersselected';
+  String get soundPage_noSpeakersSelected => 'No Speakers Selected';
 
   @override
-  String get soundPage_power => 'Sound Page Power';
+  String get soundPage_power => 'Power';
 
   @override
-  String get soundPage_speakersPerAmp => 'Sound Page Speakersperamp';
+  String get soundPage_speakersPerAmp => 'Speakers per Amp';
 
   @override
-  String get soundPage_speakersPerChannel => 'Sound Page Speakersperchannel';
+  String get soundPage_speakersPerChannel => 'Speakers per Channel';
 
   @override
-  String get soundPage_with => 'Sound Page With';
+  String get soundPage_with => 'with';
 
   @override
   String get source => 'Source';
@@ -541,13 +577,13 @@ class AppLocalizationsEn extends AppLocalizations {
   String get totalProject => 'Totalproject';
 
   @override
-  String get unitKilogram => 'Unitkilogram';
+  String get unitKilogram => 'Kg';
 
   @override
-  String get unitKilowatt => 'Unitkilowatt';
+  String get unitKilowatt => 'kW';
 
   @override
-  String get unitWatt => 'Unitwatt';
+  String get unitWatt => 'W';
 
   @override
   String get view_preset => 'View Preset';
@@ -565,25 +601,25 @@ class AppLocalizationsEn extends AppLocalizations {
   String get beamCalculation => 'beam Calculation';
 
   @override
-  String get bottomNav_catalogue => 'bottom Nav catalogue';
+  String get bottomNav_catalogue => 'Catalogue';
 
   @override
-  String get bottomNav_electricity => 'bottom Nav electricity';
+  String get bottomNav_electricity => 'Electricity';
 
   @override
-  String get bottomNav_light => 'bottom Nav light';
+  String get bottomNav_light => 'Light';
 
   @override
-  String get bottomNav_misc => 'bottom Nav misc';
+  String get bottomNav_misc => 'Misc';
 
   @override
-  String get bottomNav_sound => 'bottom Nav sound';
+  String get bottomNav_sound => 'Sound';
 
   @override
-  String get bottomNav_structure => 'bottom Nav structure';
+  String get bottomNav_structure => 'Structure';
 
   @override
-  String get bottomNav_video => 'bottom Nav video';
+  String get bottomNav_video => 'Video';
 
   @override
   String get button_reset => 'button reset';
@@ -595,13 +631,13 @@ class AppLocalizationsEn extends AppLocalizations {
   String get calculationResult => 'calculation Result';
 
   @override
-  String get catalogAccess => 'catalog Access';
+  String get catalogAccess => 'Catalogue AV';
 
   @override
-  String get catalogPage_cancel => 'catalog Page cancel';
+  String get catalogPage_cancel => 'Cancel';
 
   @override
-  String get catalogPage_confirm => 'catalog Page confirm';
+  String get catalogPage_confirm => 'Confirm';
 
   @override
   String get catalogue_lensesAvailable => 'catalogue lenses Available';
@@ -622,7 +658,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get connectors => 'connectors';
 
   @override
-  String get consumption => 'consumption';
+  String get consumption => 'Consumption';
 
   @override
   String get distance_label => 'distance label';
@@ -640,7 +676,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get driverType => 'driver Type';
 
   @override
-  String get electricityMenu => 'electricity Menu';
+  String get electricityMenu => 'Electricity';
 
   @override
   String get ledWallSchemaPage_calculate => 'led Wall Schema Page calculate';
@@ -672,43 +708,43 @@ class AppLocalizationsEn extends AppLocalizations {
   String get lightAccessories => 'light Accessories';
 
   @override
-  String get lightMenu => 'light Menu';
+  String get lightMenu => 'Light';
 
   @override
-  String get lightPage_angleRange => 'light Page angle Range';
+  String get lightPage_angleRange => 'Angle (1° to 70°)';
 
   @override
-  String get lightPage_calculate => 'light Page calculate';
+  String get lightPage_calculate => 'Calculate';
 
   @override
-  String get lightPage_channel => 'light Page channel';
+  String get lightPage_channel => 'Channel';
 
   @override
-  String get lightPage_channels => 'light Page channels';
+  String get lightPage_channels => 'Channels';
 
   @override
-  String get lightPage_distanceRange => 'light Page distance Range';
+  String get lightPage_distanceRange => 'Distance (1m to 40m)';
 
   @override
-  String get lightPage_heightRange => 'light Page height Range';
+  String get lightPage_heightRange => 'Height (1m to 20m)';
 
   @override
-  String get lightPage_ledLength => 'light Page led Length';
+  String get lightPage_ledLength => 'LED Length (in meters)';
 
   @override
-  String get lightPage_meters => 'light Page meters';
+  String get lightPage_meters => 'meters';
 
   @override
-  String get lightPage_title => 'light Page title';
+  String get lightPage_title => 'Lighting Equipment';
 
   @override
-  String get lightPage_total => 'light Page total';
+  String get lightPage_total => 'Total';
 
   @override
   String get mountingTools => 'mounting Tools';
 
   @override
-  String get networkMenu => 'network Menu';
+  String get networkMenu => 'Network';
 
   @override
   String get patch_input => 'patch input';
@@ -717,10 +753,115 @@ class AppLocalizationsEn extends AppLocalizations {
   String get patch_output => 'patch output';
 
   @override
-  String get paymentPage_monthlyPlan => 'payment Page monthly Plan';
+  String get paymentPage_title => 'Premium Subscription';
 
   @override
-  String get paymentPage_yearlyPlan => 'payment Page yearly Plan';
+  String get paymentPage_monthlyPlan => 'Monthly Plan';
+
+  @override
+  String get paymentPage_yearlyPlan => 'Yearly Plan';
+
+  @override
+  String get paymentPage_monthlyPrice => '€2.49/month';
+
+  @override
+  String get paymentPage_yearlyPrice => '€19.99/year';
+
+  @override
+  String get paymentPage_securePayment => 'Secure payment';
+
+  @override
+  String get paymentPage_visaMastercardAccepted =>
+      'Visa and Mastercard accepted';
+
+  @override
+  String get paymentPage_paymentInfo => 'Payment information';
+
+  @override
+  String get paymentPage_cardholderName => 'Cardholder name';
+
+  @override
+  String get paymentPage_cardNumber => 'Card number';
+
+  @override
+  String get paymentPage_expiryDate => 'MM/YY';
+
+  @override
+  String get paymentPage_cvc => 'CVC';
+
+  @override
+  String get paymentPage_payButton => 'Pay';
+
+  @override
+  String get paymentPage_processing => 'Processing...';
+
+  @override
+  String get paymentPage_paymentSuccess => 'Payment successful!';
+
+  @override
+  String get paymentPage_subscriptionActivated =>
+      'Your premium subscription has been activated successfully!';
+
+  @override
+  String get paymentPage_plan => 'Plan';
+
+  @override
+  String get paymentPage_price => 'Price';
+
+  @override
+  String get paymentPage_continue => 'Continue';
+
+  @override
+  String get paymentPage_premiumFeatures =>
+      'You can now enjoy all premium features!';
+
+  @override
+  String get paymentPage_paymentError => 'Payment error';
+
+  @override
+  String get paymentPage_selectPaymentMethod =>
+      'Please select a payment method';
+
+  @override
+  String get paymentPage_fillAllFields => 'Please fill in all card fields';
+
+  @override
+  String get paymentPage_paymentFailed => 'Payment failed. Please try again.';
+
+  @override
+  String get paymentPage_legalText =>
+      'By proceeding with payment, you accept our terms of use and privacy policy. Payment will be processed securely by Stripe.';
+
+  @override
+  String get paymentPage_featureCompleteCatalogue => 'Complete catalogue';
+
+  @override
+  String get paymentPage_featureProjectsPresets => 'Projects and presets';
+
+  @override
+  String get paymentPage_featureExportPdfExcel => 'PDF/Excel export';
+
+  @override
+  String get paymentPage_featurePrioritySupport => 'Priority support';
+
+  @override
+  String get paymentPage_featureAutoUpdates => 'Automatic updates';
+
+  @override
+  String get paymentPage_featureSavings => '33% savings';
+
+  @override
+  String get paymentPage_descriptionMonthly => 'Full access to all features';
+
+  @override
+  String get paymentPage_descriptionYearly =>
+      'Save 33% with annual subscription';
+
+  @override
+  String get paymentPage_popular => 'Popular';
+
+  @override
+  String get paymentPage_bestValue => 'Best value';
 
   @override
   String get projectCalculationPage_globalTotal =>
@@ -737,6 +878,42 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get projectCalculationPage_powerProject =>
       'project Calculation Page power Project';
+
+  @override
+  String get projectCalculationPage_powerTab => 'Power';
+
+  @override
+  String get projectCalculationPage_weightTab => 'Weight';
+
+  @override
+  String get electricityPage_powerTab => 'Power';
+
+  @override
+  String get videoPage_projectionTab => 'Projection';
+
+  @override
+  String get videoPage_ledWallTab => 'LED Wall';
+
+  @override
+  String get videoPage_timerTab => 'Timer';
+
+  @override
+  String get catalogue_addToPreset => 'Add';
+
+  @override
+  String get catalogue_confirmAddTitle => 'Confirmation';
+
+  @override
+  String catalogue_confirmAddMessage(
+      Object count, Object preset, Object product) {
+    return 'Add $count $product to $preset?';
+  }
+
+  @override
+  String get catalogue_mode => 'Mode';
+
+  @override
+  String get catalogue_wired => 'Wired';
 
   @override
   String get projectCalculationPage_total => 'project Calculation Page total';
@@ -757,13 +934,13 @@ class AppLocalizationsEn extends AppLocalizations {
   String get selectStructure => 'select Structure';
 
   @override
-  String get soundMenu => 'sound Menu';
+  String get soundMenu => 'Sound';
 
   @override
-  String get soundPage_quantity => 'sound Page quantity';
+  String get soundPage_quantity => 'Quantity';
 
   @override
-  String get soundPage_title => 'sound Page title';
+  String get soundPage_title => 'Audio Equipment';
 
   @override
   String get speedtest_completed => 'speedtest completed';
@@ -799,96 +976,87 @@ class AppLocalizationsEn extends AppLocalizations {
   String get stripLedType => 'strip Led Type';
 
   @override
-  String get structureMenu => 'structure Menu';
+  String get structureMenu => 'Structure';
 
   @override
-  String get structurePage_3pointsAccroche =>
-      'structure Page 3 points Accroche';
+  String get structurePage_3pointsAccroche => '3 Points';
 
   @override
-  String get structurePage_4pointsAccroche =>
-      'structure Page 4 points Accroche';
+  String get structurePage_4pointsAccroche => '4 Points';
 
   @override
-  String get structurePage_chargeRepartie => 'structure Page charge Repartie';
+  String get structurePage_chargeRepartie => 'Distributed Load';
 
   @override
-  String get structurePage_chargeType => 'structure Page charge Type';
+  String get structurePage_chargeType => 'Charge Type';
 
   @override
-  String get structurePage_chargesTab => 'structure Page charges Tab';
+  String get structurePage_chargesTab => 'Charges';
 
   @override
-  String get structurePage_deflectionRatioTitle =>
-      'structure Page deflection Ratio Title';
+  String get structurePage_deflectionRatioTitle => 'Deflection Ratio';
 
   @override
   String structurePage_distance(Object distance) {
-    return 'structure Page distance';
+    return 'Distance';
   }
 
   @override
-  String get structurePage_length => 'structure Page length';
+  String get structurePage_length => 'Length';
 
   @override
-  String get structurePage_maxDeflectionTitle =>
-      'structure Page max Deflection Title';
+  String get structurePage_maxDeflectionTitle => 'Max Deflection';
 
   @override
-  String get structurePage_maxLoadTitle => 'structure Page max Load Title';
+  String get structurePage_maxLoadTitle => 'Max Load';
 
   @override
-  String get structurePage_modifier => 'structure Page modifier';
+  String get structurePage_modifier => 'Modifier';
 
   @override
-  String get structurePage_pointAccrocheCentre =>
-      'structure Page point Accroche Centre';
+  String get structurePage_pointAccrocheCentre => 'Center Point';
 
   @override
-  String get structurePage_pointsAccrocheExtremites =>
-      'structure Page points Accroche Extremites';
+  String get structurePage_pointsAccrocheExtremites => 'End Points';
 
   @override
-  String get structurePage_projectWeightTab =>
-      'structure Page project Weight Tab';
+  String get structurePage_projectWeightTab => 'Project Weight';
 
   @override
-  String get structurePage_selectCharge => 'structure Page select Charge';
+  String get structurePage_selectCharge => 'Select Charge';
 
   @override
-  String get structurePage_structure => 'structure Page structure';
+  String get structurePage_structure => 'Structure';
 
   @override
-  String get structurePage_structureWeightTitle =>
-      'structure Page structure Weight Title';
+  String get structurePage_structureWeightTitle => 'Structure Weight';
 
   @override
-  String get structurePage_title => 'structure Page title';
+  String get structurePage_title => 'Structure';
 
   @override
-  String get subscription_choose_plan => 'subscription choose plan';
+  String get subscription_choose_plan => 'Choose Plan';
 
   @override
-  String get subscription_description => 'subscription description';
+  String get subscription_description => 'Description';
 
   @override
-  String get subscription_free_trial => 'subscription free trial';
+  String get subscription_free_trial => 'Free Trial';
 
   @override
-  String get subscription_popular => 'subscription popular';
+  String get subscription_popular => 'Popular';
 
   @override
-  String get subscription_premium => 'subscription premium';
+  String get subscription_premium => 'Premium';
 
   @override
-  String get subscription_security => 'subscription security';
+  String get subscription_security => 'Security';
 
   @override
-  String get subscription_security_description =>
-      'subscription security description';
+  String get subscription_security_description => 'Security Description';
 
   @override
-  String get subscription_subscribe => 'subscription subscribe';
+  String get subscription_subscribe => 'Subscribe';
 
   @override
   String get thisSectionWillBeDeveloped => 'this Section Will Be Developed';
@@ -911,53 +1079,454 @@ class AppLocalizationsEn extends AppLocalizations {
   String get videoLedResult_poidsTotal => 'video Led Result poids Total';
 
   @override
-  String get videoMenu => 'video Menu';
+  String get videoMenu => 'Video';
 
   @override
-  String get videoPage_brand => 'video Page brand';
+  String get videoPage_brand => 'Brand';
 
   @override
-  String get videoPage_format => 'video Page format';
+  String get videoPage_format => 'Format';
 
   @override
-  String get videoPage_imageWidth => 'video Page image Width';
+  String get videoPage_imageWidth => 'Image Width';
 
   @override
-  String get videoPage_model => 'video Page model';
+  String get videoPage_model => 'Model';
 
   @override
-  String get videoPage_overlap => 'video Page overlap';
+  String get videoPage_overlap => 'Overlap';
 
   @override
-  String get videoPage_projectorCount => 'video Page projector Count';
+  String get videoPage_projectorCount => 'Projector Count';
 
   @override
-  String get videoPage_projectorDistance => 'video Page projector Distance';
+  String get videoPage_projectorDistance => 'Projector Distance';
 
   @override
-  String get videoPage_schema => 'video Page schema';
+  String get videoPage_schema => 'Schema';
 
   @override
-  String get videoPage_selectLedWall => 'video Page select Led Wall';
+  String get videoPage_selectLedWall => 'Select LED Wall';
 
   @override
-  String get videoPage_selectProduct => 'video Page select Product';
+  String get videoPage_selectProduct => 'Select Product';
 
   @override
-  String get videoPage_title => 'video Page title';
+  String get videoPage_title => 'Video';
 
   @override
-  String get voltage => 'voltage';
+  String get voltage => 'Voltage';
 
   @override
-  String get volts => 'volts';
+  String get volts => 'Volts';
 
   @override
-  String get defaultProject1 => 'Default Project 1';
+  String get defaultProject1 => 'Project 1';
 
   @override
-  String get defaultProject2 => 'Default Project 2';
+  String get defaultProject2 => 'Project 2';
 
   @override
-  String get defaultProject3 => 'Default Project 3';
+  String get defaultProject3 => 'Project 3';
+
+  @override
+  String get dmxPage_warning => 'Warning';
+
+  @override
+  String get dmxPage_productsNotPlaced => 'products not placed';
+
+  @override
+  String get dmxPage_maxIterationsReached => 'Maximum iterations reached';
+
+  @override
+  String get email_required => 'Email is required';
+
+  @override
+  String get invalid_email => 'Invalid email';
+
+  @override
+  String get password_required => 'Password is required';
+
+  @override
+  String get password_too_short => 'Password must be at least 6 characters';
+
+  @override
+  String get auth_service_loading => 'Authentication service loading';
+
+  @override
+  String get auth_service_error => 'Authentication service error';
+
+  @override
+  String get invalid_credentials_error => 'Invalid email or password';
+
+  @override
+  String get connection_error => 'Connection error';
+
+  @override
+  String get ok => 'OK';
+
+  @override
+  String get enter_email_first => 'Please enter your email';
+
+  @override
+  String get reset_email_sent =>
+      'A reset email has been sent. Check your inbox and spam folder.';
+
+  @override
+  String get login => 'Login';
+
+  @override
+  String get email => 'Email';
+
+  @override
+  String get password => 'Password';
+
+  @override
+  String get forgot_password => 'Forgot Password?';
+
+  @override
+  String get remember_me => 'Remember me';
+
+  @override
+  String get sign_in => 'Sign In';
+
+  @override
+  String get or_continue_with => 'Or continue with';
+
+  @override
+  String get google_sign_in => 'Sign in with Google';
+
+  @override
+  String get biometric_auth => 'Biometric Auth';
+
+  @override
+  String get sign_up => 'Sign Up';
+
+  @override
+  String get welcome_to_avwallet => 'Welcome to AVWallet';
+
+  @override
+  String welcome_to_avwallet_with_name(Object name) {
+    return 'Welcome to AVWallet, $name';
+  }
+
+  @override
+  String premium_usage_remaining(Object count) {
+    return 'You have premium usage.\\nYou have $count uses remaining';
+  }
+
+  @override
+  String get continueButton => 'Continue';
+
+  @override
+  String get signup => 'Sign Up';
+
+  @override
+  String get confirm_password => 'Confirm Password';
+
+  @override
+  String get confirm_password_required => 'Password confirmation is required';
+
+  @override
+  String get passwords_dont_match => 'Passwords do not match';
+
+  @override
+  String get already_have_account => 'Already have an account?';
+
+  @override
+  String get verification_code_sent_message =>
+      'A verification code has been sent';
+
+  @override
+  String get verification_code => 'Verification Code';
+
+  @override
+  String get welcome_title => 'Welcome';
+
+  @override
+  String get welcome_message => 'Welcome message';
+
+  @override
+  String get beam_short => 'Beam';
+
+  @override
+  String get default_project_name => 'Default Project';
+
+  @override
+  String get no_projects_available => 'No projects available to load';
+
+  @override
+  String project_loaded(Object name) {
+    return 'Project \"$name\" loaded!';
+  }
+
+  @override
+  String export_project_confirm(Object name) {
+    return 'Do you want to export project \"$name\"?';
+  }
+
+  @override
+  String get generating_pdfs => 'Generating PDFs...';
+
+  @override
+  String files_exported_success(Object count) {
+    return '$count files exported successfully!';
+  }
+
+  @override
+  String get no_files_to_export => 'No files to export for this project';
+
+  @override
+  String export_error(Object error) {
+    return 'Error during export: $error';
+  }
+
+  @override
+  String get project_saved_locally => 'The project will be saved locally.';
+
+  @override
+  String get project_saved => 'Project saved!';
+
+  @override
+  String get export_to_project => 'To Project';
+
+  @override
+  String get export_sms => 'SMS';
+
+  @override
+  String get export_whatsapp => 'WhatsApp';
+
+  @override
+  String get export_email => 'Email';
+
+  @override
+  String get export_tooltip => 'Export';
+
+  @override
+  String get photos_project_title => 'PROJECT PHOTOS';
+
+  @override
+  String get photos_ar_captured => 'Photos captured during AR measurements:';
+
+  @override
+  String photo_label(Object filename) {
+    return 'Photo: $filename';
+  }
+
+  @override
+  String get article_label => 'Article';
+
+  @override
+  String get quantity_label => 'Qty';
+
+  @override
+  String get catalogueQuantityDialog_title => 'Quantity';
+
+  @override
+  String get catalogueQuantityDialog_enterQuantity => 'Enter quantity';
+
+  @override
+  String get catalogueQuantityDialog_dmxType => 'DMX Type';
+
+  @override
+  String get catalogueQuantityDialog_dmxMini => 'DMX mini';
+
+  @override
+  String get catalogueQuantityDialog_dmxMax => 'DMX max';
+
+  @override
+  String get catalogueQuantityDialog_cancel => 'Cancel';
+
+  @override
+  String get catalogueQuantityDialog_confirm => 'Confirm';
+
+  @override
+  String get power_label => 'Power';
+
+  @override
+  String get weight_label => 'Weight';
+
+  @override
+  String get loading => 'Loading...';
+
+  @override
+  String get create_button => 'Create';
+
+  @override
+  String get save_button => 'Save';
+
+  @override
+  String get cancel_button => 'Cancel';
+
+  @override
+  String get weight_tab_title => 'Weight';
+
+  @override
+  String get imports => 'Imports';
+
+  @override
+  String get calculation_dmx => 'DMX Calculation';
+
+  @override
+  String get calculation_sound => 'Sound Calculation';
+
+  @override
+  String get calculation_projection => 'Projection Calculation';
+
+  @override
+  String get calculation_led_wall => 'LED Wall Calculation';
+
+  @override
+  String get calculation_charges => 'Charges Calculation';
+
+  @override
+  String standard_welcome_message(Object name) {
+    return 'Welcome to AVWallet, $name';
+  }
+
+  @override
+  String standard_welcome_usage_remaining(Object count) {
+    return 'You have $count uses remaining';
+  }
+
+  @override
+  String get standard_welcome_continue => 'Continue';
+
+  @override
+  String get premium_welcome_title => 'Premium Welcome!';
+
+  @override
+  String get premium_welcome_message => 'Congratulations, Premium activated';
+
+  @override
+  String get premium_benefits_title => 'Premium Benefits';
+
+  @override
+  String get premium_benefit_unlimited => 'Unlimited usage';
+
+  @override
+  String get premium_benefit_priority => 'Priority support';
+
+  @override
+  String get premium_benefit_support => 'Dedicated technical assistance';
+
+  @override
+  String get premium_welcome_later => 'Later';
+
+  @override
+  String get premium_welcome_continue => 'Explore Premium';
+
+  @override
+  String get premium_vip_welcome_message =>
+      'Congratulations, you are part of the VIP AV Wallet team';
+
+  @override
+  String get premium_vip_access_activated =>
+      'Unlimited premium access activated';
+
+  @override
+  String get preview => 'Preview';
+
+  @override
+  String get project_parameters => 'Project Parameters';
+
+  @override
+  String get location => 'Location';
+
+  @override
+  String get mounting_date => 'Mounting date (DD/MM/YY)';
+
+  @override
+  String get period_from => 'Date: from DD/MM/YY';
+
+  @override
+  String get period_to => 'to DD/MM/YY';
+
+  @override
+  String get save_parameters => 'Save';
+
+  @override
+  String get project_location => 'Location';
+
+  @override
+  String get project_mounting_date => 'Mounting date';
+
+  @override
+  String get project_period => 'Period';
+
+  @override
+  String get not_defined => 'Not defined';
+
+  @override
+  String get start_date => 'Start: DD/MM/YY';
+
+  @override
+  String get end_date => 'End: DD/MM/YY';
+
+  @override
+  String calculation_sent_to_project(
+      Object calculationName, Object projectName) {
+    return '$calculationName sent to \"$projectName\"';
+  }
+
+  @override
+  String get project_stats_presets => 'Number of Presets';
+
+  @override
+  String get project_stats_articles => 'Total Number of Articles';
+
+  @override
+  String get project_stats_calculations => 'Number of Calculations';
+
+  @override
+  String get project_stats_photos => 'Number of Photos';
+
+  @override
+  String get select_photos => 'Select Photos';
+
+  @override
+  String get photos_imported => 'Imported Photos';
+
+  @override
+  String get photo_exported => 'Photo exported';
+
+  @override
+  String get photo_not_found => 'Photo not found';
+
+  @override
+  String get cabling_percentage => 'Cabling';
+
+  @override
+  String get cabling_addition => '+10% Cabling';
+
+  @override
+  String get review_popup_title => 'Hello';
+
+  @override
+  String get review_popup_message =>
+      'An idea, a recommendation? Your feedback interests us';
+
+  @override
+  String get review_popup_contact => 'Contact us';
+
+  @override
+  String get review_popup_continue => 'Continue';
+
+  @override
+  String get coming_soon => 'Coming soon';
+
+  @override
+  String get bandwidth_test => 'Bandwidth Test';
+
+  @override
+  String get bandwidth_test_title => 'Bandwidth';
+
+  @override
+  String get bandwidth_test_description => 'Test your connection speed';
+
+  @override
+  String get bandwidth_test_start => 'Start test';
+
+  @override
+  String get bandwidth_test_results => 'Results';
 }

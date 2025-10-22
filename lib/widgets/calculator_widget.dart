@@ -14,7 +14,7 @@ class _CalculatorWidgetState extends State<CalculatorWidget> {
   double _firstNumber = 0;
   double _secondNumber = 0;
   bool _waitingForOperand = false;
-  List<String> _calculationHistory = [];
+  final List<String> _calculationHistory = [];
 
   void _onButtonPressed(String value) {
     setState(() {

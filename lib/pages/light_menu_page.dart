@@ -7,8 +7,7 @@ import '../widgets/export_widget.dart';
 import '../widgets/preset_widget.dart';
 import '../widgets/border_labeled_dropdown.dart';
 import '../widgets/action_button.dart';
-import 'package:av_wallet_hive/l10n/app_localizations.dart';
-import '../services/translation_service.dart';
+import 'package:av_wallet/l10n/app_localizations.dart';
 import '../theme/app_theme.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../providers/page_state_provider.dart';
@@ -269,10 +268,15 @@ class _LightMenuPageState extends ConsumerState<LightMenuPage>
   }
 
 
+
   @override
   Widget build(BuildContext context) {
     final loc = AppLocalizations.of(context)!;
-    final translationService = TranslationService();
+    final screenWidth = MediaQuery.of(context).size.width;
+    
+    // Tailles fixes pour iPhone SE et autres appareils
+    final iconSize = 14.0; // 14px pour les icônes
+    final fontSize = 12.0; // 12px pour le texte
 
     return Scaffold(
       appBar: const CustomAppBar(
@@ -298,49 +302,147 @@ class _LightMenuPageState extends ConsumerState<LightMenuPage>
                 Container(
                   margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
                   padding: const EdgeInsets.symmetric(vertical: 2),
-                  child: TabBar(
-                    controller: _tabController,
-                    tabs: [
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(12),
+                    border: Border(
+                      bottom: BorderSide(
+                        color: Theme.of(context).brightness == Brightness.dark
+                            ? Colors.lightBlue[300]!
+                            : const Color(0xFF0A1128),
+                        width: 2,
+                      ),
+                    ),
+                  ),
+         child: TabBar(
+           controller: _tabController,
+           dividerColor: Colors.transparent, // Supprime la ligne de séparation
+           indicatorColor: Colors.transparent, // Supprime l'indicateur bleu
+           labelColor: Colors.transparent, // Masque les couleurs par défaut
+           unselectedLabelColor: Colors.transparent, // Masque les couleurs par défaut
+           tabs: [
                       Tab(
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            const Icon(Icons.calculate, size: 16),
-                            const SizedBox(width: 4),
-                            const Text('DMX'),
-                          ],
+                        child: AnimatedBuilder(
+                          animation: _tabController,
+                          builder: (context, child) {
+                            final isSelected = _tabController.index == 0;
+                            return Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Icon(
+                                  Icons.calculate, 
+                                  size: iconSize,
+                                  color: isSelected 
+                                    ? (Theme.of(context).brightness == Brightness.dark 
+                                        ? Colors.lightBlue[300]! 
+                                        : const Color(0xFF0A1128))
+                                    : Colors.white,
+                                ),
+                                const SizedBox(width: 4),
+                                Text(
+                                  'DMX',
+                                  style: TextStyle(
+                                    color: isSelected 
+                                      ? (Theme.of(context).brightness == Brightness.dark 
+                                          ? Colors.lightBlue[300]! 
+                                          : const Color(0xFF0A1128))
+                                      : Colors.white,
+                                    fontSize: fontSize,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                              ],
+                            );
+                          },
                         ),
                       ),
                       Tab(
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            const Icon(Icons.calculate, size: 16),
-                            const SizedBox(width: 4),
-                            Text(translationService.t('beam_short')),
-                          ],
+                        child: AnimatedBuilder(
+                          animation: _tabController,
+                          builder: (context, child) {
+                            final isSelected = _tabController.index == 1;
+                            return Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Icon(
+                                  Icons.calculate, 
+                                  size: iconSize,
+                                  color: isSelected 
+                                    ? (Theme.of(context).brightness == Brightness.dark 
+                                        ? Colors.lightBlue[300]! 
+                                        : const Color(0xFF0A1128))
+                                    : Colors.white,
+                                ),
+                                const SizedBox(width: 4),
+                                Flexible(
+                                  child: Text(
+                                    AppLocalizations.of(context)!.lightPage_beamTab,
+                                    style: TextStyle(
+                                      color: isSelected 
+                                        ? (Theme.of(context).brightness == Brightness.dark 
+                                            ? Colors.lightBlue[300]! 
+                                            : const Color(0xFF0A1128))
+                                        : Colors.white,
+                                      fontSize: fontSize,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                    overflow: TextOverflow.ellipsis,
+                                    textAlign: TextAlign.center,
+                                  ),
+                                ),
+                              ],
+                            );
+                          },
                         ),
                       ),
                       Tab(
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            const Icon(Icons.calculate, size: 16),
-                            const SizedBox(width: 4),
-                            const Text('Drv'),
-                          ],
+                        child: AnimatedBuilder(
+                          animation: _tabController,
+                          builder: (context, child) {
+                            final isSelected = _tabController.index == 2;
+                            return Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Icon(
+                                  Icons.calculate, 
+                                  size: iconSize,
+                                  color: isSelected 
+                                    ? (Theme.of(context).brightness == Brightness.dark 
+                                        ? Colors.lightBlue[300]! 
+                                        : const Color(0xFF0A1128))
+                                    : Colors.white,
+                                ),
+                                const SizedBox(width: 4),
+                                Flexible(
+                                  child: Text(
+                                    AppLocalizations.of(context)!.lightPage_ledDriverTab,
+                                    style: TextStyle(
+                                      color: isSelected 
+                                        ? (Theme.of(context).brightness == Brightness.dark 
+                                            ? Colors.lightBlue[300]! 
+                                            : const Color(0xFF0A1128))
+                                        : Colors.white,
+                                      fontSize: fontSize,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                    overflow: TextOverflow.ellipsis,
+                                    textAlign: TextAlign.center,
+                                  ),
+                                ),
+                              ],
+                            );
+                          },
                         ),
                       ),
                     ],
-                    labelColor: Theme.of(context).extension<LightPageTheme>()?.tabSelectedColor,
-                    unselectedLabelColor: Theme.of(context).extension<LightPageTheme>()?.tabUnselectedColor,
-                    indicatorColor: Theme.of(context).extension<LightPageTheme>()?.tabIndicatorColor,
-                    labelStyle: Theme.of(context).extension<LightPageTheme>()?.tabSelectedTextStyle,
-                    unselectedLabelStyle: Theme.of(context).extension<LightPageTheme>()?.tabTextStyle,
                   ),
+                ),
+                const SizedBox(height: 6),
+                // Widget Preset pour tous les onglets
+                PresetWidget(
+                  onPresetSelected: (preset) {
+                    // Logique de sélection de preset si nécessaire
+                  },
                 ),
                 const SizedBox(height: 6),
                 Expanded(
@@ -351,12 +453,17 @@ class _LightMenuPageState extends ConsumerState<LightMenuPage>
                       const DmxTab(),
                       // Deuxième onglet - Faisceau
                       SingleChildScrollView(
-                        padding: const EdgeInsets.all(16),
                         child: Container(
+                          margin: const EdgeInsets.all(16),
                           padding: const EdgeInsets.all(16),
                           decoration: BoxDecoration(
-                            color: const Color(0xFF0A1128).withAlpha((0.3 * 255).round()),
-                            border: Border.all(color: Colors.white, width: 1),
+                            color: Theme.of(context).extension<ResultContainerTheme>()?.backgroundColor ?? 
+                                   Colors.grey.withOpacity(0.1),
+                            border: Border.all(
+                              color: Theme.of(context).extension<ResultContainerTheme>()?.borderColor ?? 
+                                     Colors.grey,
+                              width: 1,
+                            ),
                             borderRadius: BorderRadius.circular(12),
                           ),
                           child: Column(
@@ -438,7 +545,7 @@ class _LightMenuPageState extends ConsumerState<LightMenuPage>
                                   padding: const EdgeInsets.all(16),
                                   decoration: BoxDecoration(
                                     color: const Color(0xFF0A1128).withOpacity(0.5),
-                                    border: Border.all(color: const Color(0xFF0A1128), width: 1),
+                                    border: Border.all(color: Colors.blueGrey[600]!, width: 1),
                                     borderRadius: BorderRadius.circular(12),
                                   ),
                                   child: Column(
@@ -480,7 +587,7 @@ class _LightMenuPageState extends ConsumerState<LightMenuPage>
                                             children: [
                                               Icon(
                                                 Icons.chat_bubble_outline,
-                                                size: 16,
+                                                size: 14,
                                                 color: Theme.of(context).brightness == Brightness.dark
                                                     ? Colors.lightBlue[300]
                                                     : Colors.blue[700],
@@ -512,14 +619,17 @@ class _LightMenuPageState extends ConsumerState<LightMenuPage>
                                           ),
                                           const SizedBox(width: 20),
                                           // Bouton Export
-                                          ExportWidget(
-                                            title: 'Calcul Faisceau',
-                                            content: lightState.beamCalculationResult!,
-                                            projectType: 'light',
-                                            fileName: 'calcul_faisceau',
-                                            customIcon: Icons.cloud_upload,
-                                            backgroundColor: Colors.blueGrey[900],
-                                            tooltip: 'Exporter le calcul',
+                                          Transform.rotate(
+                                            angle: 0, // Pas de rotation - flèche vers le haut
+                                            child: ExportWidget(
+                                              title: 'Faisceau',
+                                              content: lightState.beamCalculationResult!,
+                                              projectType: 'faisceau',
+                                              fileName: 'faisceau',
+                                              customIcon: Icons.cloud_upload,
+                                              backgroundColor: Colors.blueGrey[900],
+                                              tooltip: 'Exporter le calcul',
+                                            ),
                                           ),
                                         ],
                                       ),
@@ -533,19 +643,18 @@ class _LightMenuPageState extends ConsumerState<LightMenuPage>
                       // Troisième onglet - Driver (refait)
                       Column(
                         children: [
-                          // Widget Preset
-                          PresetWidget(
-                            onPresetSelected: (preset) {
-                              // Logique de sélection de preset si nécessaire
-                            },
-                          ),
                           // Cadre principal
                           Expanded(
                             child: Container(
                               margin: const EdgeInsets.all(16),
                               decoration: BoxDecoration(
-                                color: const Color(0xFF0A1128).withOpacity(0.3),
-                                border: Border.all(color: Colors.white, width: 1),
+                                color: Theme.of(context).extension<ResultContainerTheme>()?.backgroundColor ?? 
+                                       Colors.grey.withOpacity(0.1),
+                                border: Border.all(
+                                  color: Theme.of(context).extension<ResultContainerTheme>()?.borderColor ?? 
+                                         Colors.grey,
+                                  width: 1,
+                                ),
                                 borderRadius: BorderRadius.circular(12),
                               ),
                               child: SingleChildScrollView(
@@ -676,7 +785,7 @@ class _LightMenuPageState extends ConsumerState<LightMenuPage>
                                         padding: const EdgeInsets.all(16),
                                         decoration: BoxDecoration(
                                           color: const Color(0xFF0A1128).withOpacity(0.5),
-                                          border: Border.all(color: const Color(0xFF0A1128), width: 1),
+                                          border: Border.all(color: Colors.blueGrey[600]!, width: 1),
                                           borderRadius: BorderRadius.circular(12),
                                         ),
                                         child: Column(
@@ -712,7 +821,7 @@ class _LightMenuPageState extends ConsumerState<LightMenuPage>
                                                   children: [
                                                     Icon(
                                                       Icons.chat_bubble_outline,
-                                                      size: 16,
+                                                      size: 14,
                                                       color: Theme.of(context).brightness == Brightness.dark
                                                           ? Colors.lightBlue[300]
                                                           : Colors.blue[700],
@@ -744,14 +853,17 @@ class _LightMenuPageState extends ConsumerState<LightMenuPage>
                                                 ),
                                                 const SizedBox(width: 20),
                                                 // Bouton Export (rotated)
-                                                ExportWidget(
-                                                  title: 'Configuration Driver LED',
-                                                  content: lightState.driverCalculationResult!,
-                                                  projectType: 'light',
-                                                  fileName: 'configuration_driver_led',
-                                                  customIcon: Icons.cloud_upload,
-                                                  backgroundColor: Colors.blueGrey[900],
-                                                  tooltip: 'Exporter la configuration',
+                                                Transform.rotate(
+                                                  angle: 0, // Pas de rotation - flèche vers le haut
+                                                  child: ExportWidget(
+                                                    title: 'Led Driver',
+                                                    content: lightState.driverCalculationResult!,
+                                                    projectType: 'driver',
+                                                    fileName: 'led_driver',
+                                                    customIcon: Icons.cloud_upload,
+                                                    backgroundColor: Colors.blueGrey[900],
+                                                    tooltip: 'Exporter la configuration',
+                                                  ),
                                                 ),
                                               ],
                                             ),

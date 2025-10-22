@@ -1,10 +1,11 @@
 // lib/pages/structure_menu_page.dart
 import 'package:flutter/material.dart';
-import 'package:av_wallet_hive/l10n/app_localizations.dart';
+import 'package:av_wallet/l10n/app_localizations.dart';
 import '../data/asd_data.dart';
 import '../widgets/custom_app_bar.dart';
 import '../widgets/border_labeled_dropdown.dart';
 import '../widgets/preset_widget.dart';
+import '../utils/consumption_parser.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../providers/preset_provider.dart';
 import '../models/catalogue_item.dart';
@@ -17,6 +18,7 @@ import '../widgets/export_widget.dart';
 import '../widgets/action_button.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:convert';
+import '../theme/colors.dart';
 
 import '../widgets/uniform_bottom_nav_bar.dart';
 
@@ -35,6 +37,98 @@ class _StructureMenuPageState extends ConsumerState<StructureMenuPage>
   String selectedCharge = 'structurePage_chargeRepartie';
   double additionalLoad = 0;
   bool showResult = false;
+
+  // Données constructeur SC300, SC390, SC500, E20D (Charges préconisées 1/300)
+  final Map<String, Map<int, Map<String, double>>> structureData = {
+    'SC300': {
+      1:  {'Q': 1543, 'P1': 1543, 'P2': 772, 'P3': 514, 'P4': 386, 'SW': 7,   'deflection': 3},
+      2:  {'Q': 768,  'P1': 1537, 'P2': 768, 'P3': 512, 'P4': 384, 'SW': 13,  'deflection': 7},
+      3:  {'Q': 510,  'P1': 1530, 'P2': 765, 'P3': 510, 'P4': 383, 'SW': 20,  'deflection': 10},
+      4:  {'Q': 381,  'P1': 1169, 'P2': 762, 'P3': 508, 'P4': 381, 'SW': 26,  'deflection': 13},
+      5:  {'Q': 303,  'P1': 924,  'P2': 701, 'P3': 467, 'P4': 379, 'SW': 33,  'deflection': 17},
+      6:  {'Q': 252,  'P1': 758,  'P2': 578, 'P3': 385, 'P4': 322, 'SW': 39,  'deflection': 20},
+      7:  {'Q': 177,  'P1': 637,  'P2': 449, 'P3': 323, 'P4': 254, 'SW': 46,  'deflection': 23},
+      8:  {'Q': 117,  'P1': 546,  'P2': 335, 'P3': 242, 'P4': 190, 'SW': 52,  'deflection': 27},
+      9:  {'Q': 80,   'P1': 428,  'P2': 256, 'P3': 185, 'P4': 146, 'SW': 59,  'deflection': 30},
+      10: {'Q': 56,   'P1': 329,  'P2': 199, 'P3': 144, 'P4': 114, 'SW': 65,  'deflection': 33},
+      11: {'Q': 41,   'P1': 254,  'P2': 155, 'P3': 113, 'P4': 90,  'SW': 72,  'deflection': 37},
+      12: {'Q': 30,   'P1': 195,  'P2': 121, 'P3': 89,  'P4': 71,  'SW': 78,  'deflection': 40},
+      13: {'Q': 22,   'P1': 148,  'P2': 94,  'P3': 70,  'P4': 56,  'SW': 85,  'deflection': 43},
+      14: {'Q': 16,   'P1': 110,  'P2': 72,  'P3': 54,  'P4': 44,  'SW': 91,  'deflection': 47},
+      15: {'Q': 12,   'P1': 77,   'P2': 54,  'P3': 41,  'P4': 33,  'SW': 98,  'deflection': 50},
+      16: {'Q': 9,    'P1': 50,   'P2': 38,  'P3': 30,  'P4': 25,  'SW': 104, 'deflection': 53},
+      17: {'Q': 6,    'P1': 26,   'P2': 25,  'P3': 21,  'P4': 17,  'SW': 111, 'deflection': 57},
+      18: {'Q': 4,    'P1': 5,    'P2': 13,  'P3': 12,  'P4': 11,  'SW': 117, 'deflection': 60},
+      19: {'Q': 3,    'P1': 0,    'P2': 2,   'P3': 5,   'P4': 5,   'SW': 124, 'deflection': 63},
+      20: {'Q': 1,    'P1': 0,    'P2': 0,   'P3': 0,   'P4': 0,   'SW': 130, 'deflection': 67},
+    },
+    'SC390': {
+      1:  {'Q': 2441, 'P1': 2441, 'P2': 1221, 'P3': 814, 'P4': 610, 'SW': 8,   'deflection': 3},
+      2:  {'Q': 1217, 'P1': 2433, 'P2': 1217, 'P3': 811, 'P4': 608, 'SW': 15,  'deflection': 7},
+      3:  {'Q': 809,  'P1': 2237, 'P2': 1213, 'P3': 809, 'P4': 606, 'SW': 23,  'deflection': 10},
+      4:  {'Q': 604,  'P1': 1664, 'P2': 1209, 'P3': 806, 'P4': 604, 'SW': 31,  'deflection': 13},
+      5:  {'Q': 482,  'P1': 1318, 'P2': 998,  'P3': 665, 'P4': 555, 'SW': 39,  'deflection': 17},
+      6:  {'Q': 369,  'P1': 1084, 'P2': 824,  'P3': 550, 'P4': 459, 'SW': 46,  'deflection': 20},
+      7:  {'Q': 269,  'P1': 915,  'P2': 699,  'P3': 466, 'P4': 390, 'SW': 54,  'deflection': 23},
+      8:  {'Q': 204,  'P1': 786,  'P2': 605,  'P3': 403, 'P4': 338, 'SW': 62,  'deflection': 27},
+      9:  {'Q': 160,  'P1': 684,  'P2': 530,  'P3': 354, 'P4': 297, 'SW': 69,  'deflection': 30},
+      10: {'Q': 118,  'P1': 601,  'P2': 422,  'P3': 305, 'P4': 240, 'SW': 77,  'deflection': 33},
+      11: {'Q': 87,   'P1': 532,  'P2': 338,  'P3': 245, 'P4': 193, 'SW': 85,  'deflection': 37},
+      12: {'Q': 65,   'P1': 452,  'P2': 274,  'P3': 199, 'P4': 157, 'SW': 92,  'deflection': 40},
+      13: {'Q': 49,   'P1': 364,  'P2': 222,  'P3': 162, 'P4': 128, 'SW': 100, 'deflection': 43},
+      14: {'Q': 38,   'P1': 292,  'P2': 181,  'P3': 133, 'P4': 105, 'SW': 108, 'deflection': 47},
+      15: {'Q': 29,   'P1': 233,  'P2': 147,  'P3': 108, 'P4': 86,  'SW': 116, 'deflection': 50},
+      16: {'Q': 23,   'P1': 183,  'P2': 118,  'P3': 88,  'P4': 71,  'SW': 123, 'deflection': 53},
+      17: {'Q': 18,   'P1': 141,  'P2': 94,   'P3': 71,  'P4': 57,  'SW': 131, 'deflection': 57},
+      18: {'Q': 14,   'P1': 104,  'P2': 73,   'P3': 56,  'P4': 45,  'SW': 139, 'deflection': 60},
+      19: {'Q': 11,   'P1': 70,   'P2': 55,   'P3': 43,  'P4': 35,  'SW': 147, 'deflection': 63},
+      20: {'Q': 8,    'P1': 40,   'P2': 40,   'P3': 32,  'P4': 26,  'SW': 154, 'deflection': 67},
+    },
+    'SC500': {
+      1:  {'Q': 4000, 'P1': 4000, 'P2': 2000, 'P3': 1333, 'P4': 1000, 'SW': 10, 'deflection': 3},
+      2:  {'Q': 2000, 'P1': 4000, 'P2': 2000, 'P3': 1333, 'P4': 1000, 'SW': 20, 'deflection': 7},
+      3:  {'Q': 1333, 'P1': 4000, 'P2': 2000, 'P3': 1333, 'P4': 1000, 'SW': 30, 'deflection': 10},
+      4:  {'Q': 1000, 'P1': 3000, 'P2': 2000, 'P3': 1333, 'P4': 1000, 'SW': 40, 'deflection': 13},
+      5:  {'Q': 800,  'P1': 2400, 'P2': 1800, 'P3': 1200, 'P4': 1000, 'SW': 50, 'deflection': 17},
+      6:  {'Q': 667,  'P1': 2000, 'P2': 1500, 'P3': 1000, 'P4': 833,  'SW': 60, 'deflection': 20},
+      7:  {'Q': 571,  'P1': 1714, 'P2': 1286, 'P3': 857,  'P4': 714,  'SW': 70, 'deflection': 23},
+      8:  {'Q': 500,  'P1': 1500, 'P2': 1125, 'P3': 750,  'P4': 625,  'SW': 80, 'deflection': 27},
+      9:  {'Q': 444,  'P1': 1333, 'P2': 1000, 'P3': 667,  'P4': 556,  'SW': 90, 'deflection': 30},
+      10: {'Q': 400,  'P1': 1200, 'P2': 900,  'P3': 600,  'P4': 500,  'SW': 100,'deflection': 33},
+      11: {'Q': 364,  'P1': 1091, 'P2': 818,  'P3': 545,  'P4': 455,  'SW': 110,'deflection': 37},
+      12: {'Q': 333,  'P1': 1000, 'P2': 750,  'P3': 500,  'P4': 417,  'SW': 120,'deflection': 40},
+      13: {'Q': 308,  'P1': 923,  'P2': 692,  'P3': 462,  'P4': 385,  'SW': 130,'deflection': 43},
+      14: {'Q': 286,  'P1': 857,  'P2': 643,  'P3': 429,  'P4': 357,  'SW': 140,'deflection': 47},
+      15: {'Q': 267,  'P1': 800,  'P2': 600,  'P3': 400,  'P4': 333,  'SW': 150,'deflection': 50},
+      16: {'Q': 250,  'P1': 750,  'P2': 563,  'P3': 375,  'P4': 313,  'SW': 160,'deflection': 53},
+      17: {'Q': 235,  'P1': 706,  'P2': 529,  'P3': 353,  'P4': 294,  'SW': 170,'deflection': 57},
+      18: {'Q': 222,  'P1': 667,  'P2': 500,  'P3': 333,  'P4': 278,  'SW': 180,'deflection': 60},
+      19: {'Q': 211,  'P1': 632,  'P2': 474,  'P3': 316,  'P4': 263,  'SW': 190,'deflection': 63},
+      20: {'Q': 200,  'P1': 600,  'P2': 450,  'P3': 300,  'P4': 250,  'SW': 200,'deflection': 67},
+    },
+    'E20D': {
+      1:  {'Q': 2000, 'P1': 2000, 'P2': 1000, 'P3': 667,  'P4': 500,  'SW': 5,  'deflection': 3},
+      2:  {'Q': 1000, 'P1': 2000, 'P2': 1000, 'P3': 667,  'P4': 500,  'SW': 10, 'deflection': 7},
+      3:  {'Q': 667,  'P1': 2000, 'P2': 1000, 'P3': 667,  'P4': 500,  'SW': 15, 'deflection': 10},
+      4:  {'Q': 500,  'P1': 1500, 'P2': 1000, 'P3': 667,  'P4': 500,  'SW': 20, 'deflection': 13},
+      5:  {'Q': 400,  'P1': 1200, 'P2': 900,  'P3': 600,  'P4': 500,  'SW': 25, 'deflection': 17},
+      6:  {'Q': 333,  'P1': 1000, 'P2': 750,  'P3': 500,  'P4': 417,  'SW': 30, 'deflection': 20},
+      7:  {'Q': 286,  'P1': 857,  'P2': 643,  'P3': 429,  'P4': 357,  'SW': 35, 'deflection': 23},
+      8:  {'Q': 250,  'P1': 750,  'P2': 563,  'P3': 375,  'P4': 313,  'SW': 40, 'deflection': 27},
+      9:  {'Q': 222,  'P1': 667,  'P2': 500,  'P3': 333,  'P4': 278,  'SW': 45, 'deflection': 30},
+      10: {'Q': 200,  'P1': 600,  'P2': 450,  'P3': 300,  'P4': 250,  'SW': 50, 'deflection': 33},
+      11: {'Q': 182,  'P1': 545,  'P2': 409,  'P3': 273,  'P4': 227,  'SW': 55, 'deflection': 37},
+      12: {'Q': 167,  'P1': 500,  'P2': 375,  'P3': 250,  'P4': 208,  'SW': 60, 'deflection': 40},
+      13: {'Q': 154,  'P1': 462,  'P2': 346,  'P3': 231,  'P4': 192,  'SW': 65, 'deflection': 43},
+      14: {'Q': 143,  'P1': 429,  'P2': 321,  'P3': 214,  'P4': 179,  'SW': 70, 'deflection': 47},
+      15: {'Q': 133,  'P1': 400,  'P2': 300,  'P3': 200,  'P4': 167,  'SW': 75, 'deflection': 50},
+      16: {'Q': 125,  'P1': 375,  'P2': 281,  'P3': 188,  'P4': 156,  'SW': 80, 'deflection': 53},
+      17: {'Q': 118,  'P1': 353,  'P2': 265,  'P3': 176,  'P4': 147,  'SW': 85, 'deflection': 57},
+      18: {'Q': 111,  'P1': 333,  'P2': 250,  'P3': 167,  'P4': 139,  'SW': 90, 'deflection': 60},
+      19: {'Q': 105,  'P1': 316,  'P2': 237,  'P3': 158,  'P4': 132,  'SW': 95, 'deflection': 63},
+      20: {'Q': 100,  'P1': 300,  'P2': 225,  'P3': 150,  'P4': 125,  'SW': 100,'deflection': 67},
+    },
+  };
   String searchQuery = '';
   List<CatalogueItem> searchResults = [];
   bool showSearchResults = false;
@@ -170,8 +264,8 @@ class _StructureMenuPageState extends ConsumerState<StructureMenuPage>
                               borderSide: BorderSide(
                                 color: Theme.of(context).brightness ==
                                         Brightness.dark
-                                    ? Colors.white.withOpacity(0.5)
-                                    : Colors.black.withOpacity(0.5),
+                                    ? Colors.white.withValues(alpha: 0.5)
+                                    : Colors.black.withValues(alpha: 0.5),
                               ),
                             ),
                             focusedBorder: OutlineInputBorder(
@@ -525,7 +619,7 @@ class _StructureMenuPageState extends ConsumerState<StructureMenuPage>
                     padding: const EdgeInsets.all(16),
                     decoration: BoxDecoration(
                       color: const Color(0xFF0A1128).withOpacity(0.5),
-                      border: Border.all(color: const Color(0xFF0A1128), width: 1),
+                      border: Border.all(color: Colors.blueGrey[900]!, width: 1),
                       borderRadius: BorderRadius.circular(12),
                     ),
                     child: Column(
@@ -683,19 +777,21 @@ class _StructureMenuPageState extends ConsumerState<StructureMenuPage>
                               iconSize: 28,
                             ),
                             const SizedBox(width: 20),
-                            // Bouton Export (rotated)
+                            // Bouton Export
                             Transform.rotate(
-                              angle: 3.14159, // 180° en radians
+                              angle: 0, // Pas de rotation - flèche vers le haut naturellement
                               child: Container(
                                 decoration: BoxDecoration(
-                                  color: Colors.transparent,
+                                  color: Colors.blueGrey[900], // Identique au bouton comment
+                                  borderRadius: BorderRadius.circular(8),
                                 ),
                                 child: ExportWidget(
-                                  title: 'Calcul de structure - ${selectedStructure}',
-                                  content: 'Résultats du calcul de charge pour une structure ${selectedStructure} de ${distance.toStringAsFixed(1)}m',
-                                  presetName: 'Structure ${selectedStructure}',
+                                  title: 'Charge 1',
+                                  content: _buildStructureCalculationContent(),
+                                  presetName: 'Structure $selectedStructure',
                                   exportDate: DateTime.now(),
                                   projectType: 'structure',
+                                  backgroundColor: Colors.blueGrey[900], // Identique au bouton comment
                                   projectSummary: {
                                     'structure': selectedStructure,
                                     'distance': '${distance.toStringAsFixed(1)} m',
@@ -750,12 +846,8 @@ class _StructureMenuPageState extends ConsumerState<StructureMenuPage>
         grouped.putIfAbsent(cat, () => []).add(item.item);
 
         final value = showConso
-            ? (item.item.conso.contains('W')
-                ? (double.tryParse(item.item.conso.replaceAll('W', '').trim()) ?? 0) * item.quantity
-                : 0)
-            : (item.item.poids.contains('kg')
-                ? (double.tryParse(item.item.poids.replaceAll('kg', '').trim()) ?? 0) * item.quantity
-                : 0);
+            ? ConsumptionParser.parseConsumption(item.item.conso) * item.quantity
+            : ConsumptionParser.parseWeight(item.item.poids) * item.quantity;
 
         totalsPerCategory.update(
           cat,
@@ -767,24 +859,23 @@ class _StructureMenuPageState extends ConsumerState<StructureMenuPage>
         
         // Compter les exports
         if (item.item.categorie == 'Export') {
-          totalExports += item.quantity;
+          totalExports += item.quantity.toInt();
         } else {
           // Compter seulement les vrais articles (pas les exports)
-          totalItems += item.quantity;
+          totalItems += item.quantity.toInt();
         }
       }
     }
+    
+    // Ajouter 10% de câblage pour le mode poids au total global
+    totalProjet = totalProjet * 1.1; // +10% de câblage
 
-    return Center(
-      child: Container(
-        width: MediaQuery.of(context).size.width * 0.9, // Réduire la largeur de 10%
-        margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 10), // Laisser respirer les bordures
-        padding: const EdgeInsets.all(16),
-        decoration: BoxDecoration(
-          color: const Color(0xFF0A1128).withOpacity(0.3),
-          borderRadius: BorderRadius.circular(12),
-          border: Border.all(color: Colors.white, width: 1), // Bordure blanche
-        ),
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: const Color(0xFF0A1128).withValues(alpha: 0.3),
+        borderRadius: BorderRadius.circular(12),
+      ),
       child: SingleChildScrollView(
         physics: const AlwaysScrollableScrollPhysics(),
         child: Column(
@@ -840,7 +931,6 @@ class _StructureMenuPageState extends ConsumerState<StructureMenuPage>
                 margin: const EdgeInsets.only(bottom: 16),
                 decoration: BoxDecoration(
                   color: const Color(0xFF0A1128).withOpacity(0.3),
-                  border: Border.all(color: Colors.white, width: 1),
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: Column(
@@ -896,14 +986,13 @@ class _StructureMenuPageState extends ConsumerState<StructureMenuPage>
               padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
                 color: const Color(0xFF0A1128).withOpacity(0.3),
-                border: Border.all(color: Colors.white, width: 1),
                 borderRadius: BorderRadius.circular(12),
               ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    '${ref.read(projectProvider).projects.isNotEmpty ? ref.read(projectProvider).getTranslatedProjectName(ref.read(projectProvider).selectedProject, AppLocalizations.of(context)!) : AppLocalizations.of(context)!.defaultProjectName}',
+                    ref.read(projectProvider).projects.isNotEmpty ? ref.read(projectProvider).getTranslatedProjectName(ref.read(projectProvider).selectedProject, AppLocalizations.of(context)!) : AppLocalizations.of(context)!.defaultProjectName,
                     style: Theme.of(context).textTheme.titleLarge?.copyWith(
                       fontSize: Theme.of(context).textTheme.titleLarge!.fontSize! - 3,
                       fontWeight: FontWeight.bold,
@@ -954,12 +1043,18 @@ class _StructureMenuPageState extends ConsumerState<StructureMenuPage>
                 totalPreset += value;
               }
               
+              // Ajouter 10% de câblage pour le mode poids
+              totalPreset = totalPreset * 1.1; // +10% de câblage
+              
               return Container(
                 margin: const EdgeInsets.only(bottom: 16),
                 decoration: BoxDecoration(
                   color: const Color(0xFF0A1128).withOpacity(0.3),
+                  border: Border.all(
+                    color: presetIndex % 2 == 0 ? Colors.blue : Colors.white, // Alternance bleu/blanc
+                    width: 1,
+                  ),
                   borderRadius: BorderRadius.circular(12),
-                  border: Border.all(color: Colors.white, width: 1), // Bordure blanche pour le cadre preset
                 ),
                 child: Padding(
                   padding: const EdgeInsets.all(16),
@@ -1033,7 +1128,6 @@ class _StructureMenuPageState extends ConsumerState<StructureMenuPage>
                                     decoration: BoxDecoration(
                                       color: Colors.red.withOpacity(0.3),
                                       borderRadius: BorderRadius.circular(12),
-                                      border: Border.all(color: Colors.white, width: 1),
                                     ),
                                     child: Icon(
                                       Icons.remove,
@@ -1053,7 +1147,6 @@ class _StructureMenuPageState extends ConsumerState<StructureMenuPage>
                                     decoration: BoxDecoration(
                                       color: Colors.white.withOpacity(0.1),
                                       borderRadius: BorderRadius.circular(8),
-                                      border: Border.all(color: Colors.white, width: 1),
                                     ),
                                     child: Text(
                                       '${item.quantity}',
@@ -1088,7 +1181,6 @@ class _StructureMenuPageState extends ConsumerState<StructureMenuPage>
                                     decoration: BoxDecoration(
                                       color: Colors.green.withOpacity(0.3),
                                       borderRadius: BorderRadius.circular(12),
-                                      border: Border.all(color: Colors.white, width: 1),
                                     ),
                                     child: Icon(
                                       Icons.add,
@@ -1124,9 +1216,9 @@ class _StructureMenuPageState extends ConsumerState<StructureMenuPage>
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            // Ligne 1: Total Poids
+                            // Ligne 1: Total Poids avec câblage
                             Text(
-                              '${AppLocalizations.of(context)!.totalPreset} ${AppLocalizations.of(context)!.weight}',
+                              'Total ${preset.name} ${AppLocalizations.of(context)!.weight} ${AppLocalizations.of(context)!.cabling_addition}',
                               style: Theme.of(context).textTheme.titleSmall?.copyWith(
                                 fontWeight: FontWeight.bold,
                                 color: Colors.white,
@@ -1157,15 +1249,15 @@ class _StructureMenuPageState extends ConsumerState<StructureMenuPage>
               padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
                 color: const Color(0xFF0A1128).withOpacity(0.3),
-                border: Border.all(color: Colors.white, width: 1), // Bordure blanche pour le total projet
+                border: Border.all(color: const Color(0xFF2C3E50), width: 1), // Bordure bleu-gris foncé
                 borderRadius: BorderRadius.circular(12),
               ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  // Ligne 1: Total Puissance
+                  // Ligne 1: Total Poids
                   Text(
-                    '${AppLocalizations.of(context)!.totalProject} ${AppLocalizations.of(context)!.weight}',
+                    'Total ${ref.read(projectProvider).projects.isNotEmpty ? ref.read(projectProvider).getTranslatedProjectName(ref.read(projectProvider).selectedProject, AppLocalizations.of(context)!) : AppLocalizations.of(context)!.defaultProjectName} ${AppLocalizations.of(context)!.weight}',
                     style: Theme.of(context).textTheme.titleMedium?.copyWith(
                       fontWeight: FontWeight.bold,
                       color: Colors.white,
@@ -1173,7 +1265,7 @@ class _StructureMenuPageState extends ConsumerState<StructureMenuPage>
                     ),
                   ),
                   const SizedBox(height: 8),
-                  // Ligne 2: Nom Projet + calcul du total en kW
+                  // Ligne 2: Nom Projet + calcul du total en kg
                   Text(
                     '${ref.read(projectProvider).projects.isNotEmpty ? ref.read(projectProvider).getTranslatedProjectName(ref.read(projectProvider).selectedProject, AppLocalizations.of(context)!) : AppLocalizations.of(context)!.defaultProjectName} : ${totalProjet.toStringAsFixed(2)} ${AppLocalizations.of(context)!.unitKilogram}',
                     style: Theme.of(context).textTheme.titleMedium?.copyWith(
@@ -1344,12 +1436,13 @@ class _StructureMenuPageState extends ConsumerState<StructureMenuPage>
                   iconSize: 28,
                 ),
                 const SizedBox(width: 20),
-                // Bouton Export (rotated)
+                // Bouton Export
                 Transform.rotate(
-                  angle: 3.14159, // 180° en radians
+                  angle: 0, // Pas de rotation - flèche vers le haut naturellement
                   child: Container(
                     decoration: BoxDecoration(
-                      color: Colors.transparent,
+                      color: Colors.blueGrey[900], // Identique au bouton comment
+                      borderRadius: BorderRadius.circular(8),
                     ),
                     child: ExportWidget(
                       title: '${AppLocalizations.of(context)!.defaultProjectName} ${ref.read(projectProvider).projects.isNotEmpty ? ref.read(projectProvider).getTranslatedProjectName(ref.read(projectProvider).selectedProject, AppLocalizations.of(context)!) : ""}',
@@ -1357,6 +1450,7 @@ class _StructureMenuPageState extends ConsumerState<StructureMenuPage>
                       presetName: ref.read(projectProvider).projects.isNotEmpty ? ref.read(projectProvider).getTranslatedProjectName(ref.read(projectProvider).selectedProject, AppLocalizations.of(context)!) : AppLocalizations.of(context)!.defaultProjectName,
                       exportDate: DateTime.now(),
                       projectType: 'weight',
+                      backgroundColor: Colors.blueGrey[900], // Identique au bouton comment
                       projectSummary: {
                         'totalItems': totalItems.toString(),
                         'totalExports': totalExports.toString(),
@@ -1388,7 +1482,6 @@ class _StructureMenuPageState extends ConsumerState<StructureMenuPage>
             ),
           ],
         ),
-      ),
       ),
     );
   }
@@ -1524,6 +1617,11 @@ class _StructureMenuPageState extends ConsumerState<StructureMenuPage>
   @override
   Widget build(BuildContext context) {
     final loc = AppLocalizations.of(context)!;
+    final screenWidth = MediaQuery.of(context).size.width;
+    
+    // Tailles fixes pour iPhone SE et autres appareils
+    final iconSize = 14.0; // 14px pour les icônes
+    final fontSize = 12.0; // 12px pour le texte
 
     return Scaffold(
       appBar: CustomAppBar(
@@ -1544,21 +1642,41 @@ class _StructureMenuPageState extends ConsumerState<StructureMenuPage>
             ),
           ),
           SafeArea(
-            child: Column(
+            child: Padding(
+              padding: const EdgeInsets.only(top: 15), // Descendre toute la page de 15 pixels (remonté de 5px)
+              child: Column(
               children: [
                 Container(
-                  decoration: const BoxDecoration(),
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(12),
+                    border: Border(
+                      bottom: BorderSide(
+                        color: Theme.of(context).brightness == Brightness.dark
+                            ? Colors.lightBlue[300]!
+                            : const Color(0xFF0A1128),
+                        width: 2,
+                      ),
+                    ),
+                  ),
                   margin:
-                      const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
-                  padding: const EdgeInsets.symmetric(vertical: 2),
-                  child: TabBar(
-                    controller: _tabController,
-                    tabs: [
+                      const EdgeInsets.symmetric(horizontal: 16, vertical: 0),
+                  padding: const EdgeInsets.symmetric(vertical: 0),
+         child: TabBar(
+           controller: _tabController,
+           dividerColor: Colors.transparent, // Supprime la ligne de séparation
+           indicatorColor: Colors.transparent, // Supprime l'indicateur bleu
+           labelColor: Theme.of(context).brightness == Brightness.dark
+               ? Colors.lightBlue[300]  // Bleu ciel en mode nuit
+               : const Color(0xFF0A1128),  // Bleu nuit en mode jour
+           unselectedLabelColor: Colors.white.withOpacity(0.7), // Blanc transparent pour les onglets non sélectionnés
+           labelStyle: TextStyle(fontSize: fontSize, fontWeight: FontWeight.bold),
+           unselectedLabelStyle: TextStyle(fontSize: fontSize, fontWeight: FontWeight.bold),
+           tabs: [
                       Tab(
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            Icon(Icons.calculate, size: 18),
+                            Icon(Icons.calculate, size: iconSize),
                             SizedBox(width: 6),
                             Text(loc.structurePage_chargesTab),
                           ],
@@ -1568,15 +1686,19 @@ class _StructureMenuPageState extends ConsumerState<StructureMenuPage>
                     ],
                   ),
                 ),
-                // Widget preset sous les titres des onglets
-                Container(
-                  margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                  child: const PresetWidget(),
-                ),
+                const SizedBox(height: 6),
+                // Widget preset sous les titres des onglets avec cadre bleu-gris foncé
+                const PresetWidget(),
+                const SizedBox(height: 6),
                 // Contenu des onglets avec marge de 10px
                 Expanded(
                   child: Container(
-                    margin: const EdgeInsets.only(top: 10),
+                    margin: const EdgeInsets.symmetric(horizontal: 16),
+                    decoration: BoxDecoration(
+                      color: const Color(0xFF0A1128).withOpacity(0.3),
+                      border: Border.all(color: Colors.white, width: 1),
+                      borderRadius: BorderRadius.circular(12),
+                    ),
                     child: TabBarView(
                       controller: _tabController,
                       children: [
@@ -1587,6 +1709,7 @@ class _StructureMenuPageState extends ConsumerState<StructureMenuPage>
                   ),
                 ),
               ],
+            ),
             ),
           ),
         ],
@@ -1625,7 +1748,7 @@ class _StructureMenuPageState extends ConsumerState<StructureMenuPage>
       return _comments[_currentStructureResult] ?? '';
     } else {
       // Pour les autres onglets, utiliser le système normal
-      final projectId = ref.read(projectProvider).selectedProject?.id ?? 'default';
+      final projectId = ref.read(projectProvider).selectedProject.id ?? 'default';
       final commentKey = '${projectId}_$tabKey';
       return _comments[commentKey] ?? '';
     }
@@ -1681,7 +1804,7 @@ class _StructureMenuPageState extends ConsumerState<StructureMenuPage>
                   commentKey = _currentStructureResult;
                 } else {
                   // Pour les autres onglets, utiliser le système normal
-                  final projectId = ref.read(projectProvider).selectedProject?.id ?? 'default';
+                  final projectId = ref.read(projectProvider).selectedProject.id ?? 'default';
                   commentKey = '${projectId}_$tabKey';
                 }
                 
@@ -1698,5 +1821,81 @@ class _StructureMenuPageState extends ConsumerState<StructureMenuPage>
         );
       },
     );
+  }
+
+  // Méthode pour générer le contenu exact des calculs de structure
+  String _buildStructureCalculationContent() {
+    // Map pour les traductions des types de charge
+    final loc = AppLocalizations.of(context)!;
+    final chargeTranslations = {
+      'structurePage_chargeRepartie': loc.structurePage_chargeRepartie,
+      'structurePage_pointAccrocheCentre': loc.structurePage_pointAccrocheCentre,
+      'structurePage_pointsAccrocheExtremites': loc.structurePage_pointsAccrocheExtremites,
+      'structurePage_3pointsAccroche': loc.structurePage_3pointsAccroche,
+      'structurePage_4pointsAccroche': loc.structurePage_4pointsAccroche,
+    };
+    
+    // Obtenir les données pour la structure et la portée sélectionnées
+    final span = distance.round();
+    final data = structureData[selectedStructure]?[span] ?? {};
+    
+    if (data.isEmpty) return 'Aucune donnée disponible';
+    
+    // Calculer les valeurs
+    final poidsStructure = data['SW'] ?? 0;
+    final flecheMaximale = data['deflection'] ?? 0;
+    final unitCharge = selectedCharge == 'structurePage_chargeRepartie' ? ' kg/m' : ' kg/pt';
+    
+    double chargeMaximale = 0;
+    switch (selectedCharge) {
+      case 'structurePage_pointAccrocheCentre':
+        chargeMaximale = data['P1'] ?? 0;
+        break;
+      case 'structurePage_pointsAccrocheExtremites':
+        chargeMaximale = data['P2'] ?? 0;
+        break;
+      case 'structurePage_chargeRepartie':
+        chargeMaximale = data['Q'] ?? 0;
+        break;
+      default:
+        chargeMaximale = 0;
+    }
+    
+    return '''
+CALCUL DE CHARGE STRUCTURE
+==========================
+
+PARAMÈTRES:
+-----------
+Structure: $selectedStructure
+Portée: ${distance.toStringAsFixed(1)} m
+Type de charge: ${chargeTranslations[selectedCharge] ?? selectedCharge}
+
+RÉSULTATS CALCULÉS:
+-------------------
+Charge maximale: ${chargeMaximale.toStringAsFixed(1)}$unitCharge
+Poids structure: ${poidsStructure.toStringAsFixed(1)} kg/m
+Flèche maximale: ${flecheMaximale.toStringAsFixed(0)} mm
+Ratio de flèche: 1/${(distance * 1000 / flecheMaximale).round()}
+
+DONNÉES CONSTRUCTEUR:
+--------------------
+Charge répartie (Q): ${data['Q']?.toStringAsFixed(0) ?? 'N/A'} kg/m
+1 point d'accroche (P1): ${data['P1']?.toStringAsFixed(0) ?? 'N/A'} kg
+2 points d'accroche (P2): ${data['P2']?.toStringAsFixed(0) ?? 'N/A'} kg/pt
+3 points d'accroche (P3): ${data['P3']?.toStringAsFixed(0) ?? 'N/A'} kg/pt
+4 points d'accroche (P4): ${data['P4']?.toStringAsFixed(0) ?? 'N/A'} kg/pt
+Poids propre (SW): ${data['SW']?.toStringAsFixed(0) ?? 'N/A'} kg/m
+Flèche réelle: ${data['deflection']?.toStringAsFixed(0) ?? 'N/A'} mm
+
+RECOMMANDATIONS:
+---------------
+• Ratio de flèche recommandé: 1/300e
+• Vérifier la compatibilité des points d'accroche
+• Considérer les charges dynamiques supplémentaires
+• Respecter les marges de sécurité constructeur
+
+Généré le: ${DateTime.now().toString().split('.')[0]}
+''';
   }
 }

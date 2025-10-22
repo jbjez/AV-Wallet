@@ -1,4 +1,4 @@
-library app_links;
+library;
 
 export 'src/app_links.dart';
 

@@ -26,6 +26,9 @@ class _ProjectSelectionPageState extends ConsumerState<ProjectSelectionPage> {
       backgroundColor: const Color(0xFF0A1128),
       appBar: AppBar(
         backgroundColor: const Color(0xFF0A1128),
+        elevation: 0,
+        shadowColor: Colors.transparent,
+        surfaceTintColor: Colors.transparent,
         title: const Text(
           'Sélectionner un Projet',
           style: TextStyle(color: Colors.white),
@@ -180,9 +183,6 @@ class _ProjectSelectionPageState extends ConsumerState<ProjectSelectionPage> {
       case 'select':
         _selectProject(index);
         break;
-      case 'rename':
-        _showRenameProjectDialog(index, project);
-        break;
       case 'delete':
         _showDeleteProjectDialog(index, project);
         break;
@@ -239,50 +239,6 @@ class _ProjectSelectionPageState extends ConsumerState<ProjectSelectionPage> {
       name: name,
     );
     ref.read(projectProvider.notifier).addProject(project);
-  }
-
-  void _showRenameProjectDialog(int index, Project project) {
-    final controller = TextEditingController(text: project.name);
-    
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        backgroundColor: const Color(0xFF1A1F3A),
-        title: const Text(
-          'Renommer le Projet',
-          style: TextStyle(color: Colors.white),
-        ),
-        content: TextField(
-          controller: controller,
-          decoration: const InputDecoration(
-            labelText: 'Nom du projet',
-            labelStyle: TextStyle(color: Colors.white70),
-            enabledBorder: OutlineInputBorder(
-              borderSide: BorderSide(color: Colors.white30),
-            ),
-            focusedBorder: OutlineInputBorder(
-              borderSide: BorderSide(color: Colors.blue),
-            ),
-          ),
-          style: const TextStyle(color: Colors.white),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('Annuler', style: TextStyle(color: Colors.white70)),
-          ),
-          ElevatedButton(
-            onPressed: () {
-              if (controller.text.trim().isNotEmpty) {
-                ref.read(projectProvider.notifier).renameProject(index, controller.text.trim());
-                Navigator.pop(context);
-              }
-            },
-            child: const Text('Renommer'),
-          ),
-        ],
-      ),
-    );
   }
 
   void _showDeleteProjectDialog(int index, Project project) {

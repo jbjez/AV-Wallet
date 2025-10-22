@@ -1,6 +1,5 @@
-import 'package:av_wallet_hive/l10n/app_localizations.dart';
+import 'package:av_wallet/l10n/app_localizations.dart';
 import 'package:flutter/material.dart';
-import 'package:av_wallet_hive/l10n/app_localizations.dart';
 import '../models/catalogue_item.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../providers/catalogue_provider.dart';

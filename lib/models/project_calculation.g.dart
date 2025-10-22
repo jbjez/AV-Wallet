@@ -18,6 +18,10 @@ _$ProjectCalculationImpl _$$ProjectCalculationImplFromJson(
       comment: json['comment'] as String?,
       filePath: json['filePath'] as String?,
       type: json['type'] as String?,
+      photoPaths: (json['photoPaths'] as List<dynamic>?)
+              ?.map((e) => e as String)
+              .toList() ??
+          const [],
       data: json['data'] as Map<String, dynamic>? ?? const {},
     );
 
@@ -33,5 +37,6 @@ Map<String, dynamic> _$$ProjectCalculationImplToJson(
       'comment': instance.comment,
       'filePath': instance.filePath,
       'type': instance.type,
+      'photoPaths': instance.photoPaths,
       'data': instance.data,
     };

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:av_wallet_hive/l10n/app_localizations.dart';
+import 'package:av_wallet/l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../theme/theme_extension.dart';
 import '../providers/project_provider.dart';
@@ -146,12 +146,12 @@ class PatchScenePage extends ConsumerStatefulWidget {
 
 class _PatchScenePageState extends ConsumerState<PatchScenePage> {
   final GlobalKey _repaintKey = GlobalKey();
-  List<PatchEntry> _inputs = [];
+  final List<PatchEntry> _inputs = [];
   
   // Gestion des commentaires
   Map<String, String> _comments = {};
-  String _currentRiderResult = ''; // Clé unique pour le résultat rider actuel
-  List<PatchEntry> _outputs = [];
+  final String _currentRiderResult = ''; // Clé unique pour le résultat rider actuel
+  final List<PatchEntry> _outputs = [];
   
   // Contrôleurs pour les champs de texte
   final TextEditingController _trackNameController = TextEditingController();
@@ -760,7 +760,7 @@ class _PatchScenePageState extends ConsumerState<PatchScenePage> {
                                       final suffix = entry.quantity > 1 ? '${i + 1}' : '';
                                       _inputs.add(PatchEntry(
                                         id: _nextId('_L_$i'),
-                                        trackName: '${baseNum}${suffix}L',
+                                        trackName: '$baseNum${suffix}L',
                                         source: entry.source,
                                         microphone: _microphoneController.text,
                                         microphoneStand: _microphoneStandController.text,
@@ -770,7 +770,7 @@ class _PatchScenePageState extends ConsumerState<PatchScenePage> {
                                       ));
                                       _inputs.add(PatchEntry(
                                         id: _nextId('_R_$i'),
-                                        trackName: '${baseNum}${suffix}R',
+                                        trackName: '$baseNum${suffix}R',
                                         source: entry.source,
                                         microphone: _microphoneController.text,
                                         microphoneStand: _microphoneStandController.text,
@@ -829,7 +829,7 @@ class _PatchScenePageState extends ConsumerState<PatchScenePage> {
                                       final suffix = entry.quantity > 1 ? '${i + 1}' : '';
                                       _outputs.add(PatchEntry(
                                         id: _nextId('_L_$i'),
-                                        trackName: '${baseNum}${suffix}L',
+                                        trackName: '$baseNum${suffix}L',
                                         source: '',
                                         microphone: '',
                                         destination: entry.destination,
@@ -838,7 +838,7 @@ class _PatchScenePageState extends ConsumerState<PatchScenePage> {
                                       ));
                                       _outputs.add(PatchEntry(
                                         id: _nextId('_R_$i'),
-                                        trackName: '${baseNum}${suffix}R',
+                                        trackName: '$baseNum${suffix}R',
                                         source: '',
                                         microphone: '',
                                         destination: entry.destination,
@@ -1007,7 +1007,7 @@ class _PatchScenePageState extends ConsumerState<PatchScenePage> {
                   ),
                 ),
                 // Bouton "Ajouter une piste" avec seulement l'icône +
-                Container(
+                SizedBox(
                   width: MediaQuery.of(context).size.width * 0.15, // Réduit de 70%
                   child: ElevatedButton(
                     onPressed: onAddTrack,
@@ -1081,7 +1081,7 @@ class _PatchScenePageState extends ConsumerState<PatchScenePage> {
                   ),
                 ),
                 // Bouton "Ajouter une piste" avec seulement l'icône +
-                Container(
+                SizedBox(
                   width: MediaQuery.of(context).size.width * 0.15, // Réduit de 70%
                   child: ElevatedButton(
                     onPressed: onAddTrack,
@@ -1121,7 +1121,7 @@ class _PatchScenePageState extends ConsumerState<PatchScenePage> {
             // Widget Export (flèche vers le haut)
             Center(
               child: ExportWidget(
-                  title: '${AppLocalizations.of(context)!.rider_technical_title} \'${ref.read(projectProvider).projects.isNotEmpty ? ref.read(projectProvider).getTranslatedProjectName(ref.read(projectProvider).selectedProject, AppLocalizations.of(context)!) : AppLocalizations.of(context)!.defaultProjectName}\'',
+                  title: 'Rider technique 1',
                   content: _generatePatchTableContent(),
                   presetName: ref.read(projectProvider).projects.isNotEmpty ? ref.read(projectProvider).getTranslatedProjectName(ref.read(projectProvider).selectedProject, AppLocalizations.of(context)!) : AppLocalizations.of(context)!.defaultProjectName,
                   exportDate: DateTime.now(),
@@ -1336,14 +1336,12 @@ class _PatchScenePageState extends ConsumerState<PatchScenePage> {
     try {
       final prefs = await SharedPreferences.getInstance();
       final projectId = ref.read(projectProvider).selectedProject;
-      if (projectId != null) {
-        final commentsJson = prefs.getString('calcul_projet_comments');
-        if (commentsJson != null) {
-          final Map<String, dynamic> commentsMap = json.decode(commentsJson);
-          _comments = commentsMap.map((key, value) => MapEntry(key, value.toString()));
-        }
+      final commentsJson = prefs.getString('calcul_projet_comments');
+      if (commentsJson != null) {
+        final Map<String, dynamic> commentsMap = json.decode(commentsJson);
+        _comments = commentsMap.map((key, value) => MapEntry(key, value.toString()));
       }
-    } catch (e) {
+        } catch (e) {
       print('Erreur lors du chargement des commentaires: $e');
     }
   }
@@ -1360,15 +1358,12 @@ class _PatchScenePageState extends ConsumerState<PatchScenePage> {
 
   String _getCommentForTab(String tabKey) {
     final projectId = ref.read(projectProvider).selectedProject;
-    if (projectId != null) {
-      return _comments['${projectId}_$tabKey'] ?? '';
-    }
-    return '';
+    return _comments['${projectId}_$tabKey'] ?? '';
+      return '';
   }
 
   Future<void> _showCommentDialog(String tabKey) async {
     final projectId = ref.read(projectProvider).selectedProject;
-    if (projectId == null) return;
 
     final currentComment = _getCommentForTab(tabKey);
     final controller = TextEditingController(text: currentComment);
@@ -1425,11 +1420,9 @@ class _PatchScenePageState extends ConsumerState<PatchScenePage> {
       
       // Réinitialiser les commentaires
       final projectId = ref.read(projectProvider).selectedProject;
-      if (projectId != null) {
-        _comments.remove('${projectId}_rider_tab');
-        _saveComments();
-      }
-    });
+      _comments.remove('${projectId}_rider_tab');
+      _saveComments();
+        });
   }
 
   void _addDefaultTracksAfterReset() {
@@ -1615,7 +1608,7 @@ class _AddRowButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
+    return SizedBox(
       width: double.infinity,
       child: ElevatedButton.icon(
         onPressed: onPressed,

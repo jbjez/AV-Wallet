@@ -12,7 +12,7 @@ class MigrateNewItemsPage extends ConsumerStatefulWidget {
 class _MigrateNewItemsPageState extends ConsumerState<MigrateNewItemsPage> {
   bool _isLoading = false;
   String _status = '';
-  List<String> _logs = [];
+  final List<String> _logs = [];
 
   void _addLog(String message) {
     setState(() {

@@ -2,7 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../providers/catalogue_provider.dart';
 import '../providers/preset_provider.dart';
-import 'package:av_wallet_hive/l10n/app_localizations.dart';
+import 'package:av_wallet/l10n/app_localizations.dart';
+import '../utils/consumption_parser.dart';
 
 class CalculProjectTab extends ConsumerWidget {
   const CalculProjectTab({super.key});
@@ -22,13 +23,13 @@ class CalculProjectTab extends ConsumerWidget {
     // Calculate power consumption total
     final powerTotal = preset.items.fold<double>(
       0,
-      (sum, item) => sum + (double.tryParse(item.item.conso.replaceAll('W', '').trim()) ?? 0),
+      (sum, item) => sum + ConsumptionParser.parseConsumption(item.item.conso),
     );
 
     // Calculate weight total
     final weightTotal = preset.items.fold<double>(
       0,
-      (sum, item) => sum + (double.tryParse(item.item.poids.replaceAll('kg', '').trim()) ?? 0),
+      (sum, item) => sum + ConsumptionParser.parseWeight(item.item.poids),
     );
 
     // Calculate grand total (if needed - this combines both metrics)

@@ -7,6 +7,7 @@ class LightPageState {
   final List<CatalogueItem> selectedFixtures;
   final Map<CatalogueItem, int> fixtureQuantities;
   final Map<CatalogueItem, String> fixtureDmxModes;
+  final Map<CatalogueItem, bool> fixtureWifiModes; // true = WiFi, false = Filaire
   final String? selectedProduct;
   final String? selectedBrand;
   final String? selectedCategory;
@@ -34,6 +35,7 @@ class LightPageState {
     this.selectedFixtures = const [],
     this.fixtureQuantities = const {},
     this.fixtureDmxModes = const {},
+    this.fixtureWifiModes = const {},
     this.selectedProduct,
     this.selectedBrand,
     this.selectedCategory,
@@ -62,6 +64,7 @@ class LightPageState {
     List<CatalogueItem>? selectedFixtures,
     Map<CatalogueItem, int>? fixtureQuantities,
     Map<CatalogueItem, String>? fixtureDmxModes,
+    Map<CatalogueItem, bool>? fixtureWifiModes,
     String? selectedProduct,
     String? selectedBrand,
     String? selectedCategory,
@@ -89,6 +92,7 @@ class LightPageState {
       selectedFixtures: selectedFixtures ?? this.selectedFixtures,
       fixtureQuantities: fixtureQuantities ?? this.fixtureQuantities,
       fixtureDmxModes: fixtureDmxModes ?? this.fixtureDmxModes,
+      fixtureWifiModes: fixtureWifiModes ?? this.fixtureWifiModes,
       selectedProduct: selectedProduct ?? this.selectedProduct,
       selectedBrand: selectedBrand ?? this.selectedBrand,
       selectedCategory: selectedCategory ?? this.selectedCategory,
@@ -337,6 +341,11 @@ class LightPageStateNotifier extends StateNotifier<LightPageState> {
 
   void updateFixtureDmxModes(Map<CatalogueItem, String> modes) {
     state = state.copyWith(fixtureDmxModes: modes);
+    _saveState();
+  }
+
+  void updateFixtureWifiModes(Map<CatalogueItem, bool> modes) {
+    state = state.copyWith(fixtureWifiModes: modes);
     _saveState();
   }
 

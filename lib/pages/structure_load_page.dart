@@ -1,6 +1,6 @@
 // lib/pages/structure_menu_page.dart
 import 'package:flutter/material.dart';
-import 'package:av_wallet_hive/l10n/app_localizations.dart';
+import 'package:av_wallet/l10n/app_localizations.dart';
 
 import 'home_page.dart';
 import 'catalogue_page.dart';
@@ -260,7 +260,7 @@ Généré le: ${DateTime.now().toString().split('.')[0]}
                       border: Border.all(color: Colors.white, width: 2),
                       borderRadius: BorderRadius.circular(16),
                     ),
-                    child: Image.asset('assets/images/logo2.png', height: 60),
+                    child: Image.asset('assets/logo2.png', height: 60),
                   ),
                 ),
                 // Content
@@ -292,13 +292,13 @@ Généré le: ${DateTime.now().toString().split('.')[0]}
                             ),
                             const SizedBox(height: 12),
                             // Distance slider
-                            Text(loc.distance_label(distance.round().toString()), style: const TextStyle(color: Colors.white)),
+                            Text(loc.distance_label.replaceAll('{distance}', distance.round().toString()), style: const TextStyle(color: Colors.white)),
                             Slider(
                               value: distance,
                               min: 1,
                               max: 20,
                               divisions: 19,
-                              label: loc.distance_label(distance.round().toString()),
+                              label: loc.distance_label.replaceAll('{distance}', distance.round().toString()),
                               onChanged: (v) => setState(() => distance = v),
                             ),
                             const SizedBox(height: 12),
@@ -368,7 +368,7 @@ Généré le: ${DateTime.now().toString().split('.')[0]}
                                   
                                   // Widget d'export
                                   const SizedBox(height: 12),
-                                  Container(
+                                  SizedBox(
                                     width: double.infinity,
                                     child: ElevatedButton.icon(
                                       onPressed: () => _exportResults(),

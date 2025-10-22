@@ -129,7 +129,7 @@ class AuthNotifier extends StateNotifier<AuthState> {
   Future<void> checkAuthStatus() async {
     state = state.copyWith(isLoading: true, error: null);
     try {
-      final user = await _authService.getCurrentUser();
+      final user = _authService.getCurrentUser();
       if (user != null) {
         state = state.copyWith(
           isLoading: false,

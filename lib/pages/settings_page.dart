@@ -1,10 +1,8 @@
-import 'package:av_wallet_hive/l10n/app_localizations.dart';
+import 'package:av_wallet/l10n/app_localizations.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:av_wallet_hive/l10n/app_localizations.dart';
 import '../providers/auth_provider.dart';
 import '../services/subscription_service.dart';
-import '../theme/theme_controller.dart';
 import 'biometric_settings_page.dart';
 
 class SettingsPage extends ConsumerStatefulWidget {
@@ -55,6 +53,9 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
       backgroundColor: const Color(0xFF0A1128),
       appBar: AppBar(
         backgroundColor: const Color(0xFF0A1128),
+        elevation: 0,
+        shadowColor: Colors.transparent,
+        surfaceTintColor: Colors.transparent,
         title: Text(
           AppLocalizations.of(context)!.settingsPage_title,
           style: const TextStyle(color: Colors.white),
@@ -72,8 +73,6 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   _buildUserInfoSection(user),
-                  const SizedBox(height: 24),
-                  _buildThemeSection(),
                   const SizedBox(height: 24),
                   _buildSecuritySection(),
                   const SizedBox(height: 24),
@@ -383,21 +382,21 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
         backgroundColor: const Color(0xFF1A1F3A),
         title: Text(
           AppLocalizations.of(context)!.settingsPage_signOutDialogTitle,
-          style: const TextStyle(color: Colors.white),
+          style: const TextStyle(color: Colors.white, fontSize: 18),
         ),
         content: Text(
           AppLocalizations.of(context)!.settingsPage_signOutDialogContent,
-          style: const TextStyle(color: Colors.white70),
+          style: const TextStyle(color: Colors.white70, fontSize: 13),
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: Text(AppLocalizations.of(context)!.settingsPage_cancel, style: const TextStyle(color: Colors.white70)),
+            child: Text(AppLocalizations.of(context)!.settingsPage_cancel, style: const TextStyle(color: Colors.white70, fontSize: 13)),
           ),
           ElevatedButton(
             onPressed: _signOut,
             style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
-            child: Text(AppLocalizations.of(context)!.settingsPage_confirmSignOut),
+            child: Text(AppLocalizations.of(context)!.settingsPage_confirmSignOut, style: const TextStyle(fontSize: 13)),
           ),
         ],
       ),
@@ -451,25 +450,6 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
   }
 
   void _navigateToFreemiumTest() {
-    Navigator.of(context).pushNamed('/freemium-test');
-  }
-
-  Widget _buildThemeSection() {
-    return _buildSection(
-      'Apparence',
-      [
-        Consumer(
-          builder: (context, ref, _) {
-            final mode = ref.watch(themeModeProvider);
-            return SwitchListTile(
-              title: const Text('Mode sombre'),
-              subtitle: Text(mode == ThemeMode.dark ? 'Activé' : 'Désactivé'),
-              value: mode == ThemeMode.dark,
-              onChanged: (_) => ref.read(themeModeProvider.notifier).toggle(),
-            );
-          },
-        ),
-      ],
-    );
+    Navigator.of(context).pushNamed('/payment');
   }
 }

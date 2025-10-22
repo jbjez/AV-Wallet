@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:path_provider/path_provider.dart';
@@ -10,9 +11,57 @@ import '../models/project.dart';
 import '../providers/preset_provider.dart';
 import '../providers/project_provider.dart';
 import '../pages/calcul_projet_page.dart';
-import '../services/translation_service.dart';
 import '../services/freemium_access_service.dart';
-import 'package:av_wallet_hive/l10n/app_localizations.dart';
+import '../services/supabase_service.dart';
+import 'package:av_wallet/l10n/app_localizations.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:hive/hive.dart';
+import '../services/hive_service.dart';
+import '../providers/imported_photos_provider.dart';
+import '../providers/project_badges_provider.dart';
+
+/// InputFormatter pour le formatage automatique des dates JJ/MM/AA
+class DateInputFormatter extends TextInputFormatter {
+  @override
+  TextEditingValue formatEditUpdate(
+    TextEditingValue oldValue,
+    TextEditingValue newValue,
+  ) {
+    // Supprimer tous les caractères non numériques
+    String newText = newValue.text.replaceAll(RegExp(r'[^0-9]'), '');
+    
+    // Limiter à 6 chiffres maximum (JJMMAA)
+    if (newText.length > 6) {
+      newText = newText.substring(0, 6);
+    }
+    
+    // Ajouter les "/" automatiquement
+    String formattedText = '';
+    if (newText.isNotEmpty) {
+      formattedText = newText.substring(0, 1);
+    }
+    if (newText.length >= 2) {
+      formattedText = '${newText.substring(0, 2)}/';
+    }
+    if (newText.length >= 3) {
+      formattedText = '${newText.substring(0, 2)}/${newText.substring(2, 3)}';
+    }
+    if (newText.length >= 4) {
+      formattedText = '${newText.substring(0, 2)}/${newText.substring(2, 4)}/';
+    }
+    if (newText.length >= 5) {
+      formattedText = '${newText.substring(0, 2)}/${newText.substring(2, 4)}/${newText.substring(4, 5)}';
+    }
+    if (newText.length >= 6) {
+      formattedText = '${newText.substring(0, 2)}/${newText.substring(2, 4)}/${newText.substring(4, 6)}';
+    }
+    
+    return TextEditingValue(
+      text: formattedText,
+      selection: TextSelection.collapsed(offset: formattedText.length),
+    );
+  }
+}
 
 class PresetWidget extends ConsumerStatefulWidget {
   final bool loadOnInit;
@@ -23,6 +72,17 @@ class PresetWidget extends ConsumerStatefulWidget {
     this.loadOnInit = false,
     this.onPresetSelected,
   });
+
+  /// Obtenir l'email de l'utilisateur connecté pour la persistance
+  static String? _getCurrentUserEmail() {
+    try {
+      final user = SB.user;
+      return user?.email;
+    } catch (e) {
+      debugPrint('Erreur lors de la récupération de l\'utilisateur: $e');
+      return null;
+    }
+  }
 
   @override
   ConsumerState<PresetWidget> createState() => _PresetWidgetState();
@@ -42,57 +102,42 @@ class _PresetWidgetState extends ConsumerState<PresetWidget> {
     return name;
   }
 
+  String _getTranslatedProjectName(String projectName) {
+    final loc = AppLocalizations.of(context)!;
+    
+    switch (projectName) {
+      case 'default_project_1':
+        return loc.defaultProject1;
+      case 'default_project_2':
+        return loc.defaultProject2;
+      case 'default_project_3':
+        return loc.defaultProject3;
+      default:
+        return projectName;
+    }
+  }
+
   @override
   void initState() {
     super.initState();
-    // Toujours vérifier la migration des presets
+    
+    // Vérifier seulement la migration des presets sans les supprimer
     WidgetsBinding.instance.addPostFrameCallback((_) {
       final presets = ref.read(presetProvider);
       bool needsUpdate = false;
+      
+      // Migrer seulement les presets avec des noms vides ou "Défaut"
       for (int i = 0; i < presets.length; i++) {
-        if (presets[i].name.isEmpty) {
+        if (presets[i].name.isEmpty || presets[i].name == 'Défaut') {
           final updatedPreset = presets[i].copyWith(name: 'Preset');
           ref.read(presetProvider.notifier).updatePreset(updatedPreset);
           needsUpdate = true;
         }
       }
+      
       if (needsUpdate) {
         // Forcer la mise à jour de l'interface
         setState(() {});
-      }
-    });
-    
-    // Toujours créer un preset par défaut au démarrage
-    Future.delayed(const Duration(milliseconds: 100), () async {
-      try {
-        // Vérifier s'il y a des presets
-        final presets = ref.read(presetProvider);
-        
-        // Si aucun preset ou si le premier preset n'est pas "Preset", créer un reset
-        if (presets.isEmpty || (presets.isNotEmpty && presets[0].name != 'Preset')) {
-          // Supprimer tous les presets existants
-          for (int i = presets.length - 1; i >= 0; i--) {
-            ref.read(presetProvider.notifier).removePreset(i);
-          }
-          
-          // Créer un preset par défaut "Preset"
-          final defaultPreset = Preset(
-            id: 'default_preset_${DateTime.now().millisecondsSinceEpoch}',
-            name: 'Preset',
-            items: [],
-          );
-          ref.read(presetProvider.notifier).addPreset(defaultPreset);
-          ref.read(presetProvider.notifier).selectPreset(0);
-        }
-      } catch (e) {
-        // Fallback simple
-        final fallbackPreset = Preset(
-          id: 'fallback_preset_${DateTime.now().millisecondsSinceEpoch}',
-          name: 'Preset',
-          items: [],
-        );
-        ref.read(presetProvider.notifier).addPreset(fallbackPreset);
-        ref.read(presetProvider.notifier).selectPreset(0);
       }
     });
   }
@@ -108,7 +153,7 @@ class _PresetWidgetState extends ConsumerState<PresetWidget> {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: Text(AppLocalizations.of(context)!.presetWidget_newPreset),
+        title: Text(AppLocalizations.of(context)!.presetWidget_create),
         content: TextField(
           controller: _nameController,
           decoration: InputDecoration(
@@ -281,8 +326,8 @@ class _PresetWidgetState extends ConsumerState<PresetWidget> {
     
     if (projectState.projects.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Aucun projet disponible à charger'),
+        SnackBar(
+          content: Text(AppLocalizations.of(context)!.no_projects_available),
           backgroundColor: Colors.orange,
         ),
       );
@@ -305,7 +350,7 @@ class _PresetWidgetState extends ConsumerState<PresetWidget> {
               Padding(
                 padding: const EdgeInsets.all(16),
                 child: Text(
-                  'Sélectionnez un projet à charger :',
+                  AppLocalizations.of(context)!.loadProject_selectProject,
                   style: TextStyle(
                     fontSize: 16,
                     color: Colors.white,
@@ -341,7 +386,7 @@ class _PresetWidgetState extends ConsumerState<PresetWidget> {
                           ),
                           child: ListTile(
                             title: Text(
-                              project.name,
+                              _getTranslatedProjectName(project.name),
                               style: TextStyle(
                                 color: Colors.white,
                                       fontWeight: isCurrentProject ? FontWeight.bold : FontWeight.normal,
@@ -366,10 +411,13 @@ class _PresetWidgetState extends ConsumerState<PresetWidget> {
                               ref.read(projectProvider.notifier).selectProject(index);
                               ref.read(presetProvider.notifier).loadPresetsFromProject(project);
                               
+                              // Nettoyer les photos du projet précédent
+                              ref.read(importedPhotosProvider.notifier).clearProjectPhotos(project.name);
+                              
                               Navigator.pop(context);
                               ScaffoldMessenger.of(context).showSnackBar(
                                 SnackBar(
-                                  content: Text('Projet "${project.name}" chargé !'),
+                                  content: Text(AppLocalizations.of(context)!.project_loaded(_getTranslatedProjectName(project.name))),
                                   backgroundColor: Colors.green,
                                   duration: const Duration(seconds: 2),
                                 ),
@@ -377,7 +425,7 @@ class _PresetWidgetState extends ConsumerState<PresetWidget> {
                             },
                           ),
                         );
-                      }).toList(),
+                      }),
                     ],
                   ),
                 ),
@@ -388,7 +436,7 @@ class _PresetWidgetState extends ConsumerState<PresetWidget> {
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text('Annuler'),
+            child: Text(AppLocalizations.of(context)!.cancel_button),
           ),
         ],
       ),
@@ -411,7 +459,7 @@ class _PresetWidgetState extends ConsumerState<PresetWidget> {
         content: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Text('Voulez-vous exporter le projet "${currentProject.name}" ?'),
+            Text(AppLocalizations.of(context)!.export_project_confirm(currentProject.name)),
             const SizedBox(height: 16),
             Text(
               'L\'export inclura tous les PDFs disponibles :\n• Calculs de puissance\n• Calculs de poids\n• Exports de calculs\n• Photos éventuelles',
@@ -445,12 +493,12 @@ class _PresetWidgetState extends ConsumerState<PresetWidget> {
       showDialog(
         context: context,
         barrierDismissible: false,
-        builder: (context) => const AlertDialog(
+        builder: (context) => AlertDialog(
           content: Row(
             children: [
-              CircularProgressIndicator(),
-              SizedBox(width: 16),
-              Text('Génération des PDFs...'),
+              const CircularProgressIndicator(),
+              const SizedBox(width: 16),
+              Text(AppLocalizations.of(context)!.generating_pdfs),
             ],
           ),
         ),
@@ -500,7 +548,7 @@ class _PresetWidgetState extends ConsumerState<PresetWidget> {
         if (context.mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
-              content: Text('${filesToShare.length} fichiers exportés avec succès !'),
+              content: Text(AppLocalizations.of(context)!.files_exported_success(filesToShare.length)),
               backgroundColor: Colors.green,
               duration: const Duration(seconds: 3),
             ),
@@ -509,8 +557,8 @@ class _PresetWidgetState extends ConsumerState<PresetWidget> {
       } else {
         if (context.mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text('Aucun fichier à exporter pour ce projet'),
+            SnackBar(
+              content: Text(AppLocalizations.of(context)!.no_files_to_export),
               backgroundColor: Colors.orange,
             ),
           );
@@ -521,7 +569,7 @@ class _PresetWidgetState extends ConsumerState<PresetWidget> {
         Navigator.pop(context); // Fermer le dialog de chargement
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Erreur lors de l\'export: $e'),
+            content: Text(AppLocalizations.of(context)!.export_error(e.toString())),
             backgroundColor: Colors.red,
           ),
         );
@@ -561,7 +609,7 @@ class _PresetWidgetState extends ConsumerState<PresetWidget> {
           build: (pw.Context context) {
             return [
               pw.Text(
-                'Projet: ${project.name}',
+                'Projet: ${_getTranslatedProjectName(project.name)}',
                 style: pw.TextStyle(fontSize: 16, fontWeight: pw.FontWeight.bold),
               ),
               pw.SizedBox(height: 20),
@@ -619,7 +667,7 @@ class _PresetWidgetState extends ConsumerState<PresetWidget> {
                     print('Erreur lors du chargement de la photo $photoPath: $e');
                   }
                   return pw.SizedBox.shrink();
-                }).toList(),
+                }),
               ],
             ];
           },
@@ -672,7 +720,7 @@ class _PresetWidgetState extends ConsumerState<PresetWidget> {
                 mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
                 children: [
                   pw.Text(
-                    'Calcul ${type == 'power' ? 'Puissance' : 'Poids'} - ${project.name}',
+                    'Calcul ${type == 'power' ? 'Puissance' : 'Poids'} - ${_getTranslatedProjectName(project.name)}',
                     style: pw.TextStyle(fontSize: 18, fontWeight: pw.FontWeight.bold),
                   ),
                   pw.Text(
@@ -718,7 +766,7 @@ class _PresetWidgetState extends ConsumerState<PresetWidget> {
                 return pw.Padding(
                   padding: const pw.EdgeInsets.only(left: 20, bottom: 8),
                   child: pw.Text(
-                    '• ${preset.name}: ${type == 'power' ? (presetValue / 1000).toStringAsFixed(2) : presetValue.toStringAsFixed(2)} ${type == 'power' ? 'kW' : 'kg'} (${presetItems} articles)',
+                    '• ${preset.name}: ${type == 'power' ? (presetValue / 1000).toStringAsFixed(2) : presetValue.toStringAsFixed(2)} ${type == 'power' ? 'kW' : 'kg'} ($presetItems articles)',
                     style: const pw.TextStyle(fontSize: 12),
                   ),
                 );
@@ -760,7 +808,7 @@ class _PresetWidgetState extends ConsumerState<PresetWidget> {
                     print('Erreur lors du chargement de la photo $photoPath: $e');
                   }
                   return pw.SizedBox.shrink();
-                }).toList(),
+                }),
               ],
             ];
           },
@@ -908,7 +956,7 @@ class _PresetWidgetState extends ConsumerState<PresetWidget> {
                     print('Erreur lors du chargement de la photo $photoPath: $e');
                   }
                   return pw.SizedBox.shrink();
-                }).toList(),
+                }),
               ],
             ];
           },
@@ -955,7 +1003,7 @@ class _PresetWidgetState extends ConsumerState<PresetWidget> {
     // Utiliser le nom du projet traduit depuis le provider
     final currentProjectName = projectState.projects.isNotEmpty 
         ? projectState.getTranslatedProjectName(projectState.selectedProject, AppLocalizations.of(context)!)
-        : context.t('default_project_name');
+        : AppLocalizations.of(context)!.default_project_name;
     
     // Afficher un indicateur de chargement si nécessaire
     if (projectState.isLoading) {
@@ -966,18 +1014,18 @@ class _PresetWidgetState extends ConsumerState<PresetWidget> {
           color: Colors.grey[300],
           borderRadius: BorderRadius.circular(8),
         ),
-        child: const Row(
+        child: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            SizedBox(
+            const SizedBox(
               width: 16,
               height: 16,
               child: CircularProgressIndicator(strokeWidth: 2),
             ),
-            SizedBox(width: 8),
+            const SizedBox(width: 8),
             Text(
-              'Chargement...',
-              style: TextStyle(
+              AppLocalizations.of(context)!.loading,
+              style: const TextStyle(
                 color: Colors.grey,
                 fontSize: 12,
                 fontWeight: FontWeight.bold,
@@ -997,18 +1045,18 @@ class _PresetWidgetState extends ConsumerState<PresetWidget> {
           color: Colors.grey[300],
           borderRadius: BorderRadius.circular(8),
         ),
-        child: const Row(
+        child: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            SizedBox(
+            const SizedBox(
               width: 16,
               height: 16,
               child: CircularProgressIndicator(strokeWidth: 2),
             ),
-            SizedBox(width: 8),
+            const SizedBox(width: 8),
             Text(
-              'Chargement...',
-              style: TextStyle(
+              AppLocalizations.of(context)!.loading,
+              style: const TextStyle(
                 color: Colors.grey,
                 fontSize: 12,
                 fontWeight: FontWeight.bold,
@@ -1019,41 +1067,105 @@ class _PresetWidgetState extends ConsumerState<PresetWidget> {
       );
     }
 
-    return SingleChildScrollView(
-      scrollDirection: Axis.horizontal,
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        border: Border.all(
+          color: const Color(0xFF455A64), // Bleu-gris foncé
+          width: 2,
+        ),
+        borderRadius: BorderRadius.circular(12),
+      ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Première ligne : Bouton Projet + 2 premiers presets
-          Row(
-            children: [
-              // Bouton Projet avec menu déroulant
-              PopupMenuButton<String>(
+          // Première ligne : Bouton Projet + 1er preset seulement
+          SingleChildScrollView(
+            scrollDirection: Axis.horizontal,
+            child: Row(
+              children: [
+            // Bouton Projet avec menu déroulant et badges
+            PopupMenuButton<String>(
             offset: const Offset(0, 40),
-            child: Container(
-              height: 36,
-              padding: const EdgeInsets.symmetric(horizontal: 12),
-              decoration: BoxDecoration(
-                color: Colors.blueGrey[900],
-                borderRadius: BorderRadius.circular(8),
-              ),
-              child: Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Icon(Icons.folder, color: Colors.white, size: 16),
-                  SizedBox(width: 4),
-                  Text(
-                    currentProjectName, // Utiliser le nom du projet dynamique
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 12,
-                      fontWeight: FontWeight.bold,
+            child: Consumer(
+              builder: (context, ref, child) {
+                // Utiliser le provider optimisé pour les badges
+                final badges = ref.watch(projectBadgesProvider);
+                
+                return Stack(
+                  children: [
+                    Container(
+                      height: 36,
+                      padding: const EdgeInsets.symmetric(horizontal: 12),
+                      decoration: BoxDecoration(
+                        color: Colors.blueGrey[900],
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Icon(Icons.folder, color: Colors.white, size: 16),
+                          SizedBox(width: 4),
+                          Text(
+                            currentProjectName, // Utiliser le nom du projet dynamique
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 12,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          SizedBox(width: 4),
+                          Icon(Icons.arrow_drop_down, color: Colors.white, size: 16),
+                        ],
+                      ),
                     ),
-                  ),
-                  SizedBox(width: 4),
-                  Icon(Icons.arrow_drop_down, color: Colors.white, size: 16),
-                ],
-              ),
+                    // Badge bleu pour les photos (en haut à gauche) - affiché en premier
+                    if (badges['photos']! > 0)
+                      Positioned(
+                        top: -2,
+                        left: -2,
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 3, vertical: 1),
+                          decoration: BoxDecoration(
+                            color: Colors.blue,
+                            borderRadius: BorderRadius.circular(6),
+                            border: Border.all(color: Colors.white, width: 1),
+                          ),
+                          child: Text(
+                            '${badges['photos']}',
+                            style: const TextStyle(
+                              color: Colors.white,
+                              fontSize: 7,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ),
+                      ),
+                    // Badge rouge pour les calculs (en haut à droite) - affiché en dernier
+                    if (badges['calculations']! > 0)
+                      Positioned(
+                        top: -2,
+                        right: -2,
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 3, vertical: 1),
+                          decoration: BoxDecoration(
+                            color: Colors.red,
+                            borderRadius: BorderRadius.circular(6),
+                            border: Border.all(color: Colors.white, width: 1),
+                          ),
+                          child: Text(
+                            '${badges['calculations']}',
+                            style: const TextStyle(
+                              color: Colors.white,
+                              fontSize: 7,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ),
+                      ),
+                  ],
+                );
+              },
             ),
             itemBuilder: (context) => [
                 PopupMenuItem<String>(
@@ -1062,7 +1174,7 @@ class _PresetWidgetState extends ConsumerState<PresetWidget> {
                     children: [
                       Icon(Icons.add, color: Colors.blue, size: 16),
                       SizedBox(width: 8),
-                      Text(context.t('new_preset'), style: TextStyle(fontSize: 12)),
+                      Text(AppLocalizations.of(context)!.new_preset, style: TextStyle(fontSize: 12)),
                     ],
                   ),
                 ),
@@ -1073,17 +1185,17 @@ class _PresetWidgetState extends ConsumerState<PresetWidget> {
                     children: [
                       Icon(Icons.visibility, color: Colors.purple, size: 16),
                       SizedBox(width: 8),
-                      Text(context.t('view_project'), style: TextStyle(fontSize: 12)),
+                      Text(AppLocalizations.of(context)!.view_project, style: TextStyle(fontSize: 12)),
                     ],
                   ),
                 ),
                 PopupMenuItem<String>(
-                  value: 'rename_project',
+                  value: 'project_parameters',
                   child: Row(
                     children: [
-                      Icon(Icons.edit, color: Colors.blue, size: 16),
+                      Icon(Icons.settings, color: Colors.orange, size: 16),
                       SizedBox(width: 8),
-                      Text(context.t('rename_project'), style: TextStyle(fontSize: 12)),
+                      Text(AppLocalizations.of(context)!.project_parameters, style: TextStyle(fontSize: 12)),
                     ],
                   ),
                 ),
@@ -1093,7 +1205,7 @@ class _PresetWidgetState extends ConsumerState<PresetWidget> {
                     children: [
                       Icon(Icons.create_new_folder, color: Colors.green, size: 16),
                       SizedBox(width: 8),
-                      Text(context.t('new_project'), style: TextStyle(fontSize: 12)),
+                      Text(AppLocalizations.of(context)!.new_project, style: TextStyle(fontSize: 12)),
                     ],
                   ),
                 ),
@@ -1103,7 +1215,7 @@ class _PresetWidgetState extends ConsumerState<PresetWidget> {
                     children: [
                       Icon(Icons.save, color: Colors.orange, size: 16),
                       SizedBox(width: 8),
-                      Text(context.t('save_project'), style: TextStyle(fontSize: 12)),
+                      Text(AppLocalizations.of(context)!.save_project, style: TextStyle(fontSize: 12)),
                     ],
                   ),
                 ),
@@ -1113,7 +1225,7 @@ class _PresetWidgetState extends ConsumerState<PresetWidget> {
                     children: [
                       Icon(Icons.folder_open, color: Colors.blue, size: 16),
                       SizedBox(width: 8),
-                      Text(context.t('load_project'), style: TextStyle(fontSize: 12)),
+                      Text(AppLocalizations.of(context)!.load_project, style: TextStyle(fontSize: 12)),
                     ],
                   ),
                 ),
@@ -1123,7 +1235,7 @@ class _PresetWidgetState extends ConsumerState<PresetWidget> {
                     children: [
                       Icon(Icons.download, color: Colors.purple, size: 16),
                       SizedBox(width: 8),
-                      Text(context.t('export_project'), style: TextStyle(fontSize: 12)),
+                      Text(AppLocalizations.of(context)!.export_project, style: TextStyle(fontSize: 12)),
                     ],
                   ),
                 ),
@@ -1139,8 +1251,8 @@ class _PresetWidgetState extends ConsumerState<PresetWidget> {
                       builder: (context) => const CalculProjetPage(),
                     ),
                   );
-                } else if (value == 'rename_project') {
-                  _showRenameProjectDialog(context);
+                } else if (value == 'project_parameters') {
+                  _showProjectParametersDialog(context);
                 } else if (value == 'new_project') {
                   _createNewProject();
                 } else if (value == 'save_project') {
@@ -1153,7 +1265,7 @@ class _PresetWidgetState extends ConsumerState<PresetWidget> {
               },
             ),
               const SizedBox(width: 2),
-              // Premiers 2 presets sur la première ligne
+              // Premier et deuxième presets sur la première ligne
               ...presets.take(2).toList().asMap().entries.map((entry) {
             final index = entry.key;
             final preset = entry.value;
@@ -1297,16 +1409,19 @@ class _PresetWidgetState extends ConsumerState<PresetWidget> {
                 ),
               ],
             );
-          }).toList(),
+          }),
             ],
           ),
-          // Deuxième ligne : Presets restants (à partir du 3ème)
-          if (presets.length > 2) ...[
+        ),
+        // Deuxième ligne : Presets restants (à partir du 3ème)
+        if (presets.length > 2) ...[
             const SizedBox(height: 4),
-            Row(
-              children: [
-                // Espacement pour aligner avec les presets de la première ligne
-                const SizedBox(width: 0),
+            SingleChildScrollView(
+              scrollDirection: Axis.horizontal,
+              child: Row(
+                children: [
+                  // Espacement pour aligner avec les presets de la première ligne
+                  const SizedBox(width: 0),
                 ...presets.skip(2).toList().asMap().entries.map((entry) {
                   final index = entry.key + 2; // Ajuster l'index pour les presets restants
                   final preset = entry.value;
@@ -1450,55 +1565,256 @@ class _PresetWidgetState extends ConsumerState<PresetWidget> {
                       ),
                     ],
                   );
-                }).toList(),
+                }),
               ],
             ),
-          ],
+          ),
+        ],
         ],
       ),
     );
   }
 
-  void _showRenameProjectDialog(BuildContext context) {
-    final currentProject = ref.read(projectProvider).selectedProject;
-    _nameController.text = currentProject.name;
+  void _showProjectParametersDialog(BuildContext context) {
+    // Récupérer les valeurs actuelles du projet
+    final project = ref.read(projectProvider).selectedProject;
+    
+    // Debug: afficher les paramètres récupérés
+    debugPrint('DEBUG PresetWidget - Récupération des paramètres:');
+    debugPrint('  - Project ID: ${project.id}');
+    debugPrint('  - Project Name: ${project.name}');
+    debugPrint('  - Location: ${project.location}');
+    debugPrint('  - Mounting Date: ${project.mountingDate}');
+    debugPrint('  - Period: ${project.period}');
+    
+    // Parser la période si elle existe
+    String startDate = '';
+    String endDate = '';
+    if (project.period != null && project.period!.contains(' - ')) {
+      final parts = project.period!.split(' - ');
+      if (parts.length == 2) {
+        startDate = parts[0].trim();
+        endDate = parts[1].trim();
+      }
+    }
+    
+    final TextEditingController locationController = TextEditingController(text: project.location ?? '');
+    final TextEditingController mountingDateController = TextEditingController(text: project.mountingDate ?? '');
+    final TextEditingController startDateController = TextEditingController(text: startDate);
+    final TextEditingController endDateController = TextEditingController(text: endDate);
+    final TextEditingController nameController = TextEditingController(text: project.name);
+    
+    // Debug: afficher les valeurs des contrôleurs
+    debugPrint('DEBUG PresetWidget - Valeurs des contrôleurs:');
+    debugPrint('  - Location Controller: "${locationController.text}"');
+    debugPrint('  - Mounting Date Controller: "${mountingDateController.text}"');
+    debugPrint('  - Start Date Controller: "${startDateController.text}"');
+    debugPrint('  - End Date Controller: "${endDateController.text}"');
+
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: Text(AppLocalizations.of(context)!.renameProject),
-        content: TextField(
-          controller: _nameController,
-          decoration: InputDecoration(
-            labelText: AppLocalizations.of(context)!.enterProjectName,
+        title: Text(
+          AppLocalizations.of(context)!.project_parameters,
+          style: const TextStyle(fontSize: 16), // Réduit de 4pts (20-4=16)
+        ),
+        content: SingleChildScrollView(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              // Nom du projet
+              TextField(
+                controller: nameController,
+                style: const TextStyle(fontSize: 12),
+                decoration: InputDecoration(
+                  labelText: AppLocalizations.of(context)!.project_name,
+                  labelStyle: const TextStyle(fontSize: 12),
+                  border: OutlineInputBorder(),
+                ),
+              ),
+              const SizedBox(height: 12),
+              // Lieu
+              TextField(
+                controller: locationController,
+                style: const TextStyle(fontSize: 12), // Réduit de 4pts (16-4=12)
+                decoration: InputDecoration(
+                  labelText: AppLocalizations.of(context)!.location,
+                  labelStyle: const TextStyle(fontSize: 12), // Réduit de 4pts
+                  border: OutlineInputBorder(),
+                ),
+              ),
+              const SizedBox(height: 12),
+              // Date montage
+              TextField(
+                controller: mountingDateController,
+                style: const TextStyle(fontSize: 12), // Réduit de 4pts
+                inputFormatters: [DateInputFormatter()],
+                decoration: InputDecoration(
+                  labelText: AppLocalizations.of(context)!.mounting_date,
+                  labelStyle: const TextStyle(fontSize: 12), // Réduit de 4pts
+                  border: OutlineInputBorder(),
+                  hintText: 'JJ/MM/AA',
+                  hintStyle: const TextStyle(fontSize: 12), // Réduit de 4pts
+                ),
+                keyboardType: TextInputType.number,
+              ),
+              const SizedBox(height: 12),
+              // Date de début
+              TextField(
+                controller: startDateController,
+                style: const TextStyle(fontSize: 12), // Réduit de 4pts
+                inputFormatters: [DateInputFormatter()],
+                decoration: InputDecoration(
+                  labelText: AppLocalizations.of(context)!.start_date,
+                  labelStyle: const TextStyle(fontSize: 12), // Réduit de 4pts
+                  border: OutlineInputBorder(),
+                  hintText: 'JJ/MM/AA',
+                  hintStyle: const TextStyle(fontSize: 12), // Réduit de 4pts
+                ),
+                keyboardType: TextInputType.number,
+              ),
+              const SizedBox(height: 8),
+              // Date de fin
+              TextField(
+                controller: endDateController,
+                style: const TextStyle(fontSize: 12), // Réduit de 4pts
+                inputFormatters: [DateInputFormatter()],
+                decoration: InputDecoration(
+                  labelText: AppLocalizations.of(context)!.end_date,
+                  labelStyle: const TextStyle(fontSize: 12), // Réduit de 4pts
+                  border: OutlineInputBorder(),
+                  hintText: 'JJ/MM/AA',
+                  hintStyle: const TextStyle(fontSize: 12), // Réduit de 4pts
+                ),
+                keyboardType: TextInputType.number,
+              ),
+            ],
           ),
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: Text(AppLocalizations.of(context)!.cancel),
+            child: Text(
+              AppLocalizations.of(context)!.cancel,
+              style: const TextStyle(fontSize: 12), // Réduit de 4pts
+            ),
           ),
           ElevatedButton(
-            onPressed: () {
-              if (_nameController.text.isNotEmpty) {
-                // Mettre à jour le nom du projet dans le provider
-                final projectIndex = ref.read(projectProvider).selectedProjectIndex;
-                ref.read(projectProvider.notifier).renameProject(projectIndex, _nameController.text);
+            onPressed: () async {
+              try {
+                // Sauvegarder les paramètres du projet
+                final project = ref.read(projectProvider).selectedProject;
+                
+                // Préparer les valeurs (garder les valeurs existantes si les champs sont vides)
+                String newName = nameController.text.trim().isNotEmpty 
+                    ? nameController.text.trim() 
+                    : project.name;
+                
+                String? newLocation = locationController.text.trim().isNotEmpty 
+                    ? locationController.text.trim() 
+                    : project.location;
+                
+                String? newMountingDate = mountingDateController.text.trim().isNotEmpty 
+                    ? mountingDateController.text.trim() 
+                    : project.mountingDate;
+                
+                String? newPeriod;
+                if (startDateController.text.trim().isNotEmpty && endDateController.text.trim().isNotEmpty) {
+                  newPeriod = '${startDateController.text.trim()} - ${endDateController.text.trim()}';
+                } else if (startDateController.text.trim().isNotEmpty || endDateController.text.trim().isNotEmpty) {
+                  // Si seulement une date est saisie, garder la période existante
+                  newPeriod = project.period;
+                } else {
+                  // Si aucune date n'est saisie, garder la période existante
+                  newPeriod = project.period;
+                }
+                
+                final updatedProject = project.copyWith(
+                  name: newName,
+                  location: newLocation,
+                  mountingDate: newMountingDate,
+                  period: newPeriod,
+                );
+                
+                // Debug: afficher les valeurs avant sauvegarde
+                debugPrint('DEBUG PresetWidget - Sauvegarde des paramètres:');
+                debugPrint('  - Name: $newName');
+                debugPrint('  - Location: $newLocation');
+                debugPrint('  - Mounting Date: $newMountingDate');
+                debugPrint('  - Period: $newPeriod');
+                
+                // Sauvegarder directement dans Hive via HiveService
+                await _saveProjectDirectlyToHive(updatedProject);
+                
+                debugPrint('DEBUG PresetWidget - Paramètres sauvegardés avec succès');
                 
                 Navigator.pop(context);
                 
+                // Rafraîchir les projets pour mettre à jour l'affichage
+                ref.read(projectProvider.notifier).refreshProjects();
+              } catch (e) {
+                debugPrint('Erreur lors de la sauvegarde des paramètres: $e');
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(
-                    content: Text('${AppLocalizations.of(context)!.projectRenamed} "${_nameController.text}"'),
-                    backgroundColor: Colors.green,
+                    content: Text('Erreur lors de la sauvegarde: $e'),
+                    backgroundColor: Colors.red,
                   ),
                 );
               }
             },
-            child: Text(AppLocalizations.of(context)!.confirm),
+            child: Text(
+              AppLocalizations.of(context)!.save_parameters,
+              style: const TextStyle(fontSize: 12), // Réduit de 4pts
+            ),
           ),
         ],
       ),
     );
+  }
+
+  /// Sauvegarder les paramètres du projet via SharedPreferences (solution de contournement)
+  Future<void> _saveProjectDirectlyToHive(Project project) async {
+    try {
+      debugPrint('DEBUG PresetWidget - Sauvegarde via SharedPreferences (contournement Hive)');
+      
+      // Sauvegarder les paramètres du projet dans SharedPreferences
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.setString('project_${project.id}_name', project.name);
+      await prefs.setString('project_${project.id}_location', project.location ?? '');
+      await prefs.setString('project_${project.id}_mounting_date', project.mountingDate ?? '');
+      await prefs.setString('project_${project.id}_period', project.period ?? '');
+      
+      debugPrint('DEBUG PresetWidget - Paramètres sauvegardés dans SharedPreferences');
+      
+      // Essayer aussi de sauvegarder dans Hive (en cas de succès futur)
+      try {
+        await HiveService.initialize();
+        // Ne pas réenregistrer l'adapter s'il existe déjà
+        if (!Hive.isAdapterRegistered(2)) {
+          Hive.registerAdapter(ProjectAdapter());
+        }
+        final box = await Hive.openBox<Project>('projects');
+        final existingIndex = box.values.toList().indexWhere((p) => p.id == project.id);
+        
+        if (existingIndex != -1) {
+          await box.putAt(existingIndex, project);
+          debugPrint('DEBUG PresetWidget - Projet aussi mis à jour dans Hive');
+        } else {
+          await box.add(project);
+          debugPrint('DEBUG PresetWidget - Projet aussi ajouté dans Hive');
+        }
+      } catch (hiveError) {
+        debugPrint('DEBUG PresetWidget - Erreur Hive ignorée (SharedPreferences OK): $hiveError');
+        // Ignorer l'erreur Hive car SharedPreferences a fonctionné
+      }
+      
+      // Mettre à jour le ProjectProvider pour synchroniser l'état
+      ref.read(projectProvider.notifier).refreshProjects();
+      
+    } catch (e) {
+      debugPrint('DEBUG PresetWidget - Erreur lors de la sauvegarde: $e');
+      rethrow;
+    }
   }
 
   void _createNewProject() {
@@ -1535,7 +1851,7 @@ class _PresetWidgetState extends ConsumerState<PresetWidget> {
             style: TextButton.styleFrom(
               padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6), // Réduit de 50%
             ),
-            child: const Text('Annuler'),
+            child: Text(AppLocalizations.of(context)!.cancel_button),
           ),
           ElevatedButton(
             onPressed: () {
@@ -1560,6 +1876,9 @@ class _PresetWidgetState extends ConsumerState<PresetWidget> {
                 print('Création du projet: ${newProject.name}');
                 ref.read(projectProvider.notifier).addProject(newProject);
                 
+                // Nettoyer les photos du projet précédent (s'il y en avait)
+                ref.read(importedPhotosProvider.notifier).clearProjectPhotos(newProject.name);
+                
                 // Charger les presets du nouveau projet
                 ref.read(presetProvider.notifier).loadPresetsFromProject(newProject);
                 print('Projet créé et presets chargés');
@@ -1576,7 +1895,7 @@ class _PresetWidgetState extends ConsumerState<PresetWidget> {
             style: ElevatedButton.styleFrom(
               padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6), // Réduit de 50%
             ),
-            child: const Text('Créer'),
+            child: Text(AppLocalizations.of(context)!.create_button),
           ),
         ],
       ),
@@ -1594,23 +1913,23 @@ class _PresetWidgetState extends ConsumerState<PresetWidget> {
       context: context,
       builder: (context) => AlertDialog(
         title: Text(AppLocalizations.of(context)!.saveProject),
-        content: const Text('Le projet sera sauvegardé localement.'),
+        content: Text(AppLocalizations.of(context)!.project_saved_locally),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text('Annuler'),
+            child: Text(AppLocalizations.of(context)!.cancel_button),
           ),
           ElevatedButton(
             onPressed: () {
               Navigator.pop(context);
               ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(
-                  content: Text('Projet sauvegardé !'),
+                SnackBar(
+                  content: Text(AppLocalizations.of(context)!.project_saved),
                   backgroundColor: Colors.green,
                 ),
               );
             },
-            child: const Text('Sauvegarder'),
+            child: Text(AppLocalizations.of(context)!.save_button),
           ),
         ],
       ),

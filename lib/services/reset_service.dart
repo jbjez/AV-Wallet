@@ -159,7 +159,8 @@ class ResetService {
         'video_page_state',
         'light_page_state',
         'electricity_page_state',
-        'structure_page_state'
+        'structure_page_state',
+        'imported_photos',  // Photos importées
       ];
 
       // Supprimer toutes les clés connues
@@ -251,7 +252,7 @@ class ResetService {
   static Future<void> _clearUserPreferences() async {
     try {
       final prefs = await SharedPreferences.getInstance();
-      final userPrefs = ['remember_me', 'user_id', 'user_email'];
+      final userPrefs = ['remember_me', 'user_id', 'user_email', 'imported_photos'];
       
       for (final key in userPrefs) {
         await prefs.remove(key);

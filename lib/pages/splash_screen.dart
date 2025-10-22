@@ -25,8 +25,8 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
     try {
       _logger.info('Initializing app...');
 
-      // Ajouter un délai minimum pour le splash screen
-      await Future.delayed(const Duration(seconds: 2));
+      // Réduire le délai pour améliorer les performances
+      await Future.delayed(const Duration(milliseconds: 800));
 
       // Vérifier si le widget est encore monté avant d'utiliser ref
       if (!mounted) return;
@@ -89,28 +89,21 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
     
     return Theme(
       data: Theme.of(context).copyWith(
-        scaffoldBackgroundColor: const Color(0xFF0A0E21),
+        scaffoldBackgroundColor: const Color(0xFF0A1128),
       ),
       child: Scaffold(
         body: Container(
-          decoration: BoxDecoration(
-            gradient: LinearGradient(
-              begin: Alignment.topCenter,
-              end: Alignment.bottomCenter,
-              colors: [
-                const Color(0xFF0A0E21),
-                const Color(0xFF1A1F35),
-              ],
-            ),
+          decoration: const BoxDecoration(
+            color: Color(0xFF0A1128), // Même couleur que le splash natif
           ),
           child: Center(
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Image.asset(
-                  'assets/images/logo2.png',
-                  width: 200,
-                  height: 200,
+                  'assets/logo2.png',
+                  width: 140,
+                  height: 140,
                 ),
                 const SizedBox(height: 20),
                 if (!_isInitialized || authState.isLoading)

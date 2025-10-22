@@ -143,30 +143,35 @@ class LightPageTheme extends ThemeExtension<LightPageTheme> {
 
 class AppTheme {
   static ThemeData get lightTheme {
+    // Rouge cerise foncé pour les éléments sélectionnés uniquement
+    const Color cherryRed = Color(0xFF8B0000);
+    const Color darkGray = Color(0xFF424242); // Gris foncé pour le texte sur fond blanc
+    const Color lightGray = Color(0xFF757575); // Gris moyen pour les éléments non sélectionnés
+    
     return ThemeData(
       useMaterial3: true,
       brightness: Brightness.light,
-      primaryColor: AppColors.mainBlue,
-      scaffoldBackgroundColor: AppColors.lightBackground,
+      primaryColor: darkGray, // Gris foncé au lieu de bleu nuit
+      scaffoldBackgroundColor: Colors.white, // Fond blanc pur
 
       textTheme: TextTheme(
         bodyLarge: TextStyle(
-          color: AppColors.mainBlue,
+          color: darkGray, // Gris foncé sur fond blanc
           fontWeight: FontWeight.normal,
           fontSize: 16,
         ),
         bodyMedium: TextStyle(
-          color: AppColors.mainBlue,
+          color: darkGray, // Gris foncé sur fond blanc
           fontWeight: FontWeight.normal,
           fontSize: 14,
         ),
         titleLarge: TextStyle(
-          color: AppColors.mainBlue,
+          color: darkGray, // Gris foncé sur fond blanc
           fontWeight: FontWeight.bold,
           fontSize: 20,
         ),
         labelLarge: TextStyle(
-          color: AppColors.mainBlue,
+          color: darkGray, // Gris foncé sur fond blanc
           fontWeight: FontWeight.bold,
           fontSize: 16,
         ),
@@ -175,7 +180,7 @@ class AppTheme {
       appBarTheme: AppBarTheme(
         centerTitle: true,
         elevation: 0,
-        backgroundColor: AppColors.appBarColor, // Couleur exacte du sélecteur
+        backgroundColor: darkGray, // Gris foncé pour l'AppBar
         iconTheme: const IconThemeData(color: Colors.white), // Icônes blanches
         titleTextStyle: const TextStyle(
           color: Colors.white, // Titre blanc
@@ -186,9 +191,9 @@ class AppTheme {
       ),
 
           tabBarTheme: TabBarThemeData(
-        labelColor: AppColors.mainBlue,
-        unselectedLabelColor: Colors.grey,
-        indicatorColor: AppColors.mainBlue,
+        labelColor: cherryRed, // Rouge cerise pour l'onglet sélectionné
+        unselectedLabelColor: lightGray, // Gris moyen pour les onglets non sélectionnés
+        indicatorColor: cherryRed, // Indicateur rouge cerise
         labelStyle: const TextStyle(
           fontFamily: 'Poppins-SemiBold',
           fontWeight: FontWeight.w600,
@@ -202,11 +207,11 @@ class AppTheme {
       ),
 
       sliderTheme: SliderThemeData(
-        activeTrackColor: AppColors.mainBlue,
-        inactiveTrackColor: AppColors.mainBlue.withOpacity(0.3),
-        thumbColor: AppColors.mainBlue,
-        overlayColor: AppColors.mainBlue.withOpacity(0.2),
-        valueIndicatorColor: AppColors.mainBlue,
+        activeTrackColor: darkGray, // Gris foncé au lieu de bleu nuit
+        inactiveTrackColor: lightGray.withOpacity(0.3), // Gris moyen transparent
+        thumbColor: darkGray, // Gris foncé
+        overlayColor: darkGray.withOpacity(0.2), // Gris foncé transparent
+        valueIndicatorColor: darkGray, // Gris foncé
         valueIndicatorTextStyle: const TextStyle(color: Colors.white),
       ),
 
@@ -215,13 +220,13 @@ class AppTheme {
         elevation: 2,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(12),
-          side: BorderSide(color: AppColors.cardBlue),
+          side: BorderSide(color: lightGray), // Bordure grise au lieu de bleue
         ),
       ),
 
       elevatedButtonTheme: ElevatedButtonThemeData(
         style: ElevatedButton.styleFrom(
-          backgroundColor: AppColors.mainBlue,
+          backgroundColor: darkGray, // Gris foncé au lieu de bleu nuit
           foregroundColor: Colors.white,
           elevation: 2,
           padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
@@ -236,32 +241,32 @@ class AppTheme {
         fillColor: Colors.white,
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(8),
-          borderSide: BorderSide(color: AppColors.mainBlue),
+          borderSide: BorderSide(color: darkGray), // Gris foncé au lieu de bleu nuit
         ),
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(8),
-          borderSide: BorderSide(color: AppColors.mainBlue.withOpacity(0.3)),
+          borderSide: BorderSide(color: lightGray.withOpacity(0.3)), // Gris moyen transparent
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(8),
-          borderSide: BorderSide(color: AppColors.mainBlue),
+          borderSide: BorderSide(color: darkGray), // Gris foncé
         ),
-        labelStyle: TextStyle(color: AppColors.mainBlue),
-        hintStyle: TextStyle(color: AppColors.mainBlue.withOpacity(0.6)),
+        labelStyle: TextStyle(color: darkGray), // Gris foncé
+        hintStyle: TextStyle(color: lightGray.withOpacity(0.6)), // Gris moyen transparent
       ),
 
       extensions: [
         ResultContainerTheme(
-          backgroundColor: const Color(0xFF0A1128).withOpacity(0.3),
-          borderColor: Colors.white,
-          textStyle: const TextStyle(
-            color: Colors.white,
+          backgroundColor: lightGray.withOpacity(0.1), // Gris transparent pour le mode jour
+          borderColor: lightGray, // Bordure grise
+          textStyle: TextStyle(
+            color: darkGray, // Texte gris foncé
             fontSize: 14,
             fontWeight: FontWeight.normal,
             fontFamily: 'Poppins-Regular',
           ),
-          titleStyle: const TextStyle(
-            color: Colors.white,
+          titleStyle: TextStyle(
+            color: darkGray, // Titre gris foncé
             fontSize: 18,
             fontWeight: FontWeight.bold,
             fontFamily: 'Poppins-SemiBold',
@@ -269,29 +274,29 @@ class AppTheme {
         ),
         LightPageTheme(
           tabBackgroundColor: Colors.transparent,
-          tabSelectedColor: AppColors.mainBlue,
-          tabUnselectedColor: Colors.grey,
-          tabIndicatorColor: AppColors.mainBlue,
-          tabTextStyle: const TextStyle(
+          tabSelectedColor: cherryRed, // Rouge cerise pour l'onglet sélectionné
+          tabUnselectedColor: lightGray, // Gris moyen pour les onglets non sélectionnés
+          tabIndicatorColor: cherryRed, // Indicateur rouge cerise
+          tabTextStyle: TextStyle(
             fontFamily: 'Poppins-Regular',
             fontSize: 14,
             fontWeight: FontWeight.w400,
-            color: Colors.black87, // Texte noir pour le thème clair
+            color: lightGray, // Texte gris moyen pour les onglets non sélectionnés
           ),
-          tabSelectedTextStyle: const TextStyle(
+          tabSelectedTextStyle: TextStyle(
             fontFamily: 'Poppins-SemiBold',
             fontSize: 14,
             fontWeight: FontWeight.w600,
-            color: AppColors.mainBlue, // Texte bleu pour l'onglet sélectionné
+            color: cherryRed, // Texte rouge cerise pour l'onglet sélectionné
           ),
-          dropdownTextColor: Colors.black87, // Texte noir pour les menus déroulants
+          dropdownTextColor: darkGray, // Texte gris foncé pour les menus déroulants
           dropdownBackgroundColor: Colors.white, // Fond blanc pour les menus déroulants
-          searchTextColor: Colors.black87, // Texte noir pour la recherche
-          searchIconColor: Colors.black87, // Icône noire pour la recherche
-          dialogBackgroundColor: AppColors.darkBackground, // Fond bleu nuit pour les dialogues
-          dialogBorderColor: AppColors.mainBlue, // Bordure bleue pour les dialogues
-          titleTextColor: AppColors.mainBlue, // Titres en bleu nuit
-          subtitleTextColor: Colors.black87, // Sous-titres en noir
+          searchTextColor: darkGray, // Texte gris foncé pour la recherche
+          searchIconColor: darkGray, // Icône grise foncée pour la recherche
+          dialogBackgroundColor: Colors.white, // Fond blanc pour les dialogues
+          dialogBorderColor: cherryRed, // Bordure rouge cerise pour les dialogues
+          titleTextColor: darkGray, // Titres en gris foncé
+          subtitleTextColor: lightGray, // Sous-titres en gris moyen
         ),
       ],
     );
@@ -307,7 +312,6 @@ class AppTheme {
         primary: const Color(0xFF1E3A8A),      // bleu nuit
         secondary: const Color(0xFF0EA5E9),    // accent cyan doux
         surface: const Color(0xFF0B152B),
-        background: const Color(0xFF0B152B),
       ),
       primaryColor: const Color(0xFF1E3A8A),
       scaffoldBackgroundColor: const Color(0xFF0B152B),

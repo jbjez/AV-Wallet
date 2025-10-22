@@ -25,7 +25,7 @@ class SimpleStripePaymentPage extends ConsumerStatefulWidget {
 
 class _SimpleStripePaymentPageState extends ConsumerState<SimpleStripePaymentPage> {
   final _logger = Logger('SimpleStripePaymentPage');
-  bool _isLoading = false;
+  final bool _isLoading = false;
   bool _isProcessing = false;
   String? _errorMessage;
 

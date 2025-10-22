@@ -123,6 +123,12 @@ class AuthService with WidgetsBindingObserver {
       if (e.toString().contains('User already registered')) {
         throw 'Cette adresse email est déjà utilisée.';
       }
+      if (e.toString().contains('AuthWeakPasswordException')) {
+        throw 'Le mot de passe doit contenir au moins 8 caractères avec une lettre minuscule, une majuscule, un chiffre et un caractère spécial.';
+      }
+      if (e.toString().contains('Invalid email')) {
+        throw 'Adresse email invalide.';
+      }
       rethrow;
     }
   }
@@ -388,9 +394,7 @@ class AuthService with WidgetsBindingObserver {
       displayName: displayName ?? '',
       photoURL: user.userMetadata?['photo_url'] as String? ?? 
                 user.userMetadata?['picture'] as String?,
-      createdAt: user.createdAt != null
-          ? DateTime.parse(user.createdAt)
-          : DateTime.now(),
+      createdAt: DateTime.parse(user.createdAt),
       isEmailVerified: user.emailConfirmedAt != null,
     );
   }

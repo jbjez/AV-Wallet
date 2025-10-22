@@ -25,8 +25,8 @@ class _SplashScreenSimpleState extends ConsumerState<SplashScreenSimple> {
     try {
       _logger.info('Initializing app...');
 
-      // Ajouter un délai minimum pour le splash screen
-      await Future.delayed(const Duration(seconds: 2));
+      // Réduire le délai pour améliorer les performances
+      await Future.delayed(const Duration(milliseconds: 800));
 
       // Vérifier si le widget est encore monté avant d'utiliser ref
       if (!mounted) return;
@@ -110,8 +110,8 @@ class _SplashScreenSimpleState extends ConsumerState<SplashScreenSimple> {
                 // Utiliser le logo principal au lieu de Logo2
                 Image.asset(
                   'assets/logo.png',
-                  width: 200,
-                  height: 200,
+                  width: 140,
+                  height: 140,
                 ),
                 const SizedBox(height: 20),
                 if (!_isInitialized || authState.isLoading)

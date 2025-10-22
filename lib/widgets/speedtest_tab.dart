@@ -9,7 +9,7 @@ import 'dart:math';                                    // [L02]
 import 'dart:typed_data';                              // [L03]
 import 'package:flutter/material.dart';                // [L04]
 import 'package:http/http.dart' as http;               // [L05]
-import 'package:av_wallet_hive/l10n/app_localizations.dart';
+import 'package:av_wallet/l10n/app_localizations.dart';
 
 class SpeedtestTab extends StatefulWidget {    // [L07]
   const SpeedtestTab({super.key});             // [L08]
@@ -304,7 +304,7 @@ class _SpeedGauge extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Text(
-                    '${currentSpeed.toStringAsFixed(1)}',
+                    currentSpeed.toStringAsFixed(1),
                     style: const TextStyle(
                       color: Colors.white,
                       fontSize: 12,

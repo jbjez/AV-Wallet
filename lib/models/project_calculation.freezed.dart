@@ -29,6 +29,8 @@ mixin _$ProjectCalculation {
   String? get comment => throw _privateConstructorUsedError;
   String? get filePath => throw _privateConstructorUsedError;
   String? get type => throw _privateConstructorUsedError;
+  List<String> get photoPaths =>
+      throw _privateConstructorUsedError; // Nouveau: liste des chemins des photos
   Map<String, dynamic> get data => throw _privateConstructorUsedError;
 
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
@@ -53,6 +55,7 @@ abstract class $ProjectCalculationCopyWith<$Res> {
       String? comment,
       String? filePath,
       String? type,
+      List<String> photoPaths,
       Map<String, dynamic> data});
 }
 
@@ -78,6 +81,7 @@ class _$ProjectCalculationCopyWithImpl<$Res, $Val extends ProjectCalculation>
     Object? comment = freezed,
     Object? filePath = freezed,
     Object? type = freezed,
+    Object? photoPaths = null,
     Object? data = null,
   }) {
     return _then(_value.copyWith(
@@ -117,6 +121,10 @@ class _$ProjectCalculationCopyWithImpl<$Res, $Val extends ProjectCalculation>
           ? _value.type
           : type // ignore: cast_nullable_to_non_nullable
               as String?,
+      photoPaths: null == photoPaths
+          ? _value.photoPaths
+          : photoPaths // ignore: cast_nullable_to_non_nullable
+              as List<String>,
       data: null == data
           ? _value.data
           : data // ignore: cast_nullable_to_non_nullable
@@ -143,6 +151,7 @@ abstract class _$$ProjectCalculationImplCopyWith<$Res>
       String? comment,
       String? filePath,
       String? type,
+      List<String> photoPaths,
       Map<String, dynamic> data});
 }
 
@@ -166,6 +175,7 @@ class __$$ProjectCalculationImplCopyWithImpl<$Res>
     Object? comment = freezed,
     Object? filePath = freezed,
     Object? type = freezed,
+    Object? photoPaths = null,
     Object? data = null,
   }) {
     return _then(_$ProjectCalculationImpl(
@@ -205,6 +215,10 @@ class __$$ProjectCalculationImplCopyWithImpl<$Res>
           ? _value.type
           : type // ignore: cast_nullable_to_non_nullable
               as String?,
+      photoPaths: null == photoPaths
+          ? _value._photoPaths
+          : photoPaths // ignore: cast_nullable_to_non_nullable
+              as List<String>,
       data: null == data
           ? _value._data
           : data // ignore: cast_nullable_to_non_nullable
@@ -226,8 +240,10 @@ class _$ProjectCalculationImpl implements _ProjectCalculation {
       this.comment,
       this.filePath,
       this.type,
+      final List<String> photoPaths = const [],
       final Map<String, dynamic> data = const {}})
-      : _data = data;
+      : _photoPaths = photoPaths,
+        _data = data;
 
   factory _$ProjectCalculationImpl.fromJson(Map<String, dynamic> json) =>
       _$$ProjectCalculationImplFromJson(json);
@@ -250,7 +266,18 @@ class _$ProjectCalculationImpl implements _ProjectCalculation {
   final String? filePath;
   @override
   final String? type;
+  final List<String> _photoPaths;
+  @override
+  @JsonKey()
+  List<String> get photoPaths {
+    if (_photoPaths is EqualUnmodifiableListView) return _photoPaths;
+    // ignore: implicit_dynamic_type
+    return EqualUnmodifiableListView(_photoPaths);
+  }
+
+// Nouveau: liste des chemins des photos
   final Map<String, dynamic> _data;
+// Nouveau: liste des chemins des photos
   @override
   @JsonKey()
   Map<String, dynamic> get data {
@@ -261,7 +288,7 @@ class _$ProjectCalculationImpl implements _ProjectCalculation {
 
   @override
   String toString() {
-    return 'ProjectCalculation(id: $id, projectId: $projectId, name: $name, totalPower: $totalPower, totalWeight: $totalWeight, createdAt: $createdAt, comment: $comment, filePath: $filePath, type: $type, data: $data)';
+    return 'ProjectCalculation(id: $id, projectId: $projectId, name: $name, totalPower: $totalPower, totalWeight: $totalWeight, createdAt: $createdAt, comment: $comment, filePath: $filePath, type: $type, photoPaths: $photoPaths, data: $data)';
   }
 
   @override
@@ -283,6 +310,8 @@ class _$ProjectCalculationImpl implements _ProjectCalculation {
             (identical(other.filePath, filePath) ||
                 other.filePath == filePath) &&
             (identical(other.type, type) || other.type == type) &&
+            const DeepCollectionEquality()
+                .equals(other._photoPaths, _photoPaths) &&
             const DeepCollectionEquality().equals(other._data, _data));
   }
 
@@ -299,6 +328,7 @@ class _$ProjectCalculationImpl implements _ProjectCalculation {
       comment,
       filePath,
       type,
+      const DeepCollectionEquality().hash(_photoPaths),
       const DeepCollectionEquality().hash(_data));
 
   @JsonKey(ignore: true)
@@ -327,6 +357,7 @@ abstract class _ProjectCalculation implements ProjectCalculation {
       final String? comment,
       final String? filePath,
       final String? type,
+      final List<String> photoPaths,
       final Map<String, dynamic> data}) = _$ProjectCalculationImpl;
 
   factory _ProjectCalculation.fromJson(Map<String, dynamic> json) =
@@ -351,6 +382,8 @@ abstract class _ProjectCalculation implements ProjectCalculation {
   @override
   String? get type;
   @override
+  List<String> get photoPaths;
+  @override // Nouveau: liste des chemins des photos
   Map<String, dynamic> get data;
   @override
   @JsonKey(ignore: true)

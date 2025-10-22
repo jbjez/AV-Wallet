@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../models/catalogue_item.dart';
-import 'package:av_wallet_hive/l10n/app_localizations.dart';
+import 'package:av_wallet/l10n/app_localizations.dart';
 
 class UnifiedQuantityDialog extends ConsumerStatefulWidget {
   final CatalogueItem item;
@@ -200,7 +200,7 @@ class _UnifiedQuantityDialogState extends ConsumerState<UnifiedQuantityDialog> {
               ),
               const SizedBox(height: 8),
               DropdownButtonFormField<String>(
-                value: selectedAmplifier,
+                initialValue: selectedAmplifier,
                 decoration: InputDecoration(
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(8),
@@ -235,7 +235,7 @@ class _UnifiedQuantityDialogState extends ConsumerState<UnifiedQuantityDialog> {
               ),
               const SizedBox(height: 8),
               DropdownButtonFormField<String>(
-                value: selectedDmxMode,
+                initialValue: selectedDmxMode,
                 decoration: InputDecoration(
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(8),

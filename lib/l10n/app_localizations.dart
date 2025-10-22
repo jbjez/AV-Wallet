@@ -110,58 +110,64 @@ abstract class AppLocalizations {
   /// **'Amplifier'**
   String get amplifier;
 
+  /// No description provided for @arMeasure_photoAr.
+  ///
+  /// In en, this message translates to:
+  /// **'Photo/AR'**
+  String get arMeasure_photoAr;
+
   /// No description provided for @arMeasure_captureError.
   ///
   /// In en, this message translates to:
-  /// **'Armeasure Captureerror'**
+  /// **'Capture error'**
   String get arMeasure_captureError;
 
   /// No description provided for @arMeasure_capturing.
   ///
   /// In en, this message translates to:
-  /// **'Armeasure Capturing'**
+  /// **'Capturing...'**
   String get arMeasure_capturing;
 
   /// No description provided for @arMeasure_defaultProject.
   ///
   /// In en, this message translates to:
-  /// **'Armeasure Defaultproject'**
+  /// **'Default project'**
   String get arMeasure_defaultProject;
 
   /// No description provided for @arMeasure_photo.
   ///
   /// In en, this message translates to:
-  /// **'Armeasure Photo'**
+  /// **'Photo'**
   String get arMeasure_photo;
 
   /// No description provided for @arMeasure_photoSaved.
   ///
   /// In en, this message translates to:
-  /// **'Armeasure Photosaved'**
+  /// **'Photo saved in project!'**
   String get arMeasure_photoSaved;
 
   /// No description provided for @arMeasure_photosAutoSaved.
   ///
   /// In en, this message translates to:
-  /// **'Armeasure Photosautosaved'**
+  /// **'Photos are automatically saved in the active project folder'**
   String get arMeasure_photosAutoSaved;
 
   /// No description provided for @arMeasure_saveError.
   ///
   /// In en, this message translates to:
-  /// **'Armeasure Saveerror'**
+  /// **'Save error'**
   String get arMeasure_saveError;
 
   /// No description provided for @arMeasure_takePhotosAndMeasure.
   ///
   /// In en, this message translates to:
-  /// **'Armeasure Takephotosandmeasure'**
+  /// **'Take reference photos and start AR measurements'**
   String get arMeasure_takePhotosAndMeasure;
 
   /// No description provided for @arMeasure_unity.
   ///
   /// In en, this message translates to:
-  /// **'Armeasure Unity'**
+  /// **'Unity'**
   String get arMeasure_unity;
 
   /// No description provided for @brand.
@@ -179,13 +185,13 @@ abstract class AppLocalizations {
   /// No description provided for @catalogPage_search.
   ///
   /// In en, this message translates to:
-  /// **'Catalog Page Search'**
+  /// **'Search'**
   String get catalogPage_search;
 
   /// No description provided for @catalogPage_subCategory.
   ///
   /// In en, this message translates to:
-  /// **'Catalog Page Subcategory'**
+  /// **'Subcategory'**
   String get catalogPage_subCategory;
 
   /// No description provided for @catalogue_angle.
@@ -329,7 +335,7 @@ abstract class AppLocalizations {
   /// No description provided for @defaultProjectName.
   ///
   /// In en, this message translates to:
-  /// **'Defaultprojectname'**
+  /// **'Project1'**
   String get defaultProjectName;
 
   /// No description provided for @delete.
@@ -353,217 +359,217 @@ abstract class AppLocalizations {
   /// No description provided for @dmxPage_allCategories.
   ///
   /// In en, this message translates to:
-  /// **'Dmx Page Allcategories'**
+  /// **'All Categories'**
   String get dmxPage_allCategories;
 
   /// No description provided for @dmxPage_cancel.
   ///
   /// In en, this message translates to:
-  /// **'Dmx Page Cancel'**
+  /// **'Cancel'**
   String get dmxPage_cancel;
 
   /// No description provided for @dmxPage_channelsTotal.
   ///
   /// In en, this message translates to:
-  /// **'Dmx Page Channelstotal'**
+  /// **'Total Channels'**
   String get dmxPage_channelsTotal;
 
   /// No description provided for @dmxPage_channelsUsed.
   ///
   /// In en, this message translates to:
-  /// **'Dmx Page Channelsused'**
+  /// **'Channels Used'**
   String get dmxPage_channelsUsed;
 
   /// No description provided for @dmxPage_confirm.
   ///
   /// In en, this message translates to:
-  /// **'Dmx Page Confirm'**
+  /// **'Confirm'**
   String get dmxPage_confirm;
 
   /// No description provided for @dmxPage_dmxMax.
   ///
   /// In en, this message translates to:
-  /// **'Dmx Page Dmxmax'**
+  /// **'DMX Max'**
   String get dmxPage_dmxMax;
 
   /// No description provided for @dmxPage_dmxMini.
   ///
   /// In en, this message translates to:
-  /// **'Dmx Page Dmxmini'**
+  /// **'DMX Mini'**
   String get dmxPage_dmxMini;
 
   /// No description provided for @dmxPage_dmxType.
   ///
   /// In en, this message translates to:
-  /// **'Dmx Page Dmxtype'**
+  /// **'DMX Type'**
   String get dmxPage_dmxType;
 
   /// No description provided for @dmxPage_importPreset.
   ///
   /// In en, this message translates to:
-  /// **'Dmx Page Importpreset'**
+  /// **'Import Preset'**
   String get dmxPage_importPreset;
 
   /// No description provided for @dmxPage_importedFromPreset.
   ///
   /// In en, this message translates to:
-  /// **'Dmx Page Importedfrompreset'**
+  /// **'Imported from Preset'**
   String get dmxPage_importedFromPreset;
 
   /// No description provided for @dmxPage_ledBar.
   ///
   /// In en, this message translates to:
-  /// **'Dmx Page Ledbar'**
+  /// **'LED Bar'**
   String get dmxPage_ledBar;
 
   /// No description provided for @dmxPage_lightDevices.
   ///
   /// In en, this message translates to:
-  /// **'Dmx Page Lightdevices'**
+  /// **'Light Devices'**
   String get dmxPage_lightDevices;
 
   /// No description provided for @dmxPage_mapDmx.
   ///
   /// In en, this message translates to:
-  /// **'Dmx Page Mapdmx'**
+  /// **'Map DMX'**
   String get dmxPage_mapDmx;
 
   /// No description provided for @dmxPage_movingHead.
   ///
   /// In en, this message translates to:
-  /// **'Dmx Page Movinghead'**
+  /// **'Moving Head'**
   String get dmxPage_movingHead;
 
   /// No description provided for @dmxPage_noPresetAvailable.
   ///
   /// In en, this message translates to:
-  /// **'Dmx Page Nopresetavailable'**
+  /// **'No Preset Available'**
   String get dmxPage_noPresetAvailable;
 
   /// No description provided for @dmxPage_noPresetSelected.
   ///
   /// In en, this message translates to:
-  /// **'Dmx Page Nopresetselected'**
+  /// **'No Preset Selected'**
   String get dmxPage_noPresetSelected;
 
   /// No description provided for @dmxPage_noProductsSelected.
   ///
   /// In en, this message translates to:
-  /// **'Dmx Page Noproductsselected'**
+  /// **'No Products Selected'**
   String get dmxPage_noProductsSelected;
 
   /// No description provided for @dmxPage_ok.
   ///
   /// In en, this message translates to:
-  /// **'Dmx Page Ok'**
+  /// **'OK'**
   String get dmxPage_ok;
 
   /// No description provided for @dmxPage_productsAddedToPreset.
   ///
   /// In en, this message translates to:
-  /// **'Dmx Page Productsaddedtopreset'**
+  /// **'Products Added to Preset'**
   String get dmxPage_productsAddedToPreset;
 
   /// No description provided for @dmxPage_quantityEnter.
   ///
   /// In en, this message translates to:
-  /// **'Dmx Page Quantityenter'**
+  /// **'Enter Quantity'**
   String get dmxPage_quantityEnter;
 
   /// No description provided for @dmxPage_scanner.
   ///
   /// In en, this message translates to:
-  /// **'Dmx Page Scanner'**
+  /// **'Scanner'**
   String get dmxPage_scanner;
 
   /// No description provided for @dmxPage_searchHint.
   ///
   /// In en, this message translates to:
-  /// **'Dmx Page Searchhint'**
+  /// **'Search Hint'**
   String get dmxPage_searchHint;
 
   /// No description provided for @dmxPage_selectPreset.
   ///
   /// In en, this message translates to:
-  /// **'Dmx Page Selectpreset'**
+  /// **'Select Preset'**
   String get dmxPage_selectPreset;
 
   /// No description provided for @dmxPage_selectedProducts.
   ///
   /// In en, this message translates to:
-  /// **'Dmx Page Selectedproducts'**
+  /// **'Selected Products'**
   String get dmxPage_selectedProducts;
 
   /// No description provided for @dmxPage_strobe.
   ///
   /// In en, this message translates to:
-  /// **'Dmx Page Strobe'**
+  /// **'Strobe'**
   String get dmxPage_strobe;
 
   /// No description provided for @dmxPage_universe.
   ///
   /// In en, this message translates to:
-  /// **'Dmx Page Universe'**
+  /// **'Universe'**
   String get dmxPage_universe;
 
   /// No description provided for @dmxPage_universesNeeded.
   ///
   /// In en, this message translates to:
-  /// **'Dmx Page Universesneeded'**
+  /// **'Universes Needed'**
   String get dmxPage_universesNeeded;
 
   /// No description provided for @dmxPage_wash.
   ///
   /// In en, this message translates to:
-  /// **'Dmx Page Wash'**
+  /// **'Wash'**
   String get dmxPage_wash;
 
   /// No description provided for @dmxPage_wired.
   ///
   /// In en, this message translates to:
-  /// **'Dmx Page Wired'**
+  /// **'Wired'**
   String get dmxPage_wired;
 
   /// No description provided for @driverTab_customDriverChannels.
   ///
   /// In en, this message translates to:
-  /// **'Drivertab Customdriverchannels'**
+  /// **'Custom Driver Channels'**
   String get driverTab_customDriverChannels;
 
   /// No description provided for @driverTab_customDriverIntensity.
   ///
   /// In en, this message translates to:
-  /// **'Drivertab Customdriverintensity'**
+  /// **'Custom Driver Intensity'**
   String get driverTab_customDriverIntensity;
 
   /// No description provided for @driverTab_customDriverTitle.
   ///
   /// In en, this message translates to:
-  /// **'Drivertab Customdrivertitle'**
+  /// **'Custom Driver Title'**
   String get driverTab_customDriverTitle;
 
   /// No description provided for @driverTab_driverChoice.
   ///
   /// In en, this message translates to:
-  /// **'Drivertab Driverchoice'**
+  /// **'Driver Choice'**
   String get driverTab_driverChoice;
 
   /// No description provided for @driverTab_ledLength.
   ///
   /// In en, this message translates to:
-  /// **'Drivertab Ledlength'**
+  /// **'LED Length'**
   String get driverTab_ledLength;
 
   /// No description provided for @driverTab_ledPower.
   ///
   /// In en, this message translates to:
-  /// **'Drivertab Ledpower'**
+  /// **'LED Power'**
   String get driverTab_ledPower;
 
   /// No description provided for @enterProjectName.
   ///
   /// In en, this message translates to:
-  /// **'Enterprojectname'**
+  /// **'Enter Project Name'**
   String get enterProjectName;
 
   /// No description provided for @export.
@@ -575,44 +581,98 @@ abstract class AppLocalizations {
   /// No description provided for @exportCount.
   ///
   /// In en, this message translates to:
-  /// **'Exportcount'**
+  /// **'Export Count'**
   String get exportCount;
 
   /// No description provided for @exportProject.
   ///
   /// In en, this message translates to:
-  /// **'Exportproject'**
+  /// **'Export Project'**
   String get exportProject;
 
   /// No description provided for @lightPage_beamDiameter.
   ///
   /// In en, this message translates to:
-  /// **'Light Page Beamdiameter'**
+  /// **'Beam Diameter'**
   String get lightPage_beamDiameter;
+
+  /// No description provided for @lightPage_beamTab.
+  ///
+  /// In en, this message translates to:
+  /// **'Beam'**
+  String get lightPage_beamTab;
+
+  /// No description provided for @lightPage_ledDriverTab.
+  ///
+  /// In en, this message translates to:
+  /// **'Led driver'**
+  String get lightPage_ledDriverTab;
 
   /// No description provided for @loadProject.
   ///
   /// In en, this message translates to:
-  /// **'Loadproject'**
+  /// **'Load Project'**
   String get loadProject;
+
+  /// No description provided for @loadProject_selectProject.
+  ///
+  /// In en, this message translates to:
+  /// **'Select a project to load:'**
+  String get loadProject_selectProject;
+
+  /// No description provided for @standard_welcome_title.
+  ///
+  /// In en, this message translates to:
+  /// **'Welcome to AVWallet'**
+  String standard_welcome_title(String username);
+
+  /// No description provided for @premium_benefit_catalogue.
+  ///
+  /// In en, this message translates to:
+  /// **'Catalogue +220 Products'**
+  String get premium_benefit_catalogue;
+
+  /// No description provided for @premium_benefit_calculations.
+  ///
+  /// In en, this message translates to:
+  /// **'Unlimited Calculations'**
+  String get premium_benefit_calculations;
+
+  /// No description provided for @premium_benefit_project_management.
+  ///
+  /// In en, this message translates to:
+  /// **'Project/Preset Management'**
+  String get premium_benefit_project_management;
+
+  /// No description provided for @premium_benefit_pdf_export.
+  ///
+  /// In en, this message translates to:
+  /// **'PDF Export'**
+  String get premium_benefit_pdf_export;
 
   /// No description provided for @loginMenu_accountSettings.
   ///
   /// In en, this message translates to:
-  /// **'Loginmenu Accountsettings'**
+  /// **'Account Settings'**
   String get loginMenu_accountSettings;
 
   /// No description provided for @loginMenu_logout.
   ///
   /// In en, this message translates to:
-  /// **'Loginmenu Logout'**
+  /// **'Logout'**
   String get loginMenu_logout;
 
   /// No description provided for @loginMenu_myProjects.
   ///
   /// In en, this message translates to:
-  /// **'Loginmenu Myprojects'**
+  /// **'My Projects'**
   String get loginMenu_myProjects;
+
+  /// No description provided for @loginMenu_usage.
+  ///
+  /// In en, this message translates to:
+  /// **'Usage'**
+  String get loginMenu_usage;
 
   /// No description provided for @noPresetSelected.
   ///
@@ -725,20 +785,50 @@ abstract class AppLocalizations {
   /// No description provided for @presetWidget_confirmDelete.
   ///
   /// In en, this message translates to:
-  /// **'Preset Widget Confirmdelete'**
+  /// **'Confirm Delete'**
   String get presetWidget_confirmDelete;
 
   /// No description provided for @presetWidget_create.
   ///
   /// In en, this message translates to:
-  /// **'Preset Widget Create'**
+  /// **'Create'**
   String get presetWidget_create;
 
-  /// No description provided for @presetWidget_newPreset.
+  /// No description provided for @new_preset.
   ///
   /// In en, this message translates to:
-  /// **'Preset Widget Newpreset'**
-  String get presetWidget_newPreset;
+  /// **'New Preset'**
+  String get new_preset;
+
+  /// No description provided for @view_project.
+  ///
+  /// In en, this message translates to:
+  /// **'View Project'**
+  String get view_project;
+
+  /// No description provided for @new_project.
+  ///
+  /// In en, this message translates to:
+  /// **'New Project'**
+  String get new_project;
+
+  /// No description provided for @save_project.
+  ///
+  /// In en, this message translates to:
+  /// **'Save Project'**
+  String get save_project;
+
+  /// No description provided for @load_project.
+  ///
+  /// In en, this message translates to:
+  /// **'Load Project'**
+  String get load_project;
+
+  /// No description provided for @export_project.
+  ///
+  /// In en, this message translates to:
+  /// **'Export Project'**
+  String get export_project;
 
   /// No description provided for @product.
   ///
@@ -764,6 +854,12 @@ abstract class AppLocalizations {
   /// **'Projectnamelabel'**
   String get projectNameLabel;
 
+  /// No description provided for @project_name.
+  ///
+  /// In en, this message translates to:
+  /// **'Project Name'**
+  String get project_name;
+
   /// No description provided for @projectPage_addToPreset.
   ///
   /// In en, this message translates to:
@@ -776,23 +872,11 @@ abstract class AppLocalizations {
   /// **'Project Page Cancel'**
   String get projectPage_cancel;
 
-  /// No description provided for @projectRenamed.
-  ///
-  /// In en, this message translates to:
-  /// **'Projectrenamed'**
-  String get projectRenamed;
-
   /// No description provided for @quantity.
   ///
   /// In en, this message translates to:
   /// **'Quantity'**
   String get quantity;
-
-  /// No description provided for @renameProject.
-  ///
-  /// In en, this message translates to:
-  /// **'Renameproject'**
-  String get renameProject;
 
   /// No description provided for @rename_preset.
   ///
@@ -833,277 +917,277 @@ abstract class AppLocalizations {
   /// No description provided for @settingsPage_account.
   ///
   /// In en, this message translates to:
-  /// **'Settings Page Account'**
+  /// **'Account'**
   String get settingsPage_account;
 
   /// No description provided for @settingsPage_biometricAuth.
   ///
   /// In en, this message translates to:
-  /// **'Settings Page Biometricauth'**
+  /// **'Biometric Authentication'**
   String get settingsPage_biometricAuth;
 
   /// No description provided for @settingsPage_cancel.
   ///
   /// In en, this message translates to:
-  /// **'Settings Page Cancel'**
+  /// **'Cancel'**
   String get settingsPage_cancel;
 
   /// No description provided for @settingsPage_changePassword.
   ///
   /// In en, this message translates to:
-  /// **'Settings Page Changepassword'**
+  /// **'Change Password'**
   String get settingsPage_changePassword;
 
   /// No description provided for @settingsPage_confirmSignOut.
   ///
   /// In en, this message translates to:
-  /// **'Settings Page Confirmsignout'**
+  /// **'Confirm Sign Out'**
   String get settingsPage_confirmSignOut;
 
   /// No description provided for @settingsPage_confirmUnsubscribe.
   ///
   /// In en, this message translates to:
-  /// **'Settings Page Confirmunsubscribe'**
+  /// **'Confirm Unsubscribe'**
   String get settingsPage_confirmUnsubscribe;
 
   /// No description provided for @settingsPage_email.
   ///
   /// In en, this message translates to:
-  /// **'Settings Page Email'**
+  /// **'Email'**
   String get settingsPage_email;
 
   /// No description provided for @settingsPage_error.
   ///
   /// In en, this message translates to:
-  /// **'Settings Page Error'**
+  /// **'Error'**
   String get settingsPage_error;
 
   /// No description provided for @settingsPage_featureNotImplemented.
   ///
   /// In en, this message translates to:
-  /// **'Settings Page Featurenotimplemented'**
+  /// **'Feature Not Implemented'**
   String get settingsPage_featureNotImplemented;
 
   /// No description provided for @settingsPage_freemiumTest.
   ///
   /// In en, this message translates to:
-  /// **'Settings Page Freemiumtest'**
+  /// **'Freemium Test'**
   String get settingsPage_freemiumTest;
 
   /// No description provided for @settingsPage_name.
   ///
   /// In en, this message translates to:
-  /// **'Settings Page Name'**
+  /// **'Name'**
   String get settingsPage_name;
 
   /// No description provided for @settingsPage_notAvailable.
   ///
   /// In en, this message translates to:
-  /// **'Settings Page Notavailable'**
+  /// **'Not Available'**
   String get settingsPage_notAvailable;
 
   /// No description provided for @settingsPage_notDefined.
   ///
   /// In en, this message translates to:
-  /// **'Settings Page Notdefined'**
+  /// **'Not Defined'**
   String get settingsPage_notDefined;
 
   /// No description provided for @settingsPage_ok.
   ///
   /// In en, this message translates to:
-  /// **'Settings Page Ok'**
+  /// **'OK'**
   String get settingsPage_ok;
 
   /// No description provided for @settingsPage_premium.
   ///
   /// In en, this message translates to:
-  /// **'Settings Page Premium'**
+  /// **'Premium'**
   String get settingsPage_premium;
 
   /// No description provided for @settingsPage_premiumActivated.
   ///
   /// In en, this message translates to:
-  /// **'Settings Page Premiumactivated'**
+  /// **'Premium Activated'**
   String get settingsPage_premiumActivated;
 
   /// No description provided for @settingsPage_premiumSubscription.
   ///
   /// In en, this message translates to:
-  /// **'Settings Page Premiumsubscription'**
+  /// **'Premium Subscription'**
   String get settingsPage_premiumSubscription;
 
   /// No description provided for @settingsPage_security.
   ///
   /// In en, this message translates to:
-  /// **'Settings Page Security'**
+  /// **'Security'**
   String get settingsPage_security;
 
   /// No description provided for @settingsPage_signOut.
   ///
   /// In en, this message translates to:
-  /// **'Settings Page Signout'**
+  /// **'Sign Out'**
   String get settingsPage_signOut;
 
   /// No description provided for @settingsPage_signOutDialogContent.
   ///
   /// In en, this message translates to:
-  /// **'Settings Page Signoutdialogcontent'**
+  /// **'Are you sure you want to sign out?'**
   String get settingsPage_signOutDialogContent;
 
   /// No description provided for @settingsPage_signOutDialogTitle.
   ///
   /// In en, this message translates to:
-  /// **'Settings Page Signoutdialogtitle'**
+  /// **'Sign Out'**
   String get settingsPage_signOutDialogTitle;
 
   /// No description provided for @settingsPage_standard.
   ///
   /// In en, this message translates to:
-  /// **'Settings Page Standard'**
+  /// **'Standard'**
   String get settingsPage_standard;
 
   /// No description provided for @settingsPage_status.
   ///
   /// In en, this message translates to:
-  /// **'Settings Page Status'**
+  /// **'Status'**
   String get settingsPage_status;
 
   /// No description provided for @settingsPage_subscribe.
   ///
   /// In en, this message translates to:
-  /// **'Settings Page Subscribe'**
+  /// **'Subscribe'**
   String get settingsPage_subscribe;
 
   /// No description provided for @settingsPage_subscribeDialogContent.
   ///
   /// In en, this message translates to:
-  /// **'Settings Page Subscribedialogcontent'**
+  /// **'Do you want to subscribe to the premium plan?'**
   String get settingsPage_subscribeDialogContent;
 
   /// No description provided for @settingsPage_subscribeDialogTitle.
   ///
   /// In en, this message translates to:
-  /// **'Settings Page Subscribedialogtitle'**
+  /// **'Premium Subscription'**
   String get settingsPage_subscribeDialogTitle;
 
   /// No description provided for @settingsPage_subscribeToPremium.
   ///
   /// In en, this message translates to:
-  /// **'Settings Page Subscribetopremium'**
+  /// **'Subscribe to Premium'**
   String get settingsPage_subscribeToPremium;
 
   /// No description provided for @settingsPage_subscription.
   ///
   /// In en, this message translates to:
-  /// **'Settings Page Subscription'**
+  /// **'Subscription'**
   String get settingsPage_subscription;
 
   /// No description provided for @settingsPage_subscriptionError.
   ///
   /// In en, this message translates to:
-  /// **'Settings Page Subscriptionerror'**
+  /// **'Subscription Error'**
   String get settingsPage_subscriptionError;
 
   /// No description provided for @settingsPage_success.
   ///
   /// In en, this message translates to:
-  /// **'Settings Page Success'**
+  /// **'Success'**
   String get settingsPage_success;
 
   /// No description provided for @settingsPage_title.
   ///
   /// In en, this message translates to:
-  /// **'Settings Page Title'**
+  /// **'Account Settings'**
   String get settingsPage_title;
 
   /// No description provided for @settingsPage_unsubscribe.
   ///
   /// In en, this message translates to:
-  /// **'Settings Page Unsubscribe'**
+  /// **'Unsubscribe'**
   String get settingsPage_unsubscribe;
 
   /// No description provided for @settingsPage_unsubscribeDialogContent.
   ///
   /// In en, this message translates to:
-  /// **'Settings Page Unsubscribedialogcontent'**
+  /// **'Are you sure you want to unsubscribe?'**
   String get settingsPage_unsubscribeDialogContent;
 
   /// No description provided for @settingsPage_unsubscribeDialogTitle.
   ///
   /// In en, this message translates to:
-  /// **'Settings Page Unsubscribedialogtitle'**
+  /// **'Unsubscribe'**
   String get settingsPage_unsubscribeDialogTitle;
 
   /// No description provided for @settingsPage_userInfo.
   ///
   /// In en, this message translates to:
-  /// **'Settings Page Userinfo'**
+  /// **'User Information'**
   String get settingsPage_userInfo;
 
   /// No description provided for @soundPage_ampConfigTitle.
   ///
   /// In en, this message translates to:
-  /// **'Sound Page Ampconfigtitle'**
+  /// **'Amp Config Title'**
   String get soundPage_ampConfigTitle;
 
   /// No description provided for @soundPage_amplificationTabShort.
   ///
   /// In en, this message translates to:
-  /// **'Sound Page Amplificationtabshort'**
+  /// **'Amp'**
   String get soundPage_amplificationTabShort;
 
   /// No description provided for @soundPage_amplifier.
   ///
   /// In en, this message translates to:
-  /// **'Sound Page Amplifier'**
+  /// **'Amplifier'**
   String get soundPage_amplifier;
 
   /// No description provided for @soundPage_amplifiersRequired.
   ///
   /// In en, this message translates to:
-  /// **'Sound Page Amplifiersrequired'**
+  /// **'Amplifiers Required'**
   String get soundPage_amplifiersRequired;
 
   /// No description provided for @soundPage_capacity.
   ///
   /// In en, this message translates to:
-  /// **'Sound Page Capacity'**
+  /// **'Capacity'**
   String get soundPage_capacity;
 
   /// No description provided for @soundPage_noPresetSelected.
   ///
   /// In en, this message translates to:
-  /// **'Sound Page Nopresetselected'**
+  /// **'No Preset Selected'**
   String get soundPage_noPresetSelected;
 
   /// No description provided for @soundPage_noSpeakersSelected.
   ///
   /// In en, this message translates to:
-  /// **'Sound Page Nospeakersselected'**
+  /// **'No Speakers Selected'**
   String get soundPage_noSpeakersSelected;
 
   /// No description provided for @soundPage_power.
   ///
   /// In en, this message translates to:
-  /// **'Sound Page Power'**
+  /// **'Power'**
   String get soundPage_power;
 
   /// No description provided for @soundPage_speakersPerAmp.
   ///
   /// In en, this message translates to:
-  /// **'Sound Page Speakersperamp'**
+  /// **'Speakers per Amp'**
   String get soundPage_speakersPerAmp;
 
   /// No description provided for @soundPage_speakersPerChannel.
   ///
   /// In en, this message translates to:
-  /// **'Sound Page Speakersperchannel'**
+  /// **'Speakers per Channel'**
   String get soundPage_speakersPerChannel;
 
   /// No description provided for @soundPage_with.
   ///
   /// In en, this message translates to:
-  /// **'Sound Page With'**
+  /// **'with'**
   String get soundPage_with;
 
   /// No description provided for @source.
@@ -1145,19 +1229,19 @@ abstract class AppLocalizations {
   /// No description provided for @unitKilogram.
   ///
   /// In en, this message translates to:
-  /// **'Unitkilogram'**
+  /// **'Kg'**
   String get unitKilogram;
 
   /// No description provided for @unitKilowatt.
   ///
   /// In en, this message translates to:
-  /// **'Unitkilowatt'**
+  /// **'kW'**
   String get unitKilowatt;
 
   /// No description provided for @unitWatt.
   ///
   /// In en, this message translates to:
-  /// **'Unitwatt'**
+  /// **'W'**
   String get unitWatt;
 
   /// No description provided for @view_preset.
@@ -1193,43 +1277,43 @@ abstract class AppLocalizations {
   /// auto-added from code scan
   ///
   /// In en, this message translates to:
-  /// **'bottom Nav catalogue'**
+  /// **'Catalogue'**
   String get bottomNav_catalogue;
 
   /// auto-added from code scan
   ///
   /// In en, this message translates to:
-  /// **'bottom Nav electricity'**
+  /// **'Electricity'**
   String get bottomNav_electricity;
 
   /// auto-added from code scan
   ///
   /// In en, this message translates to:
-  /// **'bottom Nav light'**
+  /// **'Light'**
   String get bottomNav_light;
 
   /// auto-added from code scan
   ///
   /// In en, this message translates to:
-  /// **'bottom Nav misc'**
+  /// **'Misc'**
   String get bottomNav_misc;
 
   /// auto-added from code scan
   ///
   /// In en, this message translates to:
-  /// **'bottom Nav sound'**
+  /// **'Sound'**
   String get bottomNav_sound;
 
   /// auto-added from code scan
   ///
   /// In en, this message translates to:
-  /// **'bottom Nav structure'**
+  /// **'Structure'**
   String get bottomNav_structure;
 
   /// auto-added from code scan
   ///
   /// In en, this message translates to:
-  /// **'bottom Nav video'**
+  /// **'Video'**
   String get bottomNav_video;
 
   /// auto-added from code scan
@@ -1253,19 +1337,19 @@ abstract class AppLocalizations {
   /// auto-added from code scan
   ///
   /// In en, this message translates to:
-  /// **'catalog Access'**
+  /// **'Catalogue AV'**
   String get catalogAccess;
 
   /// auto-added from code scan
   ///
   /// In en, this message translates to:
-  /// **'catalog Page cancel'**
+  /// **'Cancel'**
   String get catalogPage_cancel;
 
   /// auto-added from code scan
   ///
   /// In en, this message translates to:
-  /// **'catalog Page confirm'**
+  /// **'Confirm'**
   String get catalogPage_confirm;
 
   /// auto-added from code scan
@@ -1307,7 +1391,7 @@ abstract class AppLocalizations {
   /// auto-added from code scan
   ///
   /// In en, this message translates to:
-  /// **'consumption'**
+  /// **'Consumption'**
   String get consumption;
 
   /// auto-added from code scan
@@ -1343,7 +1427,7 @@ abstract class AppLocalizations {
   /// auto-added from code scan
   ///
   /// In en, this message translates to:
-  /// **'electricity Menu'**
+  /// **'Electricity'**
   String get electricityMenu;
 
   /// auto-added from code scan
@@ -1403,67 +1487,67 @@ abstract class AppLocalizations {
   /// auto-added from code scan
   ///
   /// In en, this message translates to:
-  /// **'light Menu'**
+  /// **'Light'**
   String get lightMenu;
 
   /// auto-added from code scan
   ///
   /// In en, this message translates to:
-  /// **'light Page angle Range'**
+  /// **'Angle (1° to 70°)'**
   String get lightPage_angleRange;
 
   /// auto-added from code scan
   ///
   /// In en, this message translates to:
-  /// **'light Page calculate'**
+  /// **'Calculate'**
   String get lightPage_calculate;
 
   /// auto-added from code scan
   ///
   /// In en, this message translates to:
-  /// **'light Page channel'**
+  /// **'Channel'**
   String get lightPage_channel;
 
   /// auto-added from code scan
   ///
   /// In en, this message translates to:
-  /// **'light Page channels'**
+  /// **'Channels'**
   String get lightPage_channels;
 
   /// auto-added from code scan
   ///
   /// In en, this message translates to:
-  /// **'light Page distance Range'**
+  /// **'Distance (1m to 40m)'**
   String get lightPage_distanceRange;
 
   /// auto-added from code scan
   ///
   /// In en, this message translates to:
-  /// **'light Page height Range'**
+  /// **'Height (1m to 20m)'**
   String get lightPage_heightRange;
 
   /// auto-added from code scan
   ///
   /// In en, this message translates to:
-  /// **'light Page led Length'**
+  /// **'LED Length (in meters)'**
   String get lightPage_ledLength;
 
   /// auto-added from code scan
   ///
   /// In en, this message translates to:
-  /// **'light Page meters'**
+  /// **'meters'**
   String get lightPage_meters;
 
   /// auto-added from code scan
   ///
   /// In en, this message translates to:
-  /// **'light Page title'**
+  /// **'Lighting Equipment'**
   String get lightPage_title;
 
   /// auto-added from code scan
   ///
   /// In en, this message translates to:
-  /// **'light Page total'**
+  /// **'Total'**
   String get lightPage_total;
 
   /// auto-added from code scan
@@ -1475,7 +1559,7 @@ abstract class AppLocalizations {
   /// auto-added from code scan
   ///
   /// In en, this message translates to:
-  /// **'network Menu'**
+  /// **'Network'**
   String get networkMenu;
 
   /// auto-added from code scan
@@ -1490,17 +1574,215 @@ abstract class AppLocalizations {
   /// **'patch output'**
   String get patch_output;
 
-  /// auto-added from code scan
+  /// No description provided for @paymentPage_title.
   ///
   /// In en, this message translates to:
-  /// **'payment Page monthly Plan'**
+  /// **'Premium Subscription'**
+  String get paymentPage_title;
+
+  /// No description provided for @paymentPage_monthlyPlan.
+  ///
+  /// In en, this message translates to:
+  /// **'Monthly Plan'**
   String get paymentPage_monthlyPlan;
 
-  /// auto-added from code scan
+  /// No description provided for @paymentPage_yearlyPlan.
   ///
   /// In en, this message translates to:
-  /// **'payment Page yearly Plan'**
+  /// **'Yearly Plan'**
   String get paymentPage_yearlyPlan;
+
+  /// No description provided for @paymentPage_monthlyPrice.
+  ///
+  /// In en, this message translates to:
+  /// **'€2.49/month'**
+  String get paymentPage_monthlyPrice;
+
+  /// No description provided for @paymentPage_yearlyPrice.
+  ///
+  /// In en, this message translates to:
+  /// **'€19.99/year'**
+  String get paymentPage_yearlyPrice;
+
+  /// No description provided for @paymentPage_securePayment.
+  ///
+  /// In en, this message translates to:
+  /// **'Secure payment'**
+  String get paymentPage_securePayment;
+
+  /// No description provided for @paymentPage_visaMastercardAccepted.
+  ///
+  /// In en, this message translates to:
+  /// **'Visa and Mastercard accepted'**
+  String get paymentPage_visaMastercardAccepted;
+
+  /// No description provided for @paymentPage_paymentInfo.
+  ///
+  /// In en, this message translates to:
+  /// **'Payment information'**
+  String get paymentPage_paymentInfo;
+
+  /// No description provided for @paymentPage_cardholderName.
+  ///
+  /// In en, this message translates to:
+  /// **'Cardholder name'**
+  String get paymentPage_cardholderName;
+
+  /// No description provided for @paymentPage_cardNumber.
+  ///
+  /// In en, this message translates to:
+  /// **'Card number'**
+  String get paymentPage_cardNumber;
+
+  /// No description provided for @paymentPage_expiryDate.
+  ///
+  /// In en, this message translates to:
+  /// **'MM/YY'**
+  String get paymentPage_expiryDate;
+
+  /// No description provided for @paymentPage_cvc.
+  ///
+  /// In en, this message translates to:
+  /// **'CVC'**
+  String get paymentPage_cvc;
+
+  /// No description provided for @paymentPage_payButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Pay'**
+  String get paymentPage_payButton;
+
+  /// No description provided for @paymentPage_processing.
+  ///
+  /// In en, this message translates to:
+  /// **'Processing...'**
+  String get paymentPage_processing;
+
+  /// No description provided for @paymentPage_paymentSuccess.
+  ///
+  /// In en, this message translates to:
+  /// **'Payment successful!'**
+  String get paymentPage_paymentSuccess;
+
+  /// No description provided for @paymentPage_subscriptionActivated.
+  ///
+  /// In en, this message translates to:
+  /// **'Your premium subscription has been activated successfully!'**
+  String get paymentPage_subscriptionActivated;
+
+  /// No description provided for @paymentPage_plan.
+  ///
+  /// In en, this message translates to:
+  /// **'Plan'**
+  String get paymentPage_plan;
+
+  /// No description provided for @paymentPage_price.
+  ///
+  /// In en, this message translates to:
+  /// **'Price'**
+  String get paymentPage_price;
+
+  /// No description provided for @paymentPage_continue.
+  ///
+  /// In en, this message translates to:
+  /// **'Continue'**
+  String get paymentPage_continue;
+
+  /// No description provided for @paymentPage_premiumFeatures.
+  ///
+  /// In en, this message translates to:
+  /// **'You can now enjoy all premium features!'**
+  String get paymentPage_premiumFeatures;
+
+  /// No description provided for @paymentPage_paymentError.
+  ///
+  /// In en, this message translates to:
+  /// **'Payment error'**
+  String get paymentPage_paymentError;
+
+  /// No description provided for @paymentPage_selectPaymentMethod.
+  ///
+  /// In en, this message translates to:
+  /// **'Please select a payment method'**
+  String get paymentPage_selectPaymentMethod;
+
+  /// No description provided for @paymentPage_fillAllFields.
+  ///
+  /// In en, this message translates to:
+  /// **'Please fill in all card fields'**
+  String get paymentPage_fillAllFields;
+
+  /// No description provided for @paymentPage_paymentFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Payment failed. Please try again.'**
+  String get paymentPage_paymentFailed;
+
+  /// No description provided for @paymentPage_legalText.
+  ///
+  /// In en, this message translates to:
+  /// **'By proceeding with payment, you accept our terms of use and privacy policy. Payment will be processed securely by Stripe.'**
+  String get paymentPage_legalText;
+
+  /// No description provided for @paymentPage_featureCompleteCatalogue.
+  ///
+  /// In en, this message translates to:
+  /// **'Complete catalogue'**
+  String get paymentPage_featureCompleteCatalogue;
+
+  /// No description provided for @paymentPage_featureProjectsPresets.
+  ///
+  /// In en, this message translates to:
+  /// **'Projects and presets'**
+  String get paymentPage_featureProjectsPresets;
+
+  /// No description provided for @paymentPage_featureExportPdfExcel.
+  ///
+  /// In en, this message translates to:
+  /// **'PDF/Excel export'**
+  String get paymentPage_featureExportPdfExcel;
+
+  /// No description provided for @paymentPage_featurePrioritySupport.
+  ///
+  /// In en, this message translates to:
+  /// **'Priority support'**
+  String get paymentPage_featurePrioritySupport;
+
+  /// No description provided for @paymentPage_featureAutoUpdates.
+  ///
+  /// In en, this message translates to:
+  /// **'Automatic updates'**
+  String get paymentPage_featureAutoUpdates;
+
+  /// No description provided for @paymentPage_featureSavings.
+  ///
+  /// In en, this message translates to:
+  /// **'33% savings'**
+  String get paymentPage_featureSavings;
+
+  /// No description provided for @paymentPage_descriptionMonthly.
+  ///
+  /// In en, this message translates to:
+  /// **'Full access to all features'**
+  String get paymentPage_descriptionMonthly;
+
+  /// No description provided for @paymentPage_descriptionYearly.
+  ///
+  /// In en, this message translates to:
+  /// **'Save 33% with annual subscription'**
+  String get paymentPage_descriptionYearly;
+
+  /// No description provided for @paymentPage_popular.
+  ///
+  /// In en, this message translates to:
+  /// **'Popular'**
+  String get paymentPage_popular;
+
+  /// No description provided for @paymentPage_bestValue.
+  ///
+  /// In en, this message translates to:
+  /// **'Best value'**
+  String get paymentPage_bestValue;
 
   /// auto-added from code scan
   ///
@@ -1525,6 +1807,73 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'project Calculation Page power Project'**
   String get projectCalculationPage_powerProject;
+
+  /// auto-added from code scan
+  ///
+  /// In en, this message translates to:
+  /// **'Power'**
+  String get projectCalculationPage_powerTab;
+
+  /// auto-added from code scan
+  ///
+  /// In en, this message translates to:
+  /// **'Weight'**
+  String get projectCalculationPage_weightTab;
+
+  /// auto-added from code scan
+  ///
+  /// In en, this message translates to:
+  /// **'Power'**
+  String get electricityPage_powerTab;
+
+  /// auto-added from code scan
+  ///
+  /// In en, this message translates to:
+  /// **'Projection'**
+  String get videoPage_projectionTab;
+
+  /// auto-added from code scan
+  ///
+  /// In en, this message translates to:
+  /// **'LED Wall'**
+  String get videoPage_ledWallTab;
+
+  /// auto-added from code scan
+  ///
+  /// In en, this message translates to:
+  /// **'Timer'**
+  String get videoPage_timerTab;
+
+  /// No description provided for @catalogue_addToPreset.
+  ///
+  /// In en, this message translates to:
+  /// **'Add'**
+  String get catalogue_addToPreset;
+
+  /// No description provided for @catalogue_confirmAddTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Confirmation'**
+  String get catalogue_confirmAddTitle;
+
+  /// No description provided for @catalogue_confirmAddMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Add {count} {product} to {preset}?'**
+  String catalogue_confirmAddMessage(
+      Object count, Object preset, Object product);
+
+  /// No description provided for @catalogue_mode.
+  ///
+  /// In en, this message translates to:
+  /// **'Mode'**
+  String get catalogue_mode;
+
+  /// No description provided for @catalogue_wired.
+  ///
+  /// In en, this message translates to:
+  /// **'Wired'**
+  String get catalogue_wired;
 
   /// auto-added from code scan
   ///
@@ -1565,19 +1914,19 @@ abstract class AppLocalizations {
   /// auto-added from code scan
   ///
   /// In en, this message translates to:
-  /// **'sound Menu'**
+  /// **'Sound'**
   String get soundMenu;
 
   /// auto-added from code scan
   ///
   /// In en, this message translates to:
-  /// **'sound Page quantity'**
+  /// **'Quantity'**
   String get soundPage_quantity;
 
   /// auto-added from code scan
   ///
   /// In en, this message translates to:
-  /// **'sound Page title'**
+  /// **'Audio Equipment'**
   String get soundPage_title;
 
   /// auto-added from code scan
@@ -1649,163 +1998,163 @@ abstract class AppLocalizations {
   /// auto-added from code scan
   ///
   /// In en, this message translates to:
-  /// **'structure Menu'**
+  /// **'Structure'**
   String get structureMenu;
 
   /// auto-added from code scan
   ///
   /// In en, this message translates to:
-  /// **'structure Page 3 points Accroche'**
+  /// **'3 Points'**
   String get structurePage_3pointsAccroche;
 
   /// auto-added from code scan
   ///
   /// In en, this message translates to:
-  /// **'structure Page 4 points Accroche'**
+  /// **'4 Points'**
   String get structurePage_4pointsAccroche;
 
   /// auto-added from code scan
   ///
   /// In en, this message translates to:
-  /// **'structure Page charge Repartie'**
+  /// **'Distributed Load'**
   String get structurePage_chargeRepartie;
 
   /// auto-added from code scan
   ///
   /// In en, this message translates to:
-  /// **'structure Page charge Type'**
+  /// **'Charge Type'**
   String get structurePage_chargeType;
 
   /// auto-added from code scan
   ///
   /// In en, this message translates to:
-  /// **'structure Page charges Tab'**
+  /// **'Charges'**
   String get structurePage_chargesTab;
 
   /// auto-added from code scan
   ///
   /// In en, this message translates to:
-  /// **'structure Page deflection Ratio Title'**
+  /// **'Deflection Ratio'**
   String get structurePage_deflectionRatioTitle;
 
   /// auto-added from code scan
   ///
   /// In en, this message translates to:
-  /// **'structure Page distance'**
+  /// **'Distance'**
   String structurePage_distance(Object distance);
 
   /// auto-added from code scan
   ///
   /// In en, this message translates to:
-  /// **'structure Page length'**
+  /// **'Length'**
   String get structurePage_length;
 
   /// auto-added from code scan
   ///
   /// In en, this message translates to:
-  /// **'structure Page max Deflection Title'**
+  /// **'Max Deflection'**
   String get structurePage_maxDeflectionTitle;
 
   /// auto-added from code scan
   ///
   /// In en, this message translates to:
-  /// **'structure Page max Load Title'**
+  /// **'Max Load'**
   String get structurePage_maxLoadTitle;
 
   /// auto-added from code scan
   ///
   /// In en, this message translates to:
-  /// **'structure Page modifier'**
+  /// **'Modifier'**
   String get structurePage_modifier;
 
   /// auto-added from code scan
   ///
   /// In en, this message translates to:
-  /// **'structure Page point Accroche Centre'**
+  /// **'Center Point'**
   String get structurePage_pointAccrocheCentre;
 
   /// auto-added from code scan
   ///
   /// In en, this message translates to:
-  /// **'structure Page points Accroche Extremites'**
+  /// **'End Points'**
   String get structurePage_pointsAccrocheExtremites;
 
   /// auto-added from code scan
   ///
   /// In en, this message translates to:
-  /// **'structure Page project Weight Tab'**
+  /// **'Project Weight'**
   String get structurePage_projectWeightTab;
 
   /// auto-added from code scan
   ///
   /// In en, this message translates to:
-  /// **'structure Page select Charge'**
+  /// **'Select Charge'**
   String get structurePage_selectCharge;
 
   /// auto-added from code scan
   ///
   /// In en, this message translates to:
-  /// **'structure Page structure'**
+  /// **'Structure'**
   String get structurePage_structure;
 
   /// auto-added from code scan
   ///
   /// In en, this message translates to:
-  /// **'structure Page structure Weight Title'**
+  /// **'Structure Weight'**
   String get structurePage_structureWeightTitle;
 
   /// auto-added from code scan
   ///
   /// In en, this message translates to:
-  /// **'structure Page title'**
+  /// **'Structure'**
   String get structurePage_title;
 
   /// auto-added from code scan
   ///
   /// In en, this message translates to:
-  /// **'subscription choose plan'**
+  /// **'Choose Plan'**
   String get subscription_choose_plan;
 
   /// auto-added from code scan
   ///
   /// In en, this message translates to:
-  /// **'subscription description'**
+  /// **'Description'**
   String get subscription_description;
 
   /// auto-added from code scan
   ///
   /// In en, this message translates to:
-  /// **'subscription free trial'**
+  /// **'Free Trial'**
   String get subscription_free_trial;
 
   /// auto-added from code scan
   ///
   /// In en, this message translates to:
-  /// **'subscription popular'**
+  /// **'Popular'**
   String get subscription_popular;
 
   /// auto-added from code scan
   ///
   /// In en, this message translates to:
-  /// **'subscription premium'**
+  /// **'Premium'**
   String get subscription_premium;
 
   /// auto-added from code scan
   ///
   /// In en, this message translates to:
-  /// **'subscription security'**
+  /// **'Security'**
   String get subscription_security;
 
   /// auto-added from code scan
   ///
   /// In en, this message translates to:
-  /// **'subscription security description'**
+  /// **'Security Description'**
   String get subscription_security_description;
 
   /// auto-added from code scan
   ///
   /// In en, this message translates to:
-  /// **'subscription subscribe'**
+  /// **'Subscribe'**
   String get subscription_subscribe;
 
   /// auto-added from code scan
@@ -1847,104 +2196,855 @@ abstract class AppLocalizations {
   /// auto-added from code scan
   ///
   /// In en, this message translates to:
-  /// **'video Menu'**
+  /// **'Video'**
   String get videoMenu;
 
   /// auto-added from code scan
   ///
   /// In en, this message translates to:
-  /// **'video Page brand'**
+  /// **'Brand'**
   String get videoPage_brand;
 
   /// auto-added from code scan
   ///
   /// In en, this message translates to:
-  /// **'video Page format'**
+  /// **'Format'**
   String get videoPage_format;
 
   /// auto-added from code scan
   ///
   /// In en, this message translates to:
-  /// **'video Page image Width'**
+  /// **'Image Width'**
   String get videoPage_imageWidth;
 
   /// auto-added from code scan
   ///
   /// In en, this message translates to:
-  /// **'video Page model'**
+  /// **'Model'**
   String get videoPage_model;
 
   /// auto-added from code scan
   ///
   /// In en, this message translates to:
-  /// **'video Page overlap'**
+  /// **'Overlap'**
   String get videoPage_overlap;
 
   /// auto-added from code scan
   ///
   /// In en, this message translates to:
-  /// **'video Page projector Count'**
+  /// **'Projector Count'**
   String get videoPage_projectorCount;
 
   /// auto-added from code scan
   ///
   /// In en, this message translates to:
-  /// **'video Page projector Distance'**
+  /// **'Projector Distance'**
   String get videoPage_projectorDistance;
 
   /// auto-added from code scan
   ///
   /// In en, this message translates to:
-  /// **'video Page schema'**
+  /// **'Schema'**
   String get videoPage_schema;
 
   /// auto-added from code scan
   ///
   /// In en, this message translates to:
-  /// **'video Page select Led Wall'**
+  /// **'Select LED Wall'**
   String get videoPage_selectLedWall;
 
   /// auto-added from code scan
   ///
   /// In en, this message translates to:
-  /// **'video Page select Product'**
+  /// **'Select Product'**
   String get videoPage_selectProduct;
 
   /// auto-added from code scan
   ///
   /// In en, this message translates to:
-  /// **'video Page title'**
+  /// **'Video'**
   String get videoPage_title;
 
   /// auto-added from code scan
   ///
   /// In en, this message translates to:
-  /// **'voltage'**
+  /// **'Voltage'**
   String get voltage;
 
   /// auto-added from code scan
   ///
   /// In en, this message translates to:
-  /// **'volts'**
+  /// **'Volts'**
   String get volts;
 
-  /// auto-added
+  /// Name of the first default project
   ///
   /// In en, this message translates to:
-  /// **'Default Project 1'**
+  /// **'Project 1'**
   String get defaultProject1;
 
-  /// auto-added
+  /// Name of the second default project
   ///
   /// In en, this message translates to:
-  /// **'Default Project 2'**
+  /// **'Project 2'**
   String get defaultProject2;
 
-  /// auto-added
+  /// Name of the third default project
   ///
   /// In en, this message translates to:
-  /// **'Default Project 3'**
+  /// **'Project 3'**
   String get defaultProject3;
+
+  /// No description provided for @dmxPage_warning.
+  ///
+  /// In en, this message translates to:
+  /// **'Warning'**
+  String get dmxPage_warning;
+
+  /// No description provided for @dmxPage_productsNotPlaced.
+  ///
+  /// In en, this message translates to:
+  /// **'products not placed'**
+  String get dmxPage_productsNotPlaced;
+
+  /// No description provided for @dmxPage_maxIterationsReached.
+  ///
+  /// In en, this message translates to:
+  /// **'Maximum iterations reached'**
+  String get dmxPage_maxIterationsReached;
+
+  /// No description provided for @email_required.
+  ///
+  /// In en, this message translates to:
+  /// **'Email is required'**
+  String get email_required;
+
+  /// No description provided for @invalid_email.
+  ///
+  /// In en, this message translates to:
+  /// **'Invalid email'**
+  String get invalid_email;
+
+  /// No description provided for @password_required.
+  ///
+  /// In en, this message translates to:
+  /// **'Password is required'**
+  String get password_required;
+
+  /// No description provided for @password_too_short.
+  ///
+  /// In en, this message translates to:
+  /// **'Password must be at least 6 characters'**
+  String get password_too_short;
+
+  /// No description provided for @auth_service_loading.
+  ///
+  /// In en, this message translates to:
+  /// **'Authentication service loading'**
+  String get auth_service_loading;
+
+  /// No description provided for @auth_service_error.
+  ///
+  /// In en, this message translates to:
+  /// **'Authentication service error'**
+  String get auth_service_error;
+
+  /// No description provided for @invalid_credentials_error.
+  ///
+  /// In en, this message translates to:
+  /// **'Invalid email or password'**
+  String get invalid_credentials_error;
+
+  /// No description provided for @connection_error.
+  ///
+  /// In en, this message translates to:
+  /// **'Connection error'**
+  String get connection_error;
+
+  /// No description provided for @ok.
+  ///
+  /// In en, this message translates to:
+  /// **'OK'**
+  String get ok;
+
+  /// No description provided for @enter_email_first.
+  ///
+  /// In en, this message translates to:
+  /// **'Please enter your email'**
+  String get enter_email_first;
+
+  /// No description provided for @reset_email_sent.
+  ///
+  /// In en, this message translates to:
+  /// **'A reset email has been sent. Check your inbox and spam folder.'**
+  String get reset_email_sent;
+
+  /// No description provided for @login.
+  ///
+  /// In en, this message translates to:
+  /// **'Login'**
+  String get login;
+
+  /// No description provided for @email.
+  ///
+  /// In en, this message translates to:
+  /// **'Email'**
+  String get email;
+
+  /// No description provided for @password.
+  ///
+  /// In en, this message translates to:
+  /// **'Password'**
+  String get password;
+
+  /// No description provided for @forgot_password.
+  ///
+  /// In en, this message translates to:
+  /// **'Forgot Password?'**
+  String get forgot_password;
+
+  /// No description provided for @remember_me.
+  ///
+  /// In en, this message translates to:
+  /// **'Remember me'**
+  String get remember_me;
+
+  /// No description provided for @sign_in.
+  ///
+  /// In en, this message translates to:
+  /// **'Sign In'**
+  String get sign_in;
+
+  /// No description provided for @or_continue_with.
+  ///
+  /// In en, this message translates to:
+  /// **'Or continue with'**
+  String get or_continue_with;
+
+  /// No description provided for @google_sign_in.
+  ///
+  /// In en, this message translates to:
+  /// **'Sign in with Google'**
+  String get google_sign_in;
+
+  /// No description provided for @biometric_auth.
+  ///
+  /// In en, this message translates to:
+  /// **'Biometric Auth'**
+  String get biometric_auth;
+
+  /// No description provided for @sign_up.
+  ///
+  /// In en, this message translates to:
+  /// **'Sign Up'**
+  String get sign_up;
+
+  /// No description provided for @welcome_to_avwallet.
+  ///
+  /// In en, this message translates to:
+  /// **'Welcome to AVWallet'**
+  String get welcome_to_avwallet;
+
+  /// No description provided for @welcome_to_avwallet_with_name.
+  ///
+  /// In en, this message translates to:
+  /// **'Welcome to AVWallet, {name}'**
+  String welcome_to_avwallet_with_name(Object name);
+
+  /// No description provided for @premium_usage_remaining.
+  ///
+  /// In en, this message translates to:
+  /// **'You have premium usage.\\nYou have {count} uses remaining'**
+  String premium_usage_remaining(Object count);
+
+  /// No description provided for @continueButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Continue'**
+  String get continueButton;
+
+  /// No description provided for @signup.
+  ///
+  /// In en, this message translates to:
+  /// **'Sign Up'**
+  String get signup;
+
+  /// No description provided for @confirm_password.
+  ///
+  /// In en, this message translates to:
+  /// **'Confirm Password'**
+  String get confirm_password;
+
+  /// No description provided for @confirm_password_required.
+  ///
+  /// In en, this message translates to:
+  /// **'Password confirmation is required'**
+  String get confirm_password_required;
+
+  /// No description provided for @passwords_dont_match.
+  ///
+  /// In en, this message translates to:
+  /// **'Passwords do not match'**
+  String get passwords_dont_match;
+
+  /// No description provided for @already_have_account.
+  ///
+  /// In en, this message translates to:
+  /// **'Already have an account?'**
+  String get already_have_account;
+
+  /// No description provided for @verification_code_sent_message.
+  ///
+  /// In en, this message translates to:
+  /// **'A verification code has been sent'**
+  String get verification_code_sent_message;
+
+  /// No description provided for @verification_code.
+  ///
+  /// In en, this message translates to:
+  /// **'Verification Code'**
+  String get verification_code;
+
+  /// No description provided for @welcome_title.
+  ///
+  /// In en, this message translates to:
+  /// **'Welcome'**
+  String get welcome_title;
+
+  /// No description provided for @welcome_message.
+  ///
+  /// In en, this message translates to:
+  /// **'Welcome message'**
+  String get welcome_message;
+
+  /// No description provided for @beam_short.
+  ///
+  /// In en, this message translates to:
+  /// **'Beam'**
+  String get beam_short;
+
+  /// No description provided for @default_project_name.
+  ///
+  /// In en, this message translates to:
+  /// **'Default Project'**
+  String get default_project_name;
+
+  /// No description provided for @no_projects_available.
+  ///
+  /// In en, this message translates to:
+  /// **'No projects available to load'**
+  String get no_projects_available;
+
+  /// No description provided for @project_loaded.
+  ///
+  /// In en, this message translates to:
+  /// **'Project \"{name}\" loaded!'**
+  String project_loaded(Object name);
+
+  /// No description provided for @export_project_confirm.
+  ///
+  /// In en, this message translates to:
+  /// **'Do you want to export project \"{name}\"?'**
+  String export_project_confirm(Object name);
+
+  /// No description provided for @generating_pdfs.
+  ///
+  /// In en, this message translates to:
+  /// **'Generating PDFs...'**
+  String get generating_pdfs;
+
+  /// No description provided for @files_exported_success.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} files exported successfully!'**
+  String files_exported_success(Object count);
+
+  /// No description provided for @no_files_to_export.
+  ///
+  /// In en, this message translates to:
+  /// **'No files to export for this project'**
+  String get no_files_to_export;
+
+  /// No description provided for @export_error.
+  ///
+  /// In en, this message translates to:
+  /// **'Error during export: {error}'**
+  String export_error(Object error);
+
+  /// No description provided for @project_saved_locally.
+  ///
+  /// In en, this message translates to:
+  /// **'The project will be saved locally.'**
+  String get project_saved_locally;
+
+  /// No description provided for @project_saved.
+  ///
+  /// In en, this message translates to:
+  /// **'Project saved!'**
+  String get project_saved;
+
+  /// No description provided for @export_to_project.
+  ///
+  /// In en, this message translates to:
+  /// **'To Project'**
+  String get export_to_project;
+
+  /// No description provided for @export_sms.
+  ///
+  /// In en, this message translates to:
+  /// **'SMS'**
+  String get export_sms;
+
+  /// No description provided for @export_whatsapp.
+  ///
+  /// In en, this message translates to:
+  /// **'WhatsApp'**
+  String get export_whatsapp;
+
+  /// No description provided for @export_email.
+  ///
+  /// In en, this message translates to:
+  /// **'Email'**
+  String get export_email;
+
+  /// No description provided for @export_tooltip.
+  ///
+  /// In en, this message translates to:
+  /// **'Export'**
+  String get export_tooltip;
+
+  /// No description provided for @photos_project_title.
+  ///
+  /// In en, this message translates to:
+  /// **'PROJECT PHOTOS'**
+  String get photos_project_title;
+
+  /// No description provided for @photos_ar_captured.
+  ///
+  /// In en, this message translates to:
+  /// **'Photos captured during AR measurements:'**
+  String get photos_ar_captured;
+
+  /// No description provided for @photo_label.
+  ///
+  /// In en, this message translates to:
+  /// **'Photo: {filename}'**
+  String photo_label(Object filename);
+
+  /// No description provided for @article_label.
+  ///
+  /// In en, this message translates to:
+  /// **'Article'**
+  String get article_label;
+
+  /// No description provided for @quantity_label.
+  ///
+  /// In en, this message translates to:
+  /// **'Qty'**
+  String get quantity_label;
+
+  /// No description provided for @catalogueQuantityDialog_title.
+  ///
+  /// In en, this message translates to:
+  /// **'Quantity'**
+  String get catalogueQuantityDialog_title;
+
+  /// No description provided for @catalogueQuantityDialog_enterQuantity.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter quantity'**
+  String get catalogueQuantityDialog_enterQuantity;
+
+  /// No description provided for @catalogueQuantityDialog_dmxType.
+  ///
+  /// In en, this message translates to:
+  /// **'DMX Type'**
+  String get catalogueQuantityDialog_dmxType;
+
+  /// No description provided for @catalogueQuantityDialog_dmxMini.
+  ///
+  /// In en, this message translates to:
+  /// **'DMX mini'**
+  String get catalogueQuantityDialog_dmxMini;
+
+  /// No description provided for @catalogueQuantityDialog_dmxMax.
+  ///
+  /// In en, this message translates to:
+  /// **'DMX max'**
+  String get catalogueQuantityDialog_dmxMax;
+
+  /// No description provided for @catalogueQuantityDialog_cancel.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancel'**
+  String get catalogueQuantityDialog_cancel;
+
+  /// No description provided for @catalogueQuantityDialog_confirm.
+  ///
+  /// In en, this message translates to:
+  /// **'Confirm'**
+  String get catalogueQuantityDialog_confirm;
+
+  /// No description provided for @power_label.
+  ///
+  /// In en, this message translates to:
+  /// **'Power'**
+  String get power_label;
+
+  /// No description provided for @weight_label.
+  ///
+  /// In en, this message translates to:
+  /// **'Weight'**
+  String get weight_label;
+
+  /// No description provided for @loading.
+  ///
+  /// In en, this message translates to:
+  /// **'Loading...'**
+  String get loading;
+
+  /// No description provided for @create_button.
+  ///
+  /// In en, this message translates to:
+  /// **'Create'**
+  String get create_button;
+
+  /// No description provided for @save_button.
+  ///
+  /// In en, this message translates to:
+  /// **'Save'**
+  String get save_button;
+
+  /// No description provided for @cancel_button.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancel'**
+  String get cancel_button;
+
+  /// No description provided for @weight_tab_title.
+  ///
+  /// In en, this message translates to:
+  /// **'Weight'**
+  String get weight_tab_title;
+
+  /// No description provided for @imports.
+  ///
+  /// In en, this message translates to:
+  /// **'Imports'**
+  String get imports;
+
+  /// No description provided for @calculation_dmx.
+  ///
+  /// In en, this message translates to:
+  /// **'DMX Calculation'**
+  String get calculation_dmx;
+
+  /// No description provided for @calculation_sound.
+  ///
+  /// In en, this message translates to:
+  /// **'Sound Calculation'**
+  String get calculation_sound;
+
+  /// No description provided for @calculation_projection.
+  ///
+  /// In en, this message translates to:
+  /// **'Projection Calculation'**
+  String get calculation_projection;
+
+  /// No description provided for @calculation_led_wall.
+  ///
+  /// In en, this message translates to:
+  /// **'LED Wall Calculation'**
+  String get calculation_led_wall;
+
+  /// No description provided for @calculation_charges.
+  ///
+  /// In en, this message translates to:
+  /// **'Charges Calculation'**
+  String get calculation_charges;
+
+  /// No description provided for @standard_welcome_message.
+  ///
+  /// In en, this message translates to:
+  /// **'Welcome to AVWallet, {name}'**
+  String standard_welcome_message(Object name);
+
+  /// No description provided for @standard_welcome_usage_remaining.
+  ///
+  /// In en, this message translates to:
+  /// **'You have {count} uses remaining'**
+  String standard_welcome_usage_remaining(Object count);
+
+  /// No description provided for @standard_welcome_continue.
+  ///
+  /// In en, this message translates to:
+  /// **'Continue'**
+  String get standard_welcome_continue;
+
+  /// No description provided for @premium_welcome_title.
+  ///
+  /// In en, this message translates to:
+  /// **'Premium Welcome!'**
+  String get premium_welcome_title;
+
+  /// No description provided for @premium_welcome_message.
+  ///
+  /// In en, this message translates to:
+  /// **'Congratulations, Premium activated'**
+  String get premium_welcome_message;
+
+  /// No description provided for @premium_benefits_title.
+  ///
+  /// In en, this message translates to:
+  /// **'Premium Benefits'**
+  String get premium_benefits_title;
+
+  /// No description provided for @premium_benefit_unlimited.
+  ///
+  /// In en, this message translates to:
+  /// **'Unlimited usage'**
+  String get premium_benefit_unlimited;
+
+  /// No description provided for @premium_benefit_priority.
+  ///
+  /// In en, this message translates to:
+  /// **'Priority support'**
+  String get premium_benefit_priority;
+
+  /// No description provided for @premium_benefit_support.
+  ///
+  /// In en, this message translates to:
+  /// **'Dedicated technical assistance'**
+  String get premium_benefit_support;
+
+  /// No description provided for @premium_welcome_later.
+  ///
+  /// In en, this message translates to:
+  /// **'Later'**
+  String get premium_welcome_later;
+
+  /// No description provided for @premium_welcome_continue.
+  ///
+  /// In en, this message translates to:
+  /// **'Explore Premium'**
+  String get premium_welcome_continue;
+
+  /// No description provided for @premium_vip_welcome_message.
+  ///
+  /// In en, this message translates to:
+  /// **'Congratulations, you are part of the VIP AV Wallet team'**
+  String get premium_vip_welcome_message;
+
+  /// No description provided for @premium_vip_access_activated.
+  ///
+  /// In en, this message translates to:
+  /// **'Unlimited premium access activated'**
+  String get premium_vip_access_activated;
+
+  /// No description provided for @preview.
+  ///
+  /// In en, this message translates to:
+  /// **'Preview'**
+  String get preview;
+
+  /// No description provided for @project_parameters.
+  ///
+  /// In en, this message translates to:
+  /// **'Project Parameters'**
+  String get project_parameters;
+
+  /// No description provided for @location.
+  ///
+  /// In en, this message translates to:
+  /// **'Location'**
+  String get location;
+
+  /// No description provided for @mounting_date.
+  ///
+  /// In en, this message translates to:
+  /// **'Mounting date (DD/MM/YY)'**
+  String get mounting_date;
+
+  /// No description provided for @period_from.
+  ///
+  /// In en, this message translates to:
+  /// **'Date: from DD/MM/YY'**
+  String get period_from;
+
+  /// No description provided for @period_to.
+  ///
+  /// In en, this message translates to:
+  /// **'to DD/MM/YY'**
+  String get period_to;
+
+  /// No description provided for @save_parameters.
+  ///
+  /// In en, this message translates to:
+  /// **'Save'**
+  String get save_parameters;
+
+  /// No description provided for @project_location.
+  ///
+  /// In en, this message translates to:
+  /// **'Location'**
+  String get project_location;
+
+  /// No description provided for @project_mounting_date.
+  ///
+  /// In en, this message translates to:
+  /// **'Mounting date'**
+  String get project_mounting_date;
+
+  /// No description provided for @project_period.
+  ///
+  /// In en, this message translates to:
+  /// **'Period'**
+  String get project_period;
+
+  /// No description provided for @not_defined.
+  ///
+  /// In en, this message translates to:
+  /// **'Not defined'**
+  String get not_defined;
+
+  /// No description provided for @start_date.
+  ///
+  /// In en, this message translates to:
+  /// **'Start: DD/MM/YY'**
+  String get start_date;
+
+  /// No description provided for @end_date.
+  ///
+  /// In en, this message translates to:
+  /// **'End: DD/MM/YY'**
+  String get end_date;
+
+  /// No description provided for @calculation_sent_to_project.
+  ///
+  /// In en, this message translates to:
+  /// **'{calculationName} sent to \"{projectName}\"'**
+  String calculation_sent_to_project(
+      Object calculationName, Object projectName);
+
+  /// No description provided for @project_stats_presets.
+  ///
+  /// In en, this message translates to:
+  /// **'Number of Presets'**
+  String get project_stats_presets;
+
+  /// No description provided for @project_stats_articles.
+  ///
+  /// In en, this message translates to:
+  /// **'Total Number of Articles'**
+  String get project_stats_articles;
+
+  /// No description provided for @project_stats_calculations.
+  ///
+  /// In en, this message translates to:
+  /// **'Number of Calculations'**
+  String get project_stats_calculations;
+
+  /// No description provided for @project_stats_photos.
+  ///
+  /// In en, this message translates to:
+  /// **'Number of Photos'**
+  String get project_stats_photos;
+
+  /// No description provided for @select_photos.
+  ///
+  /// In en, this message translates to:
+  /// **'Select Photos'**
+  String get select_photos;
+
+  /// No description provided for @photos_imported.
+  ///
+  /// In en, this message translates to:
+  /// **'Imported Photos'**
+  String get photos_imported;
+
+  /// No description provided for @photo_exported.
+  ///
+  /// In en, this message translates to:
+  /// **'Photo exported'**
+  String get photo_exported;
+
+  /// No description provided for @photo_not_found.
+  ///
+  /// In en, this message translates to:
+  /// **'Photo not found'**
+  String get photo_not_found;
+
+  /// No description provided for @cabling_percentage.
+  ///
+  /// In en, this message translates to:
+  /// **'Cabling'**
+  String get cabling_percentage;
+
+  /// No description provided for @cabling_addition.
+  ///
+  /// In en, this message translates to:
+  /// **'+10% Cabling'**
+  String get cabling_addition;
+
+  /// No description provided for @review_popup_title.
+  ///
+  /// In en, this message translates to:
+  /// **'Hello'**
+  String get review_popup_title;
+
+  /// No description provided for @review_popup_message.
+  ///
+  /// In en, this message translates to:
+  /// **'An idea, a recommendation? Your feedback interests us'**
+  String get review_popup_message;
+
+  /// No description provided for @review_popup_contact.
+  ///
+  /// In en, this message translates to:
+  /// **'Contact us'**
+  String get review_popup_contact;
+
+  /// No description provided for @review_popup_continue.
+  ///
+  /// In en, this message translates to:
+  /// **'Continue'**
+  String get review_popup_continue;
+
+  /// No description provided for @coming_soon.
+  ///
+  /// In en, this message translates to:
+  /// **'Coming soon'**
+  String get coming_soon;
+
+  /// No description provided for @bandwidth_test.
+  ///
+  /// In en, this message translates to:
+  /// **'Bandwidth Test'**
+  String get bandwidth_test;
+
+  /// No description provided for @bandwidth_test_title.
+  ///
+  /// In en, this message translates to:
+  /// **'Bandwidth'**
+  String get bandwidth_test_title;
+
+  /// No description provided for @bandwidth_test_description.
+  ///
+  /// In en, this message translates to:
+  /// **'Test your connection speed'**
+  String get bandwidth_test_description;
+
+  /// No description provided for @bandwidth_test_start.
+  ///
+  /// In en, this message translates to:
+  /// **'Start test'**
+  String get bandwidth_test_start;
+
+  /// No description provided for @bandwidth_test_results.
+  ///
+  /// In en, this message translates to:
+  /// **'Results'**
+  String get bandwidth_test_results;
 }
 
 class _AppLocalizationsDelegate

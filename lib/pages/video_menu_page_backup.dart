@@ -4,7 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../providers/catalogue_provider.dart';
 import '../models/catalogue_item.dart';
 import '../widgets/preset_widget.dart';
-import 'package:av_wallet_hive/l10n/app_localizations.dart';
+import 'package:av_wallet/l10n/app_localizations.dart';
 import '../widgets/custom_app_bar.dart';
 import 'led_wall_schema_page.dart';
 import '../providers/preset_provider.dart';
@@ -1252,7 +1252,7 @@ class _VideoMenuPageState extends ConsumerState<VideoMenuPage>
                                             Expanded(
                                               child: DropdownButtonFormField<CatalogueItem>(
                                                 isExpanded: true,
-                                                value: selectedMurLed,
+                                                initialValue: selectedMurLed,
                                                 hint: Text('Choisir un mur LED',
                                                     style: Theme.of(context).textTheme.bodyMedium),
                                                 dropdownColor: Theme.of(context).brightness == Brightness.light 

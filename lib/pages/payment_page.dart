@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:av_wallet_hive/l10n/app_localizations.dart';
+import 'package:av_wallet/l10n/app_localizations.dart';
 import '../services/secure_usage_service.dart';
 import '../services/device_fingerprint_service.dart';
 import '../config/supabase_config.dart';
@@ -21,7 +21,7 @@ class _PaymentPageState extends State<PaymentPage> {
   String? _successMessage;
   
   // Plans d'abonnement - seront générés avec les traductions
-  List<SubscriptionPlan> _plans = [];
+  final List<SubscriptionPlan> _plans = [];
 
   @override
   void initState() {
@@ -40,14 +40,14 @@ class _PaymentPageState extends State<PaymentPage> {
         name: loc.paymentPage_monthlyPlan,
         price: 2.49,
         currency: 'EUR',
-        interval: 'mois', // Utiliser directement le texte français
-        description: 'Accès complet à toutes les fonctionnalités',
+        interval: 'mois',
+        description: loc.paymentPage_descriptionMonthly,
         features: [
-          'Catalogue complet',
-          'Projets et presets',
-          'Export PDF/Excel',
-          'Support prioritaire',
-          'Mises à jour automatiques'
+          loc.paymentPage_featureCompleteCatalogue,
+          loc.paymentPage_featureProjectsPresets,
+          loc.paymentPage_featureExportPdfExcel,
+          loc.paymentPage_featurePrioritySupport,
+          loc.paymentPage_featureAutoUpdates
         ],
         isPopular: false,
       ),
@@ -56,15 +56,15 @@ class _PaymentPageState extends State<PaymentPage> {
         name: loc.paymentPage_yearlyPlan,
         price: 19.99,
         currency: 'EUR',
-        interval: 'an', // Utiliser directement le texte français
-        description: 'Économisez 33% avec l\'abonnement annuel',
+        interval: 'an',
+        description: loc.paymentPage_descriptionYearly,
         features: [
-          'Catalogue complet',
-          'Projets et presets',
-          'Export PDF/Excel',
-          'Support prioritaire',
-          'Mises à jour automatiques',
-          'Économie de 33%'
+          loc.paymentPage_featureCompleteCatalogue,
+          loc.paymentPage_featureProjectsPresets,
+          loc.paymentPage_featureExportPdfExcel,
+          loc.paymentPage_featurePrioritySupport,
+          loc.paymentPage_featureAutoUpdates,
+          loc.paymentPage_featureSavings
         ],
         isPopular: true,
       ),
@@ -441,32 +441,39 @@ class _PaymentPageState extends State<PaymentPage> {
                 child: SingleChildScrollView(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
-                    children: plan.features.take(2).map((feature) => Padding(
-                      padding: const EdgeInsets.only(bottom: 1),
-                      child: Row(
-                        children: [
-                          Icon(
-                            Icons.check,
-                            color: Colors.green,
-                            size: 8,
-                          ),
-                          const SizedBox(width: 2),
-                          Expanded(
-                            child: Text(
-                              feature,
-                              style: TextStyle(
-                                color: Theme.of(context).brightness == Brightness.dark
-                                    ? Colors.white70
-                                    : Colors.black54,
-                                fontSize: 6,
-                              ),
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
+                    children: plan.features.map((feature) {
+                      // Mettre en évidence l'export PDF
+                      final isExportFeature = feature.contains('PDF') || feature.contains('Export');
+                      return Padding(
+                        padding: const EdgeInsets.only(bottom: 2),
+                        child: Row(
+                          children: [
+                            Icon(
+                              isExportFeature ? Icons.file_download : Icons.check,
+                              color: isExportFeature ? Colors.blue : Colors.green,
+                              size: 10,
                             ),
-                          ),
-                        ],
-                      ),
-                    )).toList(),
+                            const SizedBox(width: 4),
+                            Expanded(
+                              child: Text(
+                                feature,
+                                style: TextStyle(
+                                  color: isExportFeature 
+                                      ? Colors.blue[300]
+                                      : Theme.of(context).brightness == Brightness.dark
+                                          ? Colors.white70
+                                          : Colors.black54,
+                                  fontSize: 7,
+                                  fontWeight: isExportFeature ? FontWeight.bold : FontWeight.normal,
+                                ),
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                            ),
+                          ],
+                        ),
+                      );
+                    }).toList(),
                   ),
                 ),
               ),

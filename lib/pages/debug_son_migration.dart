@@ -4,7 +4,7 @@ import '../services/hive_service.dart';
 import '../data/catalogue_data.dart';
 
 class DebugSonMigrationPage extends StatefulWidget {
-  const DebugSonMigrationPage({Key? key}) : super(key: key);
+  const DebugSonMigrationPage({super.key});
 
   @override
   State<DebugSonMigrationPage> createState() => _DebugSonMigrationPageState();
@@ -12,7 +12,7 @@ class DebugSonMigrationPage extends StatefulWidget {
 
 class _DebugSonMigrationPageState extends State<DebugSonMigrationPage> {
   String _status = 'Prêt à analyser...';
-  List<String> _logs = [];
+  final List<String> _logs = [];
 
   void _addLog(String message) {
     setState(() {

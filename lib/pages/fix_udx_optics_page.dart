@@ -14,7 +14,7 @@ class FixUdxOpticsPage extends ConsumerStatefulWidget {
 class _FixUdxOpticsPageState extends ConsumerState<FixUdxOpticsPage> {
   bool _isLoading = false;
   String _status = '';
-  List<String> _logs = [];
+  final List<String> _logs = [];
 
   void _addLog(String message) {
     setState(() {

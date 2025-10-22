@@ -5,9 +5,10 @@ import '../models/catalogue_item.dart';
 import '../models/cart_item.dart';
 import '../services/hive_service.dart';
 import '../models/project.dart';
+import 'imported_photos_provider.dart';
 
 final presetBoxProvider = Provider<Future<Box<Preset>>>((ref) {
-  return HiveService.getPresetsBox();
+  return HiveService.getUserPresetsBox(); // Utiliser la box spécifique à l'utilisateur
 });
 
 final presetProvider =
@@ -67,7 +68,7 @@ class PresetNotifier extends StateNotifier<List<Preset>> {
     
     try {
       _isLoading = true;
-      final box = await HiveService.getPresetsBox();
+      final box = await HiveService.getUserPresetsBox(); // Utiliser la box spécifique à l'utilisateur
       state = box.values.toList();
       _isInitialized = true;
       
@@ -119,6 +120,8 @@ class PresetNotifier extends StateNotifier<List<Preset>> {
 
   void clearPresets() {
     state = [];
+    // Nettoyer aussi les photos importées
+    ref.read(importedPhotosProvider.notifier).clearAllPhotos();
   }
 
   void addPreset(Preset preset) {
@@ -160,7 +163,7 @@ class PresetNotifier extends StateNotifier<List<Preset>> {
     
     try {
       _isLoading = true;
-      final box = await HiveService.getPresetsBox();
+      final box = await HiveService.getUserPresetsBox(); // Utiliser la box spécifique à l'utilisateur
       state = box.values.toList();
       _isInitialized = true;
     } catch (e) {
@@ -269,6 +272,8 @@ class PresetNotifier extends StateNotifier<List<Preset>> {
       await HiveService.clearPresets();
       state = [];
       _isInitialized = false;
+      // Nettoyer aussi les photos importées
+      ref.read(importedPhotosProvider.notifier).clearAllPhotos();
     } catch (e) {
       // Gérer l'erreur si nécessaire
     }

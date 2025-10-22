@@ -9,10 +9,10 @@ class UnityWidget extends StatefulWidget {
   final Function(UnityWidgetController)? onUnityMessage;
   
   const UnityWidget({
-    Key? key,
+    super.key,
     this.onUnityCreated,
     this.onUnityMessage,
-  }) : super(key: key);
+  });
 
   @override
   State<UnityWidget> createState() => _UnityWidgetState();

@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:av_wallet_hive/l10n/app_localizations.dart';
+import 'package:av_wallet/l10n/app_localizations.dart';
 import '../widgets/custom_app_bar.dart';
 import '../widgets/uniform_bottom_nav_bar.dart';
 
 class UnityMeasurePage extends StatefulWidget {
-  const UnityMeasurePage({Key? key}) : super(key: key);
+  const UnityMeasurePage({super.key});
   @override
   State<UnityMeasurePage> createState() => _UnityMeasurePageState();
 }

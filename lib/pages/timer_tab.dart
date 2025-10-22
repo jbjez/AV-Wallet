@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class TimerTab extends StatefulWidget {
-  const TimerTab({Key? key}) : super(key: key);
+  const TimerTab({super.key});
   @override
   State<TimerTab> createState() => _TimerTabState();
 }
@@ -887,8 +887,8 @@ class _FullScreenCountdown extends StatelessWidget {
     required this.onClose,
     required this.backgroundColor, // Nouveau
     required this.textColor, // Nouveau
-    Key? key
-  }) : super(key: key);
+    super.key
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -991,7 +991,7 @@ class _RingPainter extends CustomPainter {
 }
 
 class _TimeEditDialog extends StatefulWidget {
-  const _TimeEditDialog({Key? key}) : super(key: key);
+  const _TimeEditDialog({super.key});
   @override
   State<_TimeEditDialog> createState() => _TimeEditDialogState();
 }

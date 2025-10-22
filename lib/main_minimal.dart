@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:av_wallet_hive/l10n/app_localizations.dart';
-import 'package:av_wallet_hive/pages/home_page.dart';
+import 'package:av_wallet/l10n/app_localizations.dart';
+import 'package:av_wallet/pages/home_page.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:logging/logging.dart';
 import 'package:url_strategy/url_strategy.dart';
@@ -78,7 +78,7 @@ void main() async {
 class MyApp extends ConsumerWidget {
   final GlobalKey<NavigatorState> navigatorKey;
   
-  const MyApp({Key? key, required this.navigatorKey}) : super(key: key);
+  const MyApp({super.key, required this.navigatorKey});
   
   @override
   Widget build(BuildContext context, WidgetRef ref) {

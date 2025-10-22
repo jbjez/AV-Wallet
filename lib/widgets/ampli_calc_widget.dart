@@ -183,7 +183,7 @@ class _AmplificationCalculatorState extends ConsumerState<AmplificationCalculato
             ),
             const SizedBox(height: 8),
             DropdownButtonFormField<String>(
-              value: selectedSpeakerKey,
+              initialValue: selectedSpeakerKey,
               decoration: const InputDecoration(
                 border: OutlineInputBorder(),
                 filled: true,
@@ -213,7 +213,7 @@ class _AmplificationCalculatorState extends ConsumerState<AmplificationCalculato
             ),
             const SizedBox(height: 8),
             DropdownButtonFormField<String>(
-              value: selectedAmplifierKey,
+              initialValue: selectedAmplifierKey,
               decoration: const InputDecoration(
                 border: OutlineInputBorder(),
                 filled: true,
@@ -243,7 +243,7 @@ class _AmplificationCalculatorState extends ConsumerState<AmplificationCalculato
             ),
             const SizedBox(height: 8),
             DropdownButtonFormField<String>(
-              value: selectedMode,
+              initialValue: selectedMode,
               decoration: const InputDecoration(
                 border: OutlineInputBorder(),
                 filled: true,

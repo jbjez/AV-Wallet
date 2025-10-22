@@ -23,7 +23,7 @@ class _CalculatorPageState extends State<CalculatorPage> {                // [L0
   double? _accumulator;                                                   // [L13]
   String? _pendingOp;                                                     // [L14]
   bool _replaceOnNextDigit = false;                                       // [L15]
-  List<String> _calculationHistory = [];                                  // [L16]
+  final List<String> _calculationHistory = [];                                  // [L16]
 
   // ----------------------- Helpers calcul ----------------------          // [L17]
   void _inputDigit(String d) {                                            // [L18]

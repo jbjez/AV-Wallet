@@ -5,11 +5,16 @@ import '../providers/catalogue_provider.dart';
 import '../providers/page_state_provider.dart';
 import '../models/catalogue_item.dart';
 import '../widgets/preset_widget.dart';
+import '../utils/consumption_parser.dart';
+import '../theme/app_theme.dart';
 import '../widgets/export_widget.dart';
-import 'package:av_wallet_hive/l10n/app_localizations.dart';
+import 'package:av_wallet/l10n/app_localizations.dart';
 import '../widgets/custom_app_bar.dart';
+import '../widgets/uniform_bottom_nav_bar.dart';
 import '../widgets/border_labeled_dropdown.dart';
 import '../providers/preset_provider.dart';
+import '../providers/project_provider.dart';
+import '../models/project.dart';
 import 'catalogue_page.dart';
 import 'light_menu_page.dart';
 import 'structure_menu_page.dart';
@@ -366,7 +371,7 @@ class _VideoMenuPageState extends ConsumerState<VideoMenuPage>
 
   double _getMurLedConsumption(CatalogueItem? item) {
     if (item == null) return 200.0;
-    return double.tryParse(item.conso.replaceAll(' W', '')) ?? 200.0;
+    return ConsumptionParser.parseConsumption(item.conso);
   }
 
   // Fonction utilitaire pour calculer les dimensions pixellaires du mur LED
@@ -411,43 +416,208 @@ class _VideoMenuPageState extends ConsumerState<VideoMenuPage>
   }
 
   String _generateSchemaContent() {
-    if (selectedMurLed == null) return 'Aucun mur LED sélectionné';
+    final loc = AppLocalizations.of(context)!;
+    final projectState = ref.read(projectProvider);
+    final project = projectState.selectedProject;
     
-    final nbDalles = ((videoState.largeurMurLed ?? 1) * (videoState.hauteurMurLed ?? 1)).toInt();
+    // Fonction helper pour traduire le nom du projet
+    String getTranslatedProjectName(Project project) {
+      switch (project.name) {
+        case 'default_project_1':
+          return loc.defaultProject1;
+        case 'default_project_2':
+          return loc.defaultProject2;
+        case 'default_project_3':
+          return loc.defaultProject3;
+        default:
+          return project.name;
+      }
+    }
+    
+    if (selectedMurLed == null) {
+      return '''
+CALCUL MUR LED
+==============
+
+DÉTAILS DU PROJET:
+------------------
+Nom du projet: ${getTranslatedProjectName(project)}
+Lieu: ${project.location?.isNotEmpty == true ? project.location : 'Non défini'}
+Date de montage: ${project.mountingDate?.isNotEmpty == true ? project.mountingDate : 'Non définie'}
+Période: ${project.period?.isNotEmpty == true ? project.period : 'Non définie'}
+
+MUR LED - DÉTAILS:
+------------------
+Aucun mur LED sélectionné
+
+MATÉRIEL SÉLECTIONNÉ:
+---------------------
+Aucun matériel sélectionné
+
+RÉSULTAT DU CALCUL:
+-------------------
+Aucun calcul effectué. Veuillez sélectionner un mur LED et effectuer le calcul.
+
+Généré le: ${DateTime.now().toString().split('.')[0]}
+''';
+    }
+
+    final videoState = ref.watch(videoPageStateProvider);
+    final largeur = videoState.largeurMurLed ?? 1;
+    final hauteur = videoState.hauteurMurLed ?? 1;
+    final nbDalles = largeur * hauteur;
+    
+    // Calculs des dimensions
     final dimensions = _getMurLedDimensions(selectedMurLed);
     final resolution = _getMurLedResolution(selectedMurLed);
     final poids = _getMurLedWeight(selectedMurLed);
     final conso = _getMurLedConsumption(selectedMurLed);
     
-    final presetName = ref.watch(activePresetProvider)?.name ?? 'Projet';
-    final largeur = videoState.largeurMurLed ?? 1;
-    final hauteur = videoState.hauteurMurLed ?? 1;
+    // Calculer les dimensions totales du mur en mètres
+    final dimensionsParts = dimensions.split(' x ');
+    final dalleLargeur = double.tryParse(dimensionsParts[0].trim().replaceAll(' mm', '')) ?? 500;
+    final dalleHauteur = double.tryParse(dimensionsParts[1].trim().replaceAll(' mm', '')) ?? 500;
+    
+    final largeurTotale = (dalleLargeur / 1000) * largeur;
+    final hauteurTotale = (dalleHauteur / 1000) * hauteur;
+    final surfaceTotale = largeurTotale * hauteurTotale;
     
     // Utilisation de la fonction utilitaire pour les calculs
     final pixels = _calculateLedWallPixels(selectedMurLed, largeur, hauteur);
     final megapixels = pixels['total']! / 1000000;
     final ratio = largeur / hauteur;
     
-    return '''
-MUR LED - $presetName
+    String content = '''
+CALCUL MUR LED
+==============
 
-Configuration:
-- Nombre de dalles: $nbDalles
-- Dimensions par dalle: $dimensions
-- Résolution par dalle: $resolution
-- Poids total: ${(poids * nbDalles).toStringAsFixed(1)} kg
-- Consommation totale: ${(conso * nbDalles).toStringAsFixed(0)} W
+DÉTAILS DU PROJET:
+------------------
+Nom du projet: ${getTranslatedProjectName(project)}
+Lieu: ${project.location?.isNotEmpty == true ? project.location : 'Non défini'}
+Date de montage: ${project.mountingDate?.isNotEmpty == true ? project.mountingDate : 'Non définie'}
+Période: ${project.period?.isNotEmpty == true ? project.period : 'Non définie'}
 
-Calculs détaillés:
-- Espace pixellaire: ${pixels['largeur']}px x ${pixels['hauteur']}px
-- Résolution totale: ${megapixels.toStringAsFixed(1)} Mpx
-- Ratio: ${ratio.toStringAsFixed(2)}:1
+MUR LED - DÉTAILS:
+------------------
+Produit: ${selectedMurLed!.produit}
+Marque: ${selectedMurLed!.marque}
+Dimensions dalle: $dimensions
+Poids dalle: ${poids.toStringAsFixed(1)} kg
+Consommation: ${conso.toStringAsFixed(0)} W
+Résolution dalle: $resolution
 
-Schéma de montage:
-- Largeur: ${largeur.toInt()} dalles
-- Hauteur: ${hauteur.toInt()} dalles
-- Disposition: ${largeur.toInt()}x${hauteur.toInt()}
+MATÉRIEL SÉLECTIONNÉ:
+---------------------
+Configuration mur LED:
+• Largeur: ${largeur.toInt()} dalles
+• Hauteur: ${hauteur.toInt()} dalles
+• Dimensions totales: ${largeurTotale.toStringAsFixed(2)} m × ${hauteurTotale.toStringAsFixed(2)} m
+
+RÉSULTAT DU CALCUL:
+===================
+
+DIMENSIONS:
+-----------
+• Largeur: ${largeurTotale.toStringAsFixed(2)} m (${largeur.toInt()} dalles)
+• Hauteur: ${hauteurTotale.toStringAsFixed(2)} m (${hauteur.toInt()} dalles)
+• Surface totale: ${surfaceTotale.toStringAsFixed(2)} m²
+
+RÉSOLUTION:
+-----------
+• Résolution par dalle: $resolution
+• Résolution totale: ${megapixels.toStringAsFixed(1)} Mpx
+• Espace pixellaire: ${pixels['largeur']}px × ${pixels['hauteur']}px
+
+RATIO:
+------
+• Ratio largeur/hauteur: ${(largeurTotale / hauteurTotale).toStringAsFixed(2)}:1
+• Ratio dalles largeur/hauteur: ${ratio.toStringAsFixed(2)}:1
+
+POIDS:
+------
+• Poids par dalle: ${poids.toStringAsFixed(1)} kg
+• Poids total estimé: ${(poids * nbDalles).toStringAsFixed(1)} kg
+
+CONSOMMATION:
+-------------
+• Consommation par dalle: ${conso.toStringAsFixed(0)} W
+• Consommation totale: ${(conso * nbDalles).toStringAsFixed(0)} W
+
+SCHÉMA REPRÉSENTATIF:
+=====================
+Vue de face du mur LED
+
 ''';
+
+    // Génération du schéma ASCII
+    content += _generateLedWallSchema(largeur.toInt(), hauteur.toInt());
+    
+    content += '''
+
+LÉGENDE DU SCHÉMA:
+-----------------
+• Chaque "█" représente une dalle LED
+• Dimensions réelles: ${largeurTotale.toStringAsFixed(2)}m × ${hauteurTotale.toStringAsFixed(2)}m
+• Ratio des dalles: ${ratio.toStringAsFixed(2)}:1
+• Surface totale: ${surfaceTotale.toStringAsFixed(2)} m²
+
+RECOMMANDATIONS TECHNIQUES:
+---------------------------
+• Vérifier la capacité de support et de fixation
+• Considérer l'angle de vision optimal
+• Prévoir l'alimentation électrique nécessaire
+• Planifier l'installation et la maintenance
+• Tester la configuration avant l'événement
+
+Généré le: ${DateTime.now().toString().split('.')[0]}
+''';
+
+    return content;
+  }
+
+  // Méthode pour générer un schéma ASCII du mur LED
+  String _generateLedWallSchema(int largeur, int hauteur) {
+    String schema = '';
+    
+    // Limiter la taille du schéma pour la lisibilité
+    final maxLargeur = 20;
+    final maxHauteur = 10;
+    
+    final largeurSchema = largeur > maxLargeur ? maxLargeur : largeur;
+    final hauteurSchema = hauteur > maxHauteur ? maxHauteur : hauteur;
+    
+    // Calculer le ratio pour l'affichage
+    final ratioLargeur = largeur > maxLargeur ? (largeur / maxLargeur).round() : 1;
+    final ratioHauteur = hauteur > maxHauteur ? (hauteur / maxHauteur).round() : 1;
+    
+    schema += '┌';
+    for (int i = 0; i < largeurSchema; i++) {
+      schema += '─';
+    }
+    schema += '┐\n';
+    
+    for (int y = 0; y < hauteurSchema; y++) {
+      schema += '│';
+      for (int x = 0; x < largeurSchema; x++) {
+        schema += '█';
+      }
+      schema += '│\n';
+    }
+    
+    schema += '└';
+    for (int i = 0; i < largeurSchema; i++) {
+      schema += '─';
+    }
+    schema += '┘\n';
+    
+    if (largeur > maxLargeur || hauteur > maxHauteur) {
+      schema += '\nNote: Schéma réduit pour la lisibilité\n';
+      schema += 'Dimensions réelles: ${largeur}×${hauteur} dalles\n';
+      schema += 'Ratio d\'affichage: ${ratioLargeur}:${ratioHauteur}\n';
+    }
+    
+    return schema;
   }
 
   Map<String, dynamic> _buildLedWallProjectSummary() {
@@ -755,6 +925,10 @@ Schéma de montage:
     final projectors = _getProjectors();
     final screens = _getScreens();
     final accessories = _getAccessories();
+    
+    // Tailles fixes pour iPhone SE et autres appareils
+    final iconSize = 14.0; // 14px pour les icônes
+    final fontSize = 12.0; // 12px pour le texte
 
     // Calcul de la largeur par projecteur en fonction de la largeur totale
     double largeurParProjecteur;
@@ -858,63 +1032,153 @@ Schéma de montage:
                   child: Column(
                     children: [
                       Container(
-                        decoration: const BoxDecoration(),
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(12),
+                          border: Border(
+                            bottom: BorderSide(
+                              color: Theme.of(context).tabBarTheme.indicatorColor ?? Colors.red,
+                              width: 2,
+                            ),
+                          ),
+                        ),
                         margin: const EdgeInsets.symmetric(
                             horizontal: 16, vertical: 4),
                         padding: const EdgeInsets.symmetric(vertical: 2),
-                        child: TabBar(
-                          controller: _tabController,
-                          labelColor: Theme.of(context).brightness == Brightness.dark 
-                              ? Colors.lightBlue[300] 
-                              : const Color(0xFF0A1128),
-                          unselectedLabelColor: Colors.white.withOpacity(0.7),
-                          tabs: [
+         child: TabBar(
+           controller: _tabController,
+           dividerColor: Colors.transparent, // Supprime la ligne de séparation
+           indicatorColor: Colors.transparent, // Supprime l'indicateur bleu
+           labelColor: Colors.transparent, // Masque les couleurs par défaut
+           unselectedLabelColor: Colors.transparent, // Masque les couleurs par défaut
+           tabs: [
                             Tab(
-                              child: Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                mainAxisSize: MainAxisSize.min,
-                                children: [
-                                  Icon(Icons.calculate, size: 16),
-                                  SizedBox(width: 4),
-                                  Text(
-                                    'Proj', // Abrégé de "Projection"
-                                    style: Theme.of(context).textTheme.bodyMedium,
-                                  ),
-                                ],
+                              child: AnimatedBuilder(
+                                animation: _tabController,
+                                builder: (context, child) {
+                                  final isSelected = _tabController.index == 0;
+                                  return Row(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      Icon(
+                                        Icons.calculate, 
+                                        size: iconSize,
+                                        color: isSelected 
+                                          ? (Theme.of(context).brightness == Brightness.dark 
+                                              ? Colors.lightBlue[300]! 
+                                              : const Color(0xFF0A1128))
+                                          : Colors.white,
+                                      ),
+                                      const SizedBox(width: 4),
+                                      Flexible(
+                                        child: Text(
+                                          AppLocalizations.of(context)!.videoPage_projectionTab.length > 8 
+                                            ? 'Projection' 
+                                            : AppLocalizations.of(context)!.videoPage_projectionTab,
+                                          style: TextStyle(
+                                            color: isSelected 
+                                              ? (Theme.of(context).brightness == Brightness.dark 
+                                                  ? Colors.lightBlue[300]! 
+                                                  : const Color(0xFF0A1128))
+                                              : Colors.white,
+                                            fontSize: fontSize,
+                                            fontWeight: FontWeight.bold,
+                                          ),
+                                          overflow: TextOverflow.ellipsis,
+                                          textAlign: TextAlign.center,
+                                        ),
+                                      ),
+                                    ],
+                                  );
+                                },
                               ),
                             ),
                             Tab(
-                              child: Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                mainAxisSize: MainAxisSize.min,
-                                children: [
-                                  Icon(Icons.calculate, size: 16),
-                                  SizedBox(width: 4),
-                                  Text(
-                                    'LED', // Déjà court
-                                    style: Theme.of(context).textTheme.bodyMedium,
-                                  ),
-                                ],
+                              child: AnimatedBuilder(
+                                animation: _tabController,
+                                builder: (context, child) {
+                                  final isSelected = _tabController.index == 1;
+                                  return Row(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      Icon(
+                                        Icons.calculate, 
+                                        size: iconSize,
+                                        color: isSelected 
+                                          ? (Theme.of(context).brightness == Brightness.dark 
+                                              ? Colors.lightBlue[300]! 
+                                              : const Color(0xFF0A1128))
+                                          : Colors.white,
+                                      ),
+                                      const SizedBox(width: 4),
+                                      Flexible(
+                                        child: Text(
+                                          AppLocalizations.of(context)!.videoPage_ledWallTab.length > 8 
+                                            ? 'Led Wall' 
+                                            : AppLocalizations.of(context)!.videoPage_ledWallTab,
+                                          style: TextStyle(
+                                            color: isSelected 
+                                              ? (Theme.of(context).brightness == Brightness.dark 
+                                                  ? Colors.lightBlue[300]! 
+                                                  : const Color(0xFF0A1128))
+                                              : Colors.white,
+                                            fontSize: fontSize,
+                                            fontWeight: FontWeight.bold,
+                                          ),
+                                          overflow: TextOverflow.ellipsis,
+                                          textAlign: TextAlign.center,
+                                        ),
+                                      ),
+                                    ],
+                                  );
+                                },
                               ),
                             ),
                             Tab(
-                              child: Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                mainAxisSize: MainAxisSize.min,
-                                children: [
-                                  Icon(Icons.timer, size: 16),
-                                  SizedBox(width: 4),
-                                  Text(
-                                    'Timer', // Déjà court
-                                    style: Theme.of(context).textTheme.bodyMedium,
-                                  ),
-                                ],
+                              child: AnimatedBuilder(
+                                animation: _tabController,
+                                builder: (context, child) {
+                                  final isSelected = _tabController.index == 2;
+                                  return Row(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      Icon(
+                                        Icons.timer, 
+                                        size: iconSize,
+                                        color: isSelected 
+                                          ? (Theme.of(context).brightness == Brightness.dark 
+                                              ? Colors.lightBlue[300]! 
+                                              : const Color(0xFF0A1128))
+                                          : Colors.white,
+                                      ),
+                                      const SizedBox(width: 4),
+                                      Flexible(
+                                        child: Text(
+                                          AppLocalizations.of(context)!.videoPage_timerTab.length > 8 
+                                            ? 'Timer' 
+                                            : AppLocalizations.of(context)!.videoPage_timerTab,
+                                          style: TextStyle(
+                                            color: isSelected 
+                                              ? (Theme.of(context).brightness == Brightness.dark 
+                                                  ? Colors.lightBlue[300]! 
+                                                  : const Color(0xFF0A1128))
+                                              : Colors.white,
+                                            fontSize: fontSize,
+                                            fontWeight: FontWeight.bold,
+                                          ),
+                                          overflow: TextOverflow.ellipsis,
+                                          textAlign: TextAlign.center,
+                                        ),
+                                      ),
+                                    ],
+                                  );
+                                },
                               ),
                             ),
                           ],
                         ),
                       ),
                       const SizedBox(height: 6),
+                      // PresetWidget avec scroll latéral et cadre bleu-gris foncé
                       PresetWidget(
                         onPresetSelected: (preset) {
                           final index =
@@ -926,7 +1190,7 @@ Schéma de montage:
                           }
                         },
                       ),
-                      const SizedBox(height: 4),
+                      const SizedBox(height: 6),
                       Expanded(
                         child: TabBarView(
                           controller: _tabController,
@@ -940,10 +1204,13 @@ Schéma de montage:
                                   Container(
                                     padding: const EdgeInsets.all(16),
                                     decoration: BoxDecoration(
-                                      color: const Color(0xFF0A1128)
-                                          .withAlpha((0.3 * 255).toInt()),
+                                      color: Theme.of(context).extension<ResultContainerTheme>()?.backgroundColor ?? 
+                                             Colors.grey.withOpacity(0.1),
                                       border: Border.all(
-                                          color: Colors.white, width: 1),
+                                        color: Theme.of(context).extension<ResultContainerTheme>()?.borderColor ?? 
+                                               Colors.grey,
+                                        width: 1,
+                                      ),
                                       borderRadius: BorderRadius.circular(12),
                                     ),
                                     child: Column(
@@ -1086,7 +1353,7 @@ Schéma de montage:
                                                   .withOpacity(0.3),
                                               border: Border.all(
                                                   color:
-                                                      const Color(0xFF0A1128),
+                                                      const Color(0xFF455A64),
                                                   width: 1),
                                               borderRadius:
                                                   BorderRadius.circular(12),
@@ -1164,22 +1431,28 @@ Schéma de montage:
                                                   mainAxisAlignment:
                                                       MainAxisAlignment.center,
                                                   children: [
-                                                    Transform.rotate(
-                                                      angle: 3.14159, // 180° en radians
-                                                      child: ExportWidget(
-                                                        title: 'Schémas Mur LED',
-                                                        content: _generateSchemaContent(),
-                                                        projectType: 'led_wall',
-                                                        fileName: 'schemas_mur_led',
-                                                        customIcon: Icons.schema,
-                                                        backgroundColor: Colors.white,
-                                                        tooltip: 'Exporter les schémas',
-                                                        projectSummary: _buildLedWallProjectSummary(),
-                                                      ),
+                                                    ExportWidget(
+                                                      title: 'Calcul Mur LED',
+                                                      content: _generateSchemaContent(),
+                                                      projectType: 'led_wall',
+                                                      fileName: 'schemas_mur_led',
+                                                      customIcon: Icons.cloud_upload,
+                                                      backgroundColor: const Color(0xFF0A1128), // Couleur du bouton calcul
+                                                      tooltip: 'Exporter les schémas',
+                                                      projectSummary: _buildLedWallProjectSummary(),
                                                     ),
                                                     const SizedBox(width: 16),
                                                     ActionButton(
-                                                      icon: Icons.shopping_cart,
+                                                      icon: Icons.add,
+                                                      style: ElevatedButton.styleFrom(
+                                                        backgroundColor: const Color(0xFF0A1128), // Couleur du bouton calcul
+                                                        foregroundColor: Colors.white,
+                                                        shape: RoundedRectangleBorder(
+                                                          borderRadius: BorderRadius.circular(8),
+                                                        ),
+                                                        padding: const EdgeInsets.all(12),
+                                                        elevation: 0,
+                                                      ),
                                                       onPressed: selectedMurLed ==
                                                                   null ||
                                                               ref
@@ -1279,32 +1552,7 @@ Schéma de montage:
             ),
         ],
       ),
-      bottomNavigationBar: BottomNavigationBar(
-        type: BottomNavigationBarType.fixed,
-        backgroundColor: Colors.blueGrey[900],
-        selectedItemColor: Colors.white,
-        unselectedItemColor: Colors.grey,
-        currentIndex: 4,
-        onTap: _navigateTo,
-        items: [
-          const BottomNavigationBarItem(
-              icon: Icon(Icons.list), label: 'Catalogue'),
-          BottomNavigationBarItem(
-              icon: const Icon(Icons.lightbulb), label: loc.lightMenu),
-          BottomNavigationBarItem(
-              icon: Image.asset('assets/truss_icon_grey.png',
-                  width: 24, height: 24),
-              label: loc.structureMenu),
-          BottomNavigationBarItem(
-              icon: const Icon(Icons.volume_up), label: loc.soundMenu),
-          BottomNavigationBarItem(
-              icon: const Icon(Icons.videocam), label: loc.videoMenu),
-          BottomNavigationBarItem(
-              icon: const Icon(Icons.bolt), label: loc.electricityMenu),
-          BottomNavigationBarItem(
-              icon: const Icon(Icons.more_horiz), label: loc.networkMenu),
-        ],
-      ),
+      bottomNavigationBar: UniformBottomNavBar(currentIndex: 4),
     );
   }
 }

@@ -1,8 +1,11 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
-import 'package:av_wallet_hive/l10n/app_localizations.dart';
+import 'package:av_wallet/l10n/app_localizations.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../models/catalogue_item.dart';
+import '../models/amplifier_spec.dart';
+import '../services/amplification_calculator_service.dart';
+import '../providers/amplification_providers.dart';
 import '../models/cart_item.dart';
 import '../models/lens.dart';
 import 'calcul_projet_page.dart';
@@ -17,6 +20,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../providers/catalogue_provider.dart';
 import '../providers/preset_provider.dart';
 import '../theme/app_theme.dart';
+import '../theme/colors.dart';
 import '../services/freemium_access_service.dart';
 
 class CataloguePage extends ConsumerStatefulWidget {
@@ -45,6 +49,13 @@ class _CataloguePageState extends ConsumerState<CataloguePage> with TickerProvid
   
   // Gestion des commentaires
   Map<String, String> _comments = {}; // Clé: "marque_produit", Valeur: commentaire
+  
+  // Gestion de la quantité et des sélections pour l'ajout direct
+  int _selectedQuantity = 1;
+  String? _selectedDmxType;
+  bool _isWifiMode = false;
+  // Sélection d'ampli pour la catégorie Son
+  String? _selectedAmpModel; // ex: LA4X, LA8, LA12X, D30, D80
 
   @override
   void initState() {
@@ -98,6 +109,39 @@ class _CataloguePageState extends ConsumerState<CataloguePage> with TickerProvid
         _loadPersistedState();
       }
     });
+  }
+
+  List<Widget> _buildAmpButtonsForBrand(String brand) {
+    final List<String> models;
+    if (brand.toLowerCase().contains('l-acoust')) {
+      models = ['LA4X', 'LA8', 'LA12X'];
+    } else if (brand.toLowerCase().contains('d&b')) {
+      models = ['D30', 'D80'];
+    } else {
+      models = [];
+    }
+
+    return models.map((m) => Padding(
+      padding: const EdgeInsets.only(right: 8),
+      child: GestureDetector(
+        onTap: () {
+          setState(() {
+            _selectedAmpModel = m;
+          });
+        },
+        child: Container(
+          padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 3),
+          decoration: BoxDecoration(
+            color: _selectedAmpModel == m ? Colors.lightBlue[300] : Colors.grey[600],
+            borderRadius: BorderRadius.circular(6),
+          ),
+          child: Text(
+            m,
+            style: const TextStyle(color: Colors.white, fontSize: 10, fontWeight: FontWeight.bold),
+          ),
+        ),
+      ),
+    )).toList();
   }
 
   @override
@@ -390,12 +434,37 @@ class _CataloguePageState extends ConsumerState<CataloguePage> with TickerProvid
   List<String> get _categories {
     final items = ref.watch(catalogueProvider);
     if (items.isEmpty) return [];
-    return items
+    
+    // Ordre personnalisé des catégories
+    const customOrder = ['Lumière', 'Son', 'Vidéo', 'Régie', 'Truss/rigg', 'Divers'];
+    
+    final categories = items
         .where((item) => item.categorie.isNotEmpty)
         .map((item) => item.categorie)
         .toSet()
-        .toList()
-      ..sort();
+        .toList();
+    
+    // Trier selon l'ordre personnalisé
+    categories.sort((a, b) {
+      final indexA = customOrder.indexOf(a);
+      final indexB = customOrder.indexOf(b);
+      
+      // Si les deux sont dans l'ordre personnalisé, utiliser cet ordre
+      if (indexA != -1 && indexB != -1) {
+        return indexA.compareTo(indexB);
+      }
+      
+      // Si seulement A est dans l'ordre personnalisé, A vient en premier
+      if (indexA != -1) return -1;
+      
+      // Si seulement B est dans l'ordre personnalisé, B vient en premier
+      if (indexB != -1) return 1;
+      
+      // Si aucun n'est dans l'ordre personnalisé, trier alphabétiquement
+      return a.compareTo(b);
+    });
+    
+    return categories;
   }
 
   List<String> get _subCategoriesForSelectedCategory {
@@ -596,7 +665,7 @@ class _CataloguePageState extends ConsumerState<CataloguePage> with TickerProvid
     // Lentilles de projection
     if (item.optiques != null && item.optiques!.isNotEmpty) {
       for (final optique in item.optiques!) {
-        content.writeln('• ${optique}');
+        content.writeln('• $optique');
       }
       content.writeln('');
     }
@@ -723,160 +792,258 @@ class _CataloguePageState extends ConsumerState<CataloguePage> with TickerProvid
 
   void _showQuantityDialog(CatalogueItem item) {
     int quantity = 1;
-    final TextEditingController quantityController =
-        TextEditingController(text: '1');
+
+    // Déterminer si c'est un produit lumière pour utiliser le style approprié
+    final isLightProduct = item.categorie == 'Lumière';
+    
+    // Variables pour le choix DMX (uniquement pour les produits lumière)
+    String? selectedDmxType;
+    List<String> dmxTypes = ['DMX mini', 'DMX max'];
+    if (isLightProduct) {
+      selectedDmxType = 'DMX mini'; // Valeur par défaut
+    }
 
     showDialog(
       context: context,
       builder: (BuildContext context) {
         return StatefulBuilder(
           builder: (context, setState) {
-            void updateQuantity(String value) {
-              final newQuantity = int.tryParse(value) ?? 1;
-              if (newQuantity > 0) {
-                setState(() {
-                  quantity = newQuantity;
-                  quantityController.text = quantity.toString();
-                });
-              }
-            }
-
             return AlertDialog(
-              backgroundColor: Theme.of(context).brightness == Brightness.dark
-                  ? const Color(0xFF0A1128)
-                  : Colors.white,
+              backgroundColor: isLightProduct 
+                  ? Colors.blueGrey[900]
+                  : (Theme.of(context).brightness == Brightness.dark
+                      ? const Color(0xFF0A1128)
+                      : Colors.white),
               title: Text(
-                'Quantité',
-                style: Theme.of(context).textTheme.titleLarge!.copyWith(
-                    color: Theme.of(context).brightness == Brightness.dark
-                        ? Colors.white
-                        : Colors.black),
+                AppLocalizations.of(context)!.catalogueQuantityDialog_title,
+                style: TextStyle(
+                  color: isLightProduct 
+                      ? Colors.white
+                      : (Theme.of(context).brightness == Brightness.dark
+                          ? Colors.white
+                          : Colors.black),
+                  fontSize: isLightProduct ? 16 : null,
+                ),
               ),
               content: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   Text(
                     item.produit,
-                    style: Theme.of(context).textTheme.bodyMedium!.copyWith(
-                        color: Theme.of(context).brightness == Brightness.dark
-                            ? Colors.white
-                            : Colors.black),
+                    style: TextStyle(
+                      color: isLightProduct 
+                          ? Colors.white
+                          : (Theme.of(context).brightness == Brightness.dark
+                              ? Colors.white
+                              : Colors.black),
+                    ),
                   ),
                   const SizedBox(height: 16),
+                  // Contrôleur de quantité avec boutons - et +
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       IconButton(
-                        icon: const Icon(Icons.remove),
                         onPressed: () {
                           if (quantity > 1) {
                             setState(() {
                               quantity--;
-                              quantityController.text = quantity.toString();
                             });
                           }
                         },
-                        color: Theme.of(context).brightness == Brightness.dark
-                            ? Colors.white
-                            : Colors.black,
+                        icon: const Icon(Icons.remove, color: Colors.white, size: 12),
+                        style: IconButton.styleFrom(
+                          backgroundColor: Colors.blueGrey[800],
+                          shape: const CircleBorder(),
+                          minimumSize: const Size(24, 24),
+                          padding: EdgeInsets.zero,
+                        ),
                       ),
+                      const SizedBox(width: 8),
                       Container(
-                        width: 80,
-                        padding: const EdgeInsets.symmetric(horizontal: 8),
-                        child: TextField(
-                          controller: quantityController,
-                          keyboardType: TextInputType.number,
-                          textAlign: TextAlign.center,
-                          autofocus: true,
+                        width: 60,
+                        alignment: Alignment.center,
+                        child: GestureDetector(
                           onTap: () {
-                            quantityController.selection = TextSelection(
-                              baseOffset: 0,
-                              extentOffset: quantityController.text.length,
+                            showDialog(
+                              context: context,
+                              builder: (BuildContext context) {
+                                final quantityController = TextEditingController(text: quantity.toString());
+                                return AlertDialog(
+                                  backgroundColor: isLightProduct ? Colors.blueGrey[900] : Colors.blueGrey[900],
+                                  title: Text(AppLocalizations.of(context)!.catalogueQuantityDialog_title,
+                                      style: TextStyle(color: Colors.white)),
+                                  content: TextField(
+                                    controller: quantityController,
+                                    keyboardType: TextInputType.number,
+                                    autofocus: true,
+                                    style: TextStyle(
+                                      color: Theme.of(context).brightness == Brightness.light ? Colors.black : Colors.white,
+                                    ),
+                                    decoration: InputDecoration(
+                                      hintText: AppLocalizations.of(context)!.catalogueQuantityDialog_enterQuantity,
+                                      hintStyle: TextStyle(
+                                        color: Theme.of(context).brightness == Brightness.light ? Colors.black54 : Colors.white70,
+                                      ),
+                                    ),
+                                  ),
+                                  actions: [
+                                    TextButton(
+                                      onPressed: () => Navigator.pop(context),
+                                      child: Text(AppLocalizations.of(context)!.catalogueQuantityDialog_cancel,
+                                          style: TextStyle(color: Colors.lightBlue[300])),
+                                    ),
+                                    TextButton(
+                                      onPressed: () {
+                                        final newQuantity = int.tryParse(quantityController.text) ?? 1;
+                                        if (newQuantity > 0) {
+                                          setState(() {
+                                            quantity = newQuantity;
+                                          });
+                                        }
+                                        Navigator.pop(context);
+                                      },
+                                      child: Text('OK',
+                                          style: TextStyle(color: Colors.lightBlue[300])),
+                                    ),
+                                  ],
+                                );
+                              },
                             );
                           },
-                          style: Theme.of(context)
-                              .textTheme
-                              .titleLarge!
-                              .copyWith(
-                                  color: Theme.of(context).brightness ==
-                                          Brightness.dark
-                                      ? Colors.white
-                                      : Colors.black),
-                          decoration: InputDecoration(
-                            isDense: true,
-                            contentPadding:
-                                const EdgeInsets.symmetric(vertical: 8),
-                            border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(8),
-                              borderSide: BorderSide(
-                                color: Theme.of(context).brightness ==
-                                        Brightness.dark
-                                    ? Colors.white
-                                    : Colors.black,
-                              ),
+                          child: Container(
+                            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
+                            decoration: BoxDecoration(
+                              color: Colors.grey[300],
+                              borderRadius: BorderRadius.circular(6),
+                              border: Border.all(color: Colors.grey[400]!, width: 1),
                             ),
-                            enabledBorder: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(8),
-                              borderSide: BorderSide(
-                                color: Theme.of(context).brightness ==
-                                        Brightness.dark
-                                    ? Colors.white.withOpacity(0.5)
-                                    : Colors.black.withOpacity(0.5),
-                              ),
-                            ),
-                            focusedBorder: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(8),
-                              borderSide: BorderSide(
-                                color: Theme.of(context).brightness ==
-                                        Brightness.dark
-                                    ? Colors.white
-                                    : Colors.black,
+                            child: Text(
+                              quantity.toString(),
+                              style: TextStyle(
+                                color: Colors.black,
+                                fontSize: 14,
+                                fontWeight: FontWeight.bold,
                               ),
                             ),
                           ),
-                          onChanged: updateQuantity,
-                          onSubmitted: updateQuantity,
                         ),
                       ),
+                      const SizedBox(width: 8),
                       IconButton(
-                        icon: const Icon(Icons.add),
+                        icon: const Icon(Icons.add, color: Colors.white, size: 12),
                         onPressed: () {
                           setState(() {
                             quantity++;
-                            quantityController.text = quantity.toString();
                           });
                         },
-                        color: Theme.of(context).brightness == Brightness.dark
-                            ? Colors.white
-                            : Colors.black,
+                        style: IconButton.styleFrom(
+                          backgroundColor: Colors.blueGrey[800],
+                          shape: const CircleBorder(),
+                          minimumSize: const Size(24, 24),
+                          padding: EdgeInsets.zero,
+                        ),
                       ),
                     ],
                   ),
+                  const SizedBox(height: 16),
+                  // Sélection du type DMX (uniquement pour les produits lumière)
+                  if (isLightProduct) ...[
+                    Container(
+                      decoration: BoxDecoration(
+                        color: Colors.transparent,
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      child: DropdownButtonFormField<String>(
+                        initialValue: selectedDmxType,
+                        decoration: InputDecoration(
+                          labelText: AppLocalizations.of(context)!.catalogueQuantityDialog_dmxType,
+                          labelStyle: TextStyle(color: Colors.white),
+                          filled: true,
+                          fillColor: Colors.transparent,
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(8),
+                            borderSide: BorderSide(color: Colors.white.withOpacity(0.3)),
+                          ),
+                          enabledBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(8),
+                            borderSide: BorderSide(color: Colors.white.withOpacity(0.3)),
+                          ),
+                          focusedBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(8),
+                            borderSide: BorderSide(color: Colors.white.withOpacity(0.5)),
+                          ),
+                        ),
+                        dropdownColor: Colors.blueGrey[800],
+                        style: const TextStyle(color: Colors.white),
+                        items: dmxTypes.map((String type) {
+                          return DropdownMenuItem<String>(
+                            value: type,
+                            child: Text(
+                              type == 'DMX mini' 
+                                  ? AppLocalizations.of(context)!.catalogueQuantityDialog_dmxMini
+                                  : AppLocalizations.of(context)!.catalogueQuantityDialog_dmxMax, 
+                              style: const TextStyle(color: Colors.white)
+                            ),
+                          );
+                        }).toList(),
+                        onChanged: (String? newValue) {
+                          setState(() {
+                            selectedDmxType = newValue;
+                          });
+                        },
+                      ),
+                    ),
+                    const SizedBox(height: 16),
+                    // Affichage des informations DMX du produit (vraies valeurs)
+                    if (item.dmxMini != null || item.dmxMax != null)
+                      Container(
+                        padding: const EdgeInsets.all(8),
+                        decoration: BoxDecoration(
+                          color: Colors.blueGrey[800],
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        child: Column(
+                          children: [
+                            if (item.dmxMini != null)
+                              Text('${AppLocalizations.of(context)!.catalogueQuantityDialog_dmxMini}: ${item.dmxMini}',
+                                  style: const TextStyle(color: Colors.white, fontSize: 12)),
+                            if (item.dmxMax != null)
+                              Text('${AppLocalizations.of(context)!.catalogueQuantityDialog_dmxMax}: ${item.dmxMax}',
+                                  style: const TextStyle(color: Colors.white, fontSize: 12)),
+                          ],
+                        ),
+                      ),
+                  ],
                 ],
               ),
               actions: [
                 TextButton(
                   onPressed: () => Navigator.of(context).pop(),
                   child: Text(
-                    'Annuler',
+                    AppLocalizations.of(context)!.catalogueQuantityDialog_cancel,
                     style: TextStyle(
-                      color: Theme.of(context).brightness == Brightness.dark
-                          ? Colors.white
-                          : Colors.black,
+                      color: isLightProduct 
+                          ? Colors.lightBlue[300]
+                          : (Theme.of(context).brightness == Brightness.dark
+                              ? Colors.white
+                              : Colors.black),
                     ),
                   ),
                 ),
                 TextButton(
                   onPressed: () {
                     Navigator.of(context).pop();
-                    _startAddToProjectAnimation(item, quantity);
+                    _startAddToProjectAnimation(item, quantity, selectedDmxType);
                   },
                   child: Text(
-                    'Ajouter',
+                    AppLocalizations.of(context)!.catalogueQuantityDialog_confirm,
                     style: TextStyle(
-                      color: Theme.of(context).brightness == Brightness.dark
-                          ? Colors.white
-                          : Colors.black,
+                      color: isLightProduct 
+                          ? Colors.lightBlue[300]
+                          : (Theme.of(context).brightness == Brightness.dark
+                              ? Colors.white
+                              : Colors.black),
                     ),
                   ),
                 ),
@@ -888,7 +1055,7 @@ class _CataloguePageState extends ConsumerState<CataloguePage> with TickerProvid
     );
   }
 
-  void _startAddToProjectAnimation(CatalogueItem item, int quantity) {
+  void _startAddToProjectAnimation(CatalogueItem item, int quantity, [String? dmxType]) {
     if (_resultKey.currentContext == null) return;
 
     final RenderBox renderBox =
@@ -951,18 +1118,29 @@ class _CataloguePageState extends ConsumerState<CataloguePage> with TickerProvid
                   padding: const EdgeInsets.symmetric(vertical: 2),
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(12),
+                    border: Border(
+                      bottom: BorderSide(
+                        color: Theme.of(context).brightness == Brightness.dark
+                            ? Colors.lightBlue[300]!
+                            : const Color(0xFF0A1128),
+                        width: 2,
+                      ),
+                    ),
+                    boxShadow: [
+                      BoxShadow(
+                        color: AppColors.mainBlue.withOpacity(0.3),
+                        blurRadius: 8,
+                        offset: const Offset(0, 2),
+                      ),
+                    ],
                   ),
-                  child: TabBar(
-                    controller: _tabController,
-                    indicatorColor: Theme.of(context).brightness == Brightness.dark 
-                        ? Colors.lightBlue[300]  // Bleu ciel en mode nuit
-                        : const Color(0xFF0A1128),  // Bleu nuit en mode jour
-                    indicatorWeight: 3,
-                    labelColor: Theme.of(context).brightness == Brightness.dark 
-                        ? Colors.lightBlue[300]  // Bleu ciel en mode nuit
-                        : const Color(0xFF0A1128),  // Bleu nuit en mode jour
-                    unselectedLabelColor: Colors.grey,
-                    tabs: [
+         child: TabBar(
+           controller: _tabController,
+           dividerColor: Colors.transparent, // Supprime la ligne de séparation
+           indicatorColor: Colors.transparent, // Supprime l'indicateur bleu
+           labelColor: Theme.of(context).tabBarTheme.labelColor, // Utilise le thème
+           unselectedLabelColor: Theme.of(context).tabBarTheme.unselectedLabelColor, // Utilise le thème
+           tabs: [
                       Tab(
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.center,
@@ -971,19 +1149,15 @@ class _CataloguePageState extends ConsumerState<CataloguePage> with TickerProvid
                             Icon(
                               Icons.list,
                               size: 16,
-                              color: Theme.of(context).brightness == Brightness.dark
-                                  ? Colors.lightBlue[300]  // Bleu ciel en mode nuit
-                                  : const Color(0xFF0A1128),  // Bleu nuit en mode jour
+                              color: Theme.of(context).tabBarTheme.labelColor,
                             ),
                             const SizedBox(width: 4),
                             Text(
-                              'Catalogue AV',
+                              AppLocalizations.of(context)!.catalogAccess,
                               style: TextStyle(
                                 fontSize: 14,
-                                fontWeight: FontWeight.bold,
-                                color: Theme.of(context).brightness == Brightness.dark
-                                    ? Colors.lightBlue[300]  // Bleu ciel en mode nuit
-                                    : const Color(0xFF0A1128),  // Bleu nuit en mode jour
+                                fontWeight: FontWeight.w600,
+                                color: Theme.of(context).tabBarTheme.labelColor,
                               ),
                             ),
                           ],
@@ -993,31 +1167,25 @@ class _CataloguePageState extends ConsumerState<CataloguePage> with TickerProvid
                   ),
                 ),
                 Expanded(
-                  child: Padding(
-                    padding: const EdgeInsets.only(top: 40), // Descendu de 10 à 40 (+30px)
-                    child: TabBarView(
-                      controller: _tabController,
-                      children: [
-                        _buildCatalogueContent(),
-                      ],
-                    ),
+                  child: Column(
+                    children: [
+                      const SizedBox(height: 6),
+                      const PresetWidget(
+                        loadOnInit: true,
+                      ),
+                      const SizedBox(height: 6),
+                      Expanded(
+                        child: TabBarView(
+                          controller: _tabController,
+                          children: [
+                            _buildCatalogueContent(),
+                          ],
+                        ),
+                      ),
+                    ],
                   ),
                 ),
               ],
-            ),
-          ),
-          // PresetWidget fixe sous le titre - centré et transparent
-          Positioned(
-            top: 70, // Descendu de 60 à 70 (+10px)
-            left: 0,
-            right: 0,
-            child: Center(
-              child: Container(
-                color: Colors.transparent, // Fond complètement transparent
-                child: const PresetWidget(
-                  loadOnInit: true,
-                ),
-              ),
             ),
           ),
         ],
@@ -1151,6 +1319,607 @@ class _CataloguePageState extends ConsumerState<CataloguePage> with TickerProvid
     );
   }
 
+  // Méthode pour construire les contrôles de quantité intégrés
+  bool _isAsteraOrTitan(CatalogueItem item) {
+    final marque = item.marque.toLowerCase();
+    final produit = item.produit.toLowerCase();
+    return marque.contains('astera') || produit.contains('titan');
+  }
+
+  bool _isLineArray(CatalogueItem item) {
+    final sousCat = (item.sousCategorie).toLowerCase();
+    final produit = item.produit.toLowerCase();
+    // Heuristique: produits typiques de line array ou mention explicite
+    final keywords = ['line', 'array', 'line array', 'k1', 'k2', 'k3', 'kara', 'a15', 'a10'];
+    return keywords.any((k) => sousCat.contains(k) || produit.contains(k));
+  }
+
+  String? _defaultAmpForSoundItem(CatalogueItem item) {
+    final brandLc = item.marque.toLowerCase();
+    final isLine = _isLineArray(item);
+    if (brandLc.contains('d&b')) {
+      return isLine ? 'D80' : 'D30';
+    }
+    // L-Acoustics (ou autres marques traitées comme L-Acoustics par défaut)
+    return isLine ? 'LA12X' : 'LA4X';
+  }
+
+  Widget _buildQuantityControls(CatalogueItem item) {
+    final isLightProduct = item.categorie == 'Lumière';
+    final isSoundProduct = item.categorie == 'Son' || item.categorie == 'SON' || item.categorie == 'Audio';
+
+    // Appliquer défauts automatiques
+    if (isLightProduct && _isAsteraOrTitan(item)) {
+      _isWifiMode = true;
+    }
+    // DMX: tous les produits lumière en "Mini" par défaut si non choisi
+    if (isLightProduct && (_selectedDmxType == null || _selectedDmxType!.isEmpty)) {
+      _selectedDmxType = 'DMX mini';
+    }
+    if (isSoundProduct && _selectedAmpModel == null) {
+      _selectedAmpModel = _defaultAmpForSoundItem(item);
+    }
+    final preset = ref.watch(activePresetProvider);
+    final presetName = preset?.name ?? 'Preset';
+    
+    return GestureDetector(
+      onTap: () => _showAddDialog(item),
+      child: Container(
+        padding: const EdgeInsets.all(12),
+        decoration: BoxDecoration(
+          color: Colors.blueGrey[900]?.withOpacity(0.3),
+          borderRadius: BorderRadius.circular(8),
+          border: Border.all(color: Colors.lightBlue[300]!, width: 1),
+        ),
+        child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // Titre de la section: Ajouter 'NomPreset'
+          Text(
+            '${AppLocalizations.of(context)!.catalogue_addToPreset} $presetName',
+            style: TextStyle(
+              color: Colors.white,
+              fontSize: 14,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          const SizedBox(height: 12),
+          
+          // Contrôles de quantité
+          Row(
+            children: [
+              // Bouton -
+              GestureDetector(
+                onTap: () {
+                  if (_selectedQuantity > 1) {
+                    setState(() {
+                      _selectedQuantity--;
+                    });
+                  }
+                },
+                child: Container(
+                  width: 24,
+                  height: 24,
+                  decoration: BoxDecoration(
+                    color: Colors.red.withOpacity(0.3),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: Icon(
+                    Icons.remove,
+                    color: Colors.white,
+                    size: 16,
+                  ),
+                ),
+              ),
+              const SizedBox(width: 8),
+              // Affichage de la quantité
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+                decoration: BoxDecoration(
+                  color: Colors.white.withOpacity(0.1),
+                  borderRadius: BorderRadius.circular(6),
+                ),
+                child: Text(
+                  _selectedQuantity.toString(),
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 14,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ),
+              const SizedBox(width: 8),
+              // Bouton +
+              GestureDetector(
+                onTap: () {
+                  setState(() {
+                    _selectedQuantity++;
+                  });
+                },
+                child: Container(
+                  width: 24,
+                  height: 24,
+                  decoration: BoxDecoration(
+                    color: Colors.green.withOpacity(0.3),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: Icon(
+                    Icons.add,
+                    color: Colors.white,
+                    size: 16,
+                  ),
+                ),
+              ),
+              const Spacer(),
+              // Bouton corbeille pour réinitialiser
+              GestureDetector(
+                onTap: () {
+                  setState(() {
+                    _selectedQuantity = 1;
+                    _selectedDmxType = null;
+                    _isWifiMode = false;
+                  });
+                },
+                child: Container(
+                  width: 24,
+                  height: 24,
+                  decoration: BoxDecoration(
+                    color: Colors.red.withOpacity(0.3),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: Icon(
+                    Icons.delete_outline,
+                    color: Colors.white,
+                    size: 16,
+                  ),
+                ),
+              ),
+            ],
+          ),
+          
+          // Sélecteurs pour les produits lumière
+          if (isLightProduct) ...[
+            const SizedBox(height: 12),
+            
+            // Sélecteur DMX Mini/Maxi
+            Row(
+              children: [
+                Text(
+                  'DMX:',
+                  style: TextStyle(color: Colors.white, fontSize: 12),
+                ),
+                const SizedBox(width: 12),
+                GestureDetector(
+                  onTap: () {
+                    setState(() {
+                      _selectedDmxType = 'DMX mini';
+                    });
+                  },
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                    decoration: BoxDecoration(
+                      color: _selectedDmxType == 'DMX mini' ? Colors.lightBlue[300] : Colors.grey[600],
+                      borderRadius: BorderRadius.circular(6),
+                    ),
+                    child: Text(
+                      'Mini',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 12,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 8),
+                GestureDetector(
+                  onTap: () {
+                    setState(() {
+                      _selectedDmxType = 'DMX max';
+                    });
+                  },
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                    decoration: BoxDecoration(
+                      color: _selectedDmxType == 'DMX max' ? Colors.lightBlue[300] : Colors.grey[600],
+                      borderRadius: BorderRadius.circular(6),
+                    ),
+                    child: Text(
+                      'Max',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 12,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            
+            const SizedBox(height: 8),
+            
+            // Sélecteur WiFi/Filaire
+            Row(
+              children: [
+                Text(
+                  'Mode:',
+                  style: TextStyle(color: Colors.white, fontSize: 12),
+                ),
+                const SizedBox(width: 12),
+                GestureDetector(
+                  onTap: () {
+                    setState(() {
+                      _isWifiMode = false;
+                    });
+                  },
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                    decoration: BoxDecoration(
+                      color: !_isWifiMode ? Colors.lightBlue[300] : Colors.grey[600],
+                      borderRadius: BorderRadius.circular(6),
+                    ),
+                    child: Text(
+                      'Filaire',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 12,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 8),
+                GestureDetector(
+                  onTap: () {
+                    setState(() {
+                      _isWifiMode = true;
+                    });
+                  },
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                    decoration: BoxDecoration(
+                      color: _isWifiMode ? Colors.orange[600] : Colors.grey[600],
+                      borderRadius: BorderRadius.circular(6),
+                    ),
+                    child: Text(
+                      'WiFi',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 12,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ],
+
+          // Sélecteur d'amplification pour les produits Son (boutons compacts, sans label)
+          if (isSoundProduct) ...[
+            const SizedBox(height: 12),
+            Row(
+              children: [
+                ..._buildAmpButtonsForBrand(item.marque),
+              ],
+            ),
+          ],
+          
+          const SizedBox(height: 12),
+          
+          // Bouton d'ajout direct supprimé (éviter le doublon avec le bouton Add en dessous)
+        ],
+      ),
+    ),
+    );
+  }
+
+  // Méthode pour ajouter directement au preset
+  void _addToPresetDirectly(CatalogueItem item) {
+    // Initialiser les valeurs par défaut si nécessaire
+    if (item.categorie == 'Lumière' && _selectedDmxType == null) {
+      _selectedDmxType = 'DMX mini';
+    }
+    
+    // Utiliser la méthode existante d'ajout au preset pour l'article sélectionné
+    _startAddToProjectAnimation(item, _selectedQuantity, _selectedDmxType);
+
+    // Si catégorie Son et un modèle d'ampli est sélectionné, calculer et ajouter les amplis requis
+    try {
+      final isSoundProduct = item.categorie == 'Son' || item.categorie == 'SON' || item.categorie == 'Audio';
+      if (isSoundProduct && _selectedAmpModel != null) {
+        final speakerKey = '${item.marque}:${item.produit}';
+        // Construire la clé d'ampli d'après la marque
+        final String ampBrand = item.marque.toLowerCase().contains('d&b') ? 'd&b audiotechnik' : 'L-Acoustics';
+        final amplifierKey = '$ampBrand:${_selectedAmpModel!}';
+
+        final amplifiersMap = ref.read(amplifiersProvider);
+        final amplifier = amplifiersMap[amplifierKey];
+
+        final result = AmplificationCalculatorService.calculate(
+          AmplificationRequest(
+            speakerKey: speakerKey,
+            speakerCount: _selectedQuantity,
+            amplifierKey: amplifierKey,
+            amplifierMode: '4ch',
+            parallelChannels: 1,
+          ),
+          item,
+          amplifier,
+        );
+
+        if (result.isValid && result.amplifiersNeeded > 0) {
+          // Rechercher l'article catalogue correspondant à l'ampli pour l'ajouter au preset
+          final allItems = ref.read(catalogueProvider);
+          final ampCatalogueItem = allItems.firstWhere(
+            (ci) => ci.categorie == 'Son' &&
+                    ci.sousCategorie.toLowerCase().contains('ampli') &&
+                    ci.marque.toLowerCase() == ampBrand.toLowerCase() &&
+                    ci.produit.toLowerCase() == _selectedAmpModel!.toLowerCase(),
+            orElse: () => const CatalogueItem(
+              id: '',
+              name: '',
+              description: '',
+              categorie: '',
+              sousCategorie: '',
+              marque: '',
+              produit: '',
+              dimensions: '',
+              poids: '',
+              conso: '',
+            ),
+          );
+
+          if (ampCatalogueItem.id.isNotEmpty) {
+            final preset = ref.read(presetProvider.notifier).activePreset;
+            if (preset != null) {
+              final cartItemAmp = CartItem(item: ampCatalogueItem, quantity: result.amplifiersNeeded);
+              preset.items.add(cartItemAmp);
+              ref.read(presetProvider.notifier).updatePreset(preset);
+            }
+          } else {
+            // Informer si l'ampli n'existe pas encore dans le catalogue
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text("Ampli ${_selectedAmpModel!} introuvable dans le catalogue - ajout non effectué"),
+                backgroundColor: Colors.orange,
+              ),
+            );
+          }
+        }
+      }
+    } catch (_) {}
+    
+    // Réinitialiser les valeurs après ajout
+    setState(() {
+      _selectedQuantity = 1;
+      _selectedDmxType = null;
+      _isWifiMode = false;
+      _selectedAmpModel = null;
+    });
+    
+    // Afficher un message de confirmation
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text('${item.produit} ajouté au preset (${_selectedQuantity}x)'),
+        backgroundColor: Colors.green,
+        duration: const Duration(seconds: 2),
+      ),
+    );
+  }
+
+  // _confirmAndAdd supprimé: on ajoute directement après validation du popup quantité
+
+  Future<void> _showAddDialog(CatalogueItem item) async {
+    final preset = ref.read(activePresetProvider);
+    final presetName = preset?.name ?? 'Preset';
+
+    // Préparer les valeurs locales pour l'UI du popup
+    int localQty = _selectedQuantity;
+    String? localDmx = item.categorie == 'Lumière' ? (_selectedDmxType ?? 'DMX mini') : null;
+    // Defaults for popup
+    bool localWifi = _isAsteraOrTitan(item) ? true : _isWifiMode;
+    String? localAmp = (item.categorie == 'Son' || item.categorie == 'SON' || item.categorie == 'Audio')
+        ? (_selectedAmpModel ?? _defaultAmpForSoundItem(item))
+        : null;
+
+    await showDialog(
+      context: context,
+      builder: (context) {
+        return StatefulBuilder(
+          builder: (context, setState) {
+            return AlertDialog(
+              backgroundColor: Theme.of(context).brightness == Brightness.dark
+                  ? const Color(0xFF0A1128)
+                  : Colors.white,
+              contentPadding: const EdgeInsets.all(12),
+              content: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  // Titre "Ajouter 'NomPreset'"
+                  Text(
+                    '${AppLocalizations.of(context)!.catalogue_addToPreset} $presetName',
+                    style: TextStyle(
+                      color: Theme.of(context).brightness == Brightness.dark ? Colors.white : Colors.black,
+                      fontSize: 14,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  const SizedBox(height: 12),
+
+                  // Reprise des contrôles quantité/DMX/WiFi du cadre
+                  // Quantité
+                  Row(
+                    children: [
+                      GestureDetector(
+                        onTap: () {
+                          if (localQty > 1) setState(() => localQty--);
+                        },
+                        child: Container(
+                          width: 24,
+                          height: 24,
+                          decoration: BoxDecoration(
+                            color: Colors.red.withOpacity(0.3),
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          child: const Icon(Icons.remove, color: Colors.white, size: 16),
+                        ),
+                      ),
+                      const SizedBox(width: 8),
+                      Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+                        decoration: BoxDecoration(
+                          color: Colors.white.withOpacity(0.1),
+                          borderRadius: BorderRadius.circular(6),
+                        ),
+                        child: Text(
+                          '$localQty',
+                          style: const TextStyle(color: Colors.white, fontSize: 14, fontWeight: FontWeight.bold),
+                        ),
+                      ),
+                      const SizedBox(width: 8),
+                      GestureDetector(
+                        onTap: () => setState(() => localQty++),
+                        child: Container(
+                          width: 24,
+                          height: 24,
+                          decoration: BoxDecoration(
+                            color: Colors.green.withOpacity(0.3),
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          child: const Icon(Icons.add, color: Colors.white, size: 16),
+                        ),
+                      ),
+                    ],
+                  ),
+
+                  if (item.categorie == 'Lumière') ...[
+                    const SizedBox(height: 12),
+                    // DMX Mini / Max
+                    Row(
+                      children: [
+                        GestureDetector(
+                          onTap: () => setState(() => localDmx = 'DMX mini'),
+                          child: Container(
+                            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                            decoration: BoxDecoration(
+                              color: localDmx == 'DMX mini' ? Colors.lightBlue[300] : Colors.grey[600],
+                              borderRadius: BorderRadius.circular(6),
+                            ),
+                            child: const Text('Mini', style: TextStyle(color: Colors.white, fontSize: 12, fontWeight: FontWeight.bold)),
+                          ),
+                        ),
+                        const SizedBox(width: 8),
+                        GestureDetector(
+                          onTap: () => setState(() => localDmx = 'DMX max'),
+                          child: Container(
+                            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                            decoration: BoxDecoration(
+                              color: localDmx == 'DMX max' ? Colors.lightBlue[300] : Colors.grey[600],
+                              borderRadius: BorderRadius.circular(6),
+                            ),
+                            child: const Text('Max', style: TextStyle(color: Colors.white, fontSize: 12, fontWeight: FontWeight.bold)),
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 8),
+                    // WiFi / Filaire
+                    Row(
+                      children: [
+                        GestureDetector(
+                          onTap: () => setState(() => localWifi = false),
+                          child: Container(
+                            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                            decoration: BoxDecoration(
+                              color: !localWifi ? Colors.lightBlue[300] : Colors.grey[600],
+                              borderRadius: BorderRadius.circular(6),
+                            ),
+                            child: const Text('Filaire', style: TextStyle(color: Colors.white, fontSize: 12, fontWeight: FontWeight.bold)),
+                          ),
+                        ),
+                        const SizedBox(width: 8),
+                        GestureDetector(
+                          onTap: () => setState(() => localWifi = true),
+                          child: Container(
+                            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                            decoration: BoxDecoration(
+                              color: localWifi ? Colors.orange[600] : Colors.grey[600],
+                              borderRadius: BorderRadius.circular(6),
+                            ),
+                            child: const Text('WiFi', style: TextStyle(color: Colors.white, fontSize: 12, fontWeight: FontWeight.bold)),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+
+                  // Amplification (Son) - boutons compacts
+                  if (item.categorie == 'Son' || item.categorie == 'SON' || item.categorie == 'Audio') ...[
+                    const SizedBox(height: 12),
+                    Row(
+                      children: [
+                        ..._buildAmpButtonsForBrand(item.marque).map((w) {
+                          // Adapter le onTap pour la variable locale
+                          if (w is Padding && w.child is GestureDetector) {
+                            final gd = (w.child as GestureDetector);
+                            if (gd.child is Container) {
+                              final container = gd.child as Container;
+                              if (container.child is Text) {
+                                final label = (container.child as Text).data ?? '';
+                                return Padding(
+                                  padding: const EdgeInsets.only(right: 8),
+                                  child: GestureDetector(
+                                    onTap: () => setState(() => localAmp = label),
+                                    child: Container(
+                                      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 3),
+                                      decoration: BoxDecoration(
+                                        color: localAmp == label ? Colors.lightBlue[300] : Colors.grey[600],
+                                        borderRadius: BorderRadius.circular(6),
+                                      ),
+                                      child: Text(label, style: const TextStyle(color: Colors.white, fontSize: 10, fontWeight: FontWeight.bold)),
+                                    ),
+                                  ),
+                                );
+                              }
+                            }
+                          }
+                          return w;
+                        }),
+                      ],
+                    ),
+                  ],
+                ],
+              ),
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.of(context).pop(),
+                  child: Text(AppLocalizations.of(context)!.catalogueQuantityDialog_cancel, style: TextStyle(color: Colors.lightBlue[300])),
+                ),
+                TextButton(
+                  onPressed: () {
+                    // Synchroniser les valeurs choisies vers l'état principal
+                    setState(() {
+                      _selectedQuantity = localQty;
+                      _selectedDmxType = localDmx;
+                      _isWifiMode = localWifi;
+                      _selectedAmpModel = localAmp;
+                    });
+                    Navigator.of(context).pop();
+                    _addToPresetDirectly(item);
+                  },
+                  child: Text(AppLocalizations.of(context)!.catalogueQuantityDialog_confirm, style: TextStyle(color: Colors.lightBlue[300])),
+                ),
+              ],
+            );
+          },
+        );
+      },
+    );
+  }
+
   // Méthode helper pour afficher la section lentilles de projection
   Widget _buildOptiquesSection(List<Lens> optiques) {
     final loc = AppLocalizations.of(context)!;
@@ -1183,7 +1952,7 @@ class _CataloguePageState extends ConsumerState<CataloguePage> with TickerProvid
                     .bodySmall!
                     .copyWith(color: Colors.white70),
           ),
-        )).toList(),
+        )),
         if (optiques.any((optique) => optique.notes != null && optique.notes!.isNotEmpty))
           Padding(
             padding: const EdgeInsets.only(left: 16, top: 4),
@@ -1241,7 +2010,7 @@ class _CataloguePageState extends ConsumerState<CataloguePage> with TickerProvid
                       margin: const EdgeInsets.symmetric(
                           horizontal: 16, vertical: 4),
                       decoration: BoxDecoration(
-                        color: const Color(0xFF0A1128).withOpacity(0.3),
+                        color: const Color(0xFF0A1128).withOpacity(0.7),
                         border: Border.all(color: Colors.white, width: 1),
                         borderRadius: BorderRadius.circular(12),
                       ),
@@ -1430,9 +2199,9 @@ class _CataloguePageState extends ConsumerState<CataloguePage> with TickerProvid
                                                     ),
                                                   );
                                                 },
-                                      iconSize: 18,
+                                      iconSize: 28,
                                               ),
-                                              const SizedBox(width: 8),
+                                              const SizedBox(width: 20),
                                     ActionButton(
                                       icon: Icons.add,
                                                 onPressed: () {
@@ -1455,7 +2224,7 @@ class _CataloguePageState extends ConsumerState<CataloguePage> with TickerProvid
                                                       ),
                                                     );
                                           if (selectedItem.id.isNotEmpty) {
-                                            _showQuantityDialog(selectedItem);
+                                            _showAddDialog(selectedItem);
                                           }
                                         } else {
                                           ScaffoldMessenger.of(context).showSnackBar(
@@ -1465,13 +2234,13 @@ class _CataloguePageState extends ConsumerState<CataloguePage> with TickerProvid
                                           );
                                         }
                                       },
-                                      iconSize: 18,
+                                      iconSize: 28,
                                               ),
-                                              const SizedBox(width: 8),
+                                              const SizedBox(width: 20),
                                     ActionButton(
                                       icon: Icons.refresh,
                                                 onPressed: _resetFilters,
-                                      iconSize: 18,
+                                      iconSize: 28,
                                               ),
                                             ],
                                           ),
@@ -1666,8 +2435,12 @@ class _CataloguePageState extends ConsumerState<CataloguePage> with TickerProvid
                                             ),
                                           ),
                                           
+                                          // Cadre d'ajout intégré placé en bas du résultat
+                                          const SizedBox(height: 8),
+                                          _buildQuantityControls(selectedItem),
+                                          
                                           // Boutons d'action dans le cadre résultat
-        const SizedBox(height: 8),
+                                          const SizedBox(height: 8),
                                           Row(
                                             mainAxisAlignment: MainAxisAlignment.center,
                                             children: [
@@ -1677,11 +2450,19 @@ class _CataloguePageState extends ConsumerState<CataloguePage> with TickerProvid
                                                 iconSize: 28,
                                               ),
                                               const SizedBox(width: 20),
-                                              // Bouton Export
+                                              // Bouton Upload (sans rotation) avec fond identique à Add
                                               ExportWidget(
-                                                title: 'Catalogue AV Wallet',
+                                                title: '${AppLocalizations.of(context)!.catalogAccess} Wallet',
                                                 content: _buildExportContent(selectedItem),
                                                 fileName: 'catalogue_${DateTime.now().millisecondsSinceEpoch}',
+                                                backgroundColor: Colors.blueGrey[900],
+                                              ),
+                                              const SizedBox(width: 20),
+                                              // Bouton Add Preset (ouvre le popup d'ajout détaillé)
+                                              ActionButton(
+                                                icon: Icons.add,
+                                                onPressed: () => _showAddDialog(selectedItem),
+                                                iconSize: 28,
                                               ),
                                             ],
                                           ),

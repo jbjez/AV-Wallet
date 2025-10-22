@@ -1,7 +1,7 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:av_wallet_hive/l10n/app_localizations.dart';
+import 'package:av_wallet/l10n/app_localizations.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../../providers/catalogue_provider.dart';
 import '../../providers/preset_provider.dart';
@@ -11,7 +11,6 @@ import '../../models/cart_item.dart';
 import '../../models/preset.dart';
 import '../../widgets/export_widget.dart';
 import '../../widgets/border_labeled_dropdown.dart';
-import '../../widgets/preset_widget.dart';
 import '../../widgets/action_button.dart';
 
 class DmxTab extends ConsumerStatefulWidget {
@@ -274,18 +273,15 @@ class _DmxTabState extends ConsumerState<DmxTab> {
     }
 
 
-    // Liste des machines WiFi qui nécessitent un univers séparé
-    final wifiMachines = ['Titan', 'Helios', 'AX3', 'AX2'];
-    
-    // Séparer les produits en machines WiFi et machines câblées
+    // Séparer les produits en machines WiFi et machines câblées selon le mode sélectionné
     List<CatalogueItem> wifiProducts = [];
     List<CatalogueItem> wiredProducts = [];
     
     for (var fixture in lightState.selectedFixtures) {
-      final productName = fixture.produit;
-      bool isWifi = wifiMachines.any((wifi) => productName.toLowerCase().contains(wifi.toLowerCase()));
+      // Utiliser le mode WiFi sélectionné, ou le mode par défaut du produit
+      final isWifiMode = lightState.fixtureWifiModes[fixture] ?? fixture.isWifiByDefault ?? false;
       
-      if (isWifi) {
+      if (isWifiMode) {
         wifiProducts.add(fixture);
       } else {
         wiredProducts.add(fixture);
@@ -417,7 +413,7 @@ class _DmxTabState extends ConsumerState<DmxTab> {
         
         // Ajouter les produits de cet univers
         for (String productLine in universeProducts) {
-          resultMessage += productLine + '\n';
+          resultMessage += '$productLine\n';
         }
         
         resultMessage += '  (${AppLocalizations.of(context)!.dmxPage_channelsUsed}: $channelsUsedInUniverse/512 ${AppLocalizations.of(context)!.dmxPage_channelsTotal})\n\n';
@@ -438,8 +434,11 @@ class _DmxTabState extends ConsumerState<DmxTab> {
       
       List<CatalogueItem> remainingWifiProducts = List.from(wifiProducts);
       int currentUniverse = wiredUniverses + 1;
+      int maxIterations = 1000; // Protection contre les boucles infinies
+      int iterationCount = 0;
       
-      while (remainingWifiProducts.isNotEmpty) {
+      while (remainingWifiProducts.isNotEmpty && iterationCount < maxIterations) {
+        iterationCount++;
         resultMessage += '${AppLocalizations.of(context)!.dmxPage_universe} $currentUniverse / $totalUniverses (WiFi) :\n';
         
         int channelsUsedInUniverse = 0;
@@ -470,7 +469,8 @@ class _DmxTabState extends ConsumerState<DmxTab> {
             print('Added to universe $currentUniverse, channels used: $channelsUsedInUniverse');
           } else {
             print('Product $productName does not fit in universe $currentUniverse, will go to next universe');
-            break; // Sortir de la boucle car les produits suivants ne rentreront pas non plus
+            // Ne pas utiliser break ici, continuer avec le prochain produit
+            continue;
           }
         }
         
@@ -484,6 +484,29 @@ class _DmxTabState extends ConsumerState<DmxTab> {
         
         print('Universe $currentUniverse completed, channels used: $channelsUsedInUniverse');
         print('Remaining products: ${remainingWifiProducts.length}');
+        
+        // Si aucun produit n'a été traité dans cette itération, sortir de la boucle
+        if (productsToRemove.isEmpty) {
+          print('No products could be placed in universe $currentUniverse, stopping distribution');
+          break;
+        }
+      }
+      
+      // Vérifier s'il reste des produits non placés
+      if (remainingWifiProducts.isNotEmpty) {
+        resultMessage += 'Attention: ${remainingWifiProducts.length} produits non placés\n';
+        for (var product in remainingWifiProducts) {
+          final productName = product.produit;
+          final quantity = lightState.fixtureQuantities[product] ?? 1;
+          final channelsPerProduct = productChannels[productName]!;
+          final totalChannels = channelsPerProduct * quantity;
+          resultMessage += '  • $quantity x $productName ($totalChannels ${AppLocalizations.of(context)!.dmxPage_channelsTotal})\n';
+        }
+        resultMessage += '\n';
+      }
+      
+      if (iterationCount >= maxIterations) {
+        resultMessage += 'Attention: Limite d\'itérations atteinte\n\n';
       }
       
       print('=== END WIFI DISTRIBUTION ===');
@@ -649,7 +672,7 @@ class _DmxTabState extends ConsumerState<DmxTab> {
                                     TextButton(
                                       onPressed: () => Navigator.pop(context),
                                       child: Text(AppLocalizations.of(context)!.dmxPage_cancel,
-                                          style: TextStyle(color: Colors.white)),
+                                          style: TextStyle(color: Colors.lightBlue[300])),
                                     ),
                                     TextButton(
                                       onPressed: () {
@@ -662,7 +685,7 @@ class _DmxTabState extends ConsumerState<DmxTab> {
                                         Navigator.pop(context);
                                       },
                                       child: Text(AppLocalizations.of(context)!.dmxPage_ok,
-                                          style: TextStyle(color: Colors.white)),
+                                          style: TextStyle(color: Colors.lightBlue[300])),
                                     ),
                                   ],
                                 );
@@ -709,7 +732,7 @@ class _DmxTabState extends ConsumerState<DmxTab> {
                       borderRadius: BorderRadius.circular(8),
                     ),
                     child: DropdownButtonFormField<String>(
-                      value: selectedDmxType,
+                      initialValue: selectedDmxType,
                       decoration: InputDecoration(
                         labelText: AppLocalizations.of(context)!.dmxPage_dmxType,
                         labelStyle: TextStyle(color: Colors.white),
@@ -802,10 +825,8 @@ class _DmxTabState extends ConsumerState<DmxTab> {
                     // Focus sur les boutons après ajout d'un article
                     _focusOnButtons();
                   },
-                  child: Text(AppLocalizations.of(context)!.dmxPage_confirm,
-                      style: TextStyle(
-                        color: Theme.of(context).brightness == Brightness.light ? Colors.white : null,
-                      )),
+                                      child: Text(AppLocalizations.of(context)!.dmxPage_confirm,
+                                          style: TextStyle(color: Colors.lightBlue[300])),
                 ),
               ],
             );
@@ -847,7 +868,7 @@ class _DmxTabState extends ConsumerState<DmxTab> {
               fontWeight: FontWeight.bold,
             ),
           ),
-          content: Container(
+          content: SizedBox(
             width: double.maxFinite,
             height: 300,
             child: ListView.builder(
@@ -895,6 +916,7 @@ class _DmxTabState extends ConsumerState<DmxTab> {
     ref.read(lightPageStateProvider.notifier).updateSelectedFixtures([]);
     ref.read(lightPageStateProvider.notifier).updateFixtureQuantities({});
     ref.read(lightPageStateProvider.notifier).updateFixtureDmxModes({});
+    ref.read(lightPageStateProvider.notifier).updateFixtureWifiModes({});
     ref.read(lightPageStateProvider.notifier).updateDmxCalculation(null);
     
     // Importer les éléments lumière du preset
@@ -952,8 +974,6 @@ class _DmxTabState extends ConsumerState<DmxTab> {
       controller: _scrollController,
       child: Column(
         children: [
-          // Preset Widget
-          const PresetWidget(),
           // Cadre principal
           Container(
             margin: const EdgeInsets.all(16),
@@ -1238,15 +1258,148 @@ class _DmxTabState extends ConsumerState<DmxTab> {
                                             final newFixtures = List<CatalogueItem>.from(lightState.selectedFixtures);
                                             final newQuantities = Map<CatalogueItem, int>.from(lightState.fixtureQuantities);
                                             final newDmxModes = Map<CatalogueItem, String>.from(lightState.fixtureDmxModes);
+                                            final newWifiModes = Map<CatalogueItem, bool>.from(lightState.fixtureWifiModes);
                                             
                                             newFixtures.removeAt(index);
                                             newQuantities.remove(fixture);
                                             newDmxModes.remove(fixture);
+                                            newWifiModes.remove(fixture);
                                             
                                             ref.read(lightPageStateProvider.notifier).updateSelectedFixtures(newFixtures);
                                             ref.read(lightPageStateProvider.notifier).updateFixtureQuantities(newQuantities);
                                             ref.read(lightPageStateProvider.notifier).updateFixtureDmxModes(newDmxModes);
+                                            ref.read(lightPageStateProvider.notifier).updateFixtureWifiModes(newWifiModes);
                                           },
+                                        ),
+                                      ],
+                                    ),
+                                    const SizedBox(height: 8),
+                                    // Ligne 3: Sélecteur DMX Mini/Maxi
+                                    Row(
+                                      children: [
+                                        Text(
+                                          'DMX: ',
+                                          style: TextStyle(
+                                            color: Colors.white70,
+                                            fontSize: 12,
+                                          ),
+                                        ),
+                                        const SizedBox(width: 8),
+                                        // Bouton DMX Mini
+                                        GestureDetector(
+                                          onTap: () {
+                                            final newDmxModes = Map<CatalogueItem, String>.from(lightState.fixtureDmxModes);
+                                            newDmxModes[fixture] = AppLocalizations.of(context)!.dmxPage_dmxMini;
+                                            ref.read(lightPageStateProvider.notifier).updateFixtureDmxModes(newDmxModes);
+                                          },
+                                          child: Container(
+                                            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                                            decoration: BoxDecoration(
+                                              color: (lightState.fixtureDmxModes[fixture] ?? AppLocalizations.of(context)!.dmxPage_dmxMini) == AppLocalizations.of(context)!.dmxPage_dmxMini
+                                                  ? Colors.lightBlue 
+                                                  : Colors.grey[600],
+                                              borderRadius: BorderRadius.circular(4),
+                                            ),
+                                            child: Text(
+                                              'Mini',
+                                              style: TextStyle(
+                                                color: Colors.white,
+                                                fontSize: 10,
+                                                fontWeight: FontWeight.bold,
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+                                        const SizedBox(width: 8),
+                                        // Bouton DMX Max
+                                        GestureDetector(
+                                          onTap: () {
+                                            final newDmxModes = Map<CatalogueItem, String>.from(lightState.fixtureDmxModes);
+                                            newDmxModes[fixture] = AppLocalizations.of(context)!.dmxPage_dmxMax;
+                                            ref.read(lightPageStateProvider.notifier).updateFixtureDmxModes(newDmxModes);
+                                          },
+                                          child: Container(
+                                            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                                            decoration: BoxDecoration(
+                                              color: (lightState.fixtureDmxModes[fixture] ?? AppLocalizations.of(context)!.dmxPage_dmxMini) == AppLocalizations.of(context)!.dmxPage_dmxMax
+                                                  ? Colors.lightBlue 
+                                                  : Colors.grey[600],
+                                              borderRadius: BorderRadius.circular(4),
+                                            ),
+                                            child: Text(
+                                              'Max',
+                                              style: TextStyle(
+                                                color: Colors.white,
+                                                fontSize: 10,
+                                                fontWeight: FontWeight.bold,
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                    const SizedBox(height: 8),
+                                    // Ligne 4: Sélecteur WiFi/Filaire
+                                    Row(
+                                      children: [
+                                        Text(
+                                          'Mode: ',
+                                          style: TextStyle(
+                                            color: Colors.white70,
+                                            fontSize: 12,
+                                          ),
+                                        ),
+                                        const SizedBox(width: 8),
+                                        // Bouton Filaire
+                                        GestureDetector(
+                                          onTap: () {
+                                            final newWifiModes = Map<CatalogueItem, bool>.from(lightState.fixtureWifiModes);
+                                            newWifiModes[fixture] = false;
+                                            ref.read(lightPageStateProvider.notifier).updateFixtureWifiModes(newWifiModes);
+                                          },
+                                          child: Container(
+                                            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                                            decoration: BoxDecoration(
+                                              color: (lightState.fixtureWifiModes[fixture] ?? fixture.isWifiByDefault ?? false) 
+                                                  ? Colors.grey[600] 
+                                                  : Colors.blue,
+                                              borderRadius: BorderRadius.circular(4),
+                                            ),
+                                            child: Text(
+                                              'Filaire',
+                                              style: TextStyle(
+                                                color: Colors.white,
+                                                fontSize: 10,
+                                                fontWeight: FontWeight.bold,
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+                                        const SizedBox(width: 8),
+                                        // Bouton WiFi
+                                        GestureDetector(
+                                          onTap: () {
+                                            final newWifiModes = Map<CatalogueItem, bool>.from(lightState.fixtureWifiModes);
+                                            newWifiModes[fixture] = true;
+                                            ref.read(lightPageStateProvider.notifier).updateFixtureWifiModes(newWifiModes);
+                                          },
+                                          child: Container(
+                                            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                                            decoration: BoxDecoration(
+                                              color: (lightState.fixtureWifiModes[fixture] ?? fixture.isWifiByDefault ?? false) 
+                                                  ? Colors.orange 
+                                                  : Colors.grey[600],
+                                              borderRadius: BorderRadius.circular(4),
+                                            ),
+                                            child: Text(
+                                              'WiFi',
+                                              style: TextStyle(
+                                                color: Colors.white,
+                                                fontSize: 10,
+                                                fontWeight: FontWeight.bold,
+                                              ),
+                                            ),
+                                          ),
                                         ),
                                       ],
                                     ),
@@ -1406,14 +1559,17 @@ class _DmxTabState extends ConsumerState<DmxTab> {
                             ),
                             const SizedBox(width: 20),
                             // Bouton Export
-                            ExportWidget(
-                              title: 'Configuration DMX',
-                              content: _buildExportContent(),
-                              projectType: 'dmx',
-                              fileName: 'configuration_dmx',
-                              customIcon: Icons.cloud_upload,
-                              backgroundColor: Colors.blueGrey[900],
-                              tooltip: 'Exporter la configuration',
+                            Transform.rotate(
+                              angle: 0, // Pas de rotation - flèche vers le haut
+                              child: ExportWidget(
+                                title: 'Configuration DMX',
+                                content: _buildExportContent(),
+                                projectType: 'dmx',
+                                fileName: 'configuration_dmx',
+                                customIcon: Icons.cloud_upload,
+                                backgroundColor: Colors.blueGrey[900],
+                                tooltip: 'Exporter la configuration',
+                              ),
                             ),
                           ],
                         ),

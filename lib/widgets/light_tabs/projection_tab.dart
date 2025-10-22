@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:av_wallet_hive/l10n/app_localizations.dart';
+import 'package:av_wallet/l10n/app_localizations.dart';
 import '../../providers/catalogue_provider.dart';
 import '../../models/catalogue_item.dart';
 import '../../models/lens.dart';
@@ -36,7 +36,7 @@ class _ProjectionTabState extends ConsumerState<ProjectionTab> {
   
   // Gestion des commentaires
   Map<String, String> _comments = {};
-  String _currentProjectionResult = '';
+  final String _currentProjectionResult = '';
   
 
   @override
@@ -841,9 +841,27 @@ class _ProjectionTabState extends ConsumerState<ProjectionTab> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
-                        Text(
-                          'Optique recommandée: ${recommendation!['optique']} (${recommendation!['ratio']})',
-                          style: Theme.of(context).textTheme.bodyMedium,
+                        Center(
+                          child: Column(
+                            children: [
+                              Text(
+                                'Optique recommandée',
+                                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.white,
+                                ),
+                                textAlign: TextAlign.center,
+                              ),
+                              const SizedBox(height: 4),
+                              Text(
+                                recommendation!['optique'],
+                                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                  color: Colors.white,
+                                ),
+                                textAlign: TextAlign.center,
+                              ),
+                            ],
+                          ),
                         ),
                         const SizedBox(height: 16),
                         Center(
@@ -904,7 +922,7 @@ class _ProjectionTabState extends ConsumerState<ProjectionTab> {
   }
 
   String _generateProjectionResultKey() {
-    return 'projection_${selectedProjector?.id ?? 'none'}_${largeurProjection}_${distanceProjection}_${selectedFormat}_${nbProjecteurs}_${chevauchement}';
+    return 'projection_${selectedProjector?.id ?? 'none'}_${largeurProjection}_${distanceProjection}_${selectedFormat}_${nbProjecteurs}_$chevauchement';
   }
 
   Future<void> _showCommentDialog(String tabKey) async {

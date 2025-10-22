@@ -11,13 +11,9 @@ class ThemeModeController extends StateNotifier<ThemeMode> {
   ThemeModeController() : super(ThemeMode.dark) { _load(); }
   Future<void> _load() async {
     final sp = await SharedPreferences.getInstance();
-    final saved = sp.getString('themeMode');
-    if (saved != null) {
-      state = ThemeMode.values.firstWhere(
-        (e) => e.toString() == saved,
-        orElse: () => ThemeMode.dark,
-      );
-    }
+    // Forcer le mode nuit par défaut - effacer toute valeur sauvegardée
+    await sp.remove('themeMode');
+    state = ThemeMode.dark; // Mode nuit par défaut
   }
   Future<void> set(ThemeMode mode) async {
     state = mode;

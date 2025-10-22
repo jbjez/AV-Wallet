@@ -5,7 +5,7 @@
   },
   "appTitle": "AV Wallet",
   "welcomeMessage": "Benvenuto in AV Wallet",
-  "catalogAccess": "Catalogo",
+  "catalogAccess": "Catalogo AV",
   "lightMenu": "Luce",
   "structureMenu": "Struttura",
   "soundMenu": "Audio",
@@ -42,6 +42,8 @@
   "lightPage_presetName": "Nome preset",
   "lightPage_enterPresetName": "Inserisci nome preset",
   "lightPage_beamDiameter": "Diametro del fascio",
+  "lightPage_beamTab": "Fascio",
+  "lightPage_ledDriverTab": "Led driver",
   "lightPage_meters": "metri",
   "lightPage_recommendedConfig": "Configurazione consigliata",
   "lightPage_total": "Totale",
@@ -195,7 +197,12 @@
   "presetWidget_confirmDelete": "Sei sicuro di voler eliminare questo preset?",
   "presetWidget_yes": "Sì",
   "presetWidget_no": "No",
-  "presetWidget_newPreset": "Nuovo preset",
+  "new_preset": "Nuovo preset",
+  "view_project": "Visualizza progetto",
+  "new_project": "Nuovo progetto",
+  "save_project": "Salva progetto",
+  "load_project": "Carica progetto",
+  "export_project": "Esporta progetto",
   "presetWidget_renamePreset": "Rinomina preset",
   "presetWidget_newName": "Nuovo nome",
   "presetWidget_create": "Crea",
@@ -213,6 +220,15 @@
   "projectCalculationPage_weightProject": "Progetto Peso",
   "projectCalculationPage_powerTab": "Pot.",
   "projectCalculationPage_weightTab": "Peso",
+  "electricityPage_powerTab": "Potenza",
+  "videoPage_projectionTab": "Proiezione",
+  "videoPage_ledWallTab": "Parete LED",
+  "videoPage_timerTab": "Timer",
+  "catalogue_addToPreset": "Aggiungi",
+  "catalogue_confirmAddTitle": "Conferma",
+  "catalogue_confirmAddMessage": "Aggiungere {count} {product} a {preset}?",
+  "catalogue_mode": "Modalità",
+  "catalogue_wired": "Cablato",
   "projectCalculationPage_noPresetSelected": "Nessun preset selezionato",
   "projectCalculationPage_powerConsumption": "Consumo energetico",
   "projectCalculationPage_weight": "Peso",
@@ -418,8 +434,22 @@
   "newProject": "Nuovo Progetto",
   "saveProject": "Salva Progetto",
   "loadProject": "Carica Progetto",
+  "loadProject_selectProject": "Seleziona un progetto da caricare:",
+  "standard_welcome_title": "Benvenuto in AV Wallet, {username}",
+  "@standard_welcome_title": {
+    "placeholders": {
+      "username": {
+        "type": "String"
+      }
+    }
+  },
+  "premium_benefit_catalogue": "Catalogo +220 Prodotti",
+  "premium_benefit_calculations": "Calcoli Illimitati",
+  "premium_benefit_project_management": "Gestione Progetto/Preset",
+  "premium_benefit_pdf_export": "Esporta PDF",
   "exportProject": "Esporta Progetto",
   "projectNameLabel": "Nome del nuovo progetto",
+  "project_name": "Nome del progetto",
   "projectNameHint": "Ex: Festival Rock, Teatro...",
   "projectArchiveInfo": "Il vecchio progetto sarà automaticamente archiviato.",
   "projectSaved": "Progetto salvato!",
@@ -429,8 +459,17 @@
   "exportDate": "Data di esportazione: {date}",
   "presetsToExport": "{count} preset{count, plural, =1 {} other {s}} da esportare",
   "defaultProject1": "Progetto 1",
+  "@defaultProject1": {
+    "description": "Nome del primo progetto predefinito"
+  },
   "defaultProject2": "Progetto 2",
+  "@defaultProject2": {
+    "description": "Nome del secondo progetto predefinito"
+  },
   "defaultProject3": "Progetto 3",
+  "@defaultProject3": {
+    "description": "Nome del terzo progetto predefinito"
+  },
   "presetView": "Visualizza Preset",
   "presetRename": "Rinomina Preset",
   "presetDelete": "Elimina Preset",
@@ -448,10 +487,8 @@
   "presetImport": "Importa Preset",
   "cancel": "Annulla",
   "create": "Crea",
-  "renameProject": "Rinomina Progetto",
   "enterProjectName": "Nuovo nome del progetto",
   "confirm": "Conferma",
-  "projectRenamed": "Progetto rinominato in",
   "noPresetSelected": "Nessun preset selezionato",
   "searchArticlePlaceholder": "Cerca un articolo...",
   "searchResults": "Risultati di ricerca",
@@ -469,7 +506,7 @@
   "totalWeight": "Peso Totale",
   "unitWatt": "W",
   "unitKilowatt": "kW",
-  "unitKilogram": "kg",
+  "unitKilogram": "Kg",
   "addToPreset": "Aggiungi al preset",
   "enterQuantity": "Inserisci quantità",
   "modify": "Modifica",
@@ -498,6 +535,7 @@
   "loginMenu_accountSettings": "Impostazioni account",
   "loginMenu_myProjects": "I miei progetti",
   "loginMenu_logout": "Disconnetti",
+  "loginMenu_usage": "Utilizzo",
   "@_dropdownLabels": {
     "description": "Etichette per menu a tendina"
   },
@@ -638,7 +676,7 @@
   "dmxPage_wired": "Cablato",
   "structurePage_chargesTab": "Carichi",
   "structurePage_maxLoad": "Carico massimo: {value} kg{unit}",
-  "structurePage_structureWeight": "Peso della struttura: {value} kg/m",
+  "structurePage_structureWeight": "Peso della struttura: {value} kg",
   "structurePage_maxDeflection": "Flessione massima: {value} mm",
   "structurePage_deflectionRatio": "Rapporto di flessione: 1/{ratio}",
   "structurePage_noPresetSelected": "Nessun preset selezionato",
@@ -737,150 +775,226 @@
   "@premiumExpiredDialog_title": {
     "description": "auto-added from code scan"
   },
-  "settingsPage_account": "settings Page account",
-  "@settingsPage_account": {
-    "description": "auto-added from code scan"
-  },
-  "settingsPage_biometricAuth": "settings Page biometric Auth",
-  "@settingsPage_biometricAuth": {
-    "description": "auto-added from code scan"
-  },
-  "settingsPage_cancel": "settings Page cancel",
-  "@settingsPage_cancel": {
-    "description": "auto-added from code scan"
-  },
-  "settingsPage_changePassword": "settings Page change Password",
-  "@settingsPage_changePassword": {
-    "description": "auto-added from code scan"
-  },
-  "settingsPage_confirmSignOut": "settings Page confirm Sign Out",
-  "@settingsPage_confirmSignOut": {
-    "description": "auto-added from code scan"
-  },
-  "settingsPage_confirmUnsubscribe": "settings Page confirm Unsubscribe",
-  "@settingsPage_confirmUnsubscribe": {
-    "description": "auto-added from code scan"
-  },
-  "settingsPage_email": "settings Page email",
-  "@settingsPage_email": {
-    "description": "auto-added from code scan"
-  },
-  "settingsPage_error": "settings Page error",
-  "@settingsPage_error": {
-    "description": "auto-added from code scan"
-  },
-  "settingsPage_featureNotImplemented": "settings Page feature Not Implemented",
-  "@settingsPage_featureNotImplemented": {
-    "description": "auto-added from code scan"
-  },
-  "settingsPage_freemiumTest": "settings Page freemium Test",
-  "@settingsPage_freemiumTest": {
-    "description": "auto-added from code scan"
-  },
-  "settingsPage_name": "settings Page name",
-  "@settingsPage_name": {
-    "description": "auto-added from code scan"
-  },
-  "settingsPage_notAvailable": "settings Page not Available",
-  "@settingsPage_notAvailable": {
-    "description": "auto-added from code scan"
-  },
-  "settingsPage_notDefined": "settings Page not Defined",
-  "@settingsPage_notDefined": {
-    "description": "auto-added from code scan"
-  },
-  "settingsPage_ok": "settings Page ok",
-  "@settingsPage_ok": {
-    "description": "auto-added from code scan"
-  },
-  "settingsPage_premium": "settings Page premium",
-  "@settingsPage_premium": {
-    "description": "auto-added from code scan"
-  },
-  "settingsPage_premiumActivated": "settings Page premium Activated",
-  "@settingsPage_premiumActivated": {
-    "description": "auto-added from code scan"
-  },
-  "settingsPage_premiumSubscription": "settings Page premium Subscription",
-  "@settingsPage_premiumSubscription": {
-    "description": "auto-added from code scan"
-  },
-  "settingsPage_security": "settings Page security",
-  "@settingsPage_security": {
-    "description": "auto-added from code scan"
-  },
-  "settingsPage_signOut": "settings Page sign Out",
-  "@settingsPage_signOut": {
-    "description": "auto-added from code scan"
-  },
-  "settingsPage_signOutDialogContent": "settings Page sign Out Dialog Content",
-  "@settingsPage_signOutDialogContent": {
-    "description": "auto-added from code scan"
-  },
-  "settingsPage_signOutDialogTitle": "settings Page sign Out Dialog Title",
-  "@settingsPage_signOutDialogTitle": {
-    "description": "auto-added from code scan"
-  },
-  "settingsPage_standard": "settings Page standard",
-  "@settingsPage_standard": {
-    "description": "auto-added from code scan"
-  },
-  "settingsPage_status": "settings Page status",
-  "@settingsPage_status": {
-    "description": "auto-added from code scan"
-  },
-  "settingsPage_subscribe": "settings Page subscribe",
-  "@settingsPage_subscribe": {
-    "description": "auto-added from code scan"
-  },
-  "settingsPage_subscribeDialogContent": "settings Page subscribe Dialog Content",
-  "@settingsPage_subscribeDialogContent": {
-    "description": "auto-added from code scan"
-  },
-  "settingsPage_subscribeDialogTitle": "settings Page subscribe Dialog Title",
-  "@settingsPage_subscribeDialogTitle": {
-    "description": "auto-added from code scan"
-  },
-  "settingsPage_subscribeToPremium": "settings Page subscribe To Premium",
-  "@settingsPage_subscribeToPremium": {
-    "description": "auto-added from code scan"
-  },
-  "settingsPage_subscription": "settings Page subscription",
-  "@settingsPage_subscription": {
-    "description": "auto-added from code scan"
-  },
-  "settingsPage_subscriptionError": "settings Page subscription Error",
-  "@settingsPage_subscriptionError": {
-    "description": "auto-added from code scan"
-  },
-  "settingsPage_success": "settings Page success",
-  "@settingsPage_success": {
-    "description": "auto-added from code scan"
-  },
-  "settingsPage_title": "settings Page title",
-  "@settingsPage_title": {
-    "description": "auto-added from code scan"
-  },
-  "settingsPage_unsubscribe": "settings Page unsubscribe",
-  "@settingsPage_unsubscribe": {
-    "description": "auto-added from code scan"
-  },
-  "settingsPage_unsubscribeDialogContent": "settings Page unsubscribe Dialog Content",
-  "@settingsPage_unsubscribeDialogContent": {
-    "description": "auto-added from code scan"
-  },
-  "settingsPage_unsubscribeDialogTitle": "settings Page unsubscribe Dialog Title",
-  "@settingsPage_unsubscribeDialogTitle": {
-    "description": "auto-added from code scan"
-  },
-  "settingsPage_userInfo": "settings Page user Info",
-  "@settingsPage_userInfo": {
-    "description": "auto-added from code scan"
-  },
   "@structurePage_distance": {
     "description": "auto-added placeholders",
     "placeholders": {
       "arg1": {}
     }
-  }
+  },
+  "speedtest_running": "In esecuzione",
+  "dmxPage_warning": "Attenzione",
+  "dmxPage_productsNotPlaced": "prodotti non posizionati",
+  "dmxPage_maxIterationsReached": "Massimo di iterazioni raggiunto",
+  "paymentPage_monthlyPlan": "Piano mensile",
+  "paymentPage_yearlyPlan": "Piano annuale",
+  "subscription_premium": "Premium",
+  "subscription_description": "Descrizione",
+  "subscription_choose_plan": "Scegli piano",
+  "subscription_free_trial": "Prova gratuita",
+  "subscription_security": "Sicurezza",
+  "subscription_security_description": "Descrizione sicurezza",
+  "subscription_popular": "Popolare",
+  "subscription_subscribe": "Iscriviti",
+  "settingsPage_account": "Account",
+  "settingsPage_biometricAuth": "Autenticazione biometrica",
+  "settingsPage_cancel": "Annulla",
+  "settingsPage_changePassword": "Cambia password",
+  "settingsPage_confirmSignOut": "Conferma disconnessione",
+  "settingsPage_confirmUnsubscribe": "Conferma cancellazione abbonamento",
+  "settingsPage_email": "Email",
+  "settingsPage_error": "Errore",
+  "settingsPage_featureNotImplemented": "Funzione non implementata",
+  "settingsPage_freemiumTest": "Test freemium",
+  "settingsPage_name": "Nome",
+  "settingsPage_notAvailable": "Non disponibile",
+  "settingsPage_notDefined": "Non definito",
+  "settingsPage_ok": "OK",
+  "settingsPage_premium": "Premium",
+  "settingsPage_premiumActivated": "Premium attivato",
+  "settingsPage_premiumSubscription": "Abbonamento premium",
+  "settingsPage_security": "Sicurezza",
+  "settingsPage_signOut": "Disconnetti",
+  "settingsPage_signOutDialogContent": "Sei sicuro di volerti disconnettere?",
+  "settingsPage_signOutDialogTitle": "Disconnessione",
+  "settingsPage_standard": "Standard",
+  "settingsPage_status": "Stato",
+  "settingsPage_subscribe": "Abbonati",
+  "settingsPage_subscribeDialogContent": "Vuoi abbonarti al piano premium?",
+  "settingsPage_subscribeDialogTitle": "Abbonamento premium",
+  "settingsPage_subscribeToPremium": "Abbonati al premium",
+  "settingsPage_subscription": "Abbonamento",
+  "settingsPage_subscriptionError": "Errore abbonamento",
+  "settingsPage_success": "Successo",
+  "settingsPage_title": "Impostazioni account",
+  "settingsPage_unsubscribe": "Cancella abbonamento",
+  "settingsPage_unsubscribeDialogContent": "Sei sicuro di voler cancellare l'abbonamento?",
+  "settingsPage_unsubscribeDialogTitle": "Cancella abbonamento",
+  "settingsPage_userInfo": "Informazioni utente",
+  "email_required": "Email richiesta",
+  "invalid_email": "Email non valida",
+  "password_required": "Password richiesta",
+  "password_too_short": "La password deve contenere almeno 6 caratteri",
+  "auth_service_loading": "Servizio di autenticazione in caricamento",
+  "auth_service_error": "Errore del servizio di autenticazione",
+  "invalid_credentials_error": "Email o password non validi",
+  "connection_error": "Errore di connessione",
+  "ok": "OK",
+  "enter_email_first": "Inserisci la tua email",
+  "reset_email_sent": "È stata inviata un'email di reset. Controlla la tua casella di posta e spam.",
+  "login": "Accedi",
+  "email": "Email",
+  "password": "Password",
+  "forgot_password": "Password dimenticata?",
+  "remember_me": "Ricordami",
+  "sign_in": "Accedi",
+  "or_continue_with": "O continua con",
+  "google_sign_in": "Accedi con Google",
+  "biometric_auth": "Auth. biometrica",
+  "sign_up": "Registrati",
+  "welcome_to_avwallet": "Benvenuto in AVWallet",
+  "welcome_to_avwallet_with_name": "Benvenuto in AVWallet, {name}",
+  "premium_usage_remaining": "Hai l'uso premium.\\nTi rimangono {count} utilizzi",
+  "continueButton": "Continua",
+  "signup": "Registrati",
+  "confirm_password": "Conferma password",
+  "confirm_password_required": "Conferma password richiesta",
+  "passwords_dont_match": "Le password non coincidono",
+  "already_have_account": "Hai già un account?",
+  "verification_code_sent_message": "È stato inviato un codice di verifica",
+  "verification_code": "Codice di verifica",
+  "welcome_title": "Benvenuto",
+  "welcome_message": "Messaggio di benvenuto",
+  "beam_short": "Fascio",
+  "default_project_name": "Progetto predefinito",
+  "no_projects_available": "Nessun progetto disponibile da caricare",
+  "project_loaded": "Progetto \"{name}\" caricato!",
+  "export_project_confirm": "Vuoi esportare il progetto \"{name}\"?",
+  "generating_pdfs": "Generazione PDF in corso...",
+  "files_exported_success": "{count} file esportati con successo!",
+  "no_files_to_export": "Nessun file da esportare per questo progetto",
+  "export_error": "Errore durante l'esportazione: {error}",
+  "project_saved_locally": "Il progetto verrà salvato localmente.",
+  "project_saved": "Progetto salvato!",
+  "photos_project_title": "FOTO DEL PROGETTO",
+  "photos_ar_captured": "Foto catturate durante le misurazioni AR:",
+  "photo_label": "Foto: {filename}",
+  "article_label": "Articolo",
+  "quantity_label": "Qtà",
+  "catalogueQuantityDialog_title": "Quantità",
+  "catalogueQuantityDialog_enterQuantity": "Inserisci la quantità",
+  "catalogueQuantityDialog_dmxType": "Tipo DMX",
+  "catalogueQuantityDialog_dmxMini": "DMX mini",
+  "catalogueQuantityDialog_dmxMax": "DMX max",
+  "catalogueQuantityDialog_cancel": "Annulla",
+  "catalogueQuantityDialog_confirm": "Conferma",
+  "power_label": "Potenza",
+  "weight_label": "Peso",
+  "loading": "Caricamento...",
+  "create_button": "Crea",
+  "save_button": "Salva",
+  "cancel_button": "Annulla",
+  "weight_tab_title": "Peso",
+  "imports": "Importazioni",
+  "calculation_dmx": "Calcolo DMX",
+  "calculation_sound": "Calcolo Suono",
+  "calculation_projection": "Calcolo Proiezione",
+  "calculation_led_wall": "Calcolo Parete LED",
+  "calculation_charges": "Calcolo Carichi",
+  
+  "standard_welcome_title": "Benvenuto in AVWallet",
+  "standard_welcome_message": "Benvenuto in AVWallet, {name}",
+  "standard_welcome_usage_remaining": "Hai {count} utilizzi rimanenti",
+  "standard_welcome_continue": "Continua",
+  
+  "premium_welcome_title": "Benvenuto Premium!",
+  "premium_welcome_message": "Congratulazioni, Premium attivato",
+  "premium_benefits_title": "Vantaggi Premium",
+  "premium_benefit_unlimited": "Utilizzo illimitato",
+  "premium_benefit_priority": "Supporto prioritario",
+  "premium_benefit_support": "Assistenza tecnica dedicata",
+  "premium_welcome_later": "Più tardi",
+  "premium_welcome_continue": "Esplora Premium",
+  "premium_vip_welcome_message": "Congratulazioni, fai parte del team VIP AV Wallet",
+  "premium_vip_access_activated": "Accesso premium illimitato attivato",
+  "ok": "OK",
+  "preview": "Anteprima",
+  "export": "Esporta",
+  "project_parameters": "Parametri Progetto",
+  "location": "Luogo",
+  "mounting_date": "Data montaggio (GG/MM/AA)",
+  "period_from": "Data: dal GG/MM/AA",
+  "period_to": "al GG/MM/AA",
+  "save_parameters": "Salva",
+  "cancel": "Annulla",
+  "project_location": "Luogo",
+  "project_mounting_date": "Data montaggio",
+  "project_period": "Periodo",
+  "not_defined": "Non definito",
+  "start_date": "Inizio: GG/MM/AA",
+  "end_date": "Fine: GG/MM/AA",
+  
+  "calculation_sent_to_project": "{calculationName} inviato a \"{projectName}\"",
+  
+  "project_stats_presets": "Numero di Preset",
+  "project_stats_articles": "Numero Totale di Articoli",
+  "project_stats_calculations": "Numero di Calcoli",
+  "project_stats_photos": "Numero di Foto",
+  
+  "select_photos": "Seleziona Foto",
+  "photos_imported": "Foto Importate",
+  "preview": "Anteprima",
+  "export": "Esporta",
+  "delete": "Elimina",
+  "photo_exported": "Foto esportata",
+  "photo_not_found": "Foto non trovata",
+  "cabling_percentage": "Cablaggio",
+  "cabling_addition": "+10% Cablaggio",
+  "export_to_project": "A Progetto",
+  "export_sms": "SMS",
+  "export_whatsapp": "WhatsApp",
+  "export_email": "Email",
+  "export_tooltip": "Esporta",
+  "coming_soon": "Prossimamente",
+  "paymentPage_title": "Abbonamento Premium",
+  "paymentPage_monthlyPrice": "Mensile",
+  "paymentPage_yearlyPrice": "Annuale",
+  "paymentPage_securePayment": "Pagamento Sicuro",
+  "paymentPage_visaMastercardAccepted": "Visa & Mastercard accettate",
+  "paymentPage_paymentInfo": "Informazioni di Pagamento",
+  "paymentPage_cardholderName": "Titolare della Carta",
+  "paymentPage_cardNumber": "Numero Carta",
+  "paymentPage_expiryDate": "Data di Scadenza",
+  "paymentPage_cvc": "CVC",
+  "paymentPage_payButton": "Paga Ora",
+  "paymentPage_processing": "Elaborazione...",
+  "paymentPage_paymentSuccess": "Pagamento Riuscito",
+  "paymentPage_subscriptionActivated": "Abbonamento Attivato",
+  "paymentPage_plan": "Piano",
+  "paymentPage_price": "Prezzo",
+  "paymentPage_continue": "Continua",
+  "paymentPage_premiumFeatures": "Funzioni Premium",
+  "paymentPage_paymentError": "Errore di Pagamento",
+  "paymentPage_selectPaymentMethod": "Seleziona Metodo di Pagamento",
+  "paymentPage_fillAllFields": "Compila Tutti i Campi",
+  "paymentPage_paymentFailed": "Pagamento Fallito",
+  "paymentPage_legalText": "Con il pagamento accetti i nostri Termini di Servizio",
+  "paymentPage_featureCompleteCatalogue": "Catalogo Completo",
+  "paymentPage_featureProjectsPresets": "Progetti & Preset",
+  "paymentPage_featureExportPdfExcel": "Esporta PDF/Excel",
+  "paymentPage_featurePrioritySupport": "Supporto Prioritario",
+  "paymentPage_featureAutoUpdates": "Aggiornamenti Automatici",
+  "paymentPage_featureSavings": "Risparmi",
+  "paymentPage_descriptionMonthly": "Abbonamento Mensile",
+  "paymentPage_descriptionYearly": "Abbonamento Annuale",
+  "paymentPage_popular": "Popolare",
+  "paymentPage_bestValue": "Miglior Valore",
+  "review_popup_title": "Ciao",
+  "review_popup_message": "Un'idea, una raccomandazione? Il tuo feedback ci interessa",
+  "review_popup_contact": "Contattaci",
+  "review_popup_continue": "Continua",
+  "bandwidth_test": "Test della Larghezza di Banda",
+  "bandwidth_test_title": "Bandwidth",
+  "bandwidth_test_description": "Testa la velocità della tua connessione",
+  "bandwidth_test_start": "Avvia test",
+  "bandwidth_test_results": "Risultati"
 }

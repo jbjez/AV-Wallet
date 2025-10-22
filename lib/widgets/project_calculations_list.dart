@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../providers/project_calculation_provider.dart';
-import '../models/project_calculation.dart';
 
 class ProjectCalculationsList extends ConsumerWidget {
   final String? projectId;

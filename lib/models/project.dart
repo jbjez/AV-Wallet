@@ -14,14 +14,39 @@ class Project extends HiveObject {
   @HiveField(2)
   List<Preset> presets;
 
-  Project({required this.id, required this.name, List<Preset>? presets})
-      : presets = presets ?? [];
+  @HiveField(3)
+  String? location;
 
-  Project copyWith({String? id, String? name, List<Preset>? presets}) {
+  @HiveField(4)
+  String? mountingDate;
+
+  @HiveField(5)
+  String? period;
+
+  Project({
+    required this.id, 
+    required this.name, 
+    List<Preset>? presets,
+    this.location,
+    this.mountingDate,
+    this.period,
+  }) : presets = presets ?? [];
+
+  Project copyWith({
+    String? id, 
+    String? name, 
+    List<Preset>? presets,
+    String? location,
+    String? mountingDate,
+    String? period,
+  }) {
     return Project(
       id: id ?? this.id,
       name: name ?? this.name,
       presets: presets ?? List.from(this.presets),
+      location: location ?? this.location,
+      mountingDate: mountingDate ?? this.mountingDate,
+      period: period ?? this.period,
     );
   }
 }

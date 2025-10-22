@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../providers/auth_provider.dart';
-import '../services/translation_service.dart';
-import '../widgets/custom_dialog.dart';
-import '../services/biometric_auth_service.dart';
+import '../providers/locale_provider.dart';
 import 'email_code_verification_page.dart';
+import 'welcome_gate_page.dart';
 import '../widgets/language_selector.dart';
+import '../l10n/app_localizations.dart';
+import '../services/premium_email_service.dart';
 
 class SignInPage extends ConsumerStatefulWidget {
   final bool isDialog;
@@ -27,7 +28,6 @@ class _SignInPageState extends ConsumerState<SignInPage> {
   String? _error;
   bool _rememberMe = false;
   bool _obscurePassword = true;
-  final BiometricAuthService _biometricService = BiometricAuthService();
 
   @override
   void initState() {
@@ -46,28 +46,28 @@ class _SignInPageState extends ConsumerState<SignInPage> {
     super.dispose();
   }
 
-  String? _validateEmail(String? value, TranslationService translationService) {
+  String? _validateEmail(String? value, AppLocalizations loc) {
     if (value == null || value.isEmpty) {
-      return translationService.t('email_required');
+      return loc.email_required;
     }
     final emailRegex = RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$');
     if (!emailRegex.hasMatch(value)) {
-      return translationService.t('invalid_email');
+      return loc.invalid_email;
     }
     return null;
   }
 
-  String? _validatePassword(String? value, TranslationService translationService) {
+  String? _validatePassword(String? value, AppLocalizations loc) {
     if (value == null || value.isEmpty) {
-      return translationService.t('password_required');
+      return loc.password_required;
     }
     if (value.length < 6) {
-      return translationService.t('password_too_short');
+      return loc.password_too_short;
     }
     return null;
   }
 
-  Future<void> _signIn(TranslationService translationService) async {
+  Future<void> _signIn(AppLocalizations loc) async {
     if (!_formKey.currentState!.validate()) return;
 
     setState(() {
@@ -90,10 +90,10 @@ class _SignInPageState extends ConsumerState<SignInPage> {
           );
         },
         loading: () async {
-          throw Exception(translationService.t('auth_service_loading'));
+          throw Exception(loc.auth_service_loading);
         },
         error: (error, stack) async {
-          throw Exception('${translationService.t('auth_service_error')}: $error');
+          throw Exception('${loc.auth_service_error}: $error');
         },
       );
       
@@ -101,14 +101,23 @@ class _SignInPageState extends ConsumerState<SignInPage> {
         if (widget.isDialog) {
           Navigator.of(context).pop();
         } else {
-          Navigator.of(context).pushReplacementNamed('/home');
+          // Vérifier si l'utilisateur est premium et rediriger vers welcome gate
+          final isPremium = await PremiumEmailService.isPremiumEmail(_emailController.text);
+          Navigator.of(context).pushReplacement(
+            MaterialPageRoute(
+              builder: (context) => WelcomeGatePage(
+                email: _emailController.text,
+                isPremium: isPremium,
+              ),
+            ),
+          );
         }
       }
     } catch (e) {
       if (mounted) {
         String errorMessage = e.toString();
         if (errorMessage.contains('Invalid login credentials')) {
-          errorMessage = translationService.t('invalid_credentials_error');
+          errorMessage = loc.invalid_credentials_error;
         } else if (errorMessage.contains('Email not confirmed') || errorMessage.contains('vérifier votre email')) {
           // Rediriger vers la page de vérification de code
           Navigator.of(context).push(
@@ -133,7 +142,7 @@ class _SignInPageState extends ConsumerState<SignInPage> {
     }
   }
 
-  Future<void> _signInWithGoogle(TranslationService translationService) async {
+  Future<void> _signInWithGoogle(AppLocalizations loc) async {
     setState(() {
       _isLoading = true;
       _error = null;
@@ -146,10 +155,10 @@ class _SignInPageState extends ConsumerState<SignInPage> {
           await authService.signInWithGoogle();
         },
         loading: () async {
-          throw Exception(translationService.t('auth_service_loading'));
+          throw Exception(loc.auth_service_loading);
         },
         error: (error, stack) async {
-          throw Exception('${translationService.t('auth_service_error')}: $error');
+          throw Exception('${loc.auth_service_error}: $error');
         },
       );
       
@@ -157,7 +166,8 @@ class _SignInPageState extends ConsumerState<SignInPage> {
         if (widget.isDialog) {
           Navigator.of(context).pop();
         } else {
-          Navigator.of(context).pushReplacementNamed('/home');
+          // Pour Google, on laisse le callback gérer la redirection vers welcome gate
+          // Pas besoin de redirection ici car le callback s'en charge
         }
       }
     } catch (e) {
@@ -171,7 +181,7 @@ class _SignInPageState extends ConsumerState<SignInPage> {
           context: context,
           builder: (context) => AlertDialog(
             title: Text(
-              translationService.t('connection_error'),
+              loc.connection_error,
               style: const TextStyle(color: Colors.white),
             ),
             content: SingleChildScrollView(
@@ -188,7 +198,7 @@ class _SignInPageState extends ConsumerState<SignInPage> {
               TextButton(
                 onPressed: () => Navigator.pop(context),
                 child: Text(
-                  translationService.t('ok'),
+                  loc.ok,
                   style: const TextStyle(color: Colors.white),
                 ),
               ),
@@ -205,11 +215,11 @@ class _SignInPageState extends ConsumerState<SignInPage> {
     }
   }
 
-  void _handleForgotPassword(TranslationService translationService) async {
+  void _handleForgotPassword(AppLocalizations loc) async {
     if (_emailController.text.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text(translationService.t('enter_email_first')),
+          content: Text(loc.enter_email_first),
           backgroundColor: Colors.orange,
         ),
       );
@@ -223,10 +233,10 @@ class _SignInPageState extends ConsumerState<SignInPage> {
           await authService.resetPassword(_emailController.text);
         },
         loading: () async {
-          throw Exception(translationService.t('auth_service_loading'));
+          throw Exception(loc.auth_service_loading);
         },
         error: (error, stack) async {
-          throw Exception('${translationService.t('auth_service_error')}: $error');
+          throw Exception('${loc.auth_service_error}: $error');
         },
       );
       
@@ -234,7 +244,7 @@ class _SignInPageState extends ConsumerState<SignInPage> {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(
-              translationService.t('reset_email_sent'),
+              loc.reset_email_sent,
             ),
             backgroundColor: Colors.green,
           ),
@@ -252,14 +262,14 @@ class _SignInPageState extends ConsumerState<SignInPage> {
     }
   }
 
-  Widget _buildLoginForm(TranslationService translationService) {
+  Widget _buildLoginForm(AppLocalizations loc) {
     return Form(
       key: _formKey,
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
           Text(
-            translationService.t('login'),
+            loc.login,
             style: const TextStyle(
               fontSize: 17,
               fontWeight: FontWeight.bold,
@@ -270,7 +280,7 @@ class _SignInPageState extends ConsumerState<SignInPage> {
           TextFormField(
             controller: _emailController,
             decoration: InputDecoration(
-              labelText: translationService.t('email'),
+              labelText: loc.email,
               labelStyle: const TextStyle(color: Colors.white70, fontSize: 12),
               border: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(7),
@@ -288,14 +298,14 @@ class _SignInPageState extends ConsumerState<SignInPage> {
               fillColor: Colors.white.withOpacity(0.1),
             ),
             style: const TextStyle(color: Colors.white, fontSize: 12),
-            validator: (value) => _validateEmail(value, translationService),
+            validator: (value) => _validateEmail(value, loc),
           ),
           const SizedBox(height: 11),
           TextFormField(
             controller: _passwordController,
             obscureText: _obscurePassword,
             decoration: InputDecoration(
-              labelText: translationService.t('password'),
+              labelText: loc.password,
               labelStyle: const TextStyle(color: Colors.white70, fontSize: 12),
               border: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(7),
@@ -324,15 +334,15 @@ class _SignInPageState extends ConsumerState<SignInPage> {
               ),
             ),
             style: const TextStyle(color: Colors.white, fontSize: 12),
-            validator: (value) => _validatePassword(value, translationService),
+            validator: (value) => _validatePassword(value, loc),
           ),
           const SizedBox(height: 8),
           Align(
             alignment: Alignment.centerRight,
             child: TextButton(
-              onPressed: () => _handleForgotPassword(translationService),
+              onPressed: () => _handleForgotPassword(loc),
               child: Text(
-                translationService.t('forgot_password'),
+                loc.forgot_password,
                 style: const TextStyle(color: Colors.white70, fontSize: 12),
               ),
             ),
@@ -366,7 +376,7 @@ class _SignInPageState extends ConsumerState<SignInPage> {
               ),
               Flexible(
                 child: Text(
-                  translationService.t('remember_me'),
+                  loc.remember_me,
                   style: const TextStyle(color: Colors.white70, fontSize: 12),
                   overflow: TextOverflow.ellipsis,
                 ),
@@ -382,7 +392,7 @@ class _SignInPageState extends ConsumerState<SignInPage> {
                 foregroundColor: const Color(0xFF0A1128),
                 padding: const EdgeInsets.symmetric(vertical: 4), // Réduit de 50% (8 → 4)
               ),
-              onPressed: _isLoading ? null : () => _signIn(translationService),
+              onPressed: _isLoading ? null : () => _signIn(loc),
               child: _isLoading
                   ? const SizedBox(
                       width: 20,
@@ -390,14 +400,14 @@ class _SignInPageState extends ConsumerState<SignInPage> {
                       child: CircularProgressIndicator(),
                     )
                   : Text(
-                      translationService.t('sign_in'),
+                      loc.sign_in,
                       style: const TextStyle(fontSize: 11), // Réduit de 3 points (14 → 11)
                     ),
             ),
           ),
           const SizedBox(height: 16),
           Text(
-            translationService.t('or_continue_with'),
+            loc.or_continue_with,
             style: const TextStyle(
               color: Colors.white70,
               fontSize: 12,
@@ -421,31 +431,14 @@ class _SignInPageState extends ConsumerState<SignInPage> {
                       ),
                     )
                   : Text(
-                      translationService.t('google_sign_in'),
+                      loc.google_sign_in,
                       style: const TextStyle(fontSize: 11), // Réduit de 3 points (14 → 11)
                     ),
-              onPressed: _isLoading ? null : () => _signInWithGoogle(translationService),
+              onPressed: _isLoading ? null : () => _signInWithGoogle(loc),
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.white,
                 foregroundColor: Colors.black,
                 padding: const EdgeInsets.symmetric(vertical: 4), // Réduit de 50% (8 → 4)
-              ),
-            ),
-          ),
-          const SizedBox(height: 16),
-          SizedBox(
-            width: double.infinity,
-            child: ElevatedButton.icon(
-              icon: const Icon(Icons.face),
-              label: Text(
-                translationService.t('biometric_auth'),
-                style: const TextStyle(fontSize: 11),
-              ),
-              onPressed: _isLoading ? null : _signInWithBiometric,
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.purple,
-                foregroundColor: Colors.white,
-                padding: const EdgeInsets.symmetric(vertical: 4),
               ),
             ),
           ),
@@ -456,7 +449,7 @@ class _SignInPageState extends ConsumerState<SignInPage> {
                 Navigator.of(context).pushNamed('/sign-up');
               },
               child: Text(
-                translationService.t('sign_up'),
+                loc.sign_up,
                 style: const TextStyle(color: Colors.white70),
               ),
             ),
@@ -477,116 +470,72 @@ class _SignInPageState extends ConsumerState<SignInPage> {
     );
   }
 
-  Future<void> _signInWithBiometric() async {
-    setState(() {
-      _isLoading = true;
-      _error = null;
-    });
-
-    try {
-      final authState = ref.read(authProvider);
-      final userId = authState.user?.id;
-      
-      if (userId == null) {
-        setState(() {
-          _error = 'Utilisateur non connecté';
-        });
-        return;
-      }
-
-      // Vérifier si la biométrie est activée
-      final isEnabled = await _biometricService.isBiometricEnabled(userId);
-      if (!isEnabled) {
-        setState(() {
-          _error = 'Authentification biométrique non activée';
-        });
-        return;
-      }
-
-      // Authentifier avec la biométrie
-      final success = await _biometricService.authenticateWithBiometrics(
-        reason: 'Connectez-vous à votre compte',
-      );
-      
-      if (success) {
-        if (mounted) {
-          Navigator.of(context).pushReplacementNamed('/home');
-        }
-      } else {
-        setState(() {
-          _error = 'Authentification biométrique échouée';
-        });
-      }
-    } catch (e) {
-      if (mounted) {
-        setState(() {
-          _error = 'Erreur lors de l\'authentification biométrique: $e';
-        });
-      }
-    } finally {
-      if (mounted) {
-        setState(() {
-          _isLoading = false;
-        });
-      }
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
-    final translationService = ref.watch(translationServiceProvider.notifier);
-    ref.watch(translationServiceProvider); // Force la reconstruction quand la langue change
+    final currentLocale = ref.watch(localeProvider);
     
-    if (widget.isDialog) {
-      return Dialog(
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(20),
-        ),
-        backgroundColor: const Color(0xFF0A1128),
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.all(24),
-          child: _buildLoginForm(translationService),
-        ),
-      );
-    }
+    return Localizations.override(
+      context: context,
+      locale: currentLocale,
+      child: Builder(
+        builder: (context) {
+          final loc = AppLocalizations.of(context)!;
+          
+          if (widget.isDialog) {
+            return Dialog(
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(20),
+              ),
+              backgroundColor: const Color(0xFF0A1128),
+              child: SingleChildScrollView(
+                padding: const EdgeInsets.all(24),
+                child: _buildLoginForm(loc),
+              ),
+            );
+          }
 
-    return Scaffold(
-      appBar: AppBar(
-        backgroundColor: const Color(0xFF0A1128),
-        elevation: 0,
-        centerTitle: true,
-        title: Image.asset(
-          'assets/images/logo2.png',
-          height: 40,
-        ),
-        actions: [
-          Padding(
-            padding: const EdgeInsets.only(right: 16.0),
-            child: const LanguageSelector(),
-          ),
-        ],
-      ),
-      body: Container(
-        decoration: const BoxDecoration(
-          image: DecorationImage(
-            image: AssetImage('assets/background.jpg'),
-            fit: BoxFit.cover,
-          ),
-        ),
-        child: SafeArea(
-          child: Center(
-            child: SingleChildScrollView(
-              padding: const EdgeInsets.all(11),
-              child: Card(
-                color: const Color(0xFF0A1128).withOpacity(0.8),
-                child: Padding(
-                  padding: const EdgeInsets.all(11),
-                  child: _buildLoginForm(translationService),
+          return Scaffold(
+            appBar: AppBar(
+              backgroundColor: const Color(0xFF0A1128),
+              elevation: 0,
+              shadowColor: Colors.transparent,
+              surfaceTintColor: Colors.transparent,
+              centerTitle: true,
+              title: Image.asset(
+                'assets/logo2.png',
+                height: 40,
+              ),
+              actions: [
+                Padding(
+                  padding: const EdgeInsets.only(right: 16.0),
+                  child: const LanguageSelector(),
+                ),
+              ],
+            ),
+            body: Container(
+              decoration: const BoxDecoration(
+                image: DecorationImage(
+                  image: AssetImage('assets/background.jpg'),
+                  fit: BoxFit.cover,
+                ),
+              ),
+              child: SafeArea(
+                child: Center(
+                  child: SingleChildScrollView(
+                    padding: const EdgeInsets.all(11),
+                    child: Card(
+                      color: const Color(0xFF0A1128).withOpacity(0.8),
+                      child: Padding(
+                        padding: const EdgeInsets.all(11),
+                        child: _buildLoginForm(loc),
+                      ),
+                    ),
+                  ),
                 ),
               ),
             ),
-          ),
-        ),
+          );
+        },
       ),
     );
   }

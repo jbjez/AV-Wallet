@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:av_wallet_hive/l10n/app_localizations.dart';
+import 'package:av_wallet/l10n/app_localizations.dart';
 
 /// Widget qui force le rafraîchissement quand la langue change
 class LocalizedText extends StatefulWidget {

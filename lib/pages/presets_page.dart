@@ -46,6 +46,8 @@ class _PresetsPageState extends ConsumerState<PresetsPage> {
         backgroundColor: Theme.of(context).primaryColor,
         foregroundColor: Colors.white,
         elevation: 0,
+        shadowColor: Colors.transparent,
+        surfaceTintColor: Colors.transparent,
       ),
       body: Column(
         children: [
@@ -435,7 +437,7 @@ class _PresetsPageState extends ConsumerState<PresetsPage> {
                 Navigator.of(context).pop();
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(
-                    content: Text('Preset renommé en "${newName}"'),
+                    content: Text('Preset renommé en "$newName"'),
                     duration: const Duration(seconds: 2),
                     backgroundColor: Colors.green,
                   ),

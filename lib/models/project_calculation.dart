@@ -15,6 +15,7 @@ class ProjectCalculation with _$ProjectCalculation {
     String? comment,
     String? filePath,
     String? type,
+    @Default([]) List<String> photoPaths, // Nouveau: liste des chemins des photos
     @Default({}) Map<String, dynamic> data,
   }) = _ProjectCalculation;
 

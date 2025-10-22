@@ -14,8 +14,8 @@ final logger = Logger('CatalogueProvider');
 final catalogueProvider =
     StateNotifierProvider<CatalogueNotifier, List<CatalogueItem>>((ref) {
   final notifier = CatalogueNotifier();
-  // Réactiver l'initialisation automatique maintenant que l'app fonctionne
-  Future.delayed(const Duration(milliseconds: 100), () {
+  // Initialisation différée pour améliorer les performances
+  Future.delayed(const Duration(milliseconds: 500), () {
     print('CatalogueProvider: Starting delayed initialization');
     notifier._initAsync();
   });

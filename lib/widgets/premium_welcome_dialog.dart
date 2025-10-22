@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import '../services/translation_service.dart';
+import '../l10n/app_localizations.dart';
+import '../pages/home_page.dart';
 
 /// Dialog de bienvenue pour les utilisateurs premium
 class PremiumWelcomeDialog extends StatelessWidget {
@@ -14,109 +15,141 @@ class PremiumWelcomeDialog extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final translationService = TranslationService();
+    final loc = AppLocalizations.of(context)!;
+    final screenSize = MediaQuery.of(context).size;
     
     return AlertDialog(
+      backgroundColor: const Color(0xFF0A1128), // Fond foncé
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(16),
+        side: const BorderSide(
+          color: Color(0xFF455A64), // Bleu-gris foncé
+          width: 2,
+        ),
       ),
-      title: Row(
-        children: [
-          Container(
-            padding: const EdgeInsets.all(8),
-            decoration: BoxDecoration(
-              color: Colors.amber,
-              borderRadius: BorderRadius.circular(8),
-            ),
-            child: const Icon(
-              Icons.star,
-              color: Colors.white,
-              size: 24,
-            ),
+      title: Center(
+        child: Text(
+          loc.premium_welcome_title,
+          style: const TextStyle(
+            fontSize: 18,
+            fontWeight: FontWeight.bold,
+            color: Colors.white, // Texte blanc
           ),
-          const SizedBox(width: 12),
-          Expanded(
-            child: Text(
-              translationService.t('premium_welcome_title'),
-              style: const TextStyle(
-                fontSize: 20,
-                fontWeight: FontWeight.bold,
-                color: Colors.black87,
-              ),
-            ),
-          ),
-        ],
+        ),
       ),
-      content: Column(
-        mainAxisSize: MainAxisSize.min,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            translationService.t('premium_welcome_message'),
-            style: const TextStyle(
-              fontSize: 16,
-              color: Colors.black87,
-              height: 1.4,
-            ),
-          ),
-          const SizedBox(height: 16),
-          Container(
-            padding: const EdgeInsets.all(12),
-            decoration: BoxDecoration(
-              color: Colors.amber.shade50,
-              borderRadius: BorderRadius.circular(8),
-              border: Border.all(color: Colors.amber.shade200),
-            ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
+      content: ConstrainedBox(
+        constraints: BoxConstraints(
+          maxWidth: screenSize.width * 0.85,
+          maxHeight: screenSize.height * 0.6,
+        ),
+        child: SingleChildScrollView(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Center(
+                child: Column(
                   children: [
-                    Icon(
-                      Icons.check_circle,
-                      color: Colors.green.shade600,
-                      size: 20,
-                    ),
-                    const SizedBox(width: 8),
                     Text(
-                      translationService.t('premium_benefits_title'),
-                      style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        color: Colors.green.shade700,
+                      'Bienvenue sur AV Wallet, ${email.split('@')[0]}',
+                      style: const TextStyle(
+                        fontSize: 16,
+                        color: Colors.white, // Texte blanc
+                        height: 1.4,
+                        fontWeight: FontWeight.w600,
                       ),
+                      textAlign: TextAlign.center,
+                    ),
+                    const SizedBox(height: 8),
+                    Text(
+                      'Félicitation, Premium Activé',
+                      style: const TextStyle(
+                        fontSize: 16,
+                        color: Colors.white, // Texte blanc
+                        height: 1.4,
+                        fontWeight: FontWeight.w600,
+                      ),
+                      textAlign: TextAlign.center,
                     ),
                   ],
                 ),
-                const SizedBox(height: 8),
-                _buildBenefitItem(
-                  translationService.t('premium_benefit_unlimited'),
-                  Icons.all_inclusive,
+              ),
+              const SizedBox(height: 16),
+              Container(
+                padding: const EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  color: Colors.grey.shade100, // Fond clair pour les avantages
+                  borderRadius: BorderRadius.circular(8),
+                  border: Border.all(color: Colors.grey.shade300),
                 ),
-                _buildBenefitItem(
-                  translationService.t('premium_benefit_priority'),
-                  Icons.priority_high,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Center(
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Icon(
+                            Icons.check_circle,
+                            color: Colors.green.shade600,
+                            size: 18,
+                          ),
+                          const SizedBox(width: 6),
+                          Flexible(
+                            child: Text(
+                              loc.premium_benefits_title,
+                              style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                color: Colors.black, // Texte noir sur fond clair
+                                fontSize: 14,
+                              ),
+                              textAlign: TextAlign.center,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                    _buildBenefitItem(
+                      'Catalogue +220 Produits',
+                      Icons.inventory_2,
+                    ),
+                    _buildBenefitItem(
+                      'Calculs Illimités',
+                      Icons.calculate,
+                    ),
+                    _buildBenefitItem(
+                      'Gestion Projet/Preset',
+                      Icons.folder_copy,
+                    ),
+                    _buildBenefitItem(
+                      'Export PDF',
+                      Icons.picture_as_pdf,
+                    ),
+                  ],
                 ),
-                _buildBenefitItem(
-                  translationService.t('premium_benefit_support'),
-                  Icons.support_agent,
-                ),
-              ],
-            ),
+              ),
+            ],
           ),
-        ],
+        ),
       ),
       actions: [
         TextButton(
           onPressed: () => Navigator.of(context).pop(),
           child: Text(
-            translationService.t('premium_welcome_later'),
+            loc.premium_welcome_later,
             style: const TextStyle(color: Colors.grey),
           ),
         ),
         ElevatedButton(
           onPressed: () {
             Navigator.of(context).pop();
-            onContinue();
+            // Navigation directe vers la homepage
+            Future.delayed(const Duration(milliseconds: 100), () {
+              Navigator.of(context).pushReplacement(
+                MaterialPageRoute(builder: (context) => const HomePage()),
+              );
+            });
           },
           style: ElevatedButton.styleFrom(
             backgroundColor: Colors.amber,
@@ -126,7 +159,7 @@ class PremiumWelcomeDialog extends StatelessWidget {
             ),
           ),
           child: Text(
-            translationService.t('premium_welcome_continue'),
+            'Accéder',
             style: const TextStyle(fontWeight: FontWeight.bold),
           ),
         ),
@@ -142,13 +175,16 @@ class PremiumWelcomeDialog extends StatelessWidget {
           Icon(
             icon,
             size: 16,
-            color: Colors.amber.shade700,
+            color: Colors.blue.shade700,
           ),
           const SizedBox(width: 8),
           Expanded(
             child: Text(
               text,
-              style: const TextStyle(fontSize: 14),
+              style: const TextStyle(
+                fontSize: 14,
+                color: Colors.black, // Texte noir sur fond clair
+              ),
             ),
           ),
         ],

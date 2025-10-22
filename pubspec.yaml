@@ -1,4 +1,4 @@
-name: av_wallet_hive
+name: av_wallet
 description: AV Wallet — Flutter app
 publish_to: "none"
 version: 0.1.0
@@ -23,7 +23,7 @@ dependencies:
   shared_preferences: ^2.2.2
 
   # System / device
-  permission_handler: ^10.4.5
+  permission_handler: ^11.3.1
   device_info_plus: ^9.1.1
   local_auth: ^2.1.6
 
@@ -38,13 +38,18 @@ dependencies:
   # Media / hardware
   camera: ^0.10.5+9
   image_picker: ^1.0.7
-  mic_stream: ^0.6.2
+  mic_stream: ^0.7.2
   noise_meter: ^5.0.2
   share_plus: ^10.0.2
   webview_flutter: ^4.4.2
   csv: ^6.0.0
   pdf: ^3.10.7
+  flutter_pdfview: ^1.3.2
+  pdfx: ^2.6.0    # [L47] Aperçu PDF natif (iOS/Android/Web/desktop)
+  open_filex: ^4.5.0  # [L48] Fallback ouverture système
   vector_math: ^2.1.4
+  file_picker: ^8.0.0+1
+  path_provider: ^2.1.2
   wifi_scan: ^0.4.1
 
   # Auth / backend / payments
@@ -61,6 +66,7 @@ dev_dependencies:
   freezed: ^2.4.1
   json_serializable: ^6.7.1
   hive_generator: ^2.0.0
+  flutter_native_splash: ^2.4.1
 
 flutter:
   uses-material-design: true
@@ -68,10 +74,23 @@ flutter:
 
   assets:
     - assets/
-    - assets/images/logo2.png
+    - assets/logo2.png
+    - assets/logo3.png
     - assets/logo.png
+    - assets/structureicon.png
     - assets/flag_fr_48.png
     - assets/flag_en_48.png
     - assets/flag_it_48.png
     - assets/flag_de_48.png
     - assets/flag_es_48.png
+
+# Configuration du splash screen natif
+flutter_native_splash:
+  color: "#0A1128"           # bleu nuit natif
+  image: assets/logo2.png    # logo centré
+  android_12:
+    color: "#0A1128"
+    image: assets/logo2.png  # Android 12+ nécessite image séparée
+  android: true
+  ios: true
+  web: false

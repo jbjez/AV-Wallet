@@ -5,26 +5,29 @@ import 'structure_menu_page.dart';
 import 'sound_menu_page.dart';
 import 'video_menu_page.dart';
 import 'divers_menu_page.dart';
-// import 'package:av_wallet_hive/l10n/app_localizations.dart';
 import '../widgets/preset_widget.dart';
 import '../widgets/custom_app_bar.dart';
+import '../widgets/action_button.dart';
+import '../widgets/export_widget.dart';
+import '../widgets/uniform_dropdown.dart';
+import '../widgets/uniform_bottom_nav_bar.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../providers/preset_provider.dart';
 import '../providers/catalogue_provider.dart';
 import '../providers/project_provider.dart';
-import '../providers/imported_files_provider.dart';
+import '../providers/preset_pdf_provider.dart';
+import '../providers/preset_files_provider.dart';
+import '../providers/imported_photos_provider.dart';
 import '../models/catalogue_item.dart';
-import '../models/cart_data.dart';
 import '../models/cart_item.dart';
 import '../models/preset.dart';
-import 'package:av_wallet_hive/l10n/app_localizations.dart';
+import '../utils/consumption_parser.dart';
 import '../theme/colors.dart';
-import '../widgets/uniform_dropdown.dart';
-import '../widgets/export_widget.dart';
-import '../widgets/uniform_bottom_nav_bar.dart';
-import '../widgets/action_button.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:av_wallet/l10n/app_localizations.dart';
+import 'package:share_plus/share_plus.dart';
+import 'dart:io';
 import 'dart:convert';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class ElectriciteMenuPage extends ConsumerStatefulWidget {
   const ElectriciteMenuPage({super.key});
@@ -397,16 +400,17 @@ class _ElectriciteMenuPageState extends ConsumerState<ElectriciteMenuPage>
     double totalProjet = 0;
     int totalItems = 0;
     int totalExports = 0;
+    bool showConso = true; // Toujours true pour l'onglet consommation
 
-    // 🔹 Calcule pour TOUS les presets du projet (focus sur la puissance)
+    // 🔹 Calcule pour TOUS les presets du projet
     for (final preset in presets) {
       for (var item in preset.items) {
         final cat = item.item.categorie;
         grouped.putIfAbsent(cat, () => []).add(item.item);
 
-        final value = item.item.conso.contains('W')
-            ? (double.tryParse(item.item.conso.replaceAll('W', '').trim()) ?? 0) * item.quantity
-            : 0;
+        final value = showConso
+            ? ConsumptionParser.parseConsumption(item.item.conso) * item.quantity
+            : ConsumptionParser.parseWeight(item.item.poids) * item.quantity;
 
         totalsPerCategory.update(
           cat,
@@ -418,10 +422,10 @@ class _ElectriciteMenuPageState extends ConsumerState<ElectriciteMenuPage>
         
         // Compter les exports
         if (item.item.categorie == 'Export') {
-          totalExports += item.quantity;
+          totalExports += item.quantity.toInt();
         } else {
           // Compter seulement les vrais articles (pas les exports)
-          totalItems += item.quantity;
+          totalItems += item.quantity.toInt();
         }
       }
     }
@@ -429,11 +433,12 @@ class _ElectriciteMenuPageState extends ConsumerState<ElectriciteMenuPage>
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: const Color(0xFF0A1128).withOpacity(0.3),
+        color: const Color(0xFF0A1128).withValues(alpha: 0.3),
         borderRadius: BorderRadius.circular(12),
       ),
       child: SingleChildScrollView(
         physics: const AlwaysScrollableScrollPhysics(),
+        scrollDirection: Axis.vertical,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -441,20 +446,36 @@ class _ElectriciteMenuPageState extends ConsumerState<ElectriciteMenuPage>
             Container(
               margin: const EdgeInsets.only(bottom: 16),
               child: TextField(
-                onChanged: _onSearchChanged,
+                onChanged: (value) {
+                  setState(() {
+                    searchQuery = value;
+                    if (value.length >= 3) {
+                      final items = ref.read(catalogueProvider);
+                      searchResults = items
+                          .where((item) =>
+                              item.name.toLowerCase().contains(value.toLowerCase()) ||
+                              item.marque.toLowerCase().contains(value.toLowerCase()) ||
+                              item.produit.toLowerCase().contains(value.toLowerCase()))
+                          .toList();
+                      showSearchResults = true;
+                    } else {
+                      showSearchResults = false;
+                    }
+                  });
+                },
                 decoration: InputDecoration(
                   hintText: AppLocalizations.of(context)!.searchArticlePlaceholder,
-                  hintStyle: TextStyle(color: Colors.white.withOpacity(0.7)),
+                  hintStyle: TextStyle(color: Colors.white.withValues(alpha: 0.7)),
                   prefixIcon: Icon(Icons.search, color: Colors.white),
                   filled: true,
-                  fillColor: const Color(0xFF0A1128).withOpacity(0.3),
+                  fillColor: const Color(0xFF0A1128).withValues(alpha: 0.3),
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(12),
                     borderSide: BorderSide(color: Colors.white, width: 1),
                   ),
                   enabledBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(12),
-                    borderSide: BorderSide(color: Colors.white.withOpacity(0.5), width: 1),
+                    borderSide: BorderSide(color: Colors.white.withValues(alpha: 0.5), width: 1),
                   ),
                   focusedBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(12),
@@ -470,8 +491,7 @@ class _ElectriciteMenuPageState extends ConsumerState<ElectriciteMenuPage>
               Container(
                 margin: const EdgeInsets.only(bottom: 16),
                 decoration: BoxDecoration(
-                  color: const Color(0xFF0A1128).withOpacity(0.3),
-                  border: Border.all(color: Colors.white, width: 1),
+                  color: const Color(0xFF0A1128).withValues(alpha: 0.3),
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: Column(
@@ -504,7 +524,7 @@ class _ElectriciteMenuPageState extends ConsumerState<ElectriciteMenuPage>
                               Text(
                                 item.sousCategorie,
                                 style: TextStyle(
-                                  color: Colors.white.withOpacity(0.7),
+                                  color: Colors.white.withValues(alpha: 0.7),
                                   fontSize: 10,
                                 ),
                               ),
@@ -517,48 +537,118 @@ class _ElectriciteMenuPageState extends ConsumerState<ElectriciteMenuPage>
               ),
             ],
             
-            // Résumé global du projet
+            // Cadre 1: Nom du Projet (fond transparent, bordure blanche)
             Container(
               width: double.infinity,
-              constraints: BoxConstraints(
-                minWidth: 200,
-                maxWidth: 400,
-              ),
               padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
-                color: const Color(0xFF0A1128).withOpacity(0.3),
-                border: Border.all(color: Colors.white, width: 1),
+                color: Colors.transparent,
+                border: Border.all(
+                  color: Colors.white,
+                  width: 2,
+                ),
                 borderRadius: BorderRadius.circular(12),
               ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(
-                    '${ref.read(projectProvider).projects.isNotEmpty ? ref.read(projectProvider).getTranslatedProjectName(ref.read(projectProvider).selectedProject, AppLocalizations.of(context)!) : AppLocalizations.of(context)!.defaultProjectName}',
+                  Consumer(
+                    builder: (context, ref, child) {
+                      final projectState = ref.watch(projectProvider);
+                      final projectName = projectState.projects.isNotEmpty 
+                          ? projectState.getTranslatedProjectName(projectState.selectedProject, AppLocalizations.of(context)!)
+                          : AppLocalizations.of(context)!.defaultProjectName;
+                      
+                      return Text(
+                        projectName,
                     style: Theme.of(context).textTheme.titleLarge?.copyWith(
                       fontSize: Theme.of(context).textTheme.titleLarge!.fontSize! - 3,
                       fontWeight: FontWeight.bold,
                       color: Colors.white,
                     ),
+                        overflow: TextOverflow.ellipsis,
+                      );
+                    },
                   ),
                   const SizedBox(height: 16),
+                  
+                  // Paramètres du projet
+                  Consumer(
+                    builder: (context, ref, child) {
+                      final project = ref.watch(projectProvider).selectedProject;
+                      
+                      return Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
                   Text(
-                    '${AppLocalizations.of(context)!.presetCount} : ${presets.length}',
+                            AppLocalizations.of(context)!.project_parameters,
+                            style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                              fontWeight: FontWeight.bold,
+                              color: Colors.white,
+                            ),
+                          ),
+                          const SizedBox(height: 8),
+                          Text(
+                            '${AppLocalizations.of(context)!.project_location}: ${project.location ?? AppLocalizations.of(context)!.not_defined}',
+                            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                              color: Colors.white70,
+                            ),
+                          ),
+                          const SizedBox(height: 4),
+                          Text(
+                            '${AppLocalizations.of(context)!.project_mounting_date}: ${project.mountingDate ?? AppLocalizations.of(context)!.not_defined}',
+                            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                              color: Colors.white70,
+                            ),
+                          ),
+                          const SizedBox(height: 4),
+                          Text(
+                            '${AppLocalizations.of(context)!.project_period}: ${project.period ?? AppLocalizations.of(context)!.not_defined}',
+                            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                              color: Colors.white70,
+                            ),
+                          ),
+                        ],
+                      );
+                    },
+                  ),
+                  const SizedBox(height: 16),
+                  
+                  // Statistiques détaillées du projet
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        '${AppLocalizations.of(context)!.project_stats_presets}: ${presets.length}',
                     style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                       color: Colors.white,
                     ),
                   ),
+                      const SizedBox(height: 4),
                   Text(
-                    '${AppLocalizations.of(context)!.totalArticlesCount} : $totalItems',
+                        '${AppLocalizations.of(context)!.project_stats_articles}: $totalItems',
                     style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                       color: Colors.white,
                     ),
                   ),
+                      const SizedBox(height: 4),
                   Text(
-                    '${AppLocalizations.of(context)!.exportCount} : $totalExports',
+                        '${AppLocalizations.of(context)!.project_stats_calculations}: ${presets.fold<int>(0, (total, preset) {
+                          final pdfMaps = ref.read(presetPdfProvider(preset.id));
+                          return total + pdfMaps.length;
+                        })}',
+                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                          color: Colors.white,
+                        ),
+                      ),
+                      const SizedBox(height: 4),
+                      Text(
+                        '${AppLocalizations.of(context)!.project_stats_photos}: ${presets.fold<int>(0, (total, preset) => total + (ref.read(presetImageFilesProvider(preset.id)).length))}',
                     style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                       color: Colors.white,
                     ),
+                      ),
+                    ],
                   ),
                 ],
               ),
@@ -578,19 +668,31 @@ class _ElectriciteMenuPageState extends ConsumerState<ElectriciteMenuPage>
                 final cat = item.item.categorie;
                 groupedByCategory.putIfAbsent(cat, () => []).add(item);
                 
-                final value = item.item.conso.contains('W')
+                final value = showConso
+                    ? (item.item.conso.contains('W')
                     ? (double.tryParse(item.item.conso.replaceAll('W', '').trim()) ?? 0) * item.quantity
-                    : 0;
+                        : 0)
+                    : (item.item.poids.contains('kg')
+                        ? (double.tryParse(item.item.poids.replaceAll('kg', '').trim()) ?? 0) * item.quantity
+                        : 0);
                 
                 totalPreset += value;
               }
               
+              // Alternance bleu/blanc pour les bordures : index pair = bleu, index impair = blanc
+              final isBlueBorder = presetIndex % 2 == 0;
+              
               return Container(
                 margin: const EdgeInsets.only(bottom: 16),
                 decoration: BoxDecoration(
-                  color: const Color(0xFF0A1128).withOpacity(0.3),
+                  color: Colors.transparent,
                   borderRadius: BorderRadius.circular(12),
-                  border: Border.all(color: Colors.white, width: 1), // Bordure blanche pour le cadre preset
+                  border: Border.all(
+                    color: isBlueBorder 
+                        ? Colors.blue[700]!
+                        : Colors.white,
+                    width: 2,
+                  ),
                 ),
                 child: Padding(
                   padding: const EdgeInsets.all(16),
@@ -636,7 +738,7 @@ class _ElectriciteMenuPageState extends ConsumerState<ElectriciteMenuPage>
                               ),
                             ),
                             const SizedBox(height: 4),
-                            // Ligne 2: Quantité avec + et - et puissance à droite
+                            // Ligne 2: Quantité avec + et - et poids à droite
                             Row(
                               children: [
                                 // Bouton -
@@ -662,9 +764,8 @@ class _ElectriciteMenuPageState extends ConsumerState<ElectriciteMenuPage>
                                     width: 24,
                                     height: 24,
                                     decoration: BoxDecoration(
-                                      color: Colors.red.withOpacity(0.3),
+                                      color: Colors.red.withValues(alpha: 0.3),
                                       borderRadius: BorderRadius.circular(12),
-                                      border: Border.all(color: Colors.white, width: 1),
                                     ),
                                     child: Icon(
                                       Icons.remove,
@@ -682,9 +783,8 @@ class _ElectriciteMenuPageState extends ConsumerState<ElectriciteMenuPage>
                                   child: Container(
                                     padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
                                     decoration: BoxDecoration(
-                                      color: Colors.white.withOpacity(0.1),
+                                      color: Colors.white.withValues(alpha: 0.1),
                                       borderRadius: BorderRadius.circular(8),
-                                      border: Border.all(color: Colors.white, width: 1),
                                     ),
                                     child: Text(
                                       '${item.quantity}',
@@ -717,9 +817,8 @@ class _ElectriciteMenuPageState extends ConsumerState<ElectriciteMenuPage>
                                     width: 24,
                                     height: 24,
                                     decoration: BoxDecoration(
-                                      color: Colors.green.withOpacity(0.3),
+                                      color: Colors.green.withValues(alpha: 0.3),
                                       borderRadius: BorderRadius.circular(12),
-                                      border: Border.all(color: Colors.white, width: 1),
                                     ),
                                     child: Icon(
                                       Icons.add,
@@ -729,12 +828,36 @@ class _ElectriciteMenuPageState extends ConsumerState<ElectriciteMenuPage>
                                   ),
                                 ),
                                 const Spacer(),
-                                // Puissance à droite
+                                // Poids/Puissance à droite
                                 Text(
-                                  '${(double.tryParse(item.item.conso.replaceAll('W', '').trim()) ?? 0) * item.quantity} W',
+                                  '${showConso ? (ConsumptionParser.parseConsumption(item.item.conso) * item.quantity / 1000).toStringAsFixed(2) : (ConsumptionParser.parseWeight(item.item.poids) * item.quantity).toStringAsFixed(2)} ${showConso ? 'kW' : AppLocalizations.of(context)!.unitKilogram}',
                                   style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                                     color: Colors.white,
                                     fontWeight: FontWeight.w600,
+                                    fontSize: (Theme.of(context).textTheme.bodyMedium?.fontSize ?? 14) - 2,
+                                  ),
+                                ),
+                                const SizedBox(width: 8),
+                                // Bouton corbeille pour supprimer l'article
+                                GestureDetector(
+                                  onTap: () async {
+                                    // Supprimer l'article du preset
+                                    final updatedItems = preset.items.where((i) => i.item.id != item.item.id).toList();
+                                    final updatedPreset = preset.copyWith(items: updatedItems);
+                                    await ref.read(presetProvider.notifier).updatePreset(updatedPreset);
+                                  },
+                                  child: Container(
+                                    width: 24,
+                                    height: 24,
+                                    decoration: BoxDecoration(
+                                      color: Colors.red.withValues(alpha: 0.3),
+                                      borderRadius: BorderRadius.circular(12),
+                                    ),
+                                    child: Icon(
+                                      Icons.delete_outline,
+                                      color: Colors.white,
+                                      size: 16,
+                                    ),
                                   ),
                                 ),
                               ],
@@ -748,21 +871,19 @@ class _ElectriciteMenuPageState extends ConsumerState<ElectriciteMenuPage>
                         margin: const EdgeInsets.only(top: 12),
                         padding: const EdgeInsets.all(12),
                         decoration: BoxDecoration(
-                          color: const Color(0xFF0A1128).withOpacity(0.3),
+                          color: const Color(0xFF0A1128).withValues(alpha: 0.3),
                           borderRadius: BorderRadius.circular(8),
                           border: Border.all(
-                            color: Theme.of(context).brightness == Brightness.dark 
-                                ? Colors.lightBlue[300]! // Bleu ciel en mode sombre
-                                : const Color(0xFF1B3B5A), // Bleu nuit en mode clair
+                            color: Colors.lightBlue[300]!, 
                             width: 1
-                          ), // Bordure adaptative pour le total preset
+                          ),
                         ),
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            // Ligne 1: Total Puissance
+                            // Ligne 1: Total Poids avec câblage
                             Text(
-                              '${AppLocalizations.of(context)!.totalPreset} ${AppLocalizations.of(context)!.power}',
+                              'Total ${preset.name} ${showConso ? AppLocalizations.of(context)!.power : AppLocalizations.of(context)!.weight}${!showConso ? ' ${AppLocalizations.of(context)!.cabling_addition}' : ''}',
                               style: Theme.of(context).textTheme.titleSmall?.copyWith(
                                 fontWeight: FontWeight.bold,
                                 color: Colors.white,
@@ -771,11 +892,11 @@ class _ElectriciteMenuPageState extends ConsumerState<ElectriciteMenuPage>
                             const SizedBox(height: 4),
                             // Ligne 2: Projet + résultat
                             Text(
-                              '${preset.name} : ${(totalPreset / 1000).toStringAsFixed(2)} kW',
+                              '${preset.name} : ${showConso ? (totalPreset / 1000).toStringAsFixed(2) : totalPreset.toStringAsFixed(2)} ${showConso ? AppLocalizations.of(context)!.unitKilowatt : AppLocalizations.of(context)!.unitKilogram}',
                               style: Theme.of(context).textTheme.titleSmall?.copyWith(
                                 fontWeight: FontWeight.bold,
                                 color: Colors.white,
-                                fontSize: 14,
+                                fontSize: 12,
                               ),
                             ),
                           ],
@@ -787,50 +908,73 @@ class _ElectriciteMenuPageState extends ConsumerState<ElectriciteMenuPage>
               );
             }),
             
-            // Total global du projet (tout en bas)
+            // Cadre 3: Total global du projet (fond transparent, bordure bleue)
             const SizedBox(height: 20),
             Container(
               padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
-                color: const Color(0xFF0A1128).withOpacity(0.3),
-                border: Border.all(color: Colors.white, width: 1), // Bordure blanche pour le total projet
+                color: Colors.transparent,
+                border: Border.all(
+                  color: Colors.blue[700]!,
+                  width: 2,
+                ),
                 borderRadius: BorderRadius.circular(12),
               ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   // Ligne 1: Total Puissance
-                  Text(
-                    '${AppLocalizations.of(context)!.totalProject} ${AppLocalizations.of(context)!.power}',
+                  Consumer(
+                    builder: (context, ref, child) {
+                      final projectState = ref.watch(projectProvider);
+                      final projectName = projectState.projects.isNotEmpty 
+                          ? projectState.getTranslatedProjectName(projectState.selectedProject, AppLocalizations.of(context)!)
+                          : AppLocalizations.of(context)!.defaultProjectName;
+                      
+                      return Text(
+                        'Total $projectName ${showConso ? AppLocalizations.of(context)!.power : AppLocalizations.of(context)!.weight}',
                     style: Theme.of(context).textTheme.titleMedium?.copyWith(
                       fontWeight: FontWeight.bold,
                       color: Colors.white,
-                      fontSize: 16,
+                          fontSize: 14,
                     ),
+                      );
+                    },
                   ),
                   const SizedBox(height: 8),
                   // Ligne 2: Nom Projet + calcul du total en kW
-                  Text(
-                    '${ref.read(projectProvider).projects.isNotEmpty ? ref.read(projectProvider).getTranslatedProjectName(ref.read(projectProvider).selectedProject, AppLocalizations.of(context)!) : AppLocalizations.of(context)!.defaultProjectName} : ${(totalProjet / 1000).toStringAsFixed(2)} kW',
+                  Consumer(
+                    builder: (context, ref, child) {
+                      final projectState = ref.watch(projectProvider);
+                      final projectName = projectState.projects.isNotEmpty 
+                          ? projectState.getTranslatedProjectName(projectState.selectedProject, AppLocalizations.of(context)!)
+                          : AppLocalizations.of(context)!.defaultProjectName;
+                      
+                      return Text(
+                        '$projectName : ${showConso ? (totalProjet / 1000).toStringAsFixed(2) : totalProjet.toStringAsFixed(2)} ${showConso ? AppLocalizations.of(context)!.unitKilowatt : AppLocalizations.of(context)!.unitKilogram}',
                     style: Theme.of(context).textTheme.titleMedium?.copyWith(
                       fontWeight: FontWeight.bold,
                       color: Colors.white,
-                      fontSize: 16,
+                          fontSize: 12,
                     ),
+                        overflow: TextOverflow.ellipsis,
+                      );
+                    },
                   ),
                 ],
               ),
             ),
             
+            
             // Commentaire utilisateur (au-dessus des boutons)
-            if (_getCommentForTab('power_tab').isNotEmpty) ...[
+            if (_getCommentForTab(showConso ? 'power_tab' : 'weight_tab').isNotEmpty) ...[
               const SizedBox(height: 20),
               Container(
                 width: double.infinity,
                 padding: const EdgeInsets.all(12),
                 decoration: BoxDecoration(
                   color: Theme.of(context).brightness == Brightness.dark
-                      ? Colors.blue[900]?.withOpacity(0.3)
+                      ? Colors.blue[900]?.withValues(alpha: 0.3)
                       : Colors.blue[50],
                   borderRadius: BorderRadius.circular(8),
                   border: Border.all(
@@ -852,7 +996,7 @@ class _ElectriciteMenuPageState extends ConsumerState<ElectriciteMenuPage>
                     ),
                     const SizedBox(height: 6),
                     Text(
-                      _getCommentForTab('power_tab'),
+                      _getCommentForTab(showConso ? 'power_tab' : 'weight_tab'),
                       style: TextStyle(
                         fontSize: 13,
                         color: Theme.of(context).brightness == Brightness.dark
@@ -865,11 +1009,32 @@ class _ElectriciteMenuPageState extends ConsumerState<ElectriciteMenuPage>
               ),
             ],
             
-            // Cadre des fichiers importés (PDF et photos)
+            // Cadre des fichiers importés par preset avec bordure blanche
             Consumer(
               builder: (context, ref, child) {
-                final importedFiles = ref.watch(importedFilesProvider);
-                if (importedFiles.isEmpty) return const SizedBox.shrink();
+                final presets = ref.watch(presetProvider);
+                if (presets.isEmpty) return const SizedBox.shrink();
+                
+                // [L1320] — NOUVEAU SYSTÈME PDF
+                Map<String, List<Map>> allPresetPdfs = {};
+                Map<String, List<String>> allPresetImages = {};
+                
+                for (final preset in presets) {
+                  // Utiliser le nouveau provider pour les PDFs
+                  final pdfMaps = ref.watch(presetPdfProvider(preset.id));
+                  final imageFiles = ref.watch(presetImageFilesProvider(preset.id));
+                  
+                  if (pdfMaps.isNotEmpty || imageFiles.isNotEmpty) {
+                    allPresetPdfs[preset.id] = pdfMaps;
+                    allPresetImages[preset.id] = imageFiles;
+                  }
+                }
+                
+                // Vérifier aussi les photos AR du projet
+                final project = ref.watch(projectProvider).selectedProject;
+                final projectPhotos = <String>[]; // TODO: Implémenter projectPhotosProvider
+                
+                if (allPresetPdfs.isEmpty && allPresetImages.isEmpty && projectPhotos.isEmpty) return const SizedBox.shrink();
                 
                 return Column(
                   children: [
@@ -877,78 +1042,189 @@ class _ElectriciteMenuPageState extends ConsumerState<ElectriciteMenuPage>
                     Container(
                       padding: const EdgeInsets.all(16),
                       decoration: BoxDecoration(
-                        color: const Color(0xFF0A1128).withOpacity(0.3),
+                        color: Colors.transparent,
                         border: Border.all(
-                          color: Colors.white.withOpacity(0.3),
-                          width: 1,
+                          color: Colors.white,
+                          width: 2,
                         ),
                         borderRadius: BorderRadius.circular(12),
                       ),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
+                          // Titre du cadre
                           Row(
                             children: [
                               Icon(
                                 Icons.folder_open,
-                                color: Colors.white.withOpacity(0.8),
+                                color: Colors.white,
                                 size: 20,
                               ),
                               const SizedBox(width: 8),
                               Text(
-                                'Fichiers importés (${importedFiles.length})',
+                                AppLocalizations.of(context)!.imports,
                                 style: TextStyle(
-                                  color: Colors.white.withOpacity(0.9),
-                                  fontSize: 14,
-                                  fontWeight: FontWeight.w600,
+                                  color: Colors.white,
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.bold,
                                 ),
                               ),
                             ],
                           ),
-                          const SizedBox(height: 12),
-                          ...(importedFiles.map((fileName) {
-                            final isPdf = fileName.toLowerCase().endsWith('.pdf');
-                            final isImage = fileName.toLowerCase().endsWith('.jpg') || 
-                                           fileName.toLowerCase().endsWith('.jpeg') || 
-                                           fileName.toLowerCase().endsWith('.png');
+                          const SizedBox(height: 16),
+                          
+                          // [L1370] — Afficher les fichiers par preset avec nouveau système
+                          ...allPresetPdfs.entries.map((entry) {
+                            final presetId = entry.key;
+                            final pdfMaps = allPresetPdfs[presetId] ?? [];
+                            final imageFiles = allPresetImages[presetId] ?? [];
+                            
+                            return Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                // [L1380] — Lignes pour chaque calcul individuel (PDF) de ce preset
+                                if (pdfMaps.isNotEmpty) ...[
+                                  // [L1382] — Afficher chaque calcul avec icône rouge et titre simplifié
+                                  ...pdfMaps.asMap().entries.map((entry) {
+                                    final index = entry.key;
+                                    final pdfMap = entry.value;
+                                    final pdfName = pdfMap['name'] as String;
+                                    
+                                    // Extraire le type de calcul du nom du fichier
+                                    String displayName;
+                                    if (pdfName.contains('DMX')) {
+                                      displayName = 'DMX ${index + 1}';
+                                    } else if (pdfName.contains('Faisceau')) {
+                                      displayName = 'Faisceau ${index + 1}';
+                                    } else if (pdfName.contains('Led Driver')) {
+                                      displayName = 'Led Driver ${index + 1}';
+                                    } else if (pdfName.contains('LED') || pdfName.contains('Mur')) {
+                                      displayName = 'Mur Led ${index + 1}';
+                                    } else if (pdfName.contains('Son')) {
+                                      displayName = 'Son ${index + 1}';
+                                    } else if (pdfName.contains('Projection')) {
+                                      displayName = 'Projection ${index + 1}';
+                                    } else if (pdfName.contains('Charges')) {
+                                      displayName = 'Charges ${index + 1}';
+                                    } else {
+                                      displayName = 'Calcul ${index + 1}';
+                                    }
                             
                             return Container(
                               margin: const EdgeInsets.only(bottom: 8),
                               padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
                               decoration: BoxDecoration(
-                                color: Colors.white.withOpacity(0.1),
+                                        color: Colors.white.withValues(alpha: 0.1),
                                 borderRadius: BorderRadius.circular(8),
                                 border: Border.all(
-                                  color: Colors.white.withOpacity(0.2),
+                                          color: Colors.white.withValues(alpha: 0.3),
                                   width: 1,
                                 ),
                               ),
                               child: Row(
                                 children: [
                                   Icon(
-                                    isPdf ? Icons.picture_as_pdf : 
-                                    isImage ? Icons.image : Icons.insert_drive_file,
-                                    color: isPdf ? Colors.red.withOpacity(0.8) : 
-                                           isImage ? Colors.blue.withOpacity(0.8) : 
-                                           Colors.grey.withOpacity(0.8),
+                                            Icons.calculate,
+                                            color: Colors.red.withValues(alpha: 0.8),
                                     size: 18,
                                   ),
                                   const SizedBox(width: 8),
                                   Expanded(
                                     child: Text(
-                                      fileName,
+                                              displayName,
                                       style: TextStyle(
-                                        color: Colors.white.withOpacity(0.9),
-                                        fontSize: 12,
-                                      ),
-                                      overflow: TextOverflow.ellipsis,
-                                    ),
-                                  ),
+                                                color: Colors.white.withValues(alpha: 0.9),
+                                                fontSize: 14,
+                                                fontWeight: FontWeight.w600,
+                                              ),
+                                            ),
+                                          ),
+                                          // Bouton aperçu/exporter
+                                          PopupMenuButton<String>(
+                                            icon: Icon(
+                                              Icons.more_vert,
+                                              color: Colors.white.withValues(alpha: 0.7),
+                                              size: 18,
+                                            ),
+                                            onSelected: (value) async {
+                                              if (value == 'preview') {
+                                                // Aperçu PDF
+                                                try {
+                                                  showPdfPreview(context, pdfName, displayName);
+                                                } catch (e) {
+                                                  ScaffoldMessenger.of(context).showSnackBar(
+                                                    SnackBar(
+                                                      content: Text('Erreur: $e'),
+                                                      backgroundColor: Colors.red,
+                                                    ),
+                                                  );
+                                                }
+                                              } else if (value == 'export') {
+                                                // Exporter PDF
+                                                try {
+                                                  ScaffoldMessenger.of(context).showSnackBar(
+                                                    SnackBar(
+                                                      content: Text('Export PDF: $pdfName'),
+                                                      backgroundColor: Colors.blue,
+                                                    ),
+                                                  );
+                                                } catch (e) {
+                                                  ScaffoldMessenger.of(context).showSnackBar(
+                                                    SnackBar(
+                                                      content: Text('Erreur: $e'),
+                                                      backgroundColor: Colors.red,
+                                                    ),
+                                                  );
+                                                }
+                                              }
+                                            },
+                                            itemBuilder: (context) => [
+                                              PopupMenuItem(
+                                                value: 'preview',
+                                                child: Row(
+                                                  children: [
+                                                    Icon(Icons.visibility, size: 16),
+                                                    const SizedBox(width: 8),
+                                                    Text(AppLocalizations.of(context)!.preview),
+                                                  ],
+                                                ),
+                                              ),
+                                              PopupMenuItem(
+                                                value: 'export',
+                                                child: Row(
+                                                  children: [
+                                                    Icon(Icons.share, size: 16),
+                                                    const SizedBox(width: 8),
+                                                    Text(AppLocalizations.of(context)!.export),
+                                                  ],
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                          const SizedBox(width: 8),
+                        // Bouton supprimer
                                   IconButton(
-                                    onPressed: () => ref.read(importedFilesProvider.notifier).removeFile(fileName),
+                          onPressed: () async {
+                            try {
+                              // TODO: Implémenter la suppression PDF
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(
+                                  content: Text('Suppression PDF: ${pdfMap['name']}'),
+                                  backgroundColor: Colors.blue,
+                                ),
+                              );
+                            } catch (e) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(
+                                  content: Text('Erreur lors de la suppression: $e'),
+                                  backgroundColor: Colors.red,
+                                ),
+                              );
+                            }
+                          },
                                     icon: Icon(
                                       Icons.delete_outline,
-                                      color: Colors.red.withOpacity(0.8),
+                                              color: Colors.red.withValues(alpha: 0.8),
                                       size: 18,
                                     ),
                                     padding: EdgeInsets.zero,
@@ -960,11 +1236,232 @@ class _ElectriciteMenuPageState extends ConsumerState<ElectriciteMenuPage>
                                 ],
                               ),
                             );
-                          }).toList()),
-                        ],
+                                  }),
+                                ],
+                                
+                                // Ligne pour les photos avec compteur +/- de ce preset
+                                if (imageFiles.isNotEmpty) ...[
+                                  Row(
+                                    children: [
+                                      Icon(
+                                        Icons.photo_library,
+                                        color: Colors.blue,
+                                        size: 18,
+                                      ),
+                                      const SizedBox(width: 8),
+                                      Text(
+                                        'Photos:',
+                                        style: TextStyle(
+                                          color: Colors.white,
+                                          fontSize: 14,
+                                          fontWeight: FontWeight.w600,
+                                        ),
+                                      ),
+                                      const Spacer(),
+                                      // Bouton -
+                                      GestureDetector(
+                                        onTap: () {
+                                          if (imageFiles.isNotEmpty) {
+                                            ref.read(presetFilesProvider.notifier).removeFileFromPreset(presetId, imageFiles.last);
+                                          }
+                                        },
+                                        child: Container(
+                                          width: 24,
+                                          height: 24,
+                                          decoration: BoxDecoration(
+                                            color: Colors.red.withValues(alpha: 0.3),
+                                            borderRadius: BorderRadius.circular(12),
+                                          ),
+                                          child: Icon(
+                                            Icons.remove,
+                                            color: Colors.white,
+                                            size: 16,
+                                          ),
+                                        ),
+                                      ),
+                                      const SizedBox(width: 8),
+                                      // Nombre de photos
+                                      Container(
+                                        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+                                        decoration: BoxDecoration(
+                                          color: Colors.white.withValues(alpha: 0.1),
+                                          borderRadius: BorderRadius.circular(8),
+                                        ),
+                                        child: Text(
+                                          '${imageFiles.length}',
+                                          style: TextStyle(
+                                            color: Colors.white,
+                                            fontSize: 14,
+                                            fontWeight: FontWeight.bold,
+                                          ),
+                                        ),
+                                      ),
+                                      const SizedBox(width: 8),
+                                      // Bouton +
+                                      GestureDetector(
+                                        onTap: () {
+                                          // Ici on pourrait ajouter une fonctionnalité pour ajouter plus de photos
+                                          // Pour l'instant, on ne fait rien
+                                        },
+                                        child: Container(
+                                          width: 24,
+                                          height: 24,
+                                          decoration: BoxDecoration(
+                                            color: Colors.green.withValues(alpha: 0.3),
+                                            borderRadius: BorderRadius.circular(12),
+                                          ),
+                                          child: Icon(
+                                            Icons.add,
+                                            color: Colors.white,
+                                            size: 16,
+                                          ),
+                                        ),
+                                      ),
+                                      const SizedBox(width: 8),
+                                      // Poubelle pour supprimer toutes les photos de ce preset
+                                      IconButton(
+                                        onPressed: () {
+                                          for (final file in imageFiles) {
+                                            ref.read(presetFilesProvider.notifier).removeFileFromPreset(presetId, file);
+                                          }
+                                        },
+                                        icon: Icon(
+                                          Icons.delete_outline,
+                                          color: Colors.red,
+                                          size: 18,
+                                        ),
+                                        padding: EdgeInsets.zero,
+                                        constraints: const BoxConstraints(
+                                          minWidth: 24,
+                                          minHeight: 24,
                       ),
                     ),
                   ],
+                                  ),
+                                ],
+                                
+                                // Section globale pour les photos AR du projet entier
+                                Consumer(
+                                  builder: (context, ref, child) {
+                                    final project = ref.watch(projectProvider).selectedProject;
+                                    final projectName = project.name;
+                                    final arPhotos = <String>[]; // TODO: Implémenter projectPhotosProvider
+                                    
+                                    if (arPhotos.isNotEmpty) {
+                                      return Column(
+                                        children: [
+                                          const SizedBox(height: 20),
+                                          // Liste des photos AR avec la même mise en forme que les calculs
+                                          ...arPhotos.asMap().entries.map((entry) {
+                                            final index = entry.key;
+                                            final photoPath = entry.value;
+                                            
+                                            return Container(
+                                              margin: const EdgeInsets.only(bottom: 8),
+                                              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                                              decoration: BoxDecoration(
+                                                color: Colors.white.withValues(alpha: 0.1),
+                                                borderRadius: BorderRadius.circular(8),
+                                                border: Border.all(
+                                                  color: Colors.white.withValues(alpha: 0.3),
+                                                  width: 1,
+                                                ),
+                                              ),
+                                              child: Row(
+                                                children: [
+                                                  Icon(
+                                                    Icons.photo,
+                                                    color: Colors.blue.withValues(alpha: 0.8),
+                                                    size: 18,
+                                                  ),
+                                                  const SizedBox(width: 8),
+                                                  Expanded(
+                                                    child: Text(
+                                                      '${ref.read(projectProvider).getTranslatedProjectName(project, AppLocalizations.of(context)!)} ${index + 1}',
+                                                      style: TextStyle(
+                                                        color: Colors.white.withValues(alpha: 0.9),
+                                                        fontSize: 14,
+                                                        fontWeight: FontWeight.w600,
+                                                      ),
+                                                    ),
+                                                  ),
+                                                  // Menu pour aperçu/exporter/supprimer la photo
+                                                  PopupMenuButton<String>(
+                                                    onSelected: (value) async {
+                                                      switch (value) {
+                                                        case 'preview':
+                                                          _showPhotoPreview(photoPath);
+                                                          break;
+                                                        case 'export':
+                                                          _exportPhoto(photoPath);
+                                                          break;
+                                                        case 'delete':
+                                                          await ref.read(importedPhotosProvider.notifier).removePhotoFromProject(projectName, photoPath);
+                                                          break;
+                                                      }
+                                                    },
+                                                    itemBuilder: (BuildContext context) => [
+                                                      PopupMenuItem<String>(
+                                                        value: 'preview',
+                                                        child: Row(
+                                                          children: [
+                                                            Icon(Icons.visibility, size: 16),
+                                                            const SizedBox(width: 8),
+                                                            Text(AppLocalizations.of(context)!.preview),
+                                                          ],
+                                                        ),
+                                                      ),
+                                                      PopupMenuItem<String>(
+                                                        value: 'export',
+                                                        child: Row(
+                                                          children: [
+                                                            Icon(Icons.share, size: 16),
+                                                            const SizedBox(width: 8),
+                                                            Text(AppLocalizations.of(context)!.export),
+                                                          ],
+                                                        ),
+                                                      ),
+                                                      PopupMenuItem<String>(
+                                                        value: 'delete',
+                                                        child: Row(
+                                                          children: [
+                                                            Icon(Icons.delete_outline, size: 16, color: Colors.red),
+                                                            const SizedBox(width: 8),
+                                                            Text(AppLocalizations.of(context)!.delete, style: TextStyle(color: Colors.red)),
+                                                          ],
+                                                        ),
+                                                      ),
+                                                    ],
+                                                    padding: EdgeInsets.zero,
+                                                    constraints: const BoxConstraints(
+                                                      minWidth: 24,
+                                                      minHeight: 24,
+                                                    ),
+                                                    child: Icon(
+                                                      Icons.more_vert,
+                                                      color: Colors.white,
+                                                      size: 18,
+                                                    ),
+                                                  ),
+                                                ],
+                                              ),
+                                            );
+                                          }),
+                                        ],
+                                      );
+                                    }
+                                    
+                                    return const SizedBox.shrink();
+                                  },
+                                ),
+                              ],
+                            );
+                          },
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
                 );
               },
             ),
@@ -976,11 +1473,11 @@ class _ElectriciteMenuPageState extends ConsumerState<ElectriciteMenuPage>
               children: [
                 // Bouton Commentaire (icône uniquement)
                 ActionButton.comment(
-                  onPressed: () => _showCommentDialog('power_tab', 'Puissance'),
+                  onPressed: () => _showCommentDialog(showConso ? 'power_tab' : 'weight_tab', showConso ? 'Puissance' : 'Poids'),
                   iconSize: 28,
                 ),
                 const SizedBox(width: 20),
-                // Bouton Export (rotated)
+                // Bouton Export (rotated) - Premium uniquement
                 Transform.rotate(
                   angle: 3.14159, // 180° en radians
                   child: Container(
@@ -989,42 +1486,144 @@ class _ElectriciteMenuPageState extends ConsumerState<ElectriciteMenuPage>
                     ),
                     child: Consumer(
                       builder: (context, ref, child) {
-                        try {
-                          final project = ref.watch(projectProvider);
-                          final projectName = project.projects.isNotEmpty 
-                              ? project.getTranslatedProjectName(project.selectedProject, AppLocalizations.of(context)!)
+                        return FutureBuilder<bool>(
+                          future: Future.value(true), // TODO: Implémenter FreemiumAccessService
+                          builder: (context, snapshot) {
+                            if (snapshot.connectionState == ConnectionState.waiting) {
+                              return const CircularProgressIndicator();
+                            }
+                            
+                            final canExport = snapshot.data ?? false;
+                            
+                            if (!canExport) {
+                              // Afficher un bouton désactivé avec message premium
+                              return Tooltip(
+                                message: 'Export réservé aux utilisateurs Premium',
+                                child: Opacity(
+                                  opacity: 0.5,
+                                  child: Consumer(
+                                    builder: (context, ref, child) {
+                                      final projectState = ref.watch(projectProvider);
+                                      final projectName = projectState.projects.isNotEmpty 
+                                          ? projectState.getTranslatedProjectName(projectState.selectedProject, AppLocalizations.of(context)!)
                               : AppLocalizations.of(context)!.defaultProjectName;
                           
                           return ExportWidget(
                             title: '${AppLocalizations.of(context)!.defaultProjectName} $projectName',
-                            content: 'Résumé complet du projet avec tous les presets et articles',
+                                        content: _buildExportContent(showConso, totalProjet, totalItems, totalExports, presets),
                             presetName: projectName,
                             exportDate: DateTime.now(),
-                            additionalData: [
-                              {
+                                        projectType: showConso ? 'power' : 'weight',
+                                        projectSummary: {
                                 'totalItems': totalItems.toString(),
                                 'totalExports': totalExports.toString(),
-                                'totalPower': '${(totalProjet / 1000).toStringAsFixed(2)} kW',
+                                          'totalPower': showConso ? '${(totalProjet / 1000).toStringAsFixed(2)} kW' : '${totalProjet.toStringAsFixed(2)} kg',
                                 'presetCount': presets.length.toString(),
-                              }
-                            ],
-                          );
-                        } catch (e) {
+                                        },
+         // Les paramètres de projet sont maintenant inclus dans projectData
+                                  projectData: presets.map((preset) {
+                                    double totalPreset = 0;
+                                    int itemCount = 0;
+                                    List<Map<String, dynamic>> items = [];
+                                    
+                                    for (var item in preset.items) {
+                                      final value = showConso
+                                          ? (item.item.conso.contains('W')
+                                              ? (double.tryParse(item.item.conso.replaceAll('W', '').trim()) ?? 0) * item.quantity
+                                              : 0)
+                                          : (item.item.poids.contains('kg')
+                                              ? (double.tryParse(item.item.poids.replaceAll('kg', '').trim()) ?? 0) * item.quantity
+                                              : 0);
+                                      totalPreset += value;
+                                      itemCount += item.quantity.toInt();
+                                      
+                                      // Ajouter le détail de l'article
+                                      items.add({
+                                        'name': item.item.name,
+                                        'quantity': item.quantity,
+                                        'value': showConso ? (value / 1000).toStringAsFixed(2) : value.toStringAsFixed(2),
+                                        'category': item.item.categorie,
+                                      });
+                                    }
+                                    
+                                    return {
+                                      'presetName': preset.name,
+                                      'totalPower': showConso ? '${(totalPreset / 1000).toStringAsFixed(2)} kW' : '${totalPreset.toStringAsFixed(2)} kg',
+                                      'itemCount': itemCount.toString(),
+                                      'items': items, // Ajouter le détail des articles
+                                    };
+                                  }).toList(),
+                                        // Inclure les photos du projet
+                                        projectName: projectName,
+                                        fileName: 'Projet_${projectName.replaceAll(' ', '_')}_${DateTime.now().millisecondsSinceEpoch}',
+                                      );
+                                    },
+                                  ),
+                                ),
+                              );
+                            }
+                            
+                            // Bouton d'export normal pour les utilisateurs premium
+                            return Consumer(
+                              builder: (context, ref, child) {
+                                final projectState = ref.watch(projectProvider);
+                                final projectName = projectState.projects.isNotEmpty 
+                                    ? projectState.getTranslatedProjectName(projectState.selectedProject, AppLocalizations.of(context)!)
+                                    : AppLocalizations.of(context)!.defaultProjectName;
+                                
                           return ExportWidget(
-                            title: '${AppLocalizations.of(context)!.defaultProjectName} Projet',
-                            content: 'Résumé complet du projet avec tous les presets et articles',
-                            presetName: AppLocalizations.of(context)!.defaultProjectName,
+                                  title: '${AppLocalizations.of(context)!.defaultProjectName} $projectName',
+                                  content: _buildExportContent(showConso, totalProjet, totalItems, totalExports, presets),
+                                  presetName: projectName,
                             exportDate: DateTime.now(),
-                            additionalData: [
-                              {
+                                  projectType: showConso ? 'power' : 'weight',
+                                  projectSummary: {
                                 'totalItems': totalItems.toString(),
                                 'totalExports': totalExports.toString(),
-                                'totalPower': '${(totalProjet / 1000).toStringAsFixed(2)} kW',
+                                    'totalPower': showConso ? '${(totalProjet / 1000).toStringAsFixed(2)} kW' : '${totalProjet.toStringAsFixed(2)} kg',
                                 'presetCount': presets.length.toString(),
-                              }
-                            ],
-                          );
-                        }
+                                  },
+         // Les paramètres de projet sont maintenant inclus dans projectData
+                                  projectData: presets.map((preset) {
+                                    double totalPreset = 0;
+                                    int itemCount = 0;
+                                    List<Map<String, dynamic>> items = [];
+                                    
+                                    for (var item in preset.items) {
+                                      final value = showConso
+                                          ? (item.item.conso.contains('W')
+                                              ? (double.tryParse(item.item.conso.replaceAll('W', '').trim()) ?? 0) * item.quantity
+                                              : 0)
+                                          : (item.item.poids.contains('kg')
+                                              ? (double.tryParse(item.item.poids.replaceAll('kg', '').trim()) ?? 0) * item.quantity
+                                              : 0);
+                                      totalPreset += value;
+                                      itemCount += item.quantity.toInt();
+                                      
+                                      // Ajouter le détail de l'article
+                                      items.add({
+                                        'name': item.item.name,
+                                        'quantity': item.quantity,
+                                        'value': showConso ? (value / 1000).toStringAsFixed(2) : value.toStringAsFixed(2),
+                                        'category': item.item.categorie,
+                                      });
+                                    }
+                                    
+                                    return {
+                                      'presetName': preset.name,
+                                      'totalPower': showConso ? '${(totalPreset / 1000).toStringAsFixed(2)} kW' : '${totalPreset.toStringAsFixed(2)} kg',
+                                      'itemCount': itemCount.toString(),
+                                      'items': items, // Ajouter le détail des articles
+                                    };
+                                  }).toList(),
+                                  // Inclure les photos du projet
+                                  projectName: projectName,
+                                  fileName: 'Projet_${projectName.replaceAll(' ', '_')}_${DateTime.now().millisecondsSinceEpoch}',
+                                );
+                              },
+                            );
+                          },
+                        );
                       },
                     ),
                   ),
@@ -1430,38 +2029,78 @@ class _ElectriciteMenuPageState extends ConsumerState<ElectriciteMenuPage>
             child: Column(
               children: [
                 const SizedBox(height: 8),
-                TabBar(
-                  controller: _tabController,
-                  labelColor: isDark ? Colors.lightBlue[300] : const Color(0xFF1B3B5A), // Bleu ciel en mode sombre, bleu nuit en mode clair
-                  unselectedLabelColor: Colors.white, // Blanc pour l'onglet non sélectionné
-                  indicatorColor: isDark ? Colors.lightBlue[300] : const Color(0xFF1B3B5A), // Indicateur adaptatif
-                  labelStyle: TextStyle(fontSize: 12), // Réduit de 2 points (14 -> 12)
-                  unselectedLabelStyle: TextStyle(fontSize: 12), // Réduit de 2 points (14 -> 12)
-                  tabs: [
-                    Tab(
+                Container(
+                  margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+                  padding: const EdgeInsets.symmetric(vertical: 2),
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(12),
+                    border: Border(
+                      bottom: BorderSide(
+                        color: isDark ? Colors.lightBlue[300]! : const Color(0xFF0A1128),
+                        width: 2,
+                      ),
+                    ),
+                  ),
+         child: TabBar(
+           controller: _tabController,
+           dividerColor: Colors.transparent, // Supprime la ligne de séparation
+           labelColor: Theme.of(context).brightness == Brightness.dark
+               ? Colors.lightBlue[300]  // Bleu ciel en mode nuit
+               : const Color(0xFF0A1128),  // Bleu nuit en mode jour
+           unselectedLabelColor: Colors.white.withOpacity(0.7), // Blanc transparent pour les onglets non sélectionnés
+           indicatorColor: Colors.transparent, // Supprime l'indicateur pour éviter l'overflow
+           labelStyle: TextStyle(fontSize: 12), // Réduit de 2 points (14 -> 12)
+           unselectedLabelStyle: TextStyle(fontSize: 12), // Réduit de 2 points (14 -> 12)
+           tabs: [
+                      Tab(
                       child: Row(
                         mainAxisSize: MainAxisSize.min,
                         children: [
-                          Icon(Icons.bolt, size: 16),
-                          const SizedBox(width: 4),
-                          Consumer(
+                          Icon(Icons.bolt, size: 14), // Réduit la taille de l'icône
+                          const SizedBox(width: 2), // Réduit l'espacement
+                          Flexible( // Utilise Flexible pour éviter l'overflow
+                            child: Consumer(
                             builder: (context, ref, child) {
                               try {
                                 final project = ref.watch(projectProvider).selectedProject;
-                                final projectName = project != null 
-                                    ? ref.read(projectProvider).getTranslatedProjectName(project, AppLocalizations.of(context)!)
-                                    : 'Projet';
-                                return Text('Puiss. $projectName');
+                                  final projectName = ref.read(projectProvider).getTranslatedProjectName(project, AppLocalizations.of(context)!);
+                                  // Abréger encore plus le nom du projet
+                                  final abbreviatedName = projectName.length > 6 
+                                      ? '${projectName.substring(0, 6)}...' 
+                                      : projectName;
+                                  return Text(
+                                    '${AppLocalizations.of(context)!.projectCalculationPage_powerTab} $abbreviatedName',
+                                    style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 12), // Augmenté de 2 points
+                                    overflow: TextOverflow.ellipsis,
+                                  );
                               } catch (e) {
-                                return const Text('Puiss. Projet');
-                              }
-                            },
+                                  return Text(
+                                    '${AppLocalizations.of(context)!.projectCalculationPage_powerTab} ${AppLocalizations.of(context)!.defaultProjectName}',
+                                    style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 12), // Augmenté de 2 points
+                                    overflow: TextOverflow.ellipsis,
+                                  );
+                                }
+                              },
+                            ),
                           ),
                         ],
                       ),
                     ),
-                    const Tab(text: 'Calcul Puissance'),
+                    Tab(
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Icon(Icons.calculate, size: 16),
+                          const SizedBox(width: 4),
+                          Text(
+                            AppLocalizations.of(context)!.electricityPage_powerTab,
+                            style: const TextStyle(fontWeight: FontWeight.bold),
+                          ),
+                        ],
+                      ),
+                    ),
                   ],
+                ),
                 ),
                 const SizedBox(height: 6),
                 PresetWidget(
@@ -1485,7 +2124,7 @@ class _ElectriciteMenuPageState extends ConsumerState<ElectriciteMenuPage>
                     puissanceParPhase = puissanceTotale / nombrePhases;
                   },
                 ),
-                const SizedBox(height: 4),
+                const SizedBox(height: 6),
                 Expanded(
                   child: Container(
                     margin:
@@ -1513,14 +2152,13 @@ class _ElectriciteMenuPageState extends ConsumerState<ElectriciteMenuPage>
           ),
         ],
       ),
-      bottomNavigationBar: const UniformBottomNavBar(currentIndex: 5),
+      bottomNavigationBar: UniformBottomNavBar(currentIndex: 5),
     );
   }
 
   String _getProjectName() {
     try {
       final project = ref.read(projectProvider).selectedProject;
-      if (project == null) return 'Projet';
       
       // Utiliser la méthode de traduction du ProjectProvider
       return ref.read(projectProvider).getTranslatedProjectName(project, AppLocalizations.of(context)!);
@@ -1758,5 +2396,110 @@ class _ElectriciteMenuPageState extends ConsumerState<ElectriciteMenuPage>
         );
       },
     );
+  }
+
+  // Méthodes manquantes pour le nouveau contenu
+  String _buildExportContent(bool showConso, double totalProjet, int totalItems, int totalExports, List<Preset> presets) {
+    final String type = showConso ? 'PUISSANCE' : 'POIDS';
+    final String totalFormatted = showConso ? '${(totalProjet / 1000).toStringAsFixed(2)} kW' : '${totalProjet.toStringAsFixed(2)} kg';
+    
+    String content = '''
+CALCUL DE ${type} - PROJET COMPLET
+=================================
+
+RÉSUMÉ GLOBAL:
+--------------
+Total ${type.toLowerCase()}: $totalFormatted
+Nombre total d'articles: $totalItems
+Nombre d'exports: $totalExports
+Nombre de presets: ${presets.length}
+
+DÉTAIL PAR PRESET:
+-----------------
+''';
+
+    for (int i = 0; i < presets.length; i++) {
+      final preset = presets[i];
+      double totalPreset = 0;
+      int itemCount = 0;
+      
+      for (var item in preset.items) {
+        final value = showConso
+            ? ConsumptionParser.parseConsumption(item.item.conso) * item.quantity
+            : ConsumptionParser.parseWeight(item.item.poids) * item.quantity;
+        
+        totalPreset += value;
+        itemCount += item.quantity;
+      }
+      
+      final presetTotal = showConso ? '${(totalPreset / 1000).toStringAsFixed(2)} kW' : '${totalPreset.toStringAsFixed(2)} kg';
+      
+      content += '''
+${i + 1}. ${preset.name}
+   Total ${type.toLowerCase()}: $presetTotal
+   Articles: $itemCount
+   
+   Détail des articles:
+''';
+      
+      // Grouper les articles par catégorie
+      final Map<String, List<CartItem>> groupedItems = {};
+      for (var item in preset.items) {
+        final category = item.item.categorie;
+        if (!groupedItems.containsKey(category)) {
+          groupedItems[category] = [];
+        }
+        groupedItems[category]!.add(item);
+      }
+      
+      // Afficher les articles groupés par catégorie
+      groupedItems.forEach((category, items) {
+        content += '   ${category}:\n';
+        for (var item in items) {
+          final value = showConso
+              ? ConsumptionParser.parseConsumption(item.item.conso) * item.quantity
+              : ConsumptionParser.parseWeight(item.item.poids) * item.quantity;
+          
+          final itemTotal = showConso ? '${(value / 1000).toStringAsFixed(2)} kW' : '${value.toStringAsFixed(2)} kg';
+          content += '     • ${item.item.produit} (x${item.quantity}): $itemTotal\n';
+        }
+      });
+      
+      content += '\n';
+    }
+    
+    content += '''
+RECOMMANDATIONS:
+---------------
+${showConso ? 
+  '• Vérifier la capacité des alimentations\n• Considérer les facteurs de puissance\n• Prévoir des marges de sécurité\n• Calculer les courants de démarrage' :
+  '• Vérifier la capacité de levage\n• Considérer les charges dynamiques\n• Prévoir des marges de sécurité\n• Calculer les centres de gravité'
+}
+
+Généré le: ${DateTime.now().toString().split('.')[0]}
+''';
+
+    return content;
+  }
+
+  void _showPhotoPreview(String photoPath) {
+    // TODO: Implémenter l'aperçu des photos
+    debugPrint('Aperçu photo: $photoPath');
+  }
+
+  void _exportPhoto(String photoPath) async {
+    try {
+      final file = File(photoPath);
+      if (await file.exists()) {
+        await Share.shareXFiles([XFile(photoPath)]);
+      }
+    } catch (e) {
+      debugPrint('Erreur export photo: $e');
+    }
+  }
+
+  void showPdfPreview(BuildContext context, String filePath, String title) {
+    // TODO: Implémenter l'aperçu PDF
+    debugPrint('Aperçu PDF: $filePath');
   }
 }

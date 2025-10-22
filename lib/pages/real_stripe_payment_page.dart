@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart' hide Card;
 import 'package:flutter/material.dart' as material show Card;
-import 'package:flutter_stripe/flutter_stripe.dart';
 import 'package:logging/logging.dart';
 import '../services/real_stripe_service.dart';
 

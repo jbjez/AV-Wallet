@@ -1,8 +1,7 @@
-import 'package:av_wallet_hive/l10n/app_localizations.dart';
+import 'package:av_wallet/l10n/app_localizations.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../widgets/preset_widget.dart';
-import 'package:av_wallet_hive/l10n/app_localizations.dart';
 import '../widgets/custom_app_bar.dart';
 import '../providers/preset_provider.dart';
 import 'video_menu_page.dart';
@@ -72,6 +71,7 @@ class _LightMenuPageState extends ConsumerState<LightMenuPage>
                         padding: const EdgeInsets.symmetric(vertical: 2),
                         child: TabBar(
                           controller: _tabController,
+                          dividerColor: Colors.transparent, // Supprime la ligne de séparation
                           tabs: [
                             Tab(
                               child: Row(

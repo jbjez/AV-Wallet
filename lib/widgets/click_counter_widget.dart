@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
-import '../providers/auth_provider.dart';
 import '../services/auth_service.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 

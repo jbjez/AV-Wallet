@@ -297,7 +297,7 @@ class SpeedTester {
         return;
       }
 
-      final totalBytes = samples.length > 0 ? samples.reduce((a, b) => a + b) : 0;
+      final totalBytes = samples.isNotEmpty ? samples.reduce((a, b) => a + b) : 0;
       final avgMbps = samples.isNotEmpty ? samples.reduce((a, b) => a + b) / samples.length : 0.0;
       final instantMbps = samples.isNotEmpty ? samples.last : 0.0;
 

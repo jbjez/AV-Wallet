@@ -1,14 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../services/translation_service.dart';
+import '../providers/locale_provider.dart';
 
 class LanguageSelector extends ConsumerWidget {
   const LanguageSelector({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final translationService = ref.watch(translationServiceProvider.notifier);
-    final currentLocale = ref.watch(translationServiceProvider);
+    final currentLocale = ref.watch(localeProvider);
 
     return PopupMenuButton<String>(
       icon: Container(
@@ -32,7 +31,7 @@ class LanguageSelector extends ConsumerWidget {
       ),
       color: const Color(0xFF0A1128),
       onSelected: (String languageCode) {
-        translationService.setLocale(Locale(languageCode));
+        ref.read(localeProvider.notifier).setLocale(Locale(languageCode));
       },
       itemBuilder: (BuildContext context) => [
         _buildLanguageItem('fr', 'Français', 'assets/flag_fr_48.png'),

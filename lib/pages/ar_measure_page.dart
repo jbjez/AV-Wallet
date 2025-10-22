@@ -5,14 +5,16 @@ import 'package:path_provider/path_provider.dart';
 import 'dart:io';
 import 'ar_measure_unity_page.dart';
 import '../utils/permissions.dart';
-import '../providers/preset_provider.dart';
+import '../providers/project_provider.dart';
+import '../providers/imported_photos_provider.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:av_wallet_hive/l10n/app_localizations.dart';
+import 'package:av_wallet/l10n/app_localizations.dart';
 import '../widgets/custom_app_bar.dart';
 import '../widgets/uniform_bottom_nav_bar.dart';
+import '../widgets/preset_widget.dart';
 
 class ArMeasurePage extends ConsumerStatefulWidget {
-  const ArMeasurePage({Key? key}) : super(key: key);
+  const ArMeasurePage({super.key});
   @override
   ConsumerState<ArMeasurePage> createState() => _ArMeasurePageState();
 }
@@ -27,24 +29,23 @@ class _ArMeasurePageState extends ConsumerState<ArMeasurePage> with TickerProvid
   void initState() {
     super.initState();
     _tabController = TabController(length: 1, vsync: this);
-    _checkCameraPermission();
+    _initPerms();
+  }
+
+  Future<void> _initPerms() async {
+    // Debug log pour vérifier les permissions
+    final camStatus = await Permission.camera.status;
+    debugPrint('CAM status: $camStatus');
+    
+    final ok = await AppPermissions.ensureCamera();
+    if (!mounted) return;
+    setState(() => _ready = ok);
   }
 
   @override
   void dispose() {
     _tabController.dispose();
     super.dispose();
-  }
-
-  Future<void> _checkCameraPermission() async {
-    // Debug log pour vérifier les permissions
-    final camStatus = await Permission.camera.status;
-    debugPrint('CAM status iOS: $camStatus');
-    
-    final ok = await AppPermissions.ensureCamera();
-    if (mounted) {
-      setState(() => _ready = ok);
-    }
   }
 
   Future<void> _capturePhoto() async {
@@ -76,20 +77,22 @@ class _ArMeasurePageState extends ConsumerState<ArMeasurePage> with TickerProvid
 
   Future<void> _savePhotoToProject(XFile photo) async {
     try {
-      // Récupérer le preset actif
-      final activePreset = ref.read(activePresetProvider);
-      final presetName = activePreset?.name ?? AppLocalizations.of(context)!.arMeasure_defaultProject;
+      // Récupérer le projet sélectionné au lieu du preset
+      final selectedProject = ref.read(projectProvider).selectedProject;
+      final projectName = selectedProject.name;
+      
+      debugPrint('DEBUG AR - Project name: $projectName');
       
       // Créer le dossier du projet s'il n'existe pas
       final documentsDir = await getApplicationDocumentsDirectory();
-      final projectDir = Directory('${documentsDir.path}/projets/$presetName/photos_ar');
+      final projectDir = Directory('${documentsDir.path}/projets/$projectName/photos_ar');
       if (!await projectDir.exists()) {
         await projectDir.create(recursive: true);
       }
       
       // Générer un nom de fichier unique avec timestamp
       final timestamp = DateTime.now().millisecondsSinceEpoch;
-      final fileName = 'ar_photo_${timestamp}.jpg';
+      final fileName = 'ar_photo_$timestamp.jpg';
       final filePath = '${projectDir.path}/$fileName';
       
       // Copier la photo dans le dossier du projet
@@ -99,12 +102,15 @@ class _ArMeasurePageState extends ConsumerState<ArMeasurePage> with TickerProvid
       
       debugPrint('Photo sauvegardée: $filePath');
       
+      // Ajouter la photo au provider des photos importées
+      await ref.read(importedPhotosProvider.notifier).addPhotoToProject(projectName, filePath);
+      
       // Optionnel: supprimer la photo temporaire
       await sourceFile.delete();
       
     } catch (e) {
       debugPrint('${AppLocalizations.of(context)!.arMeasure_saveError}: $e');
-      throw e;
+      rethrow;
     }
   }
 
@@ -181,7 +187,7 @@ class _ArMeasurePageState extends ConsumerState<ArMeasurePage> with TickerProvid
                             ),
                             const SizedBox(width: 4),
                             Text(
-                              'Photo/AR',
+                              AppLocalizations.of(context)!.arMeasure_photoAr,
                               style: TextStyle(
                                 fontSize: 14,
                                 fontWeight: FontWeight.bold,
@@ -196,6 +202,9 @@ class _ArMeasurePageState extends ConsumerState<ArMeasurePage> with TickerProvid
                     ],
                   ),
                 ),
+                const SizedBox(height: 6),
+                const PresetWidget(),
+                const SizedBox(height: 6),
                 Expanded(
                   child: Padding(
                     padding: const EdgeInsets.only(top: 40),
@@ -209,6 +218,7 @@ class _ArMeasurePageState extends ConsumerState<ArMeasurePage> with TickerProvid
                             child: Column(
                               children: [
                                 const SizedBox(height: 20),
+                                
                                 Text(
                                   AppLocalizations.of(context)!.arMeasure_takePhotosAndMeasure,
                                   style: const TextStyle(
@@ -217,7 +227,7 @@ class _ArMeasurePageState extends ConsumerState<ArMeasurePage> with TickerProvid
                                   ),
                                   textAlign: TextAlign.center,
                                 ),
-                                const SizedBox(height: 40),
+                                const SizedBox(height: 20),
                                 
                                 // Boutons côte à côte
                                 Row(
@@ -254,10 +264,25 @@ class _ArMeasurePageState extends ConsumerState<ArMeasurePage> with TickerProvid
                                     Expanded(
                                       child: ElevatedButton.icon(
                                         onPressed: _ready ? () {
-                                          Navigator.push(
-                                            context,
-                                            MaterialPageRoute(
-                                              builder: (context) => const ArMeasureUnityPage(),
+                                          // Afficher une snackbar "Prochainement" au lieu de naviguer
+                                          final loc = AppLocalizations.of(context)!;
+                                          ScaffoldMessenger.of(context).showSnackBar(
+                                            SnackBar(
+                                              content: Text(
+                                                loc.coming_soon,
+                                                style: const TextStyle(
+                                                  color: Colors.white,
+                                                  fontSize: 16,
+                                                  fontWeight: FontWeight.bold,
+                                                ),
+                                              ),
+                                              backgroundColor: Colors.lightBlue[400],
+                                              duration: const Duration(seconds: 2),
+                                              behavior: SnackBarBehavior.floating,
+                                              shape: RoundedRectangleBorder(
+                                                borderRadius: BorderRadius.circular(10),
+                                              ),
+                                              margin: const EdgeInsets.all(16),
                                             ),
                                           );
                                         } : null,

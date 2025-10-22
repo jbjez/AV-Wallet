@@ -5,7 +5,7 @@
   },
   "appTitle": "AV Wallet",
   "welcomeMessage": "Willkommen bei AV Wallet",
-  "catalogAccess": "Katalog",
+  "catalogAccess": "Katalog AV",
   "lightMenu": "Licht",
   "structureMenu": "Struktur",
   "soundMenu": "Ton",
@@ -42,6 +42,8 @@
   "lightPage_presetName": "Name der Voreinstellung",
   "lightPage_enterPresetName": "Name der Voreinstellung eingeben",
   "lightPage_beamDiameter": "Strahldurchmesser",
+  "lightPage_beamTab": "Strahl",
+  "lightPage_ledDriverTab": "Led driver",
   "lightPage_meters": "Meter",
   "lightPage_recommendedConfig": "Empfohlene Konfiguration",
   "lightPage_total": "Gesamt",
@@ -204,7 +206,12 @@
   "presetWidget_confirmDelete": "Sind Sie sicher, dass Sie diese Voreinstellung löschen möchten?",
   "presetWidget_yes": "Ja",
   "presetWidget_no": "Nein",
-  "presetWidget_newPreset": "Neue Voreinstellung",
+  "new_preset": "Neue Voreinstellung",
+  "view_project": "Projekt anzeigen",
+  "new_project": "Neues Projekt",
+  "save_project": "Projekt speichern",
+  "load_project": "Projekt laden",
+  "export_project": "Projekt exportieren",
   "presetWidget_renamePreset": "Voreinstellung umbenennen",
   "presetWidget_newName": "Neuer Name",
   "presetWidget_create": "Erstellen",
@@ -222,6 +229,15 @@
   "projectCalculationPage_weightProject": "Gewichtsprojekt",
   "projectCalculationPage_powerTab": "Leist.",
   "projectCalculationPage_weightTab": "Gew.",
+  "electricityPage_powerTab": "Leistung",
+  "videoPage_projectionTab": "Projektion",
+  "videoPage_ledWallTab": "LED-Wand",
+  "videoPage_timerTab": "Timer",
+  "catalogue_addToPreset": "Hinzufügen",
+  "catalogue_confirmAddTitle": "Bestätigung",
+  "catalogue_confirmAddMessage": "{count} {product} zu {preset} hinzufügen?",
+  "catalogue_mode": "Modus",
+  "catalogue_wired": "Kabelgebunden",
   "projectCalculationPage_noPresetSelected": "Keine Voreinstellung ausgewählt",
   "projectCalculationPage_powerConsumption": "Stromverbrauch",
   "projectCalculationPage_weight": "Gewicht",
@@ -427,8 +443,22 @@
   "newProject": "Neues Projekt",
   "saveProject": "Projekt speichern",
   "loadProject": "Projekt laden",
+  "loadProject_selectProject": "Wählen Sie ein Projekt zum Laden aus:",
+  "standard_welcome_title": "Willkommen bei AV Wallet, {username}",
+  "@standard_welcome_title": {
+    "placeholders": {
+      "username": {
+        "type": "String"
+      }
+    }
+  },
+  "premium_benefit_catalogue": "Katalog +220 Produkte",
+  "premium_benefit_calculations": "Unbegrenzte Berechnungen",
+  "premium_benefit_project_management": "Projekt/Preset-Verwaltung",
+  "premium_benefit_pdf_export": "PDF-Export",
   "exportProject": "Projekt exportieren",
   "projectNameLabel": "Name des neuen Projekts",
+  "project_name": "Projektname",
   "projectNameHint": "Ex: Rock Festival, Theater...",
   "projectArchiveInfo": "Das alte Projekt wird automatisch archiviert.",
   "projectSaved": "Projekt gespeichert!",
@@ -438,8 +468,17 @@
   "exportDate": "Exportdatum: {date}",
   "presetsToExport": "{count} Preset{count, plural, =1 {} other {s}} zu exportieren",
   "defaultProject1": "Projekt 1",
+  "@defaultProject1": {
+    "description": "Name des ersten Standardprojekts"
+  },
   "defaultProject2": "Projekt 2",
+  "@defaultProject2": {
+    "description": "Name des zweiten Standardprojekts"
+  },
   "defaultProject3": "Projekt 3",
+  "@defaultProject3": {
+    "description": "Name des dritten Standardprojekts"
+  },
   "presetView": "Voreinstellung anzeigen",
   "presetRename": "Voreinstellung umbenennen",
   "presetDelete": "Voreinstellung löschen",
@@ -457,10 +496,8 @@
   "presetImport": "Voreinstellung importieren",
   "cancel": "Abbrechen",
   "create": "Erstellen",
-  "renameProject": "Projekt umbenennen",
   "enterProjectName": "Neuer Projektname",
   "confirm": "Bestätigen",
-  "projectRenamed": "Projekt umbenannt zu",
   "noPresetSelected": "Kein Preset ausgewählt",
   "searchArticlePlaceholder": "Nach Artikel suchen...",
   "searchResults": "Suchergebnisse",
@@ -478,7 +515,7 @@
   "totalWeight": "Gesamtgewicht",
   "unitWatt": "W",
   "unitKilowatt": "kW",
-  "unitKilogram": "kg",
+  "unitKilogram": "Kg",
   "addToPreset": "Zum Preset hinzufügen",
   "enterQuantity": "Menge eingeben",
   "modify": "Ändern",
@@ -507,6 +544,7 @@
   "loginMenu_accountSettings": "Kontoeinstellungen",
   "loginMenu_myProjects": "Meine Projekte",
   "loginMenu_logout": "Abmelden",
+  "loginMenu_usage": "Nutzung",
   "@_dropdownLabels": {
     "description": "Labels für Dropdown-Menüs"
   },
@@ -539,7 +577,7 @@
   "country": "Land",
   "structurePage_chargesTab": "Lasten",
   "structurePage_maxLoad": "Maximale Last: {value} kg{unit}",
-  "structurePage_structureWeight": "Strukturgewicht: {value} kg/m",
+  "structurePage_structureWeight": "Strukturgewicht: {value} kg",
   "structurePage_maxDeflection": "Maximale Durchbiegung: {value} mm",
   "structurePage_deflectionRatio": "Durchbiegungsverhältnis: 1/{ratio}",
   "structurePage_noPresetSelected": "Kein Preset ausgewählt",
@@ -600,11 +638,11 @@
   "@amperes": {
     "description": "auto-added from code scan"
   },
-  "beamCalculation": "beam Calculation",
+  "beamCalculation": "Strahlberechnung",
   "@beamCalculation": {
     "description": "auto-added from code scan"
   },
-  "button_reset": "button reset",
+  "button_reset": "Zurücksetzen",
   "@button_reset": {
     "description": "auto-added from code scan"
   },
@@ -612,7 +650,7 @@
   "@calculateDriverConfig": {
     "description": "auto-added from code scan"
   },
-  "calculationResult": "calculation Result",
+  "calculationResult": "Berechnungsergebnis",
   "@calculationResult": {
     "description": "auto-added from code scan"
   },
@@ -624,7 +662,7 @@
   "@channels": {
     "description": "auto-added from code scan"
   },
-  "channelsPlural": "channels Plural",
+  "channelsPlural": "Kanäle",
   "@channelsPlural": {
     "description": "auto-added from code scan"
   },
@@ -632,11 +670,11 @@
   "@connectors": {
     "description": "auto-added from code scan"
   },
-  "consumption": "consumption",
+  "consumption": "Verbrauch",
   "@consumption": {
     "description": "auto-added from code scan"
   },
-  "dmxCables": "dmx Cables",
+  "dmxCables": "DMX-Kabel",
   "@dmxCables": {
     "description": "auto-added from code scan"
   },
@@ -756,7 +794,7 @@
   "@dmxPage_wired": {
     "description": "auto-added from code scan"
   },
-  "driverConfiguration": "driver Configuration",
+  "driverConfiguration": "Treiberkonfiguration",
   "@driverConfiguration": {
     "description": "auto-added from code scan"
   },
@@ -788,7 +826,7 @@
   "@driverTab_result": {
     "description": "auto-added from code scan"
   },
-  "driverType": "driver Type",
+  "driverType": "Treibertyp",
   "@driverType": {
     "description": "auto-added from code scan"
   },
@@ -796,11 +834,11 @@
   "@length": {
     "description": "auto-added from code scan"
   },
-  "lightAccessories": "light Accessories",
+  "lightAccessories": "Beleuchtungszubehör",
   "@lightAccessories": {
     "description": "auto-added from code scan"
   },
-  "mountingTools": "mounting Tools",
+  "mountingTools": "Montagewerkzeuge",
   "@mountingTools": {
     "description": "auto-added from code scan"
   },
@@ -832,159 +870,159 @@
   "@protections": {
     "description": "auto-added from code scan"
   },
-  "recommendedConfiguration": "recommended Configuration",
+  "recommendedConfiguration": "Empfohlene Konfiguration",
   "@recommendedConfiguration": {
     "description": "auto-added from code scan"
   },
-  "safetyAccessories": "safety Accessories",
+  "safetyAccessories": "Sicherheitszubehör",
   "@safetyAccessories": {
     "description": "auto-added from code scan"
   },
-  "settingsPage_account": "settings Page account",
+  "settingsPage_account": "Konto",
   "@settingsPage_account": {
     "description": "auto-added from code scan"
   },
-  "settingsPage_biometricAuth": "settings Page biometric Auth",
+  "settingsPage_biometricAuth": "Biometrische Authentifizierung",
   "@settingsPage_biometricAuth": {
     "description": "auto-added from code scan"
   },
-  "settingsPage_cancel": "settings Page cancel",
+  "settingsPage_cancel": "Abbrechen",
   "@settingsPage_cancel": {
     "description": "auto-added from code scan"
   },
-  "settingsPage_changePassword": "settings Page change Password",
+  "settingsPage_changePassword": "Passwort ändern",
   "@settingsPage_changePassword": {
     "description": "auto-added from code scan"
   },
-  "settingsPage_confirmSignOut": "settings Page confirm Sign Out",
+  "settingsPage_confirmSignOut": "Abmelden bestätigen",
   "@settingsPage_confirmSignOut": {
     "description": "auto-added from code scan"
   },
-  "settingsPage_confirmUnsubscribe": "settings Page confirm Unsubscribe",
+  "settingsPage_confirmUnsubscribe": "Abmeldung bestätigen",
   "@settingsPage_confirmUnsubscribe": {
     "description": "auto-added from code scan"
   },
-  "settingsPage_email": "settings Page email",
+  "settingsPage_email": "E-Mail",
   "@settingsPage_email": {
     "description": "auto-added from code scan"
   },
-  "settingsPage_error": "settings Page error",
+  "settingsPage_error": "Fehler",
   "@settingsPage_error": {
     "description": "auto-added from code scan"
   },
-  "settingsPage_featureNotImplemented": "settings Page feature Not Implemented",
+  "settingsPage_featureNotImplemented": "Funktion nicht implementiert",
   "@settingsPage_featureNotImplemented": {
     "description": "auto-added from code scan"
   },
-  "settingsPage_freemiumTest": "settings Page freemium Test",
+  "settingsPage_freemiumTest": "Freemium-Test",
   "@settingsPage_freemiumTest": {
     "description": "auto-added from code scan"
   },
-  "settingsPage_name": "settings Page name",
+  "settingsPage_name": "Name",
   "@settingsPage_name": {
     "description": "auto-added from code scan"
   },
-  "settingsPage_notAvailable": "settings Page not Available",
+  "settingsPage_notAvailable": "Nicht verfügbar",
   "@settingsPage_notAvailable": {
     "description": "auto-added from code scan"
   },
-  "settingsPage_notDefined": "settings Page not Defined",
+  "settingsPage_notDefined": "Nicht definiert",
   "@settingsPage_notDefined": {
     "description": "auto-added from code scan"
   },
-  "settingsPage_ok": "settings Page ok",
+  "settingsPage_ok": "OK",
   "@settingsPage_ok": {
     "description": "auto-added from code scan"
   },
-  "settingsPage_premium": "settings Page premium",
+  "settingsPage_premium": "Premium",
   "@settingsPage_premium": {
     "description": "auto-added from code scan"
   },
-  "settingsPage_premiumActivated": "settings Page premium Activated",
+  "settingsPage_premiumActivated": "Premium aktiviert",
   "@settingsPage_premiumActivated": {
     "description": "auto-added from code scan"
   },
-  "settingsPage_premiumSubscription": "settings Page premium Subscription",
+  "settingsPage_premiumSubscription": "Premium-Abonnement",
   "@settingsPage_premiumSubscription": {
     "description": "auto-added from code scan"
   },
-  "settingsPage_security": "settings Page security",
+  "settingsPage_security": "Sicherheit",
   "@settingsPage_security": {
     "description": "auto-added from code scan"
   },
-  "settingsPage_signOut": "settings Page sign Out",
+  "settingsPage_signOut": "Abmelden",
   "@settingsPage_signOut": {
     "description": "auto-added from code scan"
   },
-  "settingsPage_signOutDialogContent": "settings Page sign Out Dialog Content",
+  "settingsPage_signOutDialogContent": "Sind Sie sicher, dass Sie sich abmelden möchten?",
   "@settingsPage_signOutDialogContent": {
     "description": "auto-added from code scan"
   },
-  "settingsPage_signOutDialogTitle": "settings Page sign Out Dialog Title",
+  "settingsPage_signOutDialogTitle": "Abmelden",
   "@settingsPage_signOutDialogTitle": {
     "description": "auto-added from code scan"
   },
-  "settingsPage_standard": "settings Page standard",
+  "settingsPage_standard": "Standard",
   "@settingsPage_standard": {
     "description": "auto-added from code scan"
   },
-  "settingsPage_status": "settings Page status",
+  "settingsPage_status": "Status",
   "@settingsPage_status": {
     "description": "auto-added from code scan"
   },
-  "settingsPage_subscribe": "settings Page subscribe",
+  "settingsPage_subscribe": "Abonnieren",
   "@settingsPage_subscribe": {
     "description": "auto-added from code scan"
   },
-  "settingsPage_subscribeDialogContent": "settings Page subscribe Dialog Content",
+  "settingsPage_subscribeDialogContent": "Möchten Sie das Premium-Abonnement abonnieren?",
   "@settingsPage_subscribeDialogContent": {
     "description": "auto-added from code scan"
   },
-  "settingsPage_subscribeDialogTitle": "settings Page subscribe Dialog Title",
+  "settingsPage_subscribeDialogTitle": "Premium-Abonnement",
   "@settingsPage_subscribeDialogTitle": {
     "description": "auto-added from code scan"
   },
-  "settingsPage_subscribeToPremium": "settings Page subscribe To Premium",
+  "settingsPage_subscribeToPremium": "Premium abonnieren",
   "@settingsPage_subscribeToPremium": {
     "description": "auto-added from code scan"
   },
-  "settingsPage_subscription": "settings Page subscription",
+  "settingsPage_subscription": "Abonnement",
   "@settingsPage_subscription": {
     "description": "auto-added from code scan"
   },
-  "settingsPage_subscriptionError": "settings Page subscription Error",
+  "settingsPage_subscriptionError": "Abonnement-Fehler",
   "@settingsPage_subscriptionError": {
     "description": "auto-added from code scan"
   },
-  "settingsPage_success": "settings Page success",
+  "settingsPage_success": "Erfolg",
   "@settingsPage_success": {
     "description": "auto-added from code scan"
   },
-  "settingsPage_title": "settings Page title",
+  "settingsPage_title": "Kontoeinstellungen",
   "@settingsPage_title": {
     "description": "auto-added from code scan"
   },
-  "settingsPage_unsubscribe": "settings Page unsubscribe",
+  "settingsPage_unsubscribe": "Abmelden",
   "@settingsPage_unsubscribe": {
     "description": "auto-added from code scan"
   },
-  "settingsPage_unsubscribeDialogContent": "settings Page unsubscribe Dialog Content",
+  "settingsPage_unsubscribeDialogContent": "Sind Sie sicher, dass Sie das Abonnement kündigen möchten?",
   "@settingsPage_unsubscribeDialogContent": {
     "description": "auto-added from code scan"
   },
-  "settingsPage_unsubscribeDialogTitle": "settings Page unsubscribe Dialog Title",
+  "settingsPage_unsubscribeDialogTitle": "Abonnement kündigen",
   "@settingsPage_unsubscribeDialogTitle": {
     "description": "auto-added from code scan"
   },
-  "settingsPage_userInfo": "settings Page user Info",
+  "settingsPage_userInfo": "Benutzerinformationen",
   "@settingsPage_userInfo": {
     "description": "auto-added from code scan"
   },
-  "soundPage_ampConfigTitle": "sound Page amp Config Title",
+  "soundPage_ampConfigTitle": "Verstärkerkonfiguration",
   "@soundPage_ampConfigTitle": {
     "description": "auto-added from code scan"
   },
-  "soundPage_amplificationTabShort": "sound Page amplification Tab Short",
+  "soundPage_amplificationTabShort": "Amp",
   "@soundPage_amplificationTabShort": {
     "description": "auto-added from code scan"
   },
@@ -1013,5 +1051,186 @@
   "volts": "volts",
   "@volts": {
     "description": "auto-added from code scan"
-  }
+  },
+  "speedtest_running": "Läuft",
+  "dmxPage_warning": "Warnung",
+  "dmxPage_productsNotPlaced": "Produkte nicht platziert",
+  "dmxPage_maxIterationsReached": "Maximale Iterationen erreicht",
+  "paymentPage_monthlyPlan": "Monatsplan",
+  "paymentPage_yearlyPlan": "Jahresplan",
+  "subscription_premium": "Premium",
+  "subscription_description": "Beschreibung",
+  "subscription_choose_plan": "Plan wählen",
+  "subscription_free_trial": "Kostenlose Testversion",
+  "subscription_security": "Sicherheit",
+  "subscription_security_description": "Sicherheitsbeschreibung",
+  "subscription_popular": "Beliebt",
+  "subscription_subscribe": "Abonnieren",
+  "email_required": "E-Mail ist erforderlich",
+  "invalid_email": "Ungültige E-Mail",
+  "password_required": "Passwort ist erforderlich",
+  "password_too_short": "Passwort muss mindestens 6 Zeichen haben",
+  "auth_service_loading": "Authentifizierungsservice lädt",
+  "auth_service_error": "Authentifizierungsservice-Fehler",
+  "invalid_credentials_error": "Ungültige E-Mail oder Passwort",
+  "connection_error": "Verbindungsfehler",
+  "ok": "OK",
+  "enter_email_first": "Bitte geben Sie Ihre E-Mail ein",
+  "reset_email_sent": "Eine Reset-E-Mail wurde gesendet. Überprüfen Sie Ihren Posteingang und Spam-Ordner.",
+  "login": "Anmelden",
+  "email": "E-Mail",
+  "password": "Passwort",
+  "forgot_password": "Passwort vergessen?",
+  "remember_me": "Angemeldet bleiben",
+  "sign_in": "Anmelden",
+  "or_continue_with": "Oder fortfahren mit",
+  "google_sign_in": "Mit Google anmelden",
+  "biometric_auth": "Biometrische Auth.",
+  "sign_up": "Registrieren",
+  "welcome_to_avwallet": "Willkommen bei AVWallet",
+  "welcome_to_avwallet_with_name": "Willkommen bei AVWallet, {name}",
+  "premium_usage_remaining": "Sie haben Premium-Nutzung.\\nSie haben {count} Verwendungen übrig",
+  "continueButton": "Weiter",
+  "signup": "Registrieren",
+  "confirm_password": "Passwort bestätigen",
+  "confirm_password_required": "Passwortbestätigung ist erforderlich",
+  "passwords_dont_match": "Passwörter stimmen nicht überein",
+  "already_have_account": "Bereits ein Konto?",
+  "verification_code_sent_message": "Ein Bestätigungscode wurde gesendet",
+  "verification_code": "Bestätigungscode",
+  "welcome_title": "Willkommen",
+  "welcome_message": "Willkommensnachricht",
+  "beam_short": "Strahl",
+  "default_project_name": "Standardprojekt",
+  "no_projects_available": "Keine Projekte zum Laden verfügbar",
+  "project_loaded": "Projekt \"{name}\" geladen!",
+  "export_project_confirm": "Möchten Sie das Projekt \"{name}\" exportieren?",
+  "generating_pdfs": "PDFs werden generiert...",
+  "files_exported_success": "{count} Dateien erfolgreich exportiert!",
+  "no_files_to_export": "Keine Dateien für dieses Projekt zu exportieren",
+  "export_error": "Fehler beim Export: {error}",
+  "project_saved_locally": "Das Projekt wird lokal gespeichert.",
+  "project_saved": "Projekt gespeichert!",
+  "export_to_project": "Zu Projekt",
+  "export_sms": "SMS",
+  "export_whatsapp": "WhatsApp",
+  "export_email": "Email",
+  "export_tooltip": "Exportieren",
+  "photos_project_title": "PROJEKTFOTOS",
+  "photos_ar_captured": "Fotos aufgenommen während AR-Messungen:",
+  "photo_label": "Foto: {filename}",
+  "article_label": "Artikel",
+  "quantity_label": "Anz.",
+  "catalogueQuantityDialog_title": "Menge",
+  "catalogueQuantityDialog_enterQuantity": "Menge eingeben",
+  "catalogueQuantityDialog_dmxType": "DMX-Typ",
+  "catalogueQuantityDialog_dmxMini": "DMX mini",
+  "catalogueQuantityDialog_dmxMax": "DMX max",
+  "catalogueQuantityDialog_cancel": "Abbrechen",
+  "catalogueQuantityDialog_confirm": "Bestätigen",
+  "power_label": "Leistung",
+  "weight_label": "Gewicht",
+  "loading": "Laden...",
+  "create_button": "Erstellen",
+  "save_button": "Speichern",
+  "cancel_button": "Abbrechen",
+  "weight_tab_title": "Gewicht",
+  "imports": "Importe",
+  "calculation_dmx": "DMX-Berechnung",
+  "calculation_sound": "Ton-Berechnung",
+  "calculation_projection": "Projektions-Berechnung",
+  "calculation_led_wall": "LED-Wand-Berechnung",
+  "calculation_charges": "Ladungs-Berechnung",
+  
+  "standard_welcome_title": "Willkommen bei AVWallet",
+  "standard_welcome_message": "Willkommen bei AVWallet, {name}",
+  "standard_welcome_usage_remaining": "Sie haben {count} Verwendungen übrig",
+  "standard_welcome_continue": "Weiter",
+  
+  "premium_welcome_title": "Premium Willkommen!",
+  "premium_welcome_message": "Herzlichen Glückwunsch, Premium aktiviert",
+  "premium_benefits_title": "Premium Vorteile",
+  "premium_benefit_unlimited": "Unbegrenzte Nutzung",
+  "premium_benefit_priority": "Prioritäts-Support",
+  "premium_benefit_support": "Dedizierte technische Unterstützung",
+  "premium_welcome_later": "Später",
+  "premium_welcome_continue": "Premium erkunden",
+  "premium_vip_welcome_message": "Herzlichen Glückwunsch, Sie sind Teil des VIP AV Wallet Teams",
+  "premium_vip_access_activated": "Unbegrenzter Premium-Zugang aktiviert",
+  "ok": "OK",
+  "preview": "Vorschau",
+  "export": "Exportieren",
+  "project_parameters": "Projektparameter",
+  "location": "Ort",
+  "mounting_date": "Montagedatum (TT/MM/JJ)",
+  "period_from": "Datum: vom TT/MM/JJ",
+  "period_to": "bis TT/MM/JJ",
+  "save_parameters": "Speichern",
+  "cancel": "Abbrechen",
+  "project_location": "Ort",
+  "project_mounting_date": "Montagedatum",
+  "project_period": "Zeitraum",
+  "not_defined": "Nicht definiert",
+  "start_date": "Anfang: TT/MM/JJ",
+  "end_date": "Ende: TT/MM/JJ",
+  
+  "calculation_sent_to_project": "{calculationName} an \"{projectName}\" gesendet",
+  
+  "project_stats_presets": "Anzahl der Presets",
+  "project_stats_articles": "Gesamtanzahl der Artikel",
+  "project_stats_calculations": "Anzahl der Berechnungen",
+  "project_stats_photos": "Anzahl der Fotos",
+  
+  "select_photos": "Fotos Auswählen",
+  "photos_imported": "Importierte Fotos",
+  "preview": "Vorschau",
+  "export": "Exportieren",
+  "delete": "Löschen",
+  "photo_exported": "Foto exportiert",
+  "photo_not_found": "Foto nicht gefunden",
+  "cabling_percentage": "Verkabelung",
+  "cabling_addition": "+10% Verkabelung",
+  "coming_soon": "Demnächst",
+  "paymentPage_title": "Premium-Abonnement",
+  "paymentPage_monthlyPrice": "Monatlich",
+  "paymentPage_yearlyPrice": "Jährlich",
+  "paymentPage_securePayment": "Sichere Zahlung",
+  "paymentPage_visaMastercardAccepted": "Visa & Mastercard akzeptiert",
+  "paymentPage_paymentInfo": "Zahlungsinformationen",
+  "paymentPage_cardholderName": "Karteninhaber",
+  "paymentPage_cardNumber": "Kartennummer",
+  "paymentPage_expiryDate": "Ablaufdatum",
+  "paymentPage_cvc": "CVC",
+  "paymentPage_payButton": "Jetzt bezahlen",
+  "paymentPage_processing": "Verarbeitung...",
+  "paymentPage_paymentSuccess": "Zahlung erfolgreich",
+  "paymentPage_subscriptionActivated": "Abonnement aktiviert",
+  "paymentPage_plan": "Plan",
+  "paymentPage_price": "Preis",
+  "paymentPage_continue": "Weiter",
+  "paymentPage_premiumFeatures": "Premium-Funktionen",
+  "paymentPage_paymentError": "Zahlungsfehler",
+  "paymentPage_selectPaymentMethod": "Zahlungsmethode auswählen",
+  "paymentPage_fillAllFields": "Alle Felder ausfüllen",
+  "paymentPage_paymentFailed": "Zahlung fehlgeschlagen",
+  "paymentPage_legalText": "Mit der Zahlung stimmen Sie unseren AGB zu",
+  "paymentPage_featureCompleteCatalogue": "Vollständiger Katalog",
+  "paymentPage_featureProjectsPresets": "Projekte & Presets",
+  "paymentPage_featureExportPdfExcel": "PDF/Excel Export",
+  "paymentPage_featurePrioritySupport": "Prioritätssupport",
+  "paymentPage_featureAutoUpdates": "Automatische Updates",
+  "paymentPage_featureSavings": "Ersparnisse",
+  "paymentPage_descriptionMonthly": "Monatliches Abonnement",
+  "paymentPage_descriptionYearly": "Jährliches Abonnement",
+  "paymentPage_popular": "Beliebt",
+  "paymentPage_bestValue": "Bester Wert",
+  "review_popup_title": "Hallo",
+  "review_popup_message": "Eine Idee, eine Empfehlung? Ihr Feedback interessiert uns",
+  "review_popup_contact": "Kontaktieren Sie uns",
+  "review_popup_continue": "Weiter",
+  "bandwidth_test": "Bandbreiten-Test",
+  "bandwidth_test_title": "Bandwidth",
+  "bandwidth_test_description": "Testen Sie Ihre Verbindungsgeschwindigkeit",
+  "bandwidth_test_start": "Test starten",
+  "bandwidth_test_results": "Ergebnisse"
 }

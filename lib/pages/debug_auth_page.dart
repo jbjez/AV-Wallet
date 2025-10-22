@@ -5,7 +5,7 @@ import 'package:logging/logging.dart';
 final logger = Logger('DebugAuthPage');
 
 class DebugAuthPage extends StatefulWidget {
-  const DebugAuthPage({Key? key}) : super(key: key);
+  const DebugAuthPage({super.key});
 
   @override
   State<DebugAuthPage> createState() => _DebugAuthPageState();

@@ -93,6 +93,9 @@ class CatalogueItem {
   @HiveField(28)
   final double? maxVoltageVrms;    // limite tension admissible (optionnel)
 
+  @HiveField(29)
+  final bool? isWifiByDefault;     // true si le produit est WiFi par défaut (Titan, Helios, etc.)
+
   const CatalogueItem({
     required this.id,
     required this.name,
@@ -123,6 +126,7 @@ class CatalogueItem {
     this.powerProgramW,
     this.powerPeakW,
     this.maxVoltageVrms,
+    this.isWifiByDefault,
   });
 
   Map<String, dynamic> toMap() {
@@ -156,6 +160,7 @@ class CatalogueItem {
       'power_program_w': powerProgramW,
       'power_peak_w': powerPeakW,
       'max_voltage_vrms': maxVoltageVrms,
+      'is_wifi_by_default': isWifiByDefault,
     };
   }
 
@@ -204,6 +209,7 @@ class CatalogueItem {
       maxVoltageVrms: map['max_voltage_vrms'] is double
           ? map['max_voltage_vrms']
           : double.tryParse(map['max_voltage_vrms']?.toString() ?? ''),
+      isWifiByDefault: map['is_wifi_by_default'] as bool?,
     );
   }
 
@@ -252,6 +258,7 @@ class CatalogueItem {
       maxVoltageVrms: json['max_voltage_vrms'] is double
           ? json['max_voltage_vrms']
           : double.tryParse(json['max_voltage_vrms']?.toString() ?? ''),
+      isWifiByDefault: json['is_wifi_by_default'] as bool?,
     );
   }
 
@@ -286,6 +293,7 @@ class CatalogueItem {
       'power_program_w': powerProgramW,
       'power_peak_w': powerPeakW,
       'max_voltage_vrms': maxVoltageVrms,
+      'is_wifi_by_default': isWifiByDefault,
     };
   }
 }

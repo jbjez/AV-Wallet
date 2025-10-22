@@ -1,184 +1,206 @@
 {
   "@@locale": "fr",
   "@@context": "AV Wallet",
-  "amplifier": "Amplifier",
-  "arMeasure_captureError": "Armeasure Captureerror",
-  "arMeasure_capturing": "Armeasure Capturing",
-  "arMeasure_defaultProject": "Armeasure Defaultproject",
-  "arMeasure_photo": "Armeasure Photo",
-  "arMeasure_photoSaved": "Armeasure Photosaved",
-  "arMeasure_photosAutoSaved": "Armeasure Photosautosaved",
-  "arMeasure_saveError": "Armeasure Saveerror",
-  "arMeasure_takePhotosAndMeasure": "Armeasure Takephotosandmeasure",
-  "arMeasure_unity": "Armeasure Unity",
-  "brand": "Brand",
-  "cancel": "Cancel",
-  "catalogPage_search": "Catalog Page Search",
-  "catalogPage_subCategory": "Catalog Page Subcategory",
-  "catalogue_angle": "Catalogue Angle",
-  "catalogue_brand": "Catalogue Brand",
-  "catalogue_consumption": "Catalogue Consumption",
-  "catalogue_definition": "Catalogue Definition",
-  "catalogue_description": "Catalogue Description",
-  "catalogue_dimensions": "Catalogue Dimensions",
-  "catalogue_dmxMax": "Catalogue Dmxmax",
-  "catalogue_dmxMini": "Catalogue Dmxmini",
-  "catalogue_impedance": "Catalogue Impedance",
-  "catalogue_impedanceNominal": "Catalogue Impedancenominal",
-  "catalogue_lumens": "Catalogue Lumens",
-  "catalogue_lux": "Catalogue Lux",
-  "catalogue_maxVoltage": "Catalogue Maxvoltage",
-  "catalogue_pitch": "Catalogue Pitch",
-  "catalogue_powerAdmissible": "Catalogue Poweradmissible",
-  "catalogue_powerPeak": "Catalogue Powerpeak",
-  "catalogue_powerProgram": "Catalogue Powerprogram",
-  "catalogue_powerRms": "Catalogue Powerrms",
-  "catalogue_resolution": "Catalogue Resolution",
-  "catalogue_weight": "Catalogue Weight",
-  "category": "Category",
-  "confirm": "Confirm",
-  "create": "Create",
-  "defaultProjectName": "Defaultprojectname",
-  "delete": "Delete",
-  "delete_preset": "Delete Preset",
+  "amplifier": "Amplificateur",
+  "arMeasure_photoAr": "Photo/AR",
+  "arMeasure_captureError": "Erreur de capture",
+  "arMeasure_capturing": "Capture en cours",
+  "arMeasure_defaultProject": "Projet par défaut",
+  "arMeasure_photo": "Photo",
+  "arMeasure_photoSaved": "Photo sauvegardée",
+  "arMeasure_photosAutoSaved": "Photos sauvegardées automatiquement",
+  "arMeasure_saveError": "Erreur de sauvegarde",
+  "arMeasure_takePhotosAndMeasure": "Prendre des photos et mesurer",
+  "arMeasure_unity": "Unity",
+  "brand": "Marque",
+  "cancel": "Annuler",
+  "catalogPage_search": "Rechercher",
+  "catalogPage_subCategory": "Sous-catégorie",
+  "catalogue_angle": "Angle",
+  "catalogue_brand": "Marque du catalogue",
+  "catalogue_consumption": "Consommation",
+  "catalogue_definition": "Définition",
+  "catalogue_description": "Description",
+  "catalogue_dimensions": "Dimensions",
+  "catalogue_dmxMax": "DMX Max",
+  "catalogue_dmxMini": "DMX Mini",
+  "catalogue_impedance": "Impédance",
+  "catalogue_impedanceNominal": "Impédance nominale",
+  "catalogue_lumens": "Lumens",
+  "catalogue_lux": "Lux",
+  "catalogue_maxVoltage": "Tension maximale",
+  "catalogue_pitch": "Pas",
+  "catalogue_powerAdmissible": "Puissance admissible",
+  "catalogue_powerPeak": "Puissance crête",
+  "catalogue_powerProgram": "Puissance programme",
+  "catalogue_powerRms": "Puissance RMS",
+  "catalogue_resolution": "Résolution",
+  "catalogue_weight": "Poids",
+  "category": "Catégorie",
+  "confirm": "Confirmer",
+  "create": "Créer",
+  "defaultProjectName": "Projet1",
+  "delete": "Supprimer",
+  "delete_preset": "Supprimer le preset",
   "destination": "Destination",
-  "dmxPage_allCategories": "Dmx Page Allcategories",
-  "dmxPage_cancel": "Dmx Page Cancel",
-  "dmxPage_channelsTotal": "Dmx Page Channelstotal",
-  "dmxPage_channelsUsed": "Dmx Page Channelsused",
-  "dmxPage_confirm": "Dmx Page Confirm",
-  "dmxPage_dmxMax": "Dmx Page Dmxmax",
-  "dmxPage_dmxMini": "Dmx Page Dmxmini",
-  "dmxPage_dmxType": "Dmx Page Dmxtype",
-  "dmxPage_importPreset": "Dmx Page Importpreset",
-  "dmxPage_importedFromPreset": "Dmx Page Importedfrompreset",
-  "dmxPage_ledBar": "Dmx Page Ledbar",
-  "dmxPage_lightDevices": "Dmx Page Lightdevices",
-  "dmxPage_mapDmx": "Dmx Page Mapdmx",
-  "dmxPage_movingHead": "Dmx Page Movinghead",
-  "dmxPage_noPresetAvailable": "Dmx Page Nopresetavailable",
-  "dmxPage_noPresetSelected": "Dmx Page Nopresetselected",
-  "dmxPage_noProductsSelected": "Dmx Page Noproductsselected",
-  "dmxPage_ok": "Dmx Page Ok",
-  "dmxPage_productsAddedToPreset": "Dmx Page Productsaddedtopreset",
-  "dmxPage_quantityEnter": "Dmx Page Quantityenter",
-  "dmxPage_scanner": "Dmx Page Scanner",
-  "dmxPage_searchHint": "Dmx Page Searchhint",
-  "dmxPage_selectPreset": "Dmx Page Selectpreset",
-  "dmxPage_selectedProducts": "Dmx Page Selectedproducts",
-  "dmxPage_strobe": "Dmx Page Strobe",
-  "dmxPage_universe": "Dmx Page Universe",
-  "dmxPage_universesNeeded": "Dmx Page Universesneeded",
-  "dmxPage_wash": "Dmx Page Wash",
-  "dmxPage_wired": "Dmx Page Wired",
-  "driverTab_customDriverChannels": "Drivertab Customdriverchannels",
-  "driverTab_customDriverIntensity": "Drivertab Customdriverintensity",
-  "driverTab_customDriverTitle": "Drivertab Customdrivertitle",
-  "driverTab_driverChoice": "Drivertab Driverchoice",
-  "driverTab_ledLength": "Drivertab Ledlength",
-  "driverTab_ledPower": "Drivertab Ledpower",
-  "enterProjectName": "Enterprojectname",
+  "dmxPage_allCategories": "Toutes les catégories",
+  "dmxPage_cancel": "Annuler",
+  "dmxPage_channelsTotal": "Canaux totaux",
+  "dmxPage_channelsUsed": "Canaux utilisés",
+  "dmxPage_confirm": "Confirmer",
+  "dmxPage_dmxMax": "DMX Max",
+  "dmxPage_dmxMini": "DMX Mini",
+  "dmxPage_dmxType": "Type DMX",
+  "dmxPage_importPreset": "Importer le preset",
+  "dmxPage_importedFromPreset": "Importé depuis le preset",
+  "dmxPage_ledBar": "Barre LED",
+  "dmxPage_lightDevices": "Appareils d'éclairage",
+  "dmxPage_mapDmx": "Mapper DMX",
+  "dmxPage_movingHead": "Moving Head",
+  "dmxPage_noPresetAvailable": "Aucun preset disponible",
+  "dmxPage_noPresetSelected": "Aucun preset sélectionné",
+  "dmxPage_noProductsSelected": "Aucun produit sélectionné",
+  "dmxPage_ok": "OK",
+  "dmxPage_productsAddedToPreset": "Produits ajoutés au preset",
+  "dmxPage_quantityEnter": "Entrer la quantité",
+  "dmxPage_scanner": "Scanner",
+  "dmxPage_searchHint": "Indice de recherche",
+  "dmxPage_selectPreset": "Sélectionner le preset",
+  "dmxPage_selectedProducts": "Produits sélectionnés",
+  "dmxPage_strobe": "Stroboscope",
+  "dmxPage_universe": "Univers",
+  "dmxPage_universesNeeded": "Univers nécessaires",
+  "dmxPage_wash": "Wash",
+  "dmxPage_wired": "Filaire",
+  "driverTab_customDriverChannels": "Canaux driver personnalisés",
+  "driverTab_customDriverIntensity": "Intensité driver personnalisée",
+  "driverTab_customDriverTitle": "Titre driver personnalisé",
+  "driverTab_driverChoice": "Choix du driver",
+  "driverTab_ledLength": "Longueur LED",
+  "driverTab_ledPower": "Puissance LED",
+  "enterProjectName": "Entrer le nom du projet",
   "export": "Export",
-  "exportCount": "Exportcount",
-  "exportProject": "Exportproject",
-  "lightPage_beamDiameter": "Light Page Beamdiameter",
-  "loadProject": "Loadproject",
-  "loginMenu_accountSettings": "Loginmenu Accountsettings",
-  "loginMenu_logout": "Loginmenu Logout",
-  "loginMenu_myProjects": "Loginmenu Myprojects",
-  "noPresetSelected": "Nopresetselected",
-  "patch_cancel": "Patch Cancel",
-  "patch_delete": "Patch Delete",
-  "patch_instrument": "Patch Instrument",
-  "patch_no_entries": "Patch No Entries",
-  "patch_quantity": "Patch Quantity",
-  "patch_rename": "Patch Rename",
-  "power": "Power",
+  "exportCount": "Nombre d'exports",
+  "exportProject": "Exporter le projet",
+  "lightPage_beamDiameter": "Diamètre du faisceau",
+  "lightPage_beamTab": "Faisceau",
+  "lightPage_ledDriverTab": "Led driver",
+  "loadProject": "Charger le projet",
+  "loadProject_selectProject": "Sélectionnez un projet à charger :",
+  "standard_welcome_title": "Bienvenue sur AV Wallet, {username}",
+  "@standard_welcome_title": {
+    "placeholders": {
+      "username": {
+        "type": "String"
+      }
+    }
+  },
+  "premium_benefit_catalogue": "Catalogue +220 Produits",
+  "premium_benefit_calculations": "Calculs Illimités",
+  "premium_benefit_project_management": "Gestion Projet/Preset",
+  "premium_benefit_pdf_export": "Export PDF",
+  "loginMenu_accountSettings": "Paramètres du compte",
+  "loginMenu_logout": "Déconnexion",
+  "loginMenu_myProjects": "Mes projets",
+  "loginMenu_usage": "Utilisation",
+  "noPresetSelected": "Aucun preset sélectionné",
+  "patch_cancel": "Annuler",
+  "patch_delete": "Supprimer",
+  "patch_instrument": "Instrument",
+  "patch_no_entries": "Aucune entrée",
+  "patch_quantity": "Quantité",
+  "patch_rename": "Renommer",
+  "power": "Puissance",
   "premiumExpiredDialog_message": "Premiumexpireddialog Message",
   "premiumExpiredDialog_ok": "Premiumexpireddialog Ok",
   "premiumExpiredDialog_premium": "Premiumexpireddialog Premium",
   "premiumExpiredDialog_title": "Premiumexpireddialog Title",
-  "presetCount": "Presetcount",
-  "presetDelete": "Presetdelete",
-  "presetDeleted": "Presetdeleted",
-  "presetName": "Presetname",
-  "presetRename": "Presetrename",
-  "presetRenamed": "Presetrenamed",
-  "presetWidget_confirmDelete": "Preset Widget Confirmdelete",
-  "presetWidget_create": "Preset Widget Create",
-  "presetWidget_newPreset": "Preset Widget Newpreset",
-  "product": "Product",
-  "projectArchiveInfo": "Projectarchiveinfo",
-  "projectNameHint": "Projectnamehint",
-  "projectNameLabel": "Projectnamelabel",
-  "projectPage_addToPreset": "Project Page Addtopreset",
-  "projectPage_cancel": "Project Page Cancel",
-  "projectRenamed": "Projectrenamed",
-  "quantity": "Quantity",
-  "renameProject": "Renameproject",
-  "rename_preset": "Rename Preset",
+  "presetCount": "Nombre de presets",
+  "presetDelete": "Supprimer le preset",
+  "presetDeleted": "Preset supprimé",
+  "presetName": "Nom du preset",
+  "presetRename": "Renommer le preset",
+  "presetRenamed": "Preset renommé",
+  "presetWidget_confirmDelete": "Confirmer la suppression",
+  "presetWidget_create": "Créer",
+  "presetWidget_newPreset": "Nouveau preset",
+  "new_preset": "Nouveau preset",
+  "view_project": "Voir le projet",
+  "new_project": "Nouveau projet",
+  "save_project": "Sauvegarder le projet",
+  "load_project": "Charger le projet",
+  "export_project": "Exporter le projet",
+  "product": "Produit",
+  "projectArchiveInfo": "Informations d'archive du projet",
+  "projectNameHint": "Indice du nom du projet",
+  "projectNameLabel": "Libellé du nom du projet",
+  "project_name": "Nom du projet",
+  "projectPage_addToPreset": "Ajouter au preset",
+  "projectPage_cancel": "Annuler",
+  "quantity": "Quantité",
+  "rename_preset": "Renommer le preset",
   "rider_technical_title": "Rider Technical Title",
-  "save": "Save",
-  "saveProject": "Saveproject",
-  "searchArticlePlaceholder": "Searcharticleplaceholder",
-  "search_speaker": "Search Speaker",
-  "settingsPage_account": "Settings Page Account",
-  "settingsPage_biometricAuth": "Settings Page Biometricauth",
-  "settingsPage_cancel": "Settings Page Cancel",
-  "settingsPage_changePassword": "Settings Page Changepassword",
-  "settingsPage_confirmSignOut": "Settings Page Confirmsignout",
-  "settingsPage_confirmUnsubscribe": "Settings Page Confirmunsubscribe",
-  "settingsPage_email": "Settings Page Email",
-  "settingsPage_error": "Settings Page Error",
-  "settingsPage_featureNotImplemented": "Settings Page Featurenotimplemented",
-  "settingsPage_freemiumTest": "Settings Page Freemiumtest",
-  "settingsPage_name": "Settings Page Name",
-  "settingsPage_notAvailable": "Settings Page Notavailable",
-  "settingsPage_notDefined": "Settings Page Notdefined",
-  "settingsPage_ok": "Settings Page Ok",
-  "settingsPage_premium": "Settings Page Premium",
-  "settingsPage_premiumActivated": "Settings Page Premiumactivated",
-  "settingsPage_premiumSubscription": "Settings Page Premiumsubscription",
-  "settingsPage_security": "Settings Page Security",
-  "settingsPage_signOut": "Settings Page Signout",
-  "settingsPage_signOutDialogContent": "Settings Page Signoutdialogcontent",
-  "settingsPage_signOutDialogTitle": "Settings Page Signoutdialogtitle",
-  "settingsPage_standard": "Settings Page Standard",
-  "settingsPage_status": "Settings Page Status",
-  "settingsPage_subscribe": "Settings Page Subscribe",
-  "settingsPage_subscribeDialogContent": "Settings Page Subscribedialogcontent",
-  "settingsPage_subscribeDialogTitle": "Settings Page Subscribedialogtitle",
-  "settingsPage_subscribeToPremium": "Settings Page Subscribetopremium",
-  "settingsPage_subscription": "Settings Page Subscription",
-  "settingsPage_subscriptionError": "Settings Page Subscriptionerror",
-  "settingsPage_success": "Settings Page Success",
-  "settingsPage_title": "Settings Page Title",
-  "settingsPage_unsubscribe": "Settings Page Unsubscribe",
-  "settingsPage_unsubscribeDialogContent": "Settings Page Unsubscribedialogcontent",
-  "settingsPage_unsubscribeDialogTitle": "Settings Page Unsubscribedialogtitle",
-  "settingsPage_userInfo": "Settings Page Userinfo",
-  "soundPage_ampConfigTitle": "Sound Page Ampconfigtitle",
-  "soundPage_amplificationTabShort": "Sound Page Amplificationtabshort",
-  "soundPage_amplifier": "Sound Page Amplifier",
-  "soundPage_amplifiersRequired": "Sound Page Amplifiersrequired",
-  "soundPage_capacity": "Sound Page Capacity",
-  "soundPage_noPresetSelected": "Sound Page Nopresetselected",
-  "soundPage_noSpeakersSelected": "Sound Page Nospeakersselected",
-  "soundPage_power": "Sound Page Power",
-  "soundPage_speakersPerAmp": "Sound Page Speakersperamp",
-  "soundPage_speakersPerChannel": "Sound Page Speakersperchannel",
-  "soundPage_with": "Sound Page With",
+  "save": "Sauvegarder",
+  "saveProject": "Sauvegarder le projet",
+  "searchArticlePlaceholder": "Rechercher un article",
+  "search_speaker": "Rechercher un haut-parleur",
+  "settingsPage_account": "Compte",
+  "settingsPage_biometricAuth": "Authentification biométrique",
+  "settingsPage_cancel": "Annuler",
+  "settingsPage_changePassword": "Changer le mot de passe",
+  "settingsPage_confirmSignOut": "Confirmer la déconnexion",
+  "settingsPage_confirmUnsubscribe": "Confirmer la désinscription",
+  "settingsPage_email": "Email",
+  "settingsPage_error": "Erreur",
+  "settingsPage_featureNotImplemented": "Fonctionnalité non implémentée",
+  "settingsPage_freemiumTest": "Test freemium",
+  "settingsPage_name": "Nom",
+  "settingsPage_notAvailable": "Non disponible",
+  "settingsPage_notDefined": "Non défini",
+  "settingsPage_ok": "OK",
+  "settingsPage_premium": "Premium",
+  "settingsPage_premiumActivated": "Premium activé",
+  "settingsPage_premiumSubscription": "Abonnement premium",
+  "settingsPage_security": "Sécurité",
+  "settingsPage_signOut": "Se déconnecter",
+  "settingsPage_signOutDialogContent": "Êtes-vous sûr de vouloir vous déconnecter ?",
+  "settingsPage_signOutDialogTitle": "Déconnexion",
+  "settingsPage_standard": "Standard",
+  "settingsPage_status": "Statut",
+  "settingsPage_subscribe": "S'abonner",
+  "settingsPage_subscribeDialogContent": "Voulez-vous vous abonner au plan premium ?",
+  "settingsPage_subscribeDialogTitle": "Abonnement premium",
+  "settingsPage_subscribeToPremium": "S'abonner au premium",
+  "settingsPage_subscription": "Abonnement",
+  "settingsPage_subscriptionError": "Erreur d'abonnement",
+  "settingsPage_success": "Succès",
+  "settingsPage_title": "Paramètres du compte",
+  "settingsPage_unsubscribe": "Se désabonner",
+  "settingsPage_unsubscribeDialogContent": "Êtes-vous sûr de vouloir vous désabonner ?",
+  "settingsPage_unsubscribeDialogTitle": "Désabonnement",
+  "settingsPage_userInfo": "Informations utilisateur",
+  "soundPage_ampConfigTitle": "Titre de configuration ampli",
+  "soundPage_amplificationTabShort": "Amp",
+  "soundPage_amplifier": "Amplificateur",
+  "soundPage_amplifiersRequired": "Amplificateurs requis",
+  "soundPage_capacity": "Capacité",
+  "soundPage_noPresetSelected": "Aucun preset sélectionné",
+  "soundPage_noSpeakersSelected": "Aucun haut-parleur sélectionné",
+  "soundPage_power": "Puissance",
+  "soundPage_speakersPerAmp": "Haut-parleurs par ampli",
+  "soundPage_speakersPerChannel": "Haut-parleurs par canal",
+  "soundPage_with": "avec",
   "source": "Source",
-  "speaker": "Speaker",
-  "stand": "Stand",
-  "totalArticlesCount": "Totalarticlescount",
-  "totalPreset": "Totalpreset",
-  "totalProject": "Totalproject",
-  "unitKilogram": "Unitkilogram",
-  "unitKilowatt": "Unitkilowatt",
-  "unitWatt": "Unitwatt",
-  "view_preset": "View Preset",
-  "weight": "Weight",
+  "speaker": "Haut-parleur",
+  "stand": "Support",
+  "totalArticlesCount": "Nombre total d'articles",
+  "totalPreset": "Total des presets",
+  "totalProject": "Total des projets",
+  "unitKilogram": "Kg",
+  "unitKilowatt": "kW",
+  "unitWatt": "W",
+  "view_preset": "Voir le preset",
+  "weight": "Poids",
   "amperePerChannel": "ampere Per Channel",
   "@amperePerChannel": {
     "description": "auto-added from code scan"
@@ -191,31 +213,31 @@
   "@beamCalculation": {
     "description": "auto-added from code scan"
   },
-  "bottomNav_catalogue": "bottom Nav catalogue",
+  "bottomNav_catalogue": "Catalogue",
   "@bottomNav_catalogue": {
     "description": "auto-added from code scan"
   },
-  "bottomNav_electricity": "bottom Nav electricity",
+  "bottomNav_electricity": "Électricité",
   "@bottomNav_electricity": {
     "description": "auto-added from code scan"
   },
-  "bottomNav_light": "bottom Nav light",
+  "bottomNav_light": "Lumière",
   "@bottomNav_light": {
     "description": "auto-added from code scan"
   },
-  "bottomNav_misc": "bottom Nav misc",
+  "bottomNav_misc": "Divers",
   "@bottomNav_misc": {
     "description": "auto-added from code scan"
   },
-  "bottomNav_sound": "bottom Nav sound",
+  "bottomNav_sound": "Son",
   "@bottomNav_sound": {
     "description": "auto-added from code scan"
   },
-  "bottomNav_structure": "bottom Nav structure",
+  "bottomNav_structure": "Structure",
   "@bottomNav_structure": {
     "description": "auto-added from code scan"
   },
-  "bottomNav_video": "bottom Nav video",
+  "bottomNav_video": "Vidéo",
   "@bottomNav_video": {
     "description": "auto-added from code scan"
   },
@@ -231,15 +253,15 @@
   "@calculationResult": {
     "description": "auto-added from code scan"
   },
-  "catalogAccess": "catalog Access",
+  "catalogAccess": "Catalogue AV",
   "@catalogAccess": {
     "description": "auto-added from code scan"
   },
-  "catalogPage_cancel": "catalog Page cancel",
+  "catalogPage_cancel": "Annuler",
   "@catalogPage_cancel": {
     "description": "auto-added from code scan"
   },
-  "catalogPage_confirm": "catalog Page confirm",
+  "catalogPage_confirm": "Confirmer",
   "@catalogPage_confirm": {
     "description": "auto-added from code scan"
   },
@@ -267,7 +289,7 @@
   "@connectors": {
     "description": "auto-added from code scan"
   },
-  "consumption": "consumption",
+  "consumption": "Conso...",
   "@consumption": {
     "description": "auto-added from code scan"
   },
@@ -291,7 +313,7 @@
   "@driverType": {
     "description": "auto-added from code scan"
   },
-  "electricityMenu": "electricity Menu",
+  "electricityMenu": "Électricité",
   "@electricityMenu": {
     "description": "auto-added from code scan"
   },
@@ -331,123 +353,180 @@
   "@lightAccessories": {
     "description": "auto-added from code scan"
   },
-  "lightMenu": "light Menu",
+  "lightMenu": "Lumière",
   "@lightMenu": {
     "description": "auto-added from code scan"
   },
-  "lightPage_angleRange": "light Page angle Range",
+  "lightPage_angleRange": "Angle (1° à 70°)",
   "@lightPage_angleRange": {
     "description": "auto-added from code scan"
   },
-  "lightPage_calculate": "light Page calculate",
+  "lightPage_calculate": "Calculer",
   "@lightPage_calculate": {
     "description": "auto-added from code scan"
   },
-  "lightPage_channel": "light Page channel",
+  "lightPage_channel": "Canal",
   "@lightPage_channel": {
     "description": "auto-added from code scan"
   },
-  "lightPage_channels": "light Page channels",
+  "lightPage_channels": "Canaux",
   "@lightPage_channels": {
     "description": "auto-added from code scan"
   },
-  "lightPage_distanceRange": "light Page distance Range",
+  "lightPage_distanceRange": "Distance (1m à 40m)",
   "@lightPage_distanceRange": {
     "description": "auto-added from code scan"
   },
-  "lightPage_heightRange": "light Page height Range",
+  "lightPage_heightRange": "Hauteur (1m à 20m)",
   "@lightPage_heightRange": {
     "description": "auto-added from code scan"
   },
-  "lightPage_ledLength": "light Page led Length",
+  "lightPage_ledLength": "Longueur LED (en mètres)",
   "@lightPage_ledLength": {
     "description": "auto-added from code scan"
   },
-  "lightPage_meters": "light Page meters",
+  "lightPage_meters": "mètres",
   "@lightPage_meters": {
     "description": "auto-added from code scan"
   },
-  "lightPage_title": "light Page title",
+  "lightPage_title": "Équipement d'éclairage",
   "@lightPage_title": {
     "description": "auto-added from code scan"
   },
-  "lightPage_total": "light Page total",
+  "lightPage_total": "Total",
   "@lightPage_total": {
     "description": "auto-added from code scan"
   },
-  "mountingTools": "mounting Tools",
+  "mountingTools": "Outils de montage",
   "@mountingTools": {
     "description": "auto-added from code scan"
   },
-  "networkMenu": "network Menu",
+  "networkMenu": "Réseau",
   "@networkMenu": {
     "description": "auto-added from code scan"
   },
-  "patch_input": "patch input",
+  "patch_input": "Entrée patch",
   "@patch_input": {
     "description": "auto-added from code scan"
   },
-  "patch_output": "patch output",
+  "patch_output": "Sortie patch",
   "@patch_output": {
     "description": "auto-added from code scan"
   },
-  "paymentPage_monthlyPlan": "payment Page monthly Plan",
-  "@paymentPage_monthlyPlan": {
-    "description": "auto-added from code scan"
-  },
-  "paymentPage_yearlyPlan": "payment Page yearly Plan",
-  "@paymentPage_yearlyPlan": {
-    "description": "auto-added from code scan"
-  },
-  "projectCalculationPage_globalTotal": "project Calculation Page global Total",
+  "paymentPage_title": "Abonnement Premium",
+  "paymentPage_monthlyPlan": "Plan mensuel",
+  "paymentPage_yearlyPlan": "Plan annuel",
+  "paymentPage_monthlyPrice": "2,49€/mois",
+  "paymentPage_yearlyPrice": "19,99€/an",
+  "paymentPage_securePayment": "Paiement sécurisé",
+  "paymentPage_visaMastercardAccepted": "Visa et Mastercard acceptés",
+  "paymentPage_paymentInfo": "Informations de paiement",
+  "paymentPage_cardholderName": "Nom du titulaire de la carte",
+  "paymentPage_cardNumber": "Numéro de carte",
+  "paymentPage_expiryDate": "MM/AA",
+  "paymentPage_cvc": "CVC",
+  "paymentPage_payButton": "Payer",
+  "paymentPage_processing": "Traitement en cours...",
+  "paymentPage_paymentSuccess": "Paiement réussi !",
+  "paymentPage_subscriptionActivated": "Votre abonnement premium a été activé avec succès !",
+  "paymentPage_plan": "Plan",
+  "paymentPage_price": "Prix",
+  "paymentPage_continue": "Continuer",
+  "paymentPage_premiumFeatures": "Vous pouvez maintenant profiter de toutes les fonctionnalités premium !",
+  "paymentPage_paymentError": "Erreur de paiement",
+  "paymentPage_selectPaymentMethod": "Veuillez sélectionner un mode de paiement",
+  "paymentPage_fillAllFields": "Veuillez remplir tous les champs de la carte",
+  "paymentPage_paymentFailed": "Le paiement a échoué. Veuillez réessayer.",
+  "paymentPage_legalText": "En procédant au paiement, vous acceptez nos conditions d'utilisation et notre politique de confidentialité. Le paiement sera traité de manière sécurisée par Stripe.",
+  "paymentPage_featureCompleteCatalogue": "Catalogue complet",
+  "paymentPage_featureProjectsPresets": "Projets et presets",
+  "paymentPage_featureExportPdfExcel": "Export PDF/Excel",
+  "paymentPage_featurePrioritySupport": "Support prioritaire",
+  "paymentPage_featureAutoUpdates": "Mises à jour automatiques",
+  "paymentPage_featureSavings": "Économie de 33%",
+  "paymentPage_descriptionMonthly": "Accès complet à toutes les fonctionnalités",
+  "paymentPage_descriptionYearly": "Économisez 33% avec l'abonnement annuel",
+  "paymentPage_popular": "Populaire",
+  "paymentPage_bestValue": "Meilleur rapport qualité-prix",
+  "projectCalculationPage_globalTotal": "Total global",
   "@projectCalculationPage_globalTotal": {
     "description": "auto-added from code scan"
   },
-  "projectCalculationPage_noPresetSelected": "project Calculation Page no Preset Selected",
+  "projectCalculationPage_noPresetSelected": "Aucun preset sélectionné",
   "@projectCalculationPage_noPresetSelected": {
     "description": "auto-added from code scan"
   },
-  "projectCalculationPage_powerConsumption": "project Calculation Page power Consumption",
+  "projectCalculationPage_powerConsumption": "Consommation électrique",
   "@projectCalculationPage_powerConsumption": {
     "description": "auto-added from code scan"
   },
-  "projectCalculationPage_powerProject": "project Calculation Page power Project",
+  "projectCalculationPage_powerProject": "Puissance du projet",
   "@projectCalculationPage_powerProject": {
     "description": "auto-added from code scan"
   },
-  "projectCalculationPage_total": "project Calculation Page total",
+  "projectCalculationPage_powerTab": "Puiss.",
+  "@projectCalculationPage_powerTab": {
+    "description": "auto-added from code scan"
+  },
+  "projectCalculationPage_weightTab": "Poids",
+  "@projectCalculationPage_weightTab": {
+    "description": "auto-added from code scan"
+  },
+  "electricityPage_powerTab": "Puissance",
+  "@electricityPage_powerTab": {
+    "description": "auto-added from code scan"
+  },
+  "videoPage_projectionTab": "Projection",
+  "@videoPage_projectionTab": {
+    "description": "auto-added from code scan"
+  },
+  "videoPage_ledWallTab": "Mur Led",
+  "@videoPage_ledWallTab": {
+    "description": "auto-added from code scan"
+  },
+  "videoPage_timerTab": "Timer",
+  "@videoPage_timerTab": {
+    "description": "auto-added from code scan"
+  },
+  "catalogue_addToPreset": "Ajouter",
+  "@catalogue_addToPreset": {"description": "Titre du cadre d'ajout: Ajouter 'NomPreset'"},
+  "catalogue_confirmAddTitle": "Confirmation",
+  "catalogue_confirmAddMessage": "Ajouter {count} {product} à {preset} ?",
+  "catalogue_mode": "Mode",
+  "catalogue_wired": "Filaire",
+  "projectCalculationPage_total": "Total",
   "@projectCalculationPage_total": {
     "description": "auto-added from code scan"
   },
-  "projectCalculationPage_weight": "project Calculation Page weight",
+  "projectCalculationPage_weight": "Poids",
   "@projectCalculationPage_weight": {
     "description": "auto-added from code scan"
   },
-  "protections": "protections",
+  "protections": "Protections",
   "@protections": {
     "description": "auto-added from code scan"
   },
-  "recommendedConfiguration": "recommended Configuration",
+  "recommendedConfiguration": "Configuration recommandée",
   "@recommendedConfiguration": {
     "description": "auto-added from code scan"
   },
-  "safetyAccessories": "safety Accessories",
+  "safetyAccessories": "Accessoires de sécurité",
   "@safetyAccessories": {
     "description": "auto-added from code scan"
   },
-  "selectStructure": "select Structure",
+  "selectStructure": "Sélectionner la structure",
   "@selectStructure": {
     "description": "auto-added from code scan"
   },
-  "soundMenu": "sound Menu",
+  "soundMenu": "Son",
   "@soundMenu": {
     "description": "auto-added from code scan"
   },
-  "soundPage_quantity": "sound Page quantity",
+  "soundPage_quantity": "Quantité",
   "@soundPage_quantity": {
     "description": "auto-added from code scan"
   },
-  "soundPage_title": "sound Page title",
+  "soundPage_title": "Équipement audio",
   "@soundPage_title": {
     "description": "auto-added from code scan"
   },
@@ -495,79 +574,79 @@
   "@stripLedType": {
     "description": "auto-added from code scan"
   },
-  "structureMenu": "structure Menu",
+  "structureMenu": "Structure",
   "@structureMenu": {
     "description": "auto-added from code scan"
   },
-  "structurePage_3pointsAccroche": "structure Page 3 points Accroche",
+  "structurePage_3pointsAccroche": "3 points d'accroche",
   "@structurePage_3pointsAccroche": {
     "description": "auto-added from code scan"
   },
-  "structurePage_4pointsAccroche": "structure Page 4 points Accroche",
+  "structurePage_4pointsAccroche": "4 points d'accroche",
   "@structurePage_4pointsAccroche": {
     "description": "auto-added from code scan"
   },
-  "structurePage_chargeRepartie": "structure Page charge Repartie",
+  "structurePage_chargeRepartie": "Charge répartie",
   "@structurePage_chargeRepartie": {
     "description": "auto-added from code scan"
   },
-  "structurePage_chargeType": "structure Page charge Type",
+  "structurePage_chargeType": "Type de charge",
   "@structurePage_chargeType": {
     "description": "auto-added from code scan"
   },
-  "structurePage_chargesTab": "structure Page charges Tab",
+  "structurePage_chargesTab": "Charges",
   "@structurePage_chargesTab": {
     "description": "auto-added from code scan"
   },
-  "structurePage_deflectionRatioTitle": "structure Page deflection Ratio Title",
+  "structurePage_deflectionRatioTitle": "Titre du ratio de déflexion",
   "@structurePage_deflectionRatioTitle": {
     "description": "auto-added from code scan"
   },
-  "structurePage_distance": "structure Page distance",
+  "structurePage_distance": "Distance",
   "@structurePage_distance": {
     "description": "auto-added from code scan"
   },
-  "structurePage_length": "structure Page length",
+  "structurePage_length": "Longueur",
   "@structurePage_length": {
     "description": "auto-added from code scan"
   },
-  "structurePage_maxDeflectionTitle": "structure Page max Deflection Title",
+  "structurePage_maxDeflectionTitle": "Titre de déflexion maximale",
   "@structurePage_maxDeflectionTitle": {
     "description": "auto-added from code scan"
   },
-  "structurePage_maxLoadTitle": "structure Page max Load Title",
+  "structurePage_maxLoadTitle": "Titre de charge maximale",
   "@structurePage_maxLoadTitle": {
     "description": "auto-added from code scan"
   },
-  "structurePage_modifier": "structure Page modifier",
+  "structurePage_modifier": "Modificateur",
   "@structurePage_modifier": {
     "description": "auto-added from code scan"
   },
-  "structurePage_pointAccrocheCentre": "structure Page point Accroche Centre",
+  "structurePage_pointAccrocheCentre": "Point d'accroche centre",
   "@structurePage_pointAccrocheCentre": {
     "description": "auto-added from code scan"
   },
-  "structurePage_pointsAccrocheExtremites": "structure Page points Accroche Extremites",
+  "structurePage_pointsAccrocheExtremites": "Points d'accroche extrémités",
   "@structurePage_pointsAccrocheExtremites": {
     "description": "auto-added from code scan"
   },
-  "structurePage_projectWeightTab": "structure Page project Weight Tab",
+  "structurePage_projectWeightTab": "Poids du projet",
   "@structurePage_projectWeightTab": {
     "description": "auto-added from code scan"
   },
-  "structurePage_selectCharge": "structure Page select Charge",
+  "structurePage_selectCharge": "Sélectionner la charge",
   "@structurePage_selectCharge": {
     "description": "auto-added from code scan"
   },
-  "structurePage_structure": "structure Page structure",
+  "structurePage_structure": "Structure",
   "@structurePage_structure": {
     "description": "auto-added from code scan"
   },
-  "structurePage_structureWeightTitle": "structure Page structure Weight Title",
+  "structurePage_structureWeightTitle": "Poids de la structure",
   "@structurePage_structureWeightTitle": {
     "description": "auto-added from code scan"
   },
-  "structurePage_title": "structure Page title",
+  "structurePage_title": "Équipement de structure",
   "@structurePage_title": {
     "description": "auto-added from code scan"
   },
@@ -627,51 +706,51 @@
   "@videoLedResult_poidsTotal": {
     "description": "auto-added from code scan"
   },
-  "videoMenu": "video Menu",
+  "videoMenu": "Vidéo",
   "@videoMenu": {
     "description": "auto-added from code scan"
   },
-  "videoPage_brand": "video Page brand",
+  "videoPage_brand": "Marque",
   "@videoPage_brand": {
     "description": "auto-added from code scan"
   },
-  "videoPage_format": "video Page format",
+  "videoPage_format": "Format",
   "@videoPage_format": {
     "description": "auto-added from code scan"
   },
-  "videoPage_imageWidth": "video Page image Width",
+  "videoPage_imageWidth": "Largeur d'image",
   "@videoPage_imageWidth": {
     "description": "auto-added from code scan"
   },
-  "videoPage_model": "video Page model",
+  "videoPage_model": "Modèle",
   "@videoPage_model": {
     "description": "auto-added from code scan"
   },
-  "videoPage_overlap": "video Page overlap",
+  "videoPage_overlap": "Chevauchement",
   "@videoPage_overlap": {
     "description": "auto-added from code scan"
   },
-  "videoPage_projectorCount": "video Page projector Count",
+  "videoPage_projectorCount": "Nombre de projecteurs",
   "@videoPage_projectorCount": {
     "description": "auto-added from code scan"
   },
-  "videoPage_projectorDistance": "video Page projector Distance",
+  "videoPage_projectorDistance": "Distance des projecteurs",
   "@videoPage_projectorDistance": {
     "description": "auto-added from code scan"
   },
-  "videoPage_schema": "video Page schema",
+  "videoPage_schema": "Schéma",
   "@videoPage_schema": {
     "description": "auto-added from code scan"
   },
-  "videoPage_selectLedWall": "video Page select Led Wall",
+  "videoPage_selectLedWall": "Sélectionner mur LED",
   "@videoPage_selectLedWall": {
     "description": "auto-added from code scan"
   },
-  "videoPage_selectProduct": "video Page select Product",
+  "videoPage_selectProduct": "Sélectionner produit",
   "@videoPage_selectProduct": {
     "description": "auto-added from code scan"
   },
-  "videoPage_title": "video Page title",
+  "videoPage_title": "Vidéo",
   "@videoPage_title": {
     "description": "auto-added from code scan"
   },
@@ -683,16 +762,162 @@
   "@volts": {
     "description": "auto-added from code scan"
   },
-  "defaultProject1": "Projet par défaut 1",
+  "defaultProject1": "Projet 1",
   "@defaultProject1": {
-    "description": "auto-added"
+    "description": "Nom du premier projet par défaut"
   },
-  "defaultProject2": "Projet par défaut 2",
+  "defaultProject2": "Projet 2",
   "@defaultProject2": {
-    "description": "auto-added"
+    "description": "Nom du deuxième projet par défaut"
   },
-  "defaultProject3": "Projet par défaut 3",
+  "defaultProject3": "Projet 3",
   "@defaultProject3": {
-    "description": "auto-added"
-  }
+    "description": "Nom du troisième projet par défaut"
+  },
+  "dmxPage_warning": "Attention",
+  "dmxPage_productsNotPlaced": "produits non placés",
+  "dmxPage_maxIterationsReached": "Limite d'itérations atteinte",
+  "subscription_premium": "Premium",
+  "subscription_description": "Description",
+  "subscription_choose_plan": "Choisir un plan",
+  "subscription_free_trial": "Essai gratuit",
+  "subscription_security": "Sécurité",
+  "subscription_security_description": "Description sécurité",
+  "subscription_popular": "Populaire",
+  "subscription_subscribe": "S'abonner",
+  "email_required": "L'email est requis",
+  "invalid_email": "Email invalide",
+  "password_required": "Le mot de passe est requis",
+  "password_too_short": "Le mot de passe doit contenir au moins 6 caractères",
+  "auth_service_loading": "Service d'authentification en cours de chargement",
+  "auth_service_error": "Erreur du service d'authentification",
+  "invalid_credentials_error": "Email ou mot de passe incorrect",
+  "connection_error": "Erreur de connexion",
+  "ok": "OK",
+  "enter_email_first": "Veuillez entrer votre email",
+  "reset_email_sent": "Un email de réinitialisation a été envoyé. Vérifiez votre boîte de réception et vos spams.",
+  "login": "Connexion",
+  "email": "Email",
+  "password": "Mot de passe",
+  "forgot_password": "Mot de passe oublié ?",
+  "remember_me": "Se souvenir de moi",
+  "sign_in": "Se connecter",
+  "or_continue_with": "Ou continuer avec",
+  "google_sign_in": "Se connecter avec Google",
+  "biometric_auth": "Auth. biométrique",
+  "sign_up": "S'inscrire",
+  "welcome_to_avwallet": "Bienvenue sur AVWallet",
+  "welcome_to_avwallet_with_name": "Bienvenue sur AVWallet, {name}",
+  "premium_usage_remaining": "Vous bénéficiez de l'utilisation premium.\\nIl vous reste {count} utilisations",
+  "continueButton": "Continuer",
+  "signup": "Inscription",
+  "confirm_password": "Confirmer le mot de passe",
+  "confirm_password_required": "La confirmation du mot de passe est requise",
+  "passwords_dont_match": "Les mots de passe ne correspondent pas",
+  "already_have_account": "Déjà un compte ?",
+  "verification_code_sent_message": "Un code de vérification a été envoyé",
+  "verification_code": "Code de vérification",
+  "welcome_title": "Bienvenue",
+  "welcome_message": "Message de bienvenue",
+  "beam_short": "Fais.",
+  "default_project_name": "Projet par défaut",
+  "no_projects_available": "Aucun projet disponible à charger",
+  "project_loaded": "Projet \"{name}\" chargé !",
+  "export_project_confirm": "Voulez-vous exporter le projet \"{name}\" ?",
+  "generating_pdfs": "Génération des PDFs...",
+  "files_exported_success": "{count} fichiers exportés avec succès !",
+  "no_files_to_export": "Aucun fichier à exporter pour ce projet",
+  "export_error": "Erreur lors de l'export: {error}",
+  "project_saved_locally": "Le projet sera sauvegardé localement.",
+  "project_saved": "Projet sauvegardé !",
+  "export_to_project": "Vers Projet",
+  "export_sms": "SMS",
+  "export_whatsapp": "WhatsApp",
+  "export_email": "Email",
+  "export_tooltip": "Exporter",
+  "photos_project_title": "PHOTOS DU PROJET",
+  "photos_ar_captured": "Photos capturées lors des mesures AR:",
+  "photo_label": "Photo: {filename}",
+  "article_label": "Article",
+  "quantity_label": "Qté",
+  "catalogueQuantityDialog_title": "Quantité",
+  "catalogueQuantityDialog_enterQuantity": "Entrez la quantité",
+  "catalogueQuantityDialog_dmxType": "Type DMX",
+  "catalogueQuantityDialog_dmxMini": "DMX mini",
+  "catalogueQuantityDialog_dmxMax": "DMX max",
+  "catalogueQuantityDialog_cancel": "Annuler",
+  "catalogueQuantityDialog_confirm": "Confirmer",
+  "power_label": "Puissance",
+  "weight_label": "Poids",
+  "loading": "Chargement...",
+  "create_button": "Créer",
+  "save_button": "Sauvegarder",
+  "cancel_button": "Annuler",
+  "weight_tab_title": "Poids",
+  "imports": "Imports",
+  "calculation_dmx": "Calcul DMX",
+  "calculation_sound": "Calcul Son",
+  "calculation_projection": "Calcul Projection",
+  "calculation_led_wall": "Calcul Mur Led",
+  "calculation_charges": "Calcul Charges",
+  
+  "standard_welcome_title": "Bienvenue sur AVWallet",
+  "standard_welcome_message": "Bienvenue sur AVWallet, {name}",
+  "standard_welcome_usage_remaining": "Vous avez {count} utilisations restantes",
+  "standard_welcome_continue": "Continuer",
+  
+  "premium_welcome_title": "Bienvenue Premium !",
+  "premium_welcome_message": "Félicitation, Premium activé",
+  "premium_benefits_title": "Avantages Premium",
+  "premium_benefit_unlimited": "Utilisation illimitée",
+  "premium_benefit_priority": "Support prioritaire",
+  "premium_benefit_support": "Assistance technique dédiée",
+  "premium_welcome_later": "Plus tard",
+  "premium_welcome_continue": "Explorer Premium",
+  "premium_vip_welcome_message": "Félicitation, vous faites parti de l'équipe VIP AV Wallet",
+  "premium_vip_access_activated": "Accès premium illimité activé",
+  "ok": "OK",
+  "preview": "Aperçu",
+  "export": "Exporter",
+  "project_parameters": "Paramètre Projet",
+  "location": "Lieu",
+  "mounting_date": "Date montage (JJ/MM/AA)",
+  "period_from": "Date : du JJ/MM/AA",
+  "period_to": "au JJ/MM/AA",
+  "save_parameters": "Sauvegarder",
+  "cancel": "Annuler",
+  "project_location": "Lieu",
+  "project_mounting_date": "Date montage",
+  "project_period": "Période",
+  "not_defined": "Non défini",
+  "start_date": "Début : JJ/MM/AA",
+  "end_date": "Fin : JJ/MM/AA",
+  
+  "calculation_sent_to_project": "{calculationName} envoyé vers \"{projectName}\"",
+  
+  "project_stats_presets": "Nombre de Presets",
+  "project_stats_articles": "Nombre Total d'Articles",
+  "project_stats_calculations": "Nombre de Calculs",
+  "project_stats_photos": "Nombre de Photos",
+  
+  "select_photos": "Sélectionner des photos",
+  "photos_imported": "Photos importées",
+  "preview": "Aperçu",
+  "export": "Exporter",
+  "delete": "Supprimer",
+  "photo_exported": "Photo exportée",
+  "photo_not_found": "Photo non trouvée",
+  "cabling_percentage": "Câblage",
+  "cabling_addition": "+10% Câblage",
+  "ok": "OK",
+  "review_popup_title": "Bonjour",
+  "review_popup_message": "Une idée, une recommandation ? Votre avis nous intéresse",
+  "review_popup_contact": "Nous contacter",
+  "review_popup_continue": "Continuer",
+  "coming_soon": "Prochainement",
+  "bandwidth_test": "Test de Bande Passante",
+  "bandwidth_test_title": "Bandwidth",
+  "bandwidth_test_description": "Testez votre vitesse de connexion",
+  "bandwidth_test_start": "Démarrer le test",
+  "bandwidth_test_results": "Résultats"
 }

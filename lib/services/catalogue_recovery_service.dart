@@ -60,7 +60,7 @@ class CatalogueRecoveryService {
                 final Map<String, dynamic> product = products[i];
                 
                 final item = CatalogueItem(
-                  id: '${category}_${brand}_${i}',
+                  id: '${category}_${brand}_$i',
                   name: product['name'] ?? 'Unknown',
                   description: product['description'] ?? '',
                   categorie: category,

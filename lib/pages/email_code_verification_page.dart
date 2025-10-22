@@ -1,12 +1,10 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../services/auth_service.dart';
 import '../providers/auth_provider.dart';
-import '../services/translation_service.dart';
 import '../services/premium_email_service.dart';
-import '../widgets/premium_vip_dialog.dart';
-import '../widgets/custom_dialog.dart';
+import '../services/translation_service.dart';
+import 'welcome_gate_page.dart';
 
 class EmailCodeVerificationPage extends ConsumerStatefulWidget {
   final String email;
@@ -63,6 +61,9 @@ class _EmailCodeVerificationPageState extends ConsumerState<EmailCodeVerificatio
       backgroundColor: const Color(0xFF0A1128),
       appBar: AppBar(
         backgroundColor: const Color(0xFF0A1128),
+        elevation: 0,
+        shadowColor: Colors.transparent,
+        surfaceTintColor: Colors.transparent,
         title: Text(
           translationService.t('verification_code'),
           style: const TextStyle(color: Colors.white),
@@ -386,15 +387,27 @@ class _EmailCodeVerificationPageState extends ConsumerState<EmailCodeVerificatio
       final isPremium = await PremiumEmailService.isPremiumEmail(widget.email);
       print('DEBUG: Is premium after verification: $isPremium');
       
-      final translationService = TranslationService();
-      
       if (mounted) {
         if (isPremium) {
-          print('DEBUG: Showing VIP welcome dialog after verification');
-          _showPremiumWelcomeDialog(translationService);
+          print('DEBUG: Redirecting to welcome gate for premium user');
+          Navigator.of(context).pushReplacement(
+            MaterialPageRoute(
+              builder: (context) => WelcomeGatePage(
+                email: widget.email,
+                isPremium: true,
+              ),
+            ),
+          );
         } else {
-          print('DEBUG: Showing normal welcome dialog after verification');
-          _showWelcomeDialog(translationService);
+          print('DEBUG: Redirecting to welcome gate for standard user');
+          Navigator.of(context).pushReplacement(
+            MaterialPageRoute(
+              builder: (context) => WelcomeGatePage(
+                email: widget.email,
+                isPremium: false,
+              ),
+            ),
+          );
         }
       }
     } catch (e) {
@@ -447,34 +460,5 @@ class _EmailCodeVerificationPageState extends ConsumerState<EmailCodeVerificatio
   void dispose() {
     _codeController.dispose();
     super.dispose();
-  }
-
-  void _showPremiumWelcomeDialog(TranslationService translationService) {
-    showDialog(
-      context: context,
-      barrierDismissible: false,
-      builder: (context) => PremiumVIPDialog(
-        email: widget.email,
-        onContinue: () {
-          Navigator.of(context).pop();
-          Navigator.of(context).pushNamedAndRemoveUntil('/home', (route) => false);
-        },
-      ),
-    );
-  }
-
-  void _showWelcomeDialog(TranslationService translationService) {
-    showDialog(
-      context: context,
-      barrierDismissible: false,
-      builder: (context) => CustomDialog(
-        title: translationService.t('welcome_title'),
-        message: translationService.t('welcome_message'),
-        onOkPressed: () {
-          Navigator.of(context).pop();
-          Navigator.of(context).pushNamedAndRemoveUntil('/home', (route) => false);
-        },
-      ),
-    );
   }
 }

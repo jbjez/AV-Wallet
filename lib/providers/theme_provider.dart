@@ -17,13 +17,9 @@ class ThemeNotifier extends StateNotifier<ThemeMode> {
   Future<void> _loadTheme() async {
     try {
       _prefs = await SharedPreferences.getInstance();
-      final savedTheme = _prefs.getString(_key);
-      if (savedTheme != null) {
-        state = ThemeMode.values.firstWhere(
-          (e) => e.toString() == savedTheme,
-          orElse: () => ThemeMode.dark,
-        );
-      }
+      // Forcer le mode nuit par défaut - effacer toute valeur sauvegardée
+      await _prefs.remove(_key);
+      state = ThemeMode.dark; // Mode nuit par défaut
     } catch (e) {
       debugPrint('Error loading theme: $e');
     }

@@ -65,7 +65,7 @@ class BiometricAuthService {
       final result = await _localAuth.authenticate(
         localizedReason: reason ?? 'Authentifiez-vous pour accéder à votre compte',
         options: const AuthenticationOptions(
-          biometricOnly: false, // Permettre d'autres méthodes si Face ID échoue
+          biometricOnly: true, // Forcer uniquement la biométrie (pas de code)
           stickyAuth: false, // Ne pas rester collé
         ),
       );
@@ -165,6 +165,39 @@ class BiometricAuthService {
     } catch (e) {
       _logger.warning('Error getting biometric method name: $e');
       return 'Authentification biométrique';
+    }
+  }
+
+  /// Vérifie si l'utilisateur a donné sa permission pour utiliser la biométrie
+  Future<bool> isBiometricPermissionGranted(String userId) async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      return prefs.getBool('biometric_permission_granted_$userId') ?? false;
+    } catch (e) {
+      _logger.warning('Error checking biometric permission: $e');
+      return false;
+    }
+  }
+
+  /// Stocke la permission biométrique de l'utilisateur
+  Future<void> grantBiometricPermission(String userId) async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.setBool('biometric_permission_granted_$userId', true);
+      _logger.info('Biometric permission granted for user: $userId');
+    } catch (e) {
+      _logger.severe('Error granting biometric permission: $e');
+    }
+  }
+
+  /// Révoque la permission biométrique de l'utilisateur
+  Future<void> revokeBiometricPermission(String userId) async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.setBool('biometric_permission_granted_$userId', false);
+      _logger.info('Biometric permission revoked for user: $userId');
+    } catch (e) {
+      _logger.severe('Error revoking biometric permission: $e');
     }
   }
 

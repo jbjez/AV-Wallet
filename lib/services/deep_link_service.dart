@@ -82,9 +82,7 @@ class DeepLinkService {
       displayName: displayName ?? '',
       photoURL: user.userMetadata?['photo_url'] as String? ?? 
                 user.userMetadata?['picture'] as String? ?? '',
-      createdAt: user.createdAt != null
-          ? DateTime.parse(user.createdAt)
-          : DateTime.now(),
+      createdAt: DateTime.parse(user.createdAt),
       isEmailVerified: user.emailConfirmedAt != null,
     );
   }

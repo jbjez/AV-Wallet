@@ -12,6 +12,9 @@ class AppLocalizationsDe extends AppLocalizations {
   String get amplifier => 'Verstärker';
 
   @override
+  String get arMeasure_photoAr => 'Foto/AR';
+
+  @override
   String get arMeasure_captureError => 'Fehler bei der Aufnahme';
 
   @override
@@ -257,7 +260,34 @@ class AppLocalizationsDe extends AppLocalizations {
   String get lightPage_beamDiameter => 'Strahldurchmesser';
 
   @override
+  String get lightPage_beamTab => 'Strahl';
+
+  @override
+  String get lightPage_ledDriverTab => 'Led driver';
+
+  @override
   String get loadProject => 'Projekt laden';
+
+  @override
+  String get loadProject_selectProject =>
+      'Wählen Sie ein Projekt zum Laden aus:';
+
+  @override
+  String standard_welcome_title(String username) {
+    return 'Willkommen bei AVWallet';
+  }
+
+  @override
+  String get premium_benefit_catalogue => 'Katalog +220 Produkte';
+
+  @override
+  String get premium_benefit_calculations => 'Unbegrenzte Berechnungen';
+
+  @override
+  String get premium_benefit_project_management => 'Projekt/Preset-Verwaltung';
+
+  @override
+  String get premium_benefit_pdf_export => 'PDF-Export';
 
   @override
   String get loginMenu_accountSettings => 'Kontoeinstellungen';
@@ -267,6 +297,9 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get loginMenu_myProjects => 'Meine Projekte';
+
+  @override
+  String get loginMenu_usage => 'Nutzung';
 
   @override
   String get noPresetSelected => 'Kein Preset ausgewählt';
@@ -330,7 +363,22 @@ class AppLocalizationsDe extends AppLocalizations {
   String get presetWidget_create => 'Erstellen';
 
   @override
-  String get presetWidget_newPreset => 'Neue Voreinstellung';
+  String get new_preset => 'Neue Voreinstellung';
+
+  @override
+  String get view_project => 'Projekt anzeigen';
+
+  @override
+  String get new_project => 'Neues Projekt';
+
+  @override
+  String get save_project => 'Projekt speichern';
+
+  @override
+  String get load_project => 'Projekt laden';
+
+  @override
+  String get export_project => 'Projekt exportieren';
 
   @override
   String get product => 'Produkt';
@@ -346,19 +394,16 @@ class AppLocalizationsDe extends AppLocalizations {
   String get projectNameLabel => 'Name des neuen Projekts';
 
   @override
+  String get project_name => 'Projektname';
+
+  @override
   String get projectPage_addToPreset => 'Zur Voreinstellung hinzufügen';
 
   @override
   String get projectPage_cancel => 'Abbrechen';
 
   @override
-  String get projectRenamed => 'Projekt umbenannt zu';
-
-  @override
   String get quantity => 'Menge';
-
-  @override
-  String get renameProject => 'Projekt umbenennen';
 
   @override
   String get rename_preset => 'Preset umbenennen';
@@ -379,127 +424,119 @@ class AppLocalizationsDe extends AppLocalizations {
   String get search_speaker => 'Nach einem Lautsprecher suchen...';
 
   @override
-  String get settingsPage_account => 'settings Page account';
+  String get settingsPage_account => 'Konto';
 
   @override
-  String get settingsPage_biometricAuth => 'settings Page biometric Auth';
+  String get settingsPage_biometricAuth => 'Biometrische Authentifizierung';
 
   @override
-  String get settingsPage_cancel => 'settings Page cancel';
+  String get settingsPage_cancel => 'Abbrechen';
 
   @override
-  String get settingsPage_changePassword => 'settings Page change Password';
+  String get settingsPage_changePassword => 'Passwort ändern';
 
   @override
-  String get settingsPage_confirmSignOut => 'settings Page confirm Sign Out';
+  String get settingsPage_confirmSignOut => 'Abmelden bestätigen';
 
   @override
-  String get settingsPage_confirmUnsubscribe =>
-      'settings Page confirm Unsubscribe';
+  String get settingsPage_confirmUnsubscribe => 'Abmeldung bestätigen';
 
   @override
-  String get settingsPage_email => 'settings Page email';
+  String get settingsPage_email => 'E-Mail';
 
   @override
-  String get settingsPage_error => 'settings Page error';
+  String get settingsPage_error => 'Fehler';
 
   @override
   String get settingsPage_featureNotImplemented =>
-      'settings Page feature Not Implemented';
+      'Funktion nicht implementiert';
 
   @override
-  String get settingsPage_freemiumTest => 'settings Page freemium Test';
+  String get settingsPage_freemiumTest => 'Freemium-Test';
 
   @override
-  String get settingsPage_name => 'settings Page name';
+  String get settingsPage_name => 'Name';
 
   @override
-  String get settingsPage_notAvailable => 'settings Page not Available';
+  String get settingsPage_notAvailable => 'Nicht verfügbar';
 
   @override
-  String get settingsPage_notDefined => 'settings Page not Defined';
+  String get settingsPage_notDefined => 'Nicht definiert';
 
   @override
-  String get settingsPage_ok => 'settings Page ok';
+  String get settingsPage_ok => 'OK';
 
   @override
-  String get settingsPage_premium => 'settings Page premium';
+  String get settingsPage_premium => 'Premium';
 
   @override
-  String get settingsPage_premiumActivated => 'settings Page premium Activated';
+  String get settingsPage_premiumActivated => 'Premium aktiviert';
 
   @override
-  String get settingsPage_premiumSubscription =>
-      'settings Page premium Subscription';
+  String get settingsPage_premiumSubscription => 'Premium-Abonnement';
 
   @override
-  String get settingsPage_security => 'settings Page security';
+  String get settingsPage_security => 'Sicherheit';
 
   @override
-  String get settingsPage_signOut => 'settings Page sign Out';
+  String get settingsPage_signOut => 'Abmelden';
 
   @override
   String get settingsPage_signOutDialogContent =>
-      'settings Page sign Out Dialog Content';
+      'Sind Sie sicher, dass Sie sich abmelden möchten?';
 
   @override
-  String get settingsPage_signOutDialogTitle =>
-      'settings Page sign Out Dialog Title';
+  String get settingsPage_signOutDialogTitle => 'Abmelden';
 
   @override
-  String get settingsPage_standard => 'settings Page standard';
+  String get settingsPage_standard => 'Standard';
 
   @override
-  String get settingsPage_status => 'settings Page status';
+  String get settingsPage_status => 'Status';
 
   @override
-  String get settingsPage_subscribe => 'settings Page subscribe';
+  String get settingsPage_subscribe => 'Abonnieren';
 
   @override
   String get settingsPage_subscribeDialogContent =>
-      'settings Page subscribe Dialog Content';
+      'Möchten Sie das Premium-Abonnement abonnieren?';
 
   @override
-  String get settingsPage_subscribeDialogTitle =>
-      'settings Page subscribe Dialog Title';
+  String get settingsPage_subscribeDialogTitle => 'Premium-Abonnement';
 
   @override
-  String get settingsPage_subscribeToPremium =>
-      'settings Page subscribe To Premium';
+  String get settingsPage_subscribeToPremium => 'Premium abonnieren';
 
   @override
-  String get settingsPage_subscription => 'settings Page subscription';
+  String get settingsPage_subscription => 'Abonnement';
 
   @override
-  String get settingsPage_subscriptionError =>
-      'settings Page subscription Error';
+  String get settingsPage_subscriptionError => 'Abonnement-Fehler';
 
   @override
-  String get settingsPage_success => 'settings Page success';
+  String get settingsPage_success => 'Erfolg';
 
   @override
-  String get settingsPage_title => 'settings Page title';
+  String get settingsPage_title => 'Kontoeinstellungen';
 
   @override
-  String get settingsPage_unsubscribe => 'settings Page unsubscribe';
+  String get settingsPage_unsubscribe => 'Abmelden';
 
   @override
   String get settingsPage_unsubscribeDialogContent =>
-      'settings Page unsubscribe Dialog Content';
+      'Sind Sie sicher, dass Sie das Abonnement kündigen möchten?';
 
   @override
-  String get settingsPage_unsubscribeDialogTitle =>
-      'settings Page unsubscribe Dialog Title';
+  String get settingsPage_unsubscribeDialogTitle => 'Abonnement kündigen';
 
   @override
-  String get settingsPage_userInfo => 'settings Page user Info';
+  String get settingsPage_userInfo => 'Benutzerinformationen';
 
   @override
-  String get soundPage_ampConfigTitle => 'sound Page amp Config Title';
+  String get soundPage_ampConfigTitle => 'Verstärkerkonfiguration';
 
   @override
-  String get soundPage_amplificationTabShort =>
-      'sound Page amplification Tab Short';
+  String get soundPage_amplificationTabShort => 'Amp';
 
   @override
   String get soundPage_amplifier => 'Verstärker';
@@ -547,7 +584,7 @@ class AppLocalizationsDe extends AppLocalizations {
   String get totalProject => 'Gesamt Projekt';
 
   @override
-  String get unitKilogram => 'kg';
+  String get unitKilogram => 'Kg';
 
   @override
   String get unitKilowatt => 'kW';
@@ -568,7 +605,7 @@ class AppLocalizationsDe extends AppLocalizations {
   String get amperes => 'amperes';
 
   @override
-  String get beamCalculation => 'beam Calculation';
+  String get beamCalculation => 'Strahlberechnung';
 
   @override
   String get bottomNav_catalogue => 'Katalog';
@@ -592,16 +629,16 @@ class AppLocalizationsDe extends AppLocalizations {
   String get bottomNav_video => 'Video';
 
   @override
-  String get button_reset => 'button reset';
+  String get button_reset => 'Zurücksetzen';
 
   @override
   String get calculateDriverConfig => 'calculate Driver Config';
 
   @override
-  String get calculationResult => 'calculation Result';
+  String get calculationResult => 'Berechnungsergebnis';
 
   @override
-  String get catalogAccess => 'Katalog';
+  String get catalogAccess => 'Katalog AV';
 
   @override
   String get catalogPage_cancel => 'Abbrechen';
@@ -622,28 +659,28 @@ class AppLocalizationsDe extends AppLocalizations {
   String get channels => 'channels';
 
   @override
-  String get channelsPlural => 'channels Plural';
+  String get channelsPlural => 'Kanäle';
 
   @override
   String get connectors => 'connectors';
 
   @override
-  String get consumption => 'consumption';
+  String get consumption => 'Verbrauch';
 
   @override
   String get distance_label => 'null m';
 
   @override
-  String get dmxCables => 'dmx Cables';
+  String get dmxCables => 'DMX-Kabel';
 
   @override
-  String get driverConfiguration => 'driver Configuration';
+  String get driverConfiguration => 'Treiberkonfiguration';
 
   @override
   String get driverTab_result => 'driver Tab result';
 
   @override
-  String get driverType => 'driver Type';
+  String get driverType => 'Treibertyp';
 
   @override
   String get electricityMenu => 'Elekt.';
@@ -673,7 +710,7 @@ class AppLocalizationsDe extends AppLocalizations {
   String get length => 'length';
 
   @override
-  String get lightAccessories => 'light Accessories';
+  String get lightAccessories => 'Beleuchtungszubehör';
 
   @override
   String get lightMenu => 'Licht';
@@ -709,7 +746,7 @@ class AppLocalizationsDe extends AppLocalizations {
   String get lightPage_total => 'Gesamt';
 
   @override
-  String get mountingTools => 'mounting Tools';
+  String get mountingTools => 'Montagewerkzeuge';
 
   @override
   String get networkMenu => 'Netzwerk';
@@ -721,10 +758,111 @@ class AppLocalizationsDe extends AppLocalizations {
   String get patch_output => 'AUSGANG';
 
   @override
-  String get paymentPage_monthlyPlan => 'payment Page monthly Plan';
+  String get paymentPage_title => 'Premium-Abonnement';
 
   @override
-  String get paymentPage_yearlyPlan => 'payment Page yearly Plan';
+  String get paymentPage_monthlyPlan => 'Monatsplan';
+
+  @override
+  String get paymentPage_yearlyPlan => 'Jahresplan';
+
+  @override
+  String get paymentPage_monthlyPrice => 'Monatlich';
+
+  @override
+  String get paymentPage_yearlyPrice => 'Jährlich';
+
+  @override
+  String get paymentPage_securePayment => 'Sichere Zahlung';
+
+  @override
+  String get paymentPage_visaMastercardAccepted =>
+      'Visa & Mastercard akzeptiert';
+
+  @override
+  String get paymentPage_paymentInfo => 'Zahlungsinformationen';
+
+  @override
+  String get paymentPage_cardholderName => 'Karteninhaber';
+
+  @override
+  String get paymentPage_cardNumber => 'Kartennummer';
+
+  @override
+  String get paymentPage_expiryDate => 'Ablaufdatum';
+
+  @override
+  String get paymentPage_cvc => 'CVC';
+
+  @override
+  String get paymentPage_payButton => 'Jetzt bezahlen';
+
+  @override
+  String get paymentPage_processing => 'Verarbeitung...';
+
+  @override
+  String get paymentPage_paymentSuccess => 'Zahlung erfolgreich';
+
+  @override
+  String get paymentPage_subscriptionActivated => 'Abonnement aktiviert';
+
+  @override
+  String get paymentPage_plan => 'Plan';
+
+  @override
+  String get paymentPage_price => 'Preis';
+
+  @override
+  String get paymentPage_continue => 'Weiter';
+
+  @override
+  String get paymentPage_premiumFeatures => 'Premium-Funktionen';
+
+  @override
+  String get paymentPage_paymentError => 'Zahlungsfehler';
+
+  @override
+  String get paymentPage_selectPaymentMethod => 'Zahlungsmethode auswählen';
+
+  @override
+  String get paymentPage_fillAllFields => 'Alle Felder ausfüllen';
+
+  @override
+  String get paymentPage_paymentFailed => 'Zahlung fehlgeschlagen';
+
+  @override
+  String get paymentPage_legalText =>
+      'Mit der Zahlung stimmen Sie unseren AGB zu';
+
+  @override
+  String get paymentPage_featureCompleteCatalogue => 'Vollständiger Katalog';
+
+  @override
+  String get paymentPage_featureProjectsPresets => 'Projekte & Presets';
+
+  @override
+  String get paymentPage_featureExportPdfExcel => 'PDF/Excel Export';
+
+  @override
+  String get paymentPage_featurePrioritySupport => 'Prioritätssupport';
+
+  @override
+  String get paymentPage_featureAutoUpdates => 'Automatische Updates';
+
+  @override
+  String get paymentPage_featureSavings => 'Ersparnisse';
+
+  @override
+  String get paymentPage_descriptionMonthly => 'Monatliches Abonnement';
+
+  @override
+  String get paymentPage_descriptionYearly => 'Jährliches Abonnement';
+
+  @override
+  String get paymentPage_popular => 'Beliebt';
+
+  @override
+  String get paymentPage_bestValue => 'Bester Wert';
 
   @override
   String get projectCalculationPage_globalTotal => 'Gesamtsumme';
@@ -740,6 +878,42 @@ class AppLocalizationsDe extends AppLocalizations {
   String get projectCalculationPage_powerProject => 'Leistungsprojekt';
 
   @override
+  String get projectCalculationPage_powerTab => 'Leist.';
+
+  @override
+  String get projectCalculationPage_weightTab => 'Gew.';
+
+  @override
+  String get electricityPage_powerTab => 'Leistung';
+
+  @override
+  String get videoPage_projectionTab => 'Projektion';
+
+  @override
+  String get videoPage_ledWallTab => 'LED-Wand';
+
+  @override
+  String get videoPage_timerTab => 'Timer';
+
+  @override
+  String get catalogue_addToPreset => 'Hinzufügen';
+
+  @override
+  String get catalogue_confirmAddTitle => 'Bestätigung';
+
+  @override
+  String catalogue_confirmAddMessage(
+      Object count, Object preset, Object product) {
+    return '$count $product zu $preset hinzufügen?';
+  }
+
+  @override
+  String get catalogue_mode => 'Modus';
+
+  @override
+  String get catalogue_wired => 'Kabelgebunden';
+
+  @override
   String get projectCalculationPage_total => 'Gesamt';
 
   @override
@@ -749,10 +923,10 @@ class AppLocalizationsDe extends AppLocalizations {
   String get protections => 'protections';
 
   @override
-  String get recommendedConfiguration => 'recommended Configuration';
+  String get recommendedConfiguration => 'Empfohlene Konfiguration';
 
   @override
-  String get safetyAccessories => 'safety Accessories';
+  String get safetyAccessories => 'Sicherheitszubehör';
 
   @override
   String get selectStructure => 'Struktur auswählen';
@@ -782,7 +956,7 @@ class AppLocalizationsDe extends AppLocalizations {
   String get speedtest_ready => 'Bereit';
 
   @override
-  String get speedtest_running => 'Läuft...';
+  String get speedtest_running => 'Läuft';
 
   @override
   String get speedtest_start => 'Starten (8s)';
@@ -861,13 +1035,13 @@ class AppLocalizationsDe extends AppLocalizations {
   String get structurePage_title => 'Struktur';
 
   @override
-  String get subscription_choose_plan => 'Wählen Sie Ihren Plan';
+  String get subscription_choose_plan => 'Plan wählen';
 
   @override
-  String get subscription_description => 'Alle Funktionen freischalten';
+  String get subscription_description => 'Beschreibung';
 
   @override
-  String get subscription_free_trial => 'Genießen Sie 30 Tage kostenlos';
+  String get subscription_free_trial => 'Kostenlose Testversion';
 
   @override
   String get subscription_popular => 'Beliebt';
@@ -876,11 +1050,10 @@ class AppLocalizationsDe extends AppLocalizations {
   String get subscription_premium => 'Premium';
 
   @override
-  String get subscription_security => 'Sichere Zahlung';
+  String get subscription_security => 'Sicherheit';
 
   @override
-  String get subscription_security_description =>
-      'Ihre Daten sind durch Bank-Level-Verschlüsselung geschützt';
+  String get subscription_security_description => 'Sicherheitsbeschreibung';
 
   @override
   String get subscription_subscribe => 'Abonnieren';
@@ -953,4 +1126,409 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get defaultProject3 => 'Projekt 3';
+
+  @override
+  String get dmxPage_warning => 'Warnung';
+
+  @override
+  String get dmxPage_productsNotPlaced => 'Produkte nicht platziert';
+
+  @override
+  String get dmxPage_maxIterationsReached => 'Maximale Iterationen erreicht';
+
+  @override
+  String get email_required => 'E-Mail ist erforderlich';
+
+  @override
+  String get invalid_email => 'Ungültige E-Mail';
+
+  @override
+  String get password_required => 'Passwort ist erforderlich';
+
+  @override
+  String get password_too_short => 'Passwort muss mindestens 6 Zeichen haben';
+
+  @override
+  String get auth_service_loading => 'Authentifizierungsservice lädt';
+
+  @override
+  String get auth_service_error => 'Authentifizierungsservice-Fehler';
+
+  @override
+  String get invalid_credentials_error => 'Ungültige E-Mail oder Passwort';
+
+  @override
+  String get connection_error => 'Verbindungsfehler';
+
+  @override
+  String get ok => 'OK';
+
+  @override
+  String get enter_email_first => 'Bitte geben Sie Ihre E-Mail ein';
+
+  @override
+  String get reset_email_sent =>
+      'Eine Reset-E-Mail wurde gesendet. Überprüfen Sie Ihren Posteingang und Spam-Ordner.';
+
+  @override
+  String get login => 'Anmelden';
+
+  @override
+  String get email => 'E-Mail';
+
+  @override
+  String get password => 'Passwort';
+
+  @override
+  String get forgot_password => 'Passwort vergessen?';
+
+  @override
+  String get remember_me => 'Angemeldet bleiben';
+
+  @override
+  String get sign_in => 'Anmelden';
+
+  @override
+  String get or_continue_with => 'Oder fortfahren mit';
+
+  @override
+  String get google_sign_in => 'Mit Google anmelden';
+
+  @override
+  String get biometric_auth => 'Biometrische Auth.';
+
+  @override
+  String get sign_up => 'Registrieren';
+
+  @override
+  String get welcome_to_avwallet => 'Willkommen bei AVWallet';
+
+  @override
+  String welcome_to_avwallet_with_name(Object name) {
+    return 'Willkommen bei AVWallet, $name';
+  }
+
+  @override
+  String premium_usage_remaining(Object count) {
+    return 'Sie haben Premium-Nutzung.\\nSie haben $count Verwendungen übrig';
+  }
+
+  @override
+  String get continueButton => 'Weiter';
+
+  @override
+  String get signup => 'Registrieren';
+
+  @override
+  String get confirm_password => 'Passwort bestätigen';
+
+  @override
+  String get confirm_password_required =>
+      'Passwortbestätigung ist erforderlich';
+
+  @override
+  String get passwords_dont_match => 'Passwörter stimmen nicht überein';
+
+  @override
+  String get already_have_account => 'Bereits ein Konto?';
+
+  @override
+  String get verification_code_sent_message =>
+      'Ein Bestätigungscode wurde gesendet';
+
+  @override
+  String get verification_code => 'Bestätigungscode';
+
+  @override
+  String get welcome_title => 'Willkommen';
+
+  @override
+  String get welcome_message => 'Willkommensnachricht';
+
+  @override
+  String get beam_short => 'Strahl';
+
+  @override
+  String get default_project_name => 'Standardprojekt';
+
+  @override
+  String get no_projects_available => 'Keine Projekte zum Laden verfügbar';
+
+  @override
+  String project_loaded(Object name) {
+    return 'Projekt \"$name\" geladen!';
+  }
+
+  @override
+  String export_project_confirm(Object name) {
+    return 'Möchten Sie das Projekt \"$name\" exportieren?';
+  }
+
+  @override
+  String get generating_pdfs => 'PDFs werden generiert...';
+
+  @override
+  String files_exported_success(Object count) {
+    return '$count Dateien erfolgreich exportiert!';
+  }
+
+  @override
+  String get no_files_to_export =>
+      'Keine Dateien für dieses Projekt zu exportieren';
+
+  @override
+  String export_error(Object error) {
+    return 'Fehler beim Export: $error';
+  }
+
+  @override
+  String get project_saved_locally => 'Das Projekt wird lokal gespeichert.';
+
+  @override
+  String get project_saved => 'Projekt gespeichert!';
+
+  @override
+  String get export_to_project => 'Zu Projekt';
+
+  @override
+  String get export_sms => 'SMS';
+
+  @override
+  String get export_whatsapp => 'WhatsApp';
+
+  @override
+  String get export_email => 'Email';
+
+  @override
+  String get export_tooltip => 'Exportieren';
+
+  @override
+  String get photos_project_title => 'PROJEKTFOTOS';
+
+  @override
+  String get photos_ar_captured => 'Fotos aufgenommen während AR-Messungen:';
+
+  @override
+  String photo_label(Object filename) {
+    return 'Foto: $filename';
+  }
+
+  @override
+  String get article_label => 'Artikel';
+
+  @override
+  String get quantity_label => 'Anz.';
+
+  @override
+  String get catalogueQuantityDialog_title => 'Menge';
+
+  @override
+  String get catalogueQuantityDialog_enterQuantity => 'Menge eingeben';
+
+  @override
+  String get catalogueQuantityDialog_dmxType => 'DMX-Typ';
+
+  @override
+  String get catalogueQuantityDialog_dmxMini => 'DMX mini';
+
+  @override
+  String get catalogueQuantityDialog_dmxMax => 'DMX max';
+
+  @override
+  String get catalogueQuantityDialog_cancel => 'Abbrechen';
+
+  @override
+  String get catalogueQuantityDialog_confirm => 'Bestätigen';
+
+  @override
+  String get power_label => 'Leistung';
+
+  @override
+  String get weight_label => 'Gewicht';
+
+  @override
+  String get loading => 'Laden...';
+
+  @override
+  String get create_button => 'Erstellen';
+
+  @override
+  String get save_button => 'Speichern';
+
+  @override
+  String get cancel_button => 'Abbrechen';
+
+  @override
+  String get weight_tab_title => 'Gewicht';
+
+  @override
+  String get imports => 'Importe';
+
+  @override
+  String get calculation_dmx => 'DMX-Berechnung';
+
+  @override
+  String get calculation_sound => 'Ton-Berechnung';
+
+  @override
+  String get calculation_projection => 'Projektions-Berechnung';
+
+  @override
+  String get calculation_led_wall => 'LED-Wand-Berechnung';
+
+  @override
+  String get calculation_charges => 'Ladungs-Berechnung';
+
+  @override
+  String standard_welcome_message(Object name) {
+    return 'Willkommen bei AVWallet, $name';
+  }
+
+  @override
+  String standard_welcome_usage_remaining(Object count) {
+    return 'Sie haben $count Verwendungen übrig';
+  }
+
+  @override
+  String get standard_welcome_continue => 'Weiter';
+
+  @override
+  String get premium_welcome_title => 'Premium Willkommen!';
+
+  @override
+  String get premium_welcome_message =>
+      'Herzlichen Glückwunsch, Premium aktiviert';
+
+  @override
+  String get premium_benefits_title => 'Premium Vorteile';
+
+  @override
+  String get premium_benefit_unlimited => 'Unbegrenzte Nutzung';
+
+  @override
+  String get premium_benefit_priority => 'Prioritäts-Support';
+
+  @override
+  String get premium_benefit_support => 'Dedizierte technische Unterstützung';
+
+  @override
+  String get premium_welcome_later => 'Später';
+
+  @override
+  String get premium_welcome_continue => 'Premium erkunden';
+
+  @override
+  String get premium_vip_welcome_message =>
+      'Herzlichen Glückwunsch, Sie sind Teil des VIP AV Wallet Teams';
+
+  @override
+  String get premium_vip_access_activated =>
+      'Unbegrenzter Premium-Zugang aktiviert';
+
+  @override
+  String get preview => 'Vorschau';
+
+  @override
+  String get project_parameters => 'Projektparameter';
+
+  @override
+  String get location => 'Ort';
+
+  @override
+  String get mounting_date => 'Montagedatum (TT/MM/JJ)';
+
+  @override
+  String get period_from => 'Datum: vom TT/MM/JJ';
+
+  @override
+  String get period_to => 'bis TT/MM/JJ';
+
+  @override
+  String get save_parameters => 'Speichern';
+
+  @override
+  String get project_location => 'Ort';
+
+  @override
+  String get project_mounting_date => 'Montagedatum';
+
+  @override
+  String get project_period => 'Zeitraum';
+
+  @override
+  String get not_defined => 'Nicht definiert';
+
+  @override
+  String get start_date => 'Anfang: TT/MM/JJ';
+
+  @override
+  String get end_date => 'Ende: TT/MM/JJ';
+
+  @override
+  String calculation_sent_to_project(
+      Object calculationName, Object projectName) {
+    return '$calculationName an \"$projectName\" gesendet';
+  }
+
+  @override
+  String get project_stats_presets => 'Anzahl der Presets';
+
+  @override
+  String get project_stats_articles => 'Gesamtanzahl der Artikel';
+
+  @override
+  String get project_stats_calculations => 'Anzahl der Berechnungen';
+
+  @override
+  String get project_stats_photos => 'Anzahl der Fotos';
+
+  @override
+  String get select_photos => 'Fotos Auswählen';
+
+  @override
+  String get photos_imported => 'Importierte Fotos';
+
+  @override
+  String get photo_exported => 'Foto exportiert';
+
+  @override
+  String get photo_not_found => 'Foto nicht gefunden';
+
+  @override
+  String get cabling_percentage => 'Verkabelung';
+
+  @override
+  String get cabling_addition => '+10% Verkabelung';
+
+  @override
+  String get review_popup_title => 'Hallo';
+
+  @override
+  String get review_popup_message =>
+      'Eine Idee, eine Empfehlung? Ihr Feedback interessiert uns';
+
+  @override
+  String get review_popup_contact => 'Kontaktieren Sie uns';
+
+  @override
+  String get review_popup_continue => 'Weiter';
+
+  @override
+  String get coming_soon => 'Demnächst';
+
+  @override
+  String get bandwidth_test => 'Bandbreiten-Test';
+
+  @override
+  String get bandwidth_test_title => 'Bandwidth';
+
+  @override
+  String get bandwidth_test_description =>
+      'Testen Sie Ihre Verbindungsgeschwindigkeit';
+
+  @override
+  String get bandwidth_test_start => 'Test starten';
+
+  @override
+  String get bandwidth_test_results => 'Ergebnisse';
 }

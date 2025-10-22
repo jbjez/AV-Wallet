@@ -9,8 +9,7 @@ import 'dart:io';
 import '../providers/preset_provider.dart';
 import '../providers/project_provider.dart';
 import '../providers/project_calculation_provider.dart';
-import '../models/cart_item.dart';
-import '../models/catalogue_item.dart';
+import '../providers/preset_pdf_provider.dart';
 import '../models/project_calculation.dart';
 import '../models/preset.dart';
 import '../models/project.dart';
@@ -41,6 +40,9 @@ class ExportWidget extends ConsumerWidget {
   // Propriétés pour les photos
   final List<String>? photoPaths; // Chemins vers les photos à inclure
   final String? projectName; // Nom du projet pour récupérer les photos
+  
+  // Propriétés pour les PDFs de calculs importés
+  final List<Map<String, dynamic>>? importedPdfs; // PDFs de calculs importés
 
   const ExportWidget({
     super.key,
@@ -61,26 +63,25 @@ class ExportWidget extends ConsumerWidget {
     this.fileName,
     this.photoPaths,
     this.projectName,
+    this.importedPdfs,
   });
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final isDarkMode = Theme.of(context).brightness == Brightness.dark;
-    // Couleur adaptée au thème : Grey 900 opacité 0.5 en mode nuit, bleu nuit opacité 0.5 en mode jour
-    final buttonColor = isDarkMode 
-        ? Colors.grey[900]!.withOpacity(0.5)
-        : Colors.blue[900]!.withOpacity(0.5);
+    
+    // Utiliser la même couleur que le bouton calcul : Colors.blueGrey[900]
+    final buttonColor = Colors.blueGrey[900]!;
+    
+    final ButtonStyle effectiveStyle = backgroundColor != null
+        ? ButtonStyles.actionButtonStyle.copyWith(
+            backgroundColor: WidgetStatePropertyAll<Color>(backgroundColor!),
+          )
+        : ButtonStyles.actionButtonStyle;
     
     return PopupMenuButton<String>(
-      child: ActionButton(
-        icon: customIcon ?? Icons.cloud_upload,
-        iconSize: 28,
-        color: Colors.white, // Toujours blanc pour la cohérence
-        style: ButtonStyles.actionButtonStyle,
-        enabled: true,
-      ),
       tooltip: tooltip ?? 'Exporter',
-      color: buttonColor, // Même couleur que ActionButton
+      color: backgroundColor ?? buttonColor, // Aligner la couleur du menu
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(8),
       ),
@@ -139,13 +140,20 @@ class ExportWidget extends ConsumerWidget {
         ),
       ],
       onSelected: (value) => _handleExport(context, ref, value),
+      child: ActionButton(
+        icon: customIcon ?? Icons.cloud_upload,
+        iconSize: 28,
+        color: Colors.white, // Toujours blanc pour la cohérence
+        style: effectiveStyle,
+        enabled: true,
+      ),
     );
   }
 
   void _handleExport(BuildContext context, WidgetRef ref, String exportType) async {
     try {
       // Générer le PDF
-      final pdfFile = await _generatePdf();
+      final pdfFile = await _generatePdf(ref, context);
       
       // Construire le message simple (titre + date)
       String exportMessage = _buildSimpleMessage();
@@ -207,12 +215,51 @@ class ExportWidget extends ConsumerWidget {
     return photos;
   }
 
-  Future<File> _generatePdf() async {
+  // Méthode pour récupérer les détails du projet actuel
+  Map<String, String?> _getProjectDetails(WidgetRef ref, BuildContext context) {
+    try {
+      final projectState = ref.read(projectProvider);
+      final project = projectState.selectedProject;
+      
+      // Fonction helper pour traduire le nom du projet
+      String getTranslatedProjectName(Project project) {
+        switch (project.name) {
+          case 'default_project_1':
+            return 'Projet 1';
+          case 'default_project_2':
+            return 'Projet 2';
+          case 'default_project_3':
+            return 'Projet 3';
+          default:
+            return project.name;
+        }
+      }
+      
+      return {
+        'name': getTranslatedProjectName(project),
+        'location': project.location,
+        'mountingDate': project.mountingDate,
+        'period': project.period,
+      };
+    } catch (e) {
+      debugPrint('Erreur récupération détails projet: $e');
+      return {
+        'name': 'Projet',
+        'location': null,
+        'mountingDate': null,
+        'period': null,
+      };
+    }
+  }
+
+  Future<File> _generatePdf(WidgetRef ref, BuildContext context) async {
+    try {
     // Créer le document PDF
     final pdf = pw.Document();
     
-    // Récupérer les photos du projet
+    // Récupérer les photos du projet et les détails du projet
     final photos = await _getProjectPhotos();
+    final projectDetails = _getProjectDetails(ref, context);
     
     // Ajouter la page avec pagination automatique
     pdf.addPage(
@@ -228,6 +275,47 @@ class ExportWidget extends ConsumerWidget {
                 pw.SizedBox(height: 10),
                 pw.Text('Date: ${(exportDate ?? DateTime.now()).toString().split('.')[0]}', 
                        style: pw.TextStyle(fontSize: 14)),
+                pw.SizedBox(height: 15),
+                
+                // Section NomProjet avec détails du projet
+                pw.Container(
+                  width: double.infinity,
+                  padding: const pw.EdgeInsets.all(12),
+                  decoration: pw.BoxDecoration(
+                    border: pw.Border.all(color: PdfColors.grey, width: 1),
+                    borderRadius: pw.BorderRadius.circular(8),
+                  ),
+                  child: pw.Column(
+                    crossAxisAlignment: pw.CrossAxisAlignment.start,
+                    children: [
+                      pw.Text(
+                        'NomProjet',
+                        style: pw.TextStyle(fontSize: 16, fontWeight: pw.FontWeight.bold),
+                      ),
+                      pw.SizedBox(height: 8),
+                      pw.Text(
+                        projectDetails['name'] ?? 'Projet',
+                        style: pw.TextStyle(fontSize: 14, fontWeight: pw.FontWeight.bold),
+                      ),
+                      pw.SizedBox(height: 8),
+                      pw.Text(
+                        'Lieu: ${projectDetails['location'] ?? 'Non défini'}',
+                        style: pw.TextStyle(fontSize: 12),
+                      ),
+                      pw.SizedBox(height: 4),
+                      pw.Text(
+                        'Date montage: ${projectDetails['mountingDate'] ?? 'Non définie'}',
+                        style: pw.TextStyle(fontSize: 12),
+                      ),
+                      pw.SizedBox(height: 4),
+                      pw.Text(
+                        'Période: ${projectDetails['period'] ?? 'Non définie'}',
+                        style: pw.TextStyle(fontSize: 12),
+                      ),
+                    ],
+                  ),
+                ),
+                pw.SizedBox(height: 15),
                 pw.Divider(color: PdfColors.grey, thickness: 1),
               ],
             ),
@@ -296,6 +384,14 @@ class ExportWidget extends ConsumerWidget {
               pw.Text(content, style: pw.TextStyle(fontSize: 12)),
               pw.SizedBox(height: 20),
             ],
+              
+              // Section PDFs de calculs importés - toujours ajoutée si des PDFs existent
+              if (importedPdfs != null && importedPdfs!.isNotEmpty) ...[
+                pw.Text('CALCULS IMPORTÉS', style: pw.TextStyle(fontSize: 18, fontWeight: pw.FontWeight.bold)),
+                pw.SizedBox(height: 10),
+                _buildImportedPdfsSection(importedPdfs!),
+                pw.SizedBox(height: 20),
+              ],
             
             // Section Photos - toujours ajoutée si des photos existent
             if (photos.isNotEmpty) ...[
@@ -308,267 +404,126 @@ class ExportWidget extends ConsumerWidget {
         },
       ),
     );
+      
+      // Sauvegarder le PDF avec gestion d'erreur améliorée
+      final directory = await getApplicationDocumentsDirectory();
+      final timestamp = DateTime.now().millisecondsSinceEpoch;
+      final fileName = this.fileName ?? 'export_$timestamp';
+      final filePath = '${directory.path}/$fileName.pdf';
+      
+      debugPrint('Sauvegarde PDF vers: $filePath');
     
-    // Sauvegarder le PDF
-    final directory = await getApplicationDocumentsDirectory();
-    final timestamp = DateTime.now().millisecondsSinceEpoch;
-    final fileName = this.fileName ?? 'export_$timestamp';
-    final file = File('${directory.path}/$fileName.pdf');
-    await file.writeAsBytes(await pdf.save());
-    
-    return file;
+    // Générer les bytes du PDF
+    final pdfBytes = await pdf.save();
+      debugPrint('PDF généré: ${pdfBytes.length} bytes');
+      
+      // Créer le fichier
+      final file = File(filePath);
+      await file.writeAsBytes(pdfBytes);
+      
+      // Vérifier que le fichier existe et est lisible
+      if (await file.exists()) {
+        final fileSize = await file.length();
+        debugPrint('Fichier PDF créé: $filePath ($fileSize bytes)');
+        
+        // Forcer la synchronisation du système de fichiers
+        // Le fichier est déjà synchronisé après writeAsBytes
+        
+        return file;
+      } else {
+        throw Exception('Le fichier PDF n\'a pas pu être créé');
+      }
+    } catch (e) {
+      debugPrint('Erreur lors de la génération du PDF: $e');
+      rethrow;
+    }
   }
 
-  pw.Widget _buildInputTable() {
-    // Extraire les données INPUT du contenu
-    final inputLines = content.split('\n')
-        .where((line) => line.contains('|') && line.contains('INPUT'))
-        .map((line) => line.split('|').map((e) => e.trim()).toList())
-        .toList();
-    
-    if (inputLines.isEmpty) {
-      return pw.Text('Aucune donnée INPUT disponible');
-    }
-    
-    // Créer le tableau
-    return pw.Table(
-      border: pw.TableBorder.all(color: PdfColors.black, width: 1),
-      columnWidths: {
-        0: const pw.FixedColumnWidth(40),   // N°
-        1: const pw.FixedColumnWidth(80),   // Nom Piste
-        2: const pw.FixedColumnWidth(120),  // Source
-        3: const pw.FixedColumnWidth(100),  // Microphone
-        4: const pw.FixedColumnWidth(80),   // Type
-        5: const pw.FixedColumnWidth(60),   // Qté
-      },
-      children: [
-        // En-tête du tableau
-        pw.TableRow(
-          decoration: pw.BoxDecoration(color: PdfColors.grey300),
-          children: [
-            pw.Padding(
-              padding: const pw.EdgeInsets.all(8),
-              child: pw.Text('N°', style: pw.TextStyle(fontWeight: pw.FontWeight.bold)),
-            ),
-            pw.Padding(
-              padding: const pw.EdgeInsets.all(8),
-              child: pw.Text('Nom Piste', style: pw.TextStyle(fontWeight: pw.FontWeight.bold)),
-            ),
-            pw.Padding(
-              padding: const pw.EdgeInsets.all(8),
-              child: pw.Text('Source', style: pw.TextStyle(fontWeight: pw.FontWeight.bold)),
-            ),
-            pw.Padding(
-              padding: const pw.EdgeInsets.all(8),
-              child: pw.Text('Microphone', style: pw.TextStyle(fontWeight: pw.FontWeight.bold)),
-            ),
-            pw.Padding(
-              padding: const pw.EdgeInsets.all(8),
-              child: pw.Text('Type', style: pw.TextStyle(fontWeight: pw.FontWeight.bold)),
-            ),
-            pw.Padding(
-              padding: const pw.EdgeInsets.all(8),
-              child: pw.Text('Qté', style: pw.TextStyle(fontWeight: pw.FontWeight.bold)),
-            ),
-          ],
-        ),
-        // Données du tableau
-        ...inputLines.map((row) => pw.TableRow(
-          children: [
-            pw.Padding(
-              padding: const pw.EdgeInsets.all(8),
-              child: pw.Text(row[0].replaceAll('.', ''), style: const pw.TextStyle(fontSize: 10)),
-            ),
-            pw.Padding(
-              padding: const pw.EdgeInsets.all(8),
-              child: pw.Text(row[1], style: const pw.TextStyle(fontSize: 10)),
-            ),
-            pw.Padding(
-              padding: const pw.EdgeInsets.all(8),
-              child: pw.Text(row[2], style: const pw.TextStyle(fontSize: 10)),
-            ),
-            pw.Padding(
-              padding: const pw.EdgeInsets.all(8),
-              child: pw.Text(row[3], style: const pw.TextStyle(fontSize: 10)),
-            ),
-            pw.Padding(
-              padding: const pw.EdgeInsets.all(8),
-              child: pw.Text(row[4], style: const pw.TextStyle(fontSize: 10)),
-            ),
-            pw.Padding(
-              padding: const pw.EdgeInsets.all(8),
-              child: pw.Text(row[5], style: const pw.TextStyle(fontSize: 10)),
-            ),
-          ],
-        )),
-      ],
-    );
-  }
 
-  pw.Widget _buildOutputTable() {
-    // Extraire les données OUTPUT du contenu
-    final outputLines = content.split('\n')
-        .where((line) => line.contains('|') && line.contains('OUTPUT'))
-        .map((line) => line.split('|').map((e) => e.trim()).toList())
-        .toList();
-    
-    if (outputLines.isEmpty) {
-      return pw.Text('Aucune donnée OUTPUT disponible');
-    }
-    
-    // Créer le tableau
-    return pw.Table(
-      border: pw.TableBorder.all(color: PdfColors.black, width: 1),
-      columnWidths: {
-        0: const pw.FixedColumnWidth(40),   // N°
-        1: const pw.FixedColumnWidth(80),   // Nom Piste
-        2: const pw.FixedColumnWidth(120),  // Destination
-        3: const pw.FixedColumnWidth(100),  // Type
-        4: const pw.FixedColumnWidth(80),   // Stéréo/Mono
-        5: const pw.FixedColumnWidth(60),   // Qté
-      },
-      children: [
-        // En-tête du tableau
-        pw.TableRow(
-          decoration: pw.BoxDecoration(color: PdfColors.grey300),
-          children: [
-            pw.Padding(
-              padding: const pw.EdgeInsets.all(8),
-              child: pw.Text('N°', style: pw.TextStyle(fontWeight: pw.FontWeight.bold)),
-            ),
-            pw.Padding(
-              padding: const pw.EdgeInsets.all(8),
-              child: pw.Text('Nom Piste', style: pw.TextStyle(fontWeight: pw.FontWeight.bold)),
-            ),
-            pw.Padding(
-              padding: const pw.EdgeInsets.all(8),
-              child: pw.Text('Destination', style: pw.TextStyle(fontWeight: pw.FontWeight.bold)),
-            ),
-            pw.Padding(
-              padding: const pw.EdgeInsets.all(8),
-              child: pw.Text('Type', style: pw.TextStyle(fontWeight: pw.FontWeight.bold)),
-            ),
-            pw.Padding(
-              padding: const pw.EdgeInsets.all(8),
-              child: pw.Text('Stéréo/Mono', style: pw.TextStyle(fontWeight: pw.FontWeight.bold)),
-            ),
-            pw.Padding(
-              padding: const pw.EdgeInsets.all(8),
-              child: pw.Text('Qté', style: pw.TextStyle(fontWeight: pw.FontWeight.bold)),
-            ),
-          ],
-        ),
-        // Données du tableau
-        ...outputLines.map((row) => pw.TableRow(
-          children: [
-            pw.Padding(
-              padding: const pw.EdgeInsets.all(8),
-              child: pw.Text(row[0].replaceAll('.', ''), style: const pw.TextStyle(fontSize: 10)),
-            ),
-            pw.Padding(
-              padding: const pw.EdgeInsets.all(8),
-              child: pw.Text(row[1], style: const pw.TextStyle(fontSize: 10)),
-            ),
-            pw.Padding(
-              padding: const pw.EdgeInsets.all(8),
-              child: pw.Text(row[2], style: const pw.TextStyle(fontSize: 10)),
-            ),
-            pw.Padding(
-              padding: const pw.EdgeInsets.all(8),
-              child: pw.Text(row[3], style: const pw.TextStyle(fontSize: 10)),
-            ),
-            pw.Padding(
-              padding: const pw.EdgeInsets.all(8),
-              child: pw.Text(row[4], style: const pw.TextStyle(fontSize: 10)),
-            ),
-            pw.Padding(
-              padding: const pw.EdgeInsets.all(8),
-              child: pw.Text(row[5], style: const pw.TextStyle(fontSize: 10)),
-            ),
-          ],
-        )),
-      ],
-    );
-  }
 
-  pw.Widget _buildSummaryTable() {
-    // Extraire les données de résumé du contenu
-    final summaryLines = content.split('\n')
-        .where((line) => line.contains(':') && line.contains('RÉSUMÉ'))
-        .map((line) => line.split(':').map((e) => e.trim()).toList())
-        .toList();
+  // Méthode helper pour récupérer tous les fichiers à partager
+  Future<List<XFile>> _getAllFilesToShare(File pdfFile) async {
+    final allFilesToShare = <XFile>[XFile(pdfFile.path)];
     
-    if (summaryLines.isEmpty) {
-      return pw.Text('Aucun résumé disponible');
+    // Ajouter tous les PDFs importés
+    if (importedPdfs != null && importedPdfs!.isNotEmpty) {
+      for (final pdfMap in importedPdfs!) {
+        final pdfPath = pdfMap['path'] as String;
+        final pdfFile = File(pdfPath);
+        
+        if (await pdfFile.exists()) {
+          allFilesToShare.add(XFile(pdfPath));
+        }
+      }
     }
     
-    // Créer le tableau de résumé
-    return pw.Table(
-      border: pw.TableBorder.all(color: PdfColors.black, width: 1),
-      columnWidths: {
-        0: const pw.FixedColumnWidth(200),  // Description
-        1: const pw.FixedColumnWidth(100),  // Valeur
-      },
-      children: [
-        // En-tête du tableau
-        pw.TableRow(
-          decoration: pw.BoxDecoration(color: PdfColors.grey300),
-          children: [
-            pw.Padding(
-              padding: const pw.EdgeInsets.all(8),
-              child: pw.Text('Description', style: pw.TextStyle(fontWeight: pw.FontWeight.bold)),
-            ),
-            pw.Padding(
-              padding: const pw.EdgeInsets.all(8),
-              child: pw.Text('Valeur', style: pw.TextStyle(fontWeight: pw.FontWeight.bold)),
-            ),
-          ],
-        ),
-        // Données du résumé
-        ...summaryLines.map((row) => pw.TableRow(
-          children: [
-            pw.Padding(
-              padding: const pw.EdgeInsets.all(8),
-              child: pw.Text(row[0], style: const pw.TextStyle(fontSize: 10)),
-            ),
-            pw.Padding(
-              padding: const pw.EdgeInsets.all(8),
-              child: pw.Text(row[1], style: const pw.TextStyle(fontSize: 10)),
-            ),
-          ],
-        )),
-      ],
-    );
+    // Ajouter toutes les photos du projet
+    final photos = await _getProjectPhotos();
+    for (final photoPath in photos) {
+      final photoFile = File(photoPath);
+      if (await photoFile.exists()) {
+        allFilesToShare.add(XFile(photoPath));
+      }
+    }
+    
+    return allFilesToShare;
   }
 
   Future<void> _exportViaSms(BuildContext context, String message, File pdfFile) async {
     try {
-      // Pour SMS, utiliser le même système que WhatsApp et Email avec fichier PDF
-      await Share.shareXFiles([XFile(pdfFile.path)], text: message);
+      // Récupérer tous les fichiers à partager
+      final allFilesToShare = await _getAllFilesToShare(pdfFile);
+      
+      await Share.shareXFiles(allFilesToShare, text: message);
+      debugPrint('Export SMS réussi avec ${allFilesToShare.length} fichiers');
+      
       if (context.mounted) {
-        // Export SMS réussi - pas de SnackBar
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('${allFilesToShare.length} fichier(s) partagé(s)'),
+            backgroundColor: Colors.green,
+          ),
+        );
       }
     } catch (e) {
+      debugPrint('Erreur lors de l\'export SMS: $e');
       if (context.mounted) {
-        // Erreur SMS silencieuse - pas de SnackBar
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Erreur SMS: ${e.toString()}')),
+        );
       }
     }
   }
 
   Future<void> _exportViaWhatsApp(BuildContext context, String message, File pdfFile) async {
     try {
-      // Pour WhatsApp, on peut partager le fichier PDF
-      await Share.shareXFiles([XFile(pdfFile.path)], text: message);
+      debugPrint('Tentative d\'export WhatsApp avec fichier: ${pdfFile.path}');
+      
+      // Vérifier que le fichier existe et est accessible
+      if (!await pdfFile.exists()) {
+        throw Exception('Le fichier PDF n\'existe pas: ${pdfFile.path}');
+      }
+      
+      final fileSize = await pdfFile.length();
+      debugPrint('Taille du fichier PDF: $fileSize bytes');
+      
+      // Pour WhatsApp, partager tous les fichiers
+      final allFilesToShare = await _getAllFilesToShare(pdfFile);
+      await Share.shareXFiles(allFilesToShare, text: message);
+      debugPrint('Export WhatsApp réussi avec ${allFilesToShare.length} fichiers');
+      
       if (context.mounted) {
         // Export WhatsApp réussi - pas de SnackBar
       }
     } catch (e) {
+      debugPrint('Erreur lors de l\'export WhatsApp: $e');
       // Fallback vers WhatsApp Web si l'app n'est pas disponible
       try {
         final whatsappUrl = Uri.parse('https://wa.me/?text=${Uri.encodeComponent(message)}');
         final launched = await launchUrl(whatsappUrl, mode: LaunchMode.externalApplication);
         
         if (launched) {
+          debugPrint('WhatsApp Web ouvert');
           if (context.mounted) {
             // WhatsApp Web ouvert - pas de SnackBar
           }
@@ -576,8 +531,11 @@ class ExportWidget extends ConsumerWidget {
           throw Exception('Impossible d\'ouvrir WhatsApp Web');
         }
       } catch (e2) {
+        debugPrint('Erreur WhatsApp Web: $e2');
         if (context.mounted) {
-          // Erreur WhatsApp silencieuse - pas de SnackBar
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('Erreur WhatsApp: ${e2.toString()}')),
+          );
         }
       }
     }
@@ -585,19 +543,36 @@ class ExportWidget extends ConsumerWidget {
 
   Future<void> _exportViaEmail(BuildContext context, WidgetRef ref, String message, File pdfFile) async {
     try {
-      // Pour Email, on peut partager le fichier PDF
-      await Share.shareXFiles([XFile(pdfFile.path)], text: message);
+      debugPrint('Tentative d\'export Email avec fichier: ${pdfFile.path}');
+      
+      // Vérifier que le fichier existe et est accessible
+      if (!await pdfFile.exists()) {
+        throw Exception('Le fichier PDF n\'existe pas: ${pdfFile.path}');
+      }
+      
+      final fileSize = await pdfFile.length();
+      debugPrint('Taille du fichier PDF: $fileSize bytes');
+      
+      // Pour Email, partager tous les fichiers
+      final allFilesToShare = await _getAllFilesToShare(pdfFile);
+      await Share.shareXFiles(allFilesToShare, text: message);
+      debugPrint('Export Email réussi avec ${allFilesToShare.length} fichiers');
+      
       if (context.mounted) {
         // Export Email réussi - pas de SnackBar
       }
     } catch (e) {
+      debugPrint('Erreur lors de l\'export Email: $e');
       // Fallback vers l'app email si disponible
       try {
         final canOpenEmail = await canLaunchUrl(Uri.parse('mailto:'));
         
         if (!canOpenEmail) {
+          debugPrint('App email non disponible');
           if (context.mounted) {
-            // App email non disponible - pas de SnackBar
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(content: Text('App email non disponible')),
+            );
           }
           return;
         }
@@ -610,6 +585,7 @@ class ExportWidget extends ConsumerWidget {
         final launched = await launchUrl(emailUrl, mode: LaunchMode.externalApplication);
         
         if (launched) {
+          debugPrint('App email ouverte');
           if (context.mounted) {
             // App email ouverte - pas de SnackBar
           }
@@ -617,8 +593,11 @@ class ExportWidget extends ConsumerWidget {
           throw Exception('Impossible d\'ouvrir l\'app email');
         }
       } catch (e2) {
+        debugPrint('Erreur app email: $e2');
         if (context.mounted) {
-          // Erreur email silencieuse - pas de SnackBar
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('Erreur Email: ${e2.toString()}')),
+          );
         }
       }
     }
@@ -640,18 +619,6 @@ class ExportWidget extends ConsumerWidget {
         ref.read(presetProvider.notifier).addPreset(defaultPreset);
         ref.read(presetProvider.notifier).setActivePresetIndex(0);
       }
-      
-      // Si pas de projet sélectionné, créer un projet par défaut
-      if (project == null) {
-        final defaultProject = Project(
-          id: 'default_${DateTime.now().millisecondsSinceEpoch}',
-          name: 'Projet par défaut',
-        );
-        ref.read(projectProvider.notifier).addProject(defaultProject);
-        // Sélectionner le dernier projet ajouté (qui sera à la fin de la liste)
-        final projects = ref.read(projectProvider).projects;
-        ref.read(projectProvider.notifier).selectProject(projects.length - 1);
-      }
 
       // Récupérer à nouveau les valeurs après création si nécessaire
       final finalPreset = ref.read(activePresetProvider) ?? Preset(
@@ -670,7 +637,7 @@ class ExportWidget extends ConsumerWidget {
       final calculation = ProjectCalculation(
         id: 'export_${DateTime.now().millisecondsSinceEpoch}',
         projectId: finalProject.id,
-        name: _getCalculationDisplayName(calculationType, title),
+        name: title, // Utiliser directement le titre passé en paramètre
         totalPower: (projectSummary?['totalPower'] as num?)?.toDouble() ?? 0.0,
         totalWeight: 0.0, // TODO: à remplacer par la vraie valeur si on l'a plus tard
         createdAt: DateTime.now(),
@@ -686,6 +653,24 @@ class ExportWidget extends ConsumerWidget {
       );
       
       ref.read(projectCalculationProvider.notifier).addCalculation(calculation);
+      debugPrint('DEBUG ExportWidget - Calcul ajouté au projectCalculationProvider: ${calculation.id}');
+      
+      // AUSSI sauvegarder dans presetPdfProvider pour que les badges fonctionnent
+      final pdfMap = {
+        'id': calculation.id,
+        'name': calculation.name,
+        'path': pdfFile.path,
+        'presetId': finalPreset.id,
+        'createdAt': DateTime.now().millisecondsSinceEpoch,
+        'type': calculationType ?? 'general',
+        'projectType': projectType ?? 'general',
+      };
+      
+      debugPrint('DEBUG ExportWidget - Ajout PDF au presetPdfProvider: ${finalPreset.id}');
+      debugPrint('DEBUG ExportWidget - PDF Map: $pdfMap');
+      
+      await ref.read(presetPdfProvider(finalPreset.id).notifier).addPdf(pdfMap);
+      debugPrint('DEBUG ExportWidget - PDF ajouté avec succès au presetPdfProvider');
       
     } catch (e) {
       // Erreur silencieuse - pas de SnackBar
@@ -708,6 +693,8 @@ class ExportWidget extends ConsumerWidget {
         return 'led';
       case 'faisceau':
         return 'faisceau';
+      case 'structure':
+        return 'charge';
       case 'amp':
         return 'son';
       case 'proj':
@@ -717,42 +704,6 @@ class ExportWidget extends ConsumerWidget {
       default:
         return 'general'; // Type général pour les exports non spécifiques
     }
-  }
-
-  String _getCalculationDisplayName(String? calculationType, String originalTitle) {
-    // Créer un nom court et descriptif basé sur le type de calcul
-    switch (calculationType) {
-      case 'dmx':
-        return 'Calcul DMX';
-      case 'faisceau':
-        return 'Calcul Faisceau';
-      case 'proj':
-        return 'Calcul Projection';
-      case 'video':
-        return 'Calcul Vidéo';
-      case 'son':
-        return 'Calcul Son';
-      case 'structure':
-        return 'Calcul Structure';
-      case 'puissance':
-        return 'Calcul Puissance';
-      case 'poids':
-        return 'Calcul Poids';
-      case 'general':
-        return 'Calcul Général';
-      default:
-        return 'Calcul ${calculationType ?? 'Export'}';
-    }
-  }
-
-  void _showSnackBar(BuildContext context, String message, Color backgroundColor) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(message),
-        backgroundColor: backgroundColor,
-        duration: Duration(seconds: backgroundColor == Colors.green ? 2 : 3),
-      ),
-    );
   }
 
   pw.Widget _buildProjectContent() {
@@ -769,6 +720,10 @@ class ExportWidget extends ConsumerWidget {
         return _buildDriverProjectContent();
       case 'led_wall':
         return _buildLedWallProjectContent();
+      case 'sound':
+        return _buildSoundProjectContent();
+      case 'structure':
+        return _buildStructureProjectContent();
       default:
         return pw.Text('Type de projet non reconnu', style: pw.TextStyle(fontSize: 12));
     }
@@ -1006,7 +961,7 @@ class ExportWidget extends ConsumerWidget {
               mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
               children: [
                 pw.Text('${data.keys.first}:', style: pw.TextStyle(fontSize: 11)),
-                pw.Text('${data.values.first}', style: pw.TextStyle(fontSize: 11, fontWeight: pw.FontWeight.bold)),
+                pw.Text(data.values.first, style: pw.TextStyle(fontSize: 11, fontWeight: pw.FontWeight.bold)),
               ],
             ),
           )),
@@ -1041,7 +996,7 @@ class ExportWidget extends ConsumerWidget {
               mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
               children: [
                 pw.Text('${data.keys.first}:', style: pw.TextStyle(fontSize: 11)),
-                pw.Text('${data.values.first}', style: pw.TextStyle(fontSize: 11, fontWeight: pw.FontWeight.bold)),
+                pw.Text(data.values.first, style: pw.TextStyle(fontSize: 11, fontWeight: pw.FontWeight.bold)),
               ],
             ),
           )),
@@ -1076,7 +1031,7 @@ class ExportWidget extends ConsumerWidget {
               mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
               children: [
                 pw.Text('${data.keys.first}:', style: pw.TextStyle(fontSize: 11)),
-                pw.Text('${data.values.first}', style: pw.TextStyle(fontSize: 11, fontWeight: pw.FontWeight.bold)),
+                pw.Text(data.values.first, style: pw.TextStyle(fontSize: 11, fontWeight: pw.FontWeight.bold)),
               ],
             ),
           )),
@@ -1392,214 +1347,75 @@ class ExportWidget extends ConsumerWidget {
             ),
           ),
           pw.SizedBox(height: 15),
+        ],
           
-          // Configuration du mur
+        // Calculs détaillés
           pw.Container(
             padding: const pw.EdgeInsets.all(15),
             decoration: pw.BoxDecoration(
-              border: pw.Border.all(color: PdfColors.grey300),
+            border: pw.Border.all(color: PdfColors.green300),
               borderRadius: pw.BorderRadius.circular(8),
+            color: PdfColors.green50,
             ),
             child: pw.Column(
               crossAxisAlignment: pw.CrossAxisAlignment.start,
               children: [
-                pw.Text('CONFIGURATION DU MUR', style: pw.TextStyle(fontSize: 14, fontWeight: pw.FontWeight.bold)),
+              pw.Text('CALCULS DÉTAILLÉS', style: pw.TextStyle(fontSize: 14, fontWeight: pw.FontWeight.bold)),
                 pw.SizedBox(height: 8),
-                pw.Row(
-                  mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
-                  children: [
-                    pw.Text('Dimensions (dalles):', style: pw.TextStyle(fontSize: 12)),
-                    pw.Text('${projectSummary!['dimensions'] ?? 'N/A'}', 
-                           style: pw.TextStyle(fontSize: 12, fontWeight: pw.FontWeight.bold)),
-                  ],
-                ),
+              
+              // Configuration du mur
+              pw.Text('Configuration du mur:', style: pw.TextStyle(fontSize: 12, fontWeight: pw.FontWeight.bold)),
                 pw.SizedBox(height: 4),
-                pw.Row(
-                  mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
-                  children: [
-                    pw.Text('Dimensions totales:', style: pw.TextStyle(fontSize: 12)),
-                    pw.Text('${projectSummary!['dimensions_totales'] ?? 'N/A'}', 
-                           style: pw.TextStyle(fontSize: 12, fontWeight: pw.FontWeight.bold)),
-                  ],
-                ),
+              pw.Text('• Nombre de dalles: ${projectSummary?['nb_dalles'] ?? 'N/A'}', style: const pw.TextStyle(fontSize: 10)),
+              pw.Text('• Disposition: ${projectSummary?['largeur_mur'] ?? 'N/A'}x${projectSummary?['hauteur_mur'] ?? 'N/A'} dalles', style: const pw.TextStyle(fontSize: 10)),
+              pw.Text('• Dimensions totales: ${projectSummary?['largeur_totale'] ?? 'N/A'}m x ${projectSummary?['hauteur_totale'] ?? 'N/A'}m', style: const pw.TextStyle(fontSize: 10)),
+              pw.SizedBox(height: 8),
+              
+              // Calculs pixellaires
+              pw.Text('Calculs pixellaires:', style: pw.TextStyle(fontSize: 12, fontWeight: pw.FontWeight.bold)),
                 pw.SizedBox(height: 4),
-                pw.Row(
-                  mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
-                  children: [
-                    pw.Text('Nombre total de dalles:', style: pw.TextStyle(fontSize: 12)),
-                    pw.Text('${projectSummary!['nb_dalles'] ?? 'N/A'}', 
-                           style: pw.TextStyle(fontSize: 12, fontWeight: pw.FontWeight.bold)),
-                  ],
-                ),
+              pw.Text('• Résolution totale: ${projectSummary?['largeur_pixels'] ?? 'N/A'}px x ${projectSummary?['hauteur_pixels'] ?? 'N/A'}px', style: const pw.TextStyle(fontSize: 10)),
+              pw.Text('• Mégapixels: ${projectSummary?['megapixels'] ?? 'N/A'} Mpx', style: const pw.TextStyle(fontSize: 10)),
+              pw.Text('• Ratio: ${projectSummary?['ratio'] ?? 'N/A'}:1', style: const pw.TextStyle(fontSize: 10)),
+              pw.SizedBox(height: 8),
+              
+              // Totaux
+              pw.Text('Totaux:', style: pw.TextStyle(fontSize: 12, fontWeight: pw.FontWeight.bold)),
                 pw.SizedBox(height: 4),
-                pw.Row(
-                  mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
-                  children: [
-                    pw.Text('Résolution totale:', style: pw.TextStyle(fontSize: 12)),
-                    pw.Text('${projectSummary!['resolution_totale'] ?? 'N/A'}', 
-                           style: pw.TextStyle(fontSize: 12, fontWeight: pw.FontWeight.bold)),
-                  ],
-                ),
-                pw.SizedBox(height: 4),
-                pw.Row(
-                  mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
-                  children: [
-                    pw.Text('Mégapixels:', style: pw.TextStyle(fontSize: 12)),
-                    pw.Text('${projectSummary!['megapixels'] ?? 'N/A'}', 
-                           style: pw.TextStyle(fontSize: 12, fontWeight: pw.FontWeight.bold)),
-                  ],
-                ),
-                pw.SizedBox(height: 4),
-                pw.Row(
-                  mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
-                  children: [
-                    pw.Text('Ratio d\'aspect:', style: pw.TextStyle(fontSize: 12)),
-                    pw.Text('${projectSummary!['ratio'] ?? 'N/A'}', 
-                           style: pw.TextStyle(fontSize: 12, fontWeight: pw.FontWeight.bold)),
-                  ],
-                ),
-                pw.SizedBox(height: 4),
-                pw.Row(
-                  mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
-                  children: [
-                    pw.Text('Poids total:', style: pw.TextStyle(fontSize: 12)),
-                    pw.Text('${projectSummary!['poids_total'] ?? 'N/A'}', 
-                           style: pw.TextStyle(fontSize: 12, fontWeight: pw.FontWeight.bold)),
-                  ],
-                ),
-                pw.SizedBox(height: 4),
-                pw.Row(
-                  mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
-                  children: [
-                    pw.Text('Consommation totale:', style: pw.TextStyle(fontSize: 12)),
-                    pw.Text('${projectSummary!['consommation_total'] ?? 'N/A'}', 
-                           style: pw.TextStyle(fontSize: 12, fontWeight: pw.FontWeight.bold)),
-                  ],
-                ),
-              ],
-            ),
+              pw.Text('• Poids total: ${projectSummary?['poids_total'] ?? 'N/A'} kg', style: const pw.TextStyle(fontSize: 10)),
+              pw.Text('• Consommation totale: ${projectSummary?['conso_total'] ?? 'N/A'} W', style: const pw.TextStyle(fontSize: 10)),
+            ],
           ),
-          pw.SizedBox(height: 20),
-        ],
+        ),
+        pw.SizedBox(height: 15),
         
-        // Détail des composants
-        if (projectData != null && projectData!.isNotEmpty) ...[
-          pw.Text('DÉTAIL DES COMPOSANTS', style: pw.TextStyle(fontSize: 16, fontWeight: pw.FontWeight.bold)),
-          pw.SizedBox(height: 10),
-          ...projectData!.map((component) => pw.Container(
-            margin: const pw.EdgeInsets.only(bottom: 15),
-            padding: const pw.EdgeInsets.all(12),
-            decoration: pw.BoxDecoration(
-              border: pw.Border.all(color: PdfColors.grey300),
-              borderRadius: pw.BorderRadius.circular(6),
-            ),
-            child: pw.Column(
-              crossAxisAlignment: pw.CrossAxisAlignment.start,
-              children: [
-                pw.Text('${component['type'] ?? 'Composant'} - ${component['produit'] ?? 'N/A'}',
-                        style: pw.TextStyle(fontSize: 14, fontWeight: pw.FontWeight.bold)),
-                pw.SizedBox(height: 8),
-                pw.Row(
-                  mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
-                  children: [
-                    pw.Text('Marque:', style: pw.TextStyle(fontSize: 11)),
-                    pw.Text('${component['marque'] ?? 'N/A'}', 
-                           style: pw.TextStyle(fontSize: 11, fontWeight: pw.FontWeight.bold)),
-                  ],
-                ),
-                pw.SizedBox(height: 4),
-                pw.Row(
-                  mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
-                  children: [
-                    pw.Text('Quantité:', style: pw.TextStyle(fontSize: 11)),
-                    pw.Text('${component['quantite'] ?? '0'} dalles', 
-                           style: pw.TextStyle(fontSize: 11, fontWeight: pw.FontWeight.bold)),
-                  ],
-                ),
-                pw.SizedBox(height: 4),
-                pw.Row(
-                  mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
-                  children: [
-                    pw.Text('Dimensions dalle:', style: pw.TextStyle(fontSize: 11)),
-                    pw.Text('${component['dimensions_dalle'] ?? 'N/A'}', 
-                           style: pw.TextStyle(fontSize: 11, fontWeight: pw.FontWeight.bold)),
-                  ],
-                ),
-                pw.SizedBox(height: 4),
-                pw.Row(
-                  mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
-                  children: [
-                    pw.Text('Résolution dalle:', style: pw.TextStyle(fontSize: 11)),
-                    pw.Text('${component['resolution_dalle'] ?? 'N/A'}', 
-                           style: pw.TextStyle(fontSize: 11, fontWeight: pw.FontWeight.bold)),
-                  ],
-                ),
-                pw.SizedBox(height: 4),
-                pw.Row(
-                  mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
-                  children: [
-                    pw.Text('Poids unitaire:', style: pw.TextStyle(fontSize: 11)),
-                    pw.Text('${component['poids_unitaire'] ?? '0.0 kg'}', 
-                           style: pw.TextStyle(fontSize: 11, fontWeight: pw.FontWeight.bold)),
-                  ],
-                ),
-                pw.SizedBox(height: 4),
-                pw.Row(
-                  mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
-                  children: [
-                    pw.Text('Consommation unitaire:', style: pw.TextStyle(fontSize: 11)),
-                    pw.Text('${component['consommation_unitaire'] ?? '0 W'}', 
-                           style: pw.TextStyle(fontSize: 11, fontWeight: pw.FontWeight.bold)),
-                  ],
-                ),
-                pw.SizedBox(height: 4),
-                pw.Row(
-                  mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
-                  children: [
-                    pw.Text('Poids total:', style: pw.TextStyle(fontSize: 11)),
-                    pw.Text('${component['poids_total'] ?? '0.0 kg'}', 
-                           style: pw.TextStyle(fontSize: 11, fontWeight: pw.FontWeight.bold)),
-                  ],
-                ),
-                pw.SizedBox(height: 4),
-                pw.Row(
-                  mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
-                  children: [
-                    pw.Text('Consommation totale:', style: pw.TextStyle(fontSize: 11)),
-                    pw.Text('${component['consommation_total'] ?? '0 W'}', 
-                           style: pw.TextStyle(fontSize: 11, fontWeight: pw.FontWeight.bold)),
-                  ],
-                ),
-              ],
-            ),
-          )),
-        ],
-        
-        // Schéma du mur avec quadrillage amélioré
-        pw.SizedBox(height: 20),
+        // Schéma de montage
         pw.Container(
           padding: const pw.EdgeInsets.all(15),
           decoration: pw.BoxDecoration(
-            border: pw.Border.all(color: PdfColors.grey300),
+            border: pw.Border.all(color: PdfColors.orange300),
             borderRadius: pw.BorderRadius.circular(8),
+            color: PdfColors.orange50,
           ),
           child: pw.Column(
-            children: [
-              pw.Text('SCHÉMA DU MUR LED', style: pw.TextStyle(fontSize: 14, fontWeight: pw.FontWeight.bold)),
-              pw.SizedBox(height: 15),
-              if (projectSummary != null) ...[
-                _buildEnhancedWallDrawing(),
-                pw.SizedBox(height: 15),
-                pw.Text('Dimensions: ${projectSummary!['dimensions'] ?? 'N/A'} dalles', style: pw.TextStyle(fontSize: 12)),
-                pw.SizedBox(height: 5),
-                pw.Text('Dimensions totales: ${projectSummary!['dimensions_totales'] ?? 'N/A'}', style: pw.TextStyle(fontSize: 12, fontWeight: pw.FontWeight.bold)),
-                pw.SizedBox(height: 5),
-                pw.Text('Résolution: ${projectSummary!['resolution_totale'] ?? 'N/A'}', style: pw.TextStyle(fontSize: 12)),
-                pw.SizedBox(height: 5),
-                pw.Text('Ratio d\'aspect: ${projectSummary!['ratio'] ?? 'N/A'}', style: pw.TextStyle(fontSize: 12)),
-                pw.SizedBox(height: 5),
-                pw.Text('Total: ${projectSummary!['nb_dalles'] ?? '0'} dalles', style: pw.TextStyle(fontSize: 12)),
-              ],
+            crossAxisAlignment: pw.CrossAxisAlignment.start,
+                  children: [
+              pw.Text('SCHÉMA DE MONTAGE', style: pw.TextStyle(fontSize: 14, fontWeight: pw.FontWeight.bold)),
+              pw.SizedBox(height: 8),
+              
+              // Schéma ASCII du mur LED
+              pw.Text('Vue de face:', style: pw.TextStyle(fontSize: 12, fontWeight: pw.FontWeight.bold)),
+                pw.SizedBox(height: 4),
+              pw.Text(_generateLedWallSchema(), style: const pw.TextStyle(fontSize: 8)),
+              pw.SizedBox(height: 8),
+              
+              // Instructions de montage
+              pw.Text('Instructions de montage:', style: pw.TextStyle(fontSize: 12, fontWeight: pw.FontWeight.bold)),
+              pw.SizedBox(height: 4),
+              pw.Text('• Commencer par le coin inférieur gauche', style: const pw.TextStyle(fontSize: 10)),
+              pw.Text('• Monter dalle par dalle de gauche à droite', style: const pw.TextStyle(fontSize: 10)),
+              pw.Text('• Vérifier la connectique entre chaque dalle', style: const pw.TextStyle(fontSize: 10)),
+              pw.Text('• Contrôler l\'alignement et la planéité', style: const pw.TextStyle(fontSize: 10)),
             ],
           ),
         ),
@@ -1607,119 +1423,139 @@ class ExportWidget extends ConsumerWidget {
     );
   }
 
-  pw.Widget _buildWallDrawing() {
-    if (projectSummary == null) return pw.SizedBox.shrink();
-    
-    // Extraire les dimensions du mur
-    final dimensions = projectSummary!['dimensions']?.toString() ?? '1 x 1';
-    final parts = dimensions.split(' x ');
-    if (parts.length != 2) return pw.SizedBox.shrink();
-    
-    final width = int.tryParse(parts[0].trim()) ?? 1;
-    final height = int.tryParse(parts[1].trim()) ?? 1;
-    
-    // Calculer la taille des carrés en respectant les proportions
-    final maxSize = 200.0; // Taille maximale du dessin
-    final tileSize = (maxSize / (width > height ? width : height)).clamp(8.0, 20.0);
-    
-    return pw.Container(
-      width: width * tileSize,
-      height: height * tileSize,
-      decoration: pw.BoxDecoration(
-        border: pw.Border.all(color: PdfColors.black, width: 2),
-      ),
-      child: pw.Table(
-        border: pw.TableBorder.all(color: PdfColors.grey400, width: 0.5),
-        children: List.generate(height, (rowIndex) {
-          return pw.TableRow(
-            children: List.generate(width, (colIndex) {
-              final index = rowIndex * width + colIndex;
-              return pw.Container(
-                width: tileSize,
-                height: tileSize,
-                decoration: pw.BoxDecoration(
-                  color: PdfColors.blue100,
-                ),
-                child: pw.Center(
-                  child: pw.Text(
-                    '${index + 1}',
-                    style: pw.TextStyle(
-                      fontSize: (tileSize * 0.3).clamp(6.0, 10.0),
-                      fontWeight: pw.FontWeight.bold,
-                      color: PdfColors.black,
-                    ),
-                  ),
-                ),
-              );
-            }),
-          );
-        }),
-      ),
+  /// Génère le contenu PDF pour les calculs Son (Amplification)
+  pw.Widget _buildSoundProjectContent() {
+    return pw.Column(
+      crossAxisAlignment: pw.CrossAxisAlignment.start,
+      children: [
+        pw.Text('CALCULS AMPLIFICATION', style: pw.TextStyle(fontSize: 18, fontWeight: pw.FontWeight.bold)),
+        pw.SizedBox(height: 15),
+        
+        // Résumé des calculs d'amplification
+        if (projectSummary != null) ...[
+          pw.Container(
+            padding: const pw.EdgeInsets.all(15),
+            decoration: pw.BoxDecoration(
+              border: pw.Border.all(color: PdfColors.blue300),
+              borderRadius: pw.BorderRadius.circular(8),
+              color: PdfColors.blue50,
+            ),
+            child: pw.Column(
+              crossAxisAlignment: pw.CrossAxisAlignment.start,
+              children: [
+                pw.Text('RÉSUMÉ AMPLIFICATION', style: pw.TextStyle(fontSize: 14, fontWeight: pw.FontWeight.bold)),
+                pw.SizedBox(height: 8),
+                
+                // Détails des enceintes et amplificateurs
+                if (projectSummary!['speakers'] != null) ...[
+                  pw.Text('Enceintes sélectionnées:', style: pw.TextStyle(fontSize: 12, fontWeight: pw.FontWeight.bold)),
+                pw.SizedBox(height: 4),
+                  ...projectSummary!['speakers'].map<String, pw.Widget>((speaker) => 
+                    pw.Padding(
+                      padding: const pw.EdgeInsets.only(left: 8, bottom: 2),
+                      child: pw.Text('• ${speaker['name']} x${speaker['quantity']}', style: const pw.TextStyle(fontSize: 10)),
+                    )
+                  ).toList(),
+                  pw.SizedBox(height: 8),
+                ],
+                
+                if (projectSummary!['amplifiers'] != null) ...[
+                  pw.Text('Amplificateurs nécessaires:', style: pw.TextStyle(fontSize: 12, fontWeight: pw.FontWeight.bold)),
+                pw.SizedBox(height: 4),
+                  ...projectSummary!['amplifiers'].map<String, pw.Widget>((amp) => 
+                    pw.Padding(
+                      padding: const pw.EdgeInsets.only(left: 8, bottom: 2),
+                      child: pw.Text('• ${amp['name']} x${amp['quantity']}', style: const pw.TextStyle(fontSize: 10)),
+                    )
+                  ).toList(),
+                  pw.SizedBox(height: 8),
+                ],
+                
+                // Calculs de puissance
+                if (projectSummary!['power_calculations'] != null) ...[
+                  pw.Text('Calculs de puissance:', style: pw.TextStyle(fontSize: 12, fontWeight: pw.FontWeight.bold)),
+                pw.SizedBox(height: 4),
+                  pw.Text('• Puissance totale requise: ${projectSummary!['power_calculations']['total_required']} W', style: const pw.TextStyle(fontSize: 10)),
+                  pw.Text('• Puissance totale disponible: ${projectSummary!['power_calculations']['total_available']} W', style: const pw.TextStyle(fontSize: 10)),
+                  pw.Text('• Utilisation: ${projectSummary!['power_calculations']['utilization']}%', style: const pw.TextStyle(fontSize: 10)),
+                  pw.SizedBox(height: 8),
+                ],
+                
+                // Avertissements
+                if (projectSummary!['warnings'] != null && projectSummary!['warnings'].isNotEmpty) ...[
+                  pw.Text('Avertissements:', style: pw.TextStyle(fontSize: 12, fontWeight: pw.FontWeight.bold, color: PdfColors.red)),
+                pw.SizedBox(height: 4),
+                  ...projectSummary!['warnings'].map<String, pw.Widget>((warning) => 
+                    pw.Padding(
+                      padding: const pw.EdgeInsets.only(left: 8, bottom: 2),
+                      child: pw.Text('⚠ $warning', style: pw.TextStyle(fontSize: 10, color: PdfColors.red)),
+                    )
+                  ).toList(),
+                ],
+              ],
+            ),
+          ),
+          pw.SizedBox(height: 15),
+        ],
+        
+        // Détails techniques
+        pw.Container(
+          padding: const pw.EdgeInsets.all(15),
+          decoration: pw.BoxDecoration(
+            border: pw.Border.all(color: PdfColors.grey300),
+            borderRadius: pw.BorderRadius.circular(8),
+          ),
+          child: pw.Column(
+            crossAxisAlignment: pw.CrossAxisAlignment.start,
+            children: [
+              pw.Text('DÉTAILS TECHNIQUES', style: pw.TextStyle(fontSize: 14, fontWeight: pw.FontWeight.bold)),
+              pw.SizedBox(height: 8),
+              pw.Text('• Impédance des enceintes: ${projectSummary?['impedance'] ?? 'Non spécifiée'} Ω', style: const pw.TextStyle(fontSize: 10)),
+              pw.Text('• Mode d\'amplification: ${projectSummary?['amplifier_mode'] ?? 'Non spécifié'}', style: const pw.TextStyle(fontSize: 10)),
+              pw.Text('• Marge de sécurité: ${projectSummary?['safety_margin'] ?? '1.5'}x', style: const pw.TextStyle(fontSize: 10)),
+              pw.Text('• Canaux en parallèle: ${projectSummary?['parallel_channels'] ?? 'Non spécifié'}', style: const pw.TextStyle(fontSize: 10)),
+            ],
+          ),
+        ),
+      ],
     );
   }
 
-  pw.Widget _buildEnhancedWallDrawing() {
-    if (projectSummary == null) return pw.SizedBox.shrink();
+  /// Génère un schéma ASCII du mur LED
+  String _generateLedWallSchema() {
+    if (projectSummary == null) return 'Schéma non disponible';
     
-    // Extraire les dimensions du mur
-    final width = projectSummary!['largeur_dalles'] ?? 1;
-    final height = projectSummary!['hauteur_dalles'] ?? 1;
-    final resX = projectSummary!['resX'] ?? 200;
-    final resY = projectSummary!['resY'] ?? 200;
+    final largeur = int.tryParse(projectSummary!['largeur_mur']?.toString() ?? '1') ?? 1;
+    final hauteur = int.tryParse(projectSummary!['hauteur_mur']?.toString() ?? '1') ?? 1;
     
-    // Calculer la taille des carrés en respectant les proportions
-    final maxSize = 300.0; // Taille maximale du dessin
-    final tileSize = (maxSize / (width > height ? width : height)).clamp(12.0, 25.0);
+    final buffer = StringBuffer();
     
-    return pw.Container(
-      width: width * tileSize,
-      height: height * tileSize,
-      decoration: pw.BoxDecoration(
-        border: pw.Border.all(color: PdfColors.black, width: 2),
-      ),
-      child: pw.Table(
-        border: pw.TableBorder.all(color: PdfColors.grey400, width: 0.5),
-        children: List.generate(height, (rowIndex) {
-          return pw.TableRow(
-            children: List.generate(width, (colIndex) {
-              final index = colIndex * height + rowIndex;
-              return pw.Container(
-                width: tileSize,
-                height: tileSize,
-                decoration: pw.BoxDecoration(
-                  color: PdfColors.blue100,
-                ),
-                child: pw.Center(
-                  child: pw.Column(
-                    mainAxisAlignment: pw.MainAxisAlignment.center,
-                    children: [
-                      pw.Text(
-                        '${index + 1}',
-                        style: pw.TextStyle(
-                          fontSize: (tileSize * 0.25).clamp(6.0, 10.0),
-                          fontWeight: pw.FontWeight.bold,
-                          color: PdfColors.black,
-                        ),
-                      ),
-                      pw.SizedBox(height: 2),
-                      pw.Text(
-                        '${resX}x${resY}',
-                        style: pw.TextStyle(
-                          fontSize: (tileSize * 0.15).clamp(4.0, 8.0),
-                          color: PdfColors.grey700,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              );
-            }),
-          );
-        }),
-      ),
-    );
+    // En-tête
+    buffer.writeln('┌${'─' * (largeur * 4 - 1)}┐');
+    
+    // Corps du mur
+    for (int y = 0; y < hauteur; y++) {
+      buffer.write('│');
+      for (int x = 0; x < largeur; x++) {
+        buffer.write('███');
+        if (x < largeur - 1) buffer.write(' ');
+      }
+      buffer.writeln('│');
+    }
+    
+    // Pied
+    buffer.writeln('└${'─' * (largeur * 4 - 1)}┘');
+    
+    // Légende
+    buffer.writeln();
+    buffer.writeln('Légende:');
+    buffer.writeln('███ = Dalle LED');
+    buffer.writeln('Dimensions: ${largeur}x$hauteur dalles');
+    
+    return buffer.toString();
   }
 
+  /// Génère la section des photos pour l'export
   pw.Widget _buildPhotosSection(List<String> photos) {
     if (photos.isEmpty) {
       return pw.SizedBox.shrink();
@@ -1728,8 +1564,7 @@ class ExportWidget extends ConsumerWidget {
     return pw.Column(
       crossAxisAlignment: pw.CrossAxisAlignment.start,
       children: [
-        pw.Text('Photos capturées lors des mesures AR:', 
-               style: pw.TextStyle(fontSize: 14, fontWeight: pw.FontWeight.bold)),
+        pw.Text('PHOTOS', style: pw.TextStyle(fontSize: 16, fontWeight: pw.FontWeight.bold)),
         pw.SizedBox(height: 10),
         ...photos.map((photoPath) {
           try {
@@ -1737,20 +1572,11 @@ class ExportWidget extends ConsumerWidget {
             if (file.existsSync()) {
               final imageBytes = file.readAsBytesSync();
               return pw.Container(
-                margin: const pw.EdgeInsets.only(bottom: 15),
-                child: pw.Column(
-                  crossAxisAlignment: pw.CrossAxisAlignment.start,
-                  children: [
-                    pw.Text('Photo: ${photoPath.split('/').last}', 
-                           style: pw.TextStyle(fontSize: 12, fontWeight: pw.FontWeight.bold)),
-                    pw.SizedBox(height: 5),
-                    pw.Image(
+                margin: const pw.EdgeInsets.only(bottom: 10),
+                child: pw.Image(
                       pw.MemoryImage(imageBytes),
                       width: 200,
                       height: 150,
-                      fit: pw.BoxFit.cover,
-                    ),
-                  ],
                 ),
               );
             }
@@ -1758,7 +1584,135 @@ class ExportWidget extends ConsumerWidget {
             debugPrint('Erreur lors du chargement de la photo $photoPath: $e');
           }
           return pw.SizedBox.shrink();
-        }).toList(),
+        }),
+      ],
+    );
+  }
+
+  /// Génère la section des PDFs de calculs importés pour l'export
+  pw.Widget _buildImportedPdfsSection(List<Map<String, dynamic>> pdfs) {
+    if (pdfs.isEmpty) {
+      return pw.SizedBox.shrink();
+    }
+
+    return pw.Column(
+      crossAxisAlignment: pw.CrossAxisAlignment.start,
+      children: [
+        pw.Text('CALCULS IMPORTÉS', style: pw.TextStyle(fontSize: 16, fontWeight: pw.FontWeight.bold)),
+        pw.SizedBox(height: 10),
+        ...pdfs.map((pdfMap) {
+          final pdfName = pdfMap['name'] as String;
+          final pdfPath = pdfMap['path'] as String;
+          final createdAt = pdfMap['createdAt'] as int?;
+          
+          return pw.Container(
+            margin: const pw.EdgeInsets.only(bottom: 15),
+            padding: const pw.EdgeInsets.all(10),
+            decoration: pw.BoxDecoration(
+              border: pw.Border.all(color: PdfColors.grey300),
+              borderRadius: pw.BorderRadius.circular(5),
+            ),
+            child: pw.Column(
+              crossAxisAlignment: pw.CrossAxisAlignment.start,
+              children: [
+                pw.Text('📄 $pdfName', 
+                       style: pw.TextStyle(fontSize: 14, fontWeight: pw.FontWeight.bold)),
+                pw.SizedBox(height: 5),
+                pw.Text('Fichier: ${pdfPath.split('/').last}', 
+                       style: pw.TextStyle(fontSize: 12, color: PdfColors.grey600)),
+                if (createdAt != null) ...[
+                  pw.SizedBox(height: 3),
+                  pw.Text('Créé le: ${DateTime.fromMillisecondsSinceEpoch(createdAt).toString().substring(0, 16)}', 
+                         style: pw.TextStyle(fontSize: 12, color: PdfColors.grey600)),
+                ],
+              ],
+            ),
+          );
+        }),
+      ],
+    );
+  }
+
+  pw.Widget _buildStructureProjectContent() {
+    return pw.Column(
+      crossAxisAlignment: pw.CrossAxisAlignment.start,
+      children: [
+        pw.Text('CALCUL DE CHARGE STRUCTURE', 
+               style: pw.TextStyle(fontSize: 18, fontWeight: pw.FontWeight.bold)),
+        pw.SizedBox(height: 15),
+        
+        // Résumé du calcul
+        pw.Text('RÉSUMÉ', style: pw.TextStyle(fontSize: 14, fontWeight: pw.FontWeight.bold)),
+        pw.SizedBox(height: 8),
+        
+        if (projectSummary != null) ...[
+          pw.Row(
+            mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
+            children: [
+              pw.Text('Structure:', style: pw.TextStyle(fontSize: 12)),
+              pw.Text(projectSummary!['structure']?.toString() ?? '', 
+                     style: pw.TextStyle(fontSize: 12, fontWeight: pw.FontWeight.bold)),
+            ],
+          ),
+          pw.SizedBox(height: 4),
+          pw.Row(
+            mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
+            children: [
+              pw.Text('Distance:', style: pw.TextStyle(fontSize: 12)),
+              pw.Text(projectSummary!['distance']?.toString() ?? '', 
+                     style: pw.TextStyle(fontSize: 12, fontWeight: pw.FontWeight.bold)),
+            ],
+          ),
+          pw.SizedBox(height: 4),
+          pw.Row(
+            mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
+            children: [
+              pw.Text('Type de charge:', style: pw.TextStyle(fontSize: 12)),
+              pw.Text(projectSummary!['chargeType']?.toString() ?? '', 
+                     style: pw.TextStyle(fontSize: 12, fontWeight: pw.FontWeight.bold)),
+            ],
+          ),
+          pw.SizedBox(height: 4),
+          pw.Row(
+            mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
+            children: [
+              pw.Text('Charge maximale:', style: pw.TextStyle(fontSize: 12)),
+              pw.Text(projectSummary!['maxLoad']?.toString() ?? '', 
+                     style: pw.TextStyle(fontSize: 12, fontWeight: pw.FontWeight.bold)),
+            ],
+          ),
+          pw.SizedBox(height: 4),
+          pw.Row(
+            mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
+            children: [
+              pw.Text('Poids structure:', style: pw.TextStyle(fontSize: 12)),
+              pw.Text(projectSummary!['structureWeight']?.toString() ?? '', 
+                     style: pw.TextStyle(fontSize: 12, fontWeight: pw.FontWeight.bold)),
+            ],
+          ),
+          pw.SizedBox(height: 4),
+          pw.Row(
+            mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
+            children: [
+              pw.Text('Flèche maximale:', style: pw.TextStyle(fontSize: 12)),
+              pw.Text(projectSummary!['maxDeflection']?.toString() ?? '', 
+                     style: pw.TextStyle(fontSize: 12, fontWeight: pw.FontWeight.bold)),
+            ],
+          ),
+          pw.SizedBox(height: 4),
+          pw.Row(
+            mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
+            children: [
+              pw.Text('Ratio flèche:', style: pw.TextStyle(fontSize: 12)),
+              pw.Text(projectSummary!['deflectionRatio']?.toString() ?? '', 
+                     style: pw.TextStyle(fontSize: 12, fontWeight: pw.FontWeight.bold)),
+            ],
+          ),
+        ],
+        
+        pw.SizedBox(height: 15),
+        pw.Text('Détails du calcul généré le ${DateTime.now().toString().substring(0, 16)}', 
+               style: pw.TextStyle(fontSize: 10, color: PdfColors.grey600)),
       ],
     );
   }
