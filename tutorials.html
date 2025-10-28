@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta content="IE=Edge" http-equiv="X-UA-Compatible">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="AV Wallet - Tutoriels">
+  <title>Tutoriels - AV Wallet</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', sans-serif;
+      background: url('assets/background.jpg') no-repeat center center fixed;
+      background-size: cover;
+      color: white;
+      min-height: 100vh;
+      position: relative;
+    }
+
+    .overlay {
+      background-color: rgba(10, 17, 40, 0.85);
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      z-index: 0;
+      min-height: 100vh;
+    }
+
+    .container {
+      position: relative;
+      z-index: 1;
+      max-width: 1200px;
+      margin: auto;
+      padding: 60px 20px;
+      text-align: center;
+      min-height: 100vh;
+    }
+
+    .logo {
+      max-width: 140px;
+      margin: 0 auto 20px;
+    }
+
+    h1 {
+      font-size: 40px;
+      font-weight: 800;
+      margin-bottom: 40px;
+    }
+
+    .tutorials-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+      gap: 40px;
+      margin: 40px 0;
+    }
+
+    .tutorial-card {
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 16px;
+      padding: 30px;
+      backdrop-filter: blur(10px);
+    }
+
+    .tutorial-card h2 {
+      font-size: 24px;
+      margin-bottom: 20px;
+    }
+
+    .tutorial-card video {
+      width: 100%;
+      border-radius: 12px;
+      box-shadow: 0 4px 24px rgba(0,0,0,0.3);
+    }
+
+    .language-menu {
+      position: absolute;
+      top: 20px;
+      left: 20px;
+      z-index: 2;
+    }
+
+    .language-select {
+      background-color: rgba(255,255,255,0.1);
+      color: white;
+      border: 1px solid white;
+      border-radius: 8px;
+      padding: 6px;
+      font-size: 14px;
+    }
+
+    nav {
+      position: absolute;
+      top: 20px;
+      right: 30px;
+      z-index: 10;
+      display: flex;
+      gap: 24px;
+    }
+
+    nav a {
+      color: #fff;
+      text-decoration: none;
+      font-weight: bold;
+      font-size: 16px;
+    }
+
+    footer {
+      text-align: center;
+      margin-top: 60px;
+      font-size: 13px;
+      color: #ccc;
+    }
+  </style>
+</head>
+<body>
+  <div class="overlay"></div>
+
+  <!-- Barre de navigation en haut à droite -->
+  <nav>
+    <a id="tutorials-link" href="tutorials.html">Tutoriels</a>
+    <a id="account-link" href="#login">Login</a>
+    <a id="privacy-link" href="privacy_fr.html">Privacy</a>
+  </nav>
+
+  <div class="language-menu">
+    <div class="custom-select" onclick="toggleDropdown()">
+      <img id="current-flag" src="assets/flag_fr_48.png" alt="Langue" style="width:24px;height:24px;border-radius:50%;cursor:pointer;border:2px solid white;object-fit:cover;">
+      <div id="dropdown-lang" style="display:none;position:absolute;top:32px;left:0;background:#1c1c1c;border:1px solid white;border-radius:8px;padding:6px 0;z-index:10;">
+        <img src="assets/flag_fr_48.png" alt="Français" style="width:24px;height:24px;margin:4px;cursor:pointer;border-radius:50%;object-fit:cover;" onclick="setLanguage('fr')">
+        <img src="assets/flag_en_48.png" alt="English" style="width:24px;height:24px;margin:4px;cursor:pointer;border-radius:50%;object-fit:cover;" onclick="setLanguage('en')">
+        <img src="assets/flag_de_48.png" alt="Deutsch" style="width:24px;height:24px;margin:4px;cursor:pointer;border-radius:50%;object-fit:cover;" onclick="setLanguage('de')">
+        <img src="assets/flag_it_48.png" alt="Italiano" style="width:24px;height:24px;margin:4px;cursor:pointer;border-radius:50%;object-fit:cover;" onclick="setLanguage('it')">
+        <img src="assets/flag_es_48.png" alt="Español" style="width:24px;height:24px;margin:4px;cursor:pointer;border-radius:50%;object-fit:cover;" onclick="setLanguage('es')">
+      </div>
+    </div>
+  </div>
+
+  <div class="container">
+    <!-- Logo -->
+    <img src="assets/logo_web.png" alt="Logo AV Wallet" class="logo" style="display: block;">
+    
+    <h1 id="page-title">Tutoriels</h1>
+
+    <div class="tutorials-grid">
+      <div class="tutorial-card">
+        <h2 id="tutorial1-title">Home et Projets</h2>
+        <video src="assets/tutorial_home.mp4" controls style="width: 100%; max-width: 100%;"></video>
+      </div>
+      <div class="tutorial-card">
+        <h2 id="tutorial2-title">Catalogue</h2>
+        <video src="assets/tutorial_catalogue.mp4" controls style="width: 100%; max-width: 100%;"></video>
+      </div>
+    </div>
+
+    <footer id="footer">© 2025 AV Wallet — Tous droits réservés</footer>
+  </div>
+
+  <script>
+    function toggleDropdown() {
+      const menu = document.getElementById('dropdown-lang');
+      menu.style.display = menu.style.display === 'block' ? 'none' : 'block';
+    }
+
+    function setLanguage(lang) {
+      localStorage.setItem('lang', lang);
+      updateLanguage(lang);
+      document.getElementById('dropdown-lang').style.display = 'none';
+    }
+
+    function updateLanguage(lang) {
+      const t = translations[lang] || translations['fr'];
+      document.getElementById('page-title').textContent = t.tutorials_title;
+      document.getElementById('tutorial1-title').textContent = t.tutorial1;
+      document.getElementById('tutorial2-title').textContent = t.tutorial2;
+      document.getElementById('footer').textContent = t.footer;
+      document.getElementById('current-flag').src = `assets/flag_${lang}_48.png`;
+      document.getElementById('tutorials-link').textContent = t.tutorials;
+      document.getElementById('account-link').textContent = t.account;
+    }
+
+    const translations = {
+      fr: {
+        tutorials_title: "Tutoriels",
+        tutorial1: "Home et Projets",
+        tutorial2: "Catalogue",
+        footer: "© 2025 AV Wallet — Tous droits réservés",
+        tutorials: "Tutoriels",
+        account: "Login"
+      },
+      en: {
+        tutorials_title: "Tutorials",
+        tutorial1: "Home and Projects",
+        tutorial2: "Catalogue",
+        footer: "© 2025 AV Wallet — All rights reserved",
+        tutorials: "Tutorials",
+        account: "Login"
+      },
+      de: {
+        tutorials_title: "Tutorials",
+        tutorial1: "Home und Projekte",
+        tutorial2: "Katalog",
+        footer: "© 2025 AV Wallet — Alle Rechte vorbehalten",
+        tutorials: "Tutorials",
+        account: "Login"
+      },
+      it: {
+        tutorials_title: "Tutoriali",
+        tutorial1: "Home e Progetti",
+        tutorial2: "Catalogo",
+        footer: "© 2025 AV Wallet — Tutti i diritti riservati",
+        tutorials: "Tutoriali",
+        account: "Login"
+      },
+      es: {
+        tutorials_title: "Tutoriales",
+        tutorial1: "Home y Proyectos",
+        tutorial2: "Catálogo",
+        footer: "© 2025 AV Wallet — Todos los derechos reservados",
+        tutorials: "Tutoriales",
+        account: "Login"
+      }
+    };
+
+    window.addEventListener('DOMContentLoaded', () => {
+      const lang = localStorage.getItem('lang') || 'fr';
+      updateLanguage(lang);
+      // Lien privacy dynamique
+      const privacyMap = {
+        fr: 'privacy_fr.html',
+        en: 'privacy_en.html',
+        de: 'privacy_de.html',
+        it: 'privacy_it.html',
+        es: 'privacy_es.html'
+      };
+      document.getElementById('privacy-link').href = privacyMap[lang] || 'privacy_fr.html';
+    });
+  </script>
+</body>
+</html>
+
