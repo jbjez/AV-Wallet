@@ -71,6 +71,46 @@
       box-shadow: 0 4px 24px rgba(0,0,0,0.3);
     }
 
+    .video-container {
+      position: relative;
+    }
+
+    .video-thumbnail {
+      position: relative;
+      cursor: pointer;
+    }
+
+    .video-thumbnail img {
+      width: 100%;
+      border-radius: 12px;
+      transition: opacity 0.3s;
+    }
+
+    .play-button {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 60px;
+      height: 60px;
+      background: rgba(0, 0, 0, 0.7);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 24px;
+      color: white;
+      transition: background 0.3s;
+    }
+
+    .video-thumbnail:hover .play-button {
+      background: rgba(0, 0, 0, 0.9);
+    }
+
+    .video-thumbnail:hover img {
+      opacity: 0.8;
+    }
+
     .language-menu {
       position: absolute;
       top: 20px;
@@ -143,19 +183,43 @@
     <div class="tutorials-grid">
       <div class="tutorial-card">
         <h2 id="tutorial1-title">Home et Projets</h2>
-        <video src="assets/tutorial_home.mp4" controls style="width: 100%; max-width: 100%;"></video>
+        <div class="video-container">
+          <video id="video1" src="assets/tutorial_home.mp4" controls style="width: 100%; max-width: 100%; display: none;"></video>
+          <div id="thumbnail1" class="video-thumbnail" onclick="playVideo(1)">
+            <img src="assets/tutorial_home.jpg" alt="Play Video" style="width: 100%; cursor: pointer; border-radius: 8px;">
+            <div class="play-button">▶</div>
+          </div>
+        </div>
       </div>
       <div class="tutorial-card">
         <h2 id="tutorial2-title">Catalogue</h2>
-        <video src="assets/tutorial_catalogue.mp4" controls style="width: 100%; max-width: 100%;"></video>
+        <div class="video-container">
+          <video id="video2" src="assets/tutorial_catalogue.mp4" controls style="width: 100%; max-width: 100%; display: none;"></video>
+          <div id="thumbnail2" class="video-thumbnail" onclick="playVideo(2)">
+            <img src="assets/tutorial_catalogue.jpg" alt="Play Video" style="width: 100%; cursor: pointer; border-radius: 8px;">
+            <div class="play-button">▶</div>
+          </div>
+        </div>
       </div>
       <div class="tutorial-card">
         <h2 id="tutorial3-title">Lumière</h2>
-        <video src="assets/tutorial_light.mp4" controls style="width: 100%; max-width: 100%;"></video>
+        <div class="video-container">
+          <video id="video3" src="assets/tutorial_light.mp4" controls style="width: 100%; max-width: 100%; display: none;"></video>
+          <div id="thumbnail3" class="video-thumbnail" onclick="playVideo(3)">
+            <img src="assets/tutorial_light.jpg" alt="Play Video" style="width: 100%; cursor: pointer; border-radius: 8px;">
+            <div class="play-button">▶</div>
+          </div>
+        </div>
       </div>
       <div class="tutorial-card">
         <h2 id="tutorial4-title">Led Wall</h2>
-        <video src="assets/tutorial_led_wall.mp4" controls style="width: 100%; max-width: 100%;"></video>
+        <div class="video-container">
+          <video id="video4" src="assets/tutorial_led_wall.mp4" controls style="width: 100%; max-width: 100%; display: none;"></video>
+          <div id="thumbnail4" class="video-thumbnail" onclick="playVideo(4)">
+            <img src="assets/tutorial_led_wall.jpg" alt="Play Video" style="width: 100%; cursor: pointer; border-radius: 8px;">
+            <div class="play-button">▶</div>
+          </div>
+        </div>
       </div>
     </div>
 
@@ -163,6 +227,15 @@
   </div>
 
   <script>
+    function playVideo(num) {
+      const video = document.getElementById('video' + num);
+      const thumbnail = document.getElementById('thumbnail' + num);
+      
+      thumbnail.style.display = 'none';
+      video.style.display = 'block';
+      video.play();
+    }
+
     function toggleDropdown() {
       const menu = document.getElementById('dropdown-lang');
       menu.style.display = menu.style.display === 'block' ? 'none' : 'block';
