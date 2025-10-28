@@ -47,22 +47,26 @@
     }
 
     .tutorials-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
-      gap: 40px;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 20px;
       margin: 40px 0;
     }
 
     .tutorial-card {
       background: rgba(255, 255, 255, 0.1);
       border-radius: 16px;
-      padding: 30px;
+      padding: 20px;
       backdrop-filter: blur(10px);
+      flex: 0 0 calc(25% - 20px);
+      min-width: 200px;
+      max-width: 250px;
     }
 
     .tutorial-card h2 {
-      font-size: 24px;
-      margin-bottom: 20px;
+      font-size: 18px;
+      margin-bottom: 15px;
     }
 
     .tutorial-card video {
@@ -188,7 +192,7 @@
         <div class="video-container">
           <video id="video1" src="assets/tutorial_home.mp4" controls style="width: 100%; max-width: 100%; display: none;"></video>
           <div id="thumbnail1" class="video-thumbnail" onclick="playVideo(1)">
-            <img src="assets/Screenshot_home.jpg" alt="Play Video" style="width: 100%; cursor: pointer; border-radius: 8px;">
+            <img src="assets/logo3.png" alt="Play Video" style="width: 100%; cursor: pointer; border-radius: 8px;">
             <div class="play-button">▶</div>
           </div>
         </div>
@@ -198,7 +202,7 @@
         <div class="video-container">
           <video id="video2" src="assets/tutorial_catalogue.mp4" controls style="width: 100%; max-width: 100%; display: none;"></video>
           <div id="thumbnail2" class="video-thumbnail" onclick="playVideo(2)">
-            <img src="assets/Screenshot_catalogue.jpg" alt="Play Video" style="width: 100%; cursor: pointer; border-radius: 8px;">
+            <img src="assets/logo3.png" alt="Play Video" style="width: 100%; cursor: pointer; border-radius: 8px;">
             <div class="play-button">▶</div>
           </div>
         </div>
@@ -208,7 +212,7 @@
         <div class="video-container">
           <video id="video3" src="assets/tutorial_light.mp4" controls style="width: 100%; max-width: 100%; display: none;"></video>
           <div id="thumbnail3" class="video-thumbnail" onclick="playVideo(3)">
-            <img src="assets/Screenshot_home.jpg" alt="Play Video" style="width: 100%; cursor: pointer; border-radius: 8px;">
+            <img src="assets/logo3.png" alt="Play Video" style="width: 100%; cursor: pointer; border-radius: 8px;">
             <div class="play-button">▶</div>
           </div>
         </div>
@@ -218,7 +222,7 @@
         <div class="video-container">
           <video id="video4" src="assets/tutorial_led_wall.mp4" controls style="width: 100%; max-width: 100%; display: none;"></video>
           <div id="thumbnail4" class="video-thumbnail" onclick="playVideo(4)">
-            <img src="assets/Screenshot_catalogue.jpg" alt="Play Video" style="width: 100%; cursor: pointer; border-radius: 8px;">
+            <img src="assets/logo3.png" alt="Play Video" style="width: 100%; cursor: pointer; border-radius: 8px;">
             <div class="play-button">▶</div>
           </div>
         </div>
