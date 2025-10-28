@@ -110,8 +110,8 @@
 
   <!-- Barre de navigation en haut à droite -->
   <nav style="position: absolute; top: 20px; right: 30px; z-index: 10; display: flex; gap: 24px;">
-    <a href="#" style="color: #fff; text-decoration: none; font-weight: bold; font-size: 16px;">Tutoriels</a>
-    <a href="#" style="color: #fff; text-decoration: none; font-weight: bold; font-size: 16px;">Mon compte</a>
+    <a id="tutorials-link" href="#" style="color: #fff; text-decoration: none; font-weight: bold; font-size: 16px;">Tutoriels</a>
+    <a id="account-link" href="#" style="color: #fff; text-decoration: none; font-weight: bold; font-size: 16px;">Login</a>
     <a id="privacy-link" href="privacy_fr.html" style="color: #fff; text-decoration: none; font-weight: bold; font-size: 16px;">Privacy</a>
   </nav>
 
@@ -179,6 +179,8 @@
     document.getElementById('context-text').innerHTML = t.context;
     document.querySelector('footer').textContent = t.footer;
     document.getElementById('current-flag').src = `assets/flag_${lang}_48.png`;
+    document.getElementById('tutorials-link').textContent = t.tutorials;
+    document.getElementById('account-link').textContent = t.account;
   }
 
   window.addEventListener('DOMContentLoaded', () => {
@@ -251,35 +253,40 @@
         context: "Que vous soyez en plein montage, en préparation ou en repérage client, AV Wallet vous donne les bons chiffres, les bons outils, au bon moment.<br>Fini les approximations. Gagnez en rigueur, en temps et en crédibilité.",
         footer: "© 2025 AV Wallet — Tous droits réservés",
         download: "Télécharger l'application",
-        account: "Mon compte"
+        account: "Login",
+        tutorials: "Tutoriels"
       },
       en: {
         slogan: "Your expertise, in your pocket.",
         context: "Whether you are in the middle of setup, preparing, or on a client visit, AV Wallet gives you the right numbers, the right tools, at the right time.<br>No more guesswork. Gain accuracy, save time, and boost your credibility.",
         footer: "© 2025 AV Wallet — All rights reserved",
         download: "Download the app",
-        account: "My account"
+        account: "Login",
+        tutorials: "Tutorials"
       },
       de: {
         slogan: "Ihre Expertise in der Tasche.",
         context: "Ob Sie gerade aufbauen, vorbereiten oder beim Kunden sind – AV Wallet liefert Ihnen die richtigen Zahlen, die richtigen Tools, zum richtigen Zeitpunkt.<br>Schluss mit Schätzungen. Gewinnen Sie an Präzision, sparen Sie Zeit und steigern Sie Ihre Glaubwürdigkeit.",
         footer: "© 2025 AV Wallet — Alle Rechte vorbehalten",
         download: "App herunterladen",
-        account: "Mein Konto"
+        account: "Login",
+        tutorials: "Tutorials"
       },
       it: {
         slogan: "La tua competenza, sempre con te.",
         context: "Che tu sia in fase di montaggio, preparazione o sopralluogo dal cliente, AV Wallet ti offre i numeri giusti, gli strumenti giusti, al momento giusto.<br>Basta approssimazioni. Guadagna in precisione, tempo e credibilità.",
         footer: "© 2025 AV Wallet — Tutti i diritti riservati",
         download: "Scarica l'app",
-        account: "Il mio account"
+        account: "Login",
+        tutorials: "Tutoriali"
       },
       es: {
         slogan: "Tu experiencia en el bolsillo.",
         context: "Ya sea durante el montaje, la preparación o una visita al cliente, AV Wallet te da los datos correctos, las herramientas adecuadas, en el momento justo.<br>Se acabaron las aproximaciones. Gana rigor, tiempo y credibilidad.",
         footer: "© 2025 AV Wallet — Todos los derechos reservados",
         download: "Descargar la app",
-        account: "Mi cuenta"
+        account: "Login",
+        tutorials: "Tutoriales"
       }
     };
 
