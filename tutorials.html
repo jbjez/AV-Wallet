@@ -48,7 +48,7 @@
 
     .tutorials-grid {
       display: flex;
-      flex-wrap: nowrap;
+      flex-wrap: wrap;
       justify-content: center;
       gap: 20px;
       margin: 40px 0;
@@ -59,40 +59,87 @@
       border-radius: 16px;
       padding: 15px;
       backdrop-filter: blur(10px);
-      flex: 1;
-      max-width: 250px;
+      flex: 0 0 calc(25% - 20px);
+      min-width: 180px;
+      max-width: 220px;
+      cursor: pointer;
       text-align: center;
     }
 
-    .tutorial-card h2 {
-      font-size: 16px;
-      margin-bottom: 10px;
-      cursor: pointer;
+    .tutorial-card:hover {
+      background: rgba(255, 255, 255, 0.15);
     }
 
-    .tutorial-card h2:hover {
-      opacity: 0.8;
+    .tutorial-card h2 {
+      font-size: 14px;
+      margin-bottom: 10px;
     }
 
     .tutorial-card video {
       width: 100%;
       border-radius: 12px;
       box-shadow: 0 4px 24px rgba(0,0,0,0.3);
+      display: none;
     }
 
     .video-container {
       position: relative;
     }
 
-    .video-container img {
-      width: 100%;
-      border-radius: 12px;
-      transition: transform 0.3s, opacity 0.3s;
+    .video-thumbnail {
+      position: relative;
+      cursor: pointer;
     }
 
-    .tutorial-card:hover .video-container img {
+    .video-thumbnail img {
+      width: 100%;
+      border-radius: 12px;
+      transition: transform 0.3s;
+    }
+
+    .video-thumbnail:hover img {
       transform: scale(1.05);
-      opacity: 0.8;
+    }
+
+    .video-modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.95);
+      z-index: 9999;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .video-modal.active {
+      display: flex;
+    }
+
+    .video-modal-content {
+      position: relative;
+      width: 90%;
+      max-width: 1200px;
+    }
+
+    .close-button {
+      position: absolute;
+      top: -40px;
+      right: 0;
+      background: white;
+      border: none;
+      color: black;
+      font-size: 24px;
+      padding: 10px 20px;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+
+    .video-modal video {
+      width: 100%;
+      border-radius: 8px;
     }
 
     .language-menu {
@@ -133,15 +180,6 @@
       font-size: 13px;
       color: #ccc;
     }
-
-    @media (max-width: 900px) {
-      .tutorials-grid {
-        flex-wrap: wrap;
-      }
-      .tutorial-card {
-        min-width: 150px;
-      }
-    }
   </style>
 </head>
 <body>
@@ -179,38 +217,46 @@
       <div class="tutorial-card" onclick="playVideo(1)">
         <h2 id="tutorial1-title">Home et Projets</h2>
         <div class="video-container">
-          <img src="assets/logo3.png" alt="Play Video" style="width: 100%; cursor: pointer; border-radius: 8px;">
+          <div id="thumbnail1" class="video-thumbnail">
+            <img src="assets/logo3.png" alt="Play Video" style="width: 100%; border-radius: 8px;">
+          </div>
         </div>
       </div>
       <div class="tutorial-card" onclick="playVideo(2)">
         <h2 id="tutorial2-title">Catalogue</h2>
         <div class="video-container">
-          <img src="assets/logo3.png" alt="Play Video" style="width: 100%; cursor: pointer; border-radius: 8px;">
+          <div id="thumbnail2" class="video-thumbnail">
+            <img src="assets/logo3.png" alt="Play Video" style="width: 100%; border-radius: 8px;">
+          </div>
         </div>
       </div>
       <div class="tutorial-card" onclick="playVideo(3)">
         <h2 id="tutorial3-title">Lumière</h2>
         <div class="video-container">
-          <img src="assets/logo3.png" alt="Play Video" style="width: 100%; cursor: pointer; border-radius: 8px;">
+          <div id="thumbnail3" class="video-thumbnail">
+            <img src="assets/logo3.png" alt="Play Video" style="width: 100%; border-radius: 8px;">
+          </div>
         </div>
       </div>
       <div class="tutorial-card" onclick="playVideo(4)">
         <h2 id="tutorial4-title">Led Wall</h2>
         <div class="video-container">
-          <img src="assets/logo3.png" alt="Play Video" style="width: 100%; cursor: pointer; border-radius: 8px;">
+          <div id="thumbnail4" class="video-thumbnail">
+            <img src="assets/logo3.png" alt="Play Video" style="width: 100%; border-radius: 8px;">
+          </div>
         </div>
       </div>
     </div>
 
-    <!-- Video modal -->
-    <div id="video-modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); z-index: 9999; justify-content: center; align-items: center;">
-      <div style="position: relative; width: 90%; max-width: 1200px;">
-        <button onclick="closeVideo()" style="position: absolute; top: -40px; right: 0; background: white; border: none; color: black; font-size: 24px; padding: 10px 20px; border-radius: 5px; cursor: pointer;">✕ Fermer</button>
-        <video id="modal-video" controls style="width: 100%; border-radius: 8px;"></video>
-      </div>
-    </div>
-
     <footer id="footer">© 2025 AV Wallet — Tous droits réservés</footer>
+  </div>
+
+  <!-- Video modal -->
+  <div id="video-modal" class="video-modal">
+    <div class="video-modal-content">
+      <button class="close-button" onclick="closeVideo()">✕ Fermer</button>
+      <video id="modal-video" controls style="width: 100%;"></video>
+    </div>
   </div>
 
   <script>
@@ -225,14 +271,14 @@
       const modal = document.getElementById('video-modal');
       const video = document.getElementById('modal-video');
       video.src = videoSources[num];
-      modal.style.display = 'flex';
+      modal.classList.add('active');
       video.play();
     }
 
     function closeVideo() {
       const modal = document.getElementById('video-modal');
       const video = document.getElementById('modal-video');
-      modal.style.display = 'none';
+      modal.classList.remove('active');
       video.pause();
       video.src = '';
     }
