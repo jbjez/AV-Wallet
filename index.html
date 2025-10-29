@@ -36,9 +36,11 @@
       z-index: 1;
       max-width: 1200px;
       margin: auto;
-      padding: 60px 20px;
+      padding: 60px 20px 20px 20px;
       text-align: center;
       min-height: 100vh;
+      display: flex;
+      flex-direction: column;
     }
 
     .language-menu {
@@ -76,9 +78,67 @@
 
     footer {
       text-align: center;
-      margin-top: 60px;
+      margin-top: auto;
+      padding: 40px 20px;
       font-size: 13px;
       color: #ccc;
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+      width: 100%;
+    }
+
+    footer .footer-content {
+      max-width: 800px;
+      margin: 0 auto;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    footer .footer-links {
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 20px;
+      margin-bottom: 15px;
+    }
+
+    footer .footer-links a {
+      color: #93AEDD;
+      text-decoration: none;
+      transition: color 0.3s;
+    }
+
+    footer .footer-links a:hover {
+      color: #fff;
+      text-decoration: underline;
+    }
+
+    footer .footer-contact {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 10px;
+      font-size: 14px;
+      color: #aaa;
+      margin: 15px 0;
+    }
+
+    footer .footer-contact a {
+      color: #93AEDD;
+      text-decoration: none;
+      font-weight: 500;
+      font-size: 14px;
+    }
+
+    footer .footer-contact a:hover {
+      text-decoration: underline;
+    }
+
+    footer .footer-copyright {
+      margin-top: 20px;
+      font-size: 11px;
+      color: #888;
     }
 
     .page-flex {
@@ -111,6 +171,7 @@
   <!-- Barre de navigation en haut à droite -->
   <nav style="position: absolute; top: 20px; right: 30px; z-index: 10; display: flex; gap: 24px;">
     <a id="tutorials-link" href="tutorials.html" style="color: #fff; text-decoration: none; font-weight: bold; font-size: 16px;">Tutoriels</a>
+    <a id="support-link" href="support.html" style="color: #fff; text-decoration: none; font-weight: bold; font-size: 16px;">Support</a>
     <a id="account-link" href="#login" style="color: #fff; text-decoration: none; font-weight: bold; font-size: 16px;">Login</a>
     <a id="privacy-link" href="privacy_fr.html" style="color: #fff; text-decoration: none; font-weight: bold; font-size: 16px;">Privacy</a>
   </nav>
@@ -157,7 +218,27 @@
         <img src="assets/Screenshot_home.jpg" alt="Capture d'écran AV Wallet" style="max-width: 220px; width: 100%; border-radius: 16px; box-shadow: 0 4px 24px rgba(0,0,0,0.15);">
       </div>
     </div>
-    <footer>© 2025 AV Wallet — Tous droits réservés</footer>
+    <footer>
+      <div class="footer-content">
+        <div class="footer-links">
+          <a id="legal-link" href="privacy_fr.html">Mentions légales</a>
+        </div>
+        <div class="footer-contact">
+          <div style="display: flex; align-items: center; gap: 8px;">
+            <span id="support-label">Support :</span>
+            <a href="mailto:support@avwallet.fr" id="support-email" style="color: #93AEDD; text-decoration: none; font-weight: 500;">support@avwallet.fr</a>
+          </div>
+          <span style="color: #666; margin: 0 5px;">|</span>
+          <div style="display: flex; align-items: center; gap: 8px;">
+            <span id="contact-label">Contact :</span>
+            <a href="mailto:support@avwallet.fr" id="contact-email" style="color: #93AEDD; text-decoration: none; font-weight: 500;">support@avwallet.fr</a>
+          </div>
+        </div>
+        <div class="footer-copyright" id="footer-copyright">
+          © 2025 AV Wallet — Tous droits réservés
+        </div>
+      </div>
+    </footer>
   </div>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -177,25 +258,30 @@
     const t = translations[lang] || translations['fr'];
     document.querySelector('.subtitle').textContent = t.slogan;
     document.getElementById('context-text').innerHTML = t.context;
-    document.querySelector('footer').textContent = t.footer;
+    document.getElementById('footer-copyright').textContent = t.footer;
     document.getElementById('current-flag').src = `assets/flag_${lang}_48.png`;
     document.getElementById('tutorials-link').textContent = t.tutorials;
+    document.getElementById('support-link').textContent = t.support;
     document.getElementById('account-link').textContent = t.account;
+    document.getElementById('legal-link').textContent = t.legal;
+    document.getElementById('support-label').textContent = t.supportLabel;
+    document.getElementById('contact-label').textContent = t.contactLabel;
   }
 
-  window.addEventListener('DOMContentLoaded', () => {
-    const lang = localStorage.getItem('lang') || 'fr';
-    updateLanguage(lang);
-    // Lien privacy dynamique
-    const privacyMap = {
-      fr: 'privacy_fr.html',
-      en: 'privacy_en.html',
-      de: 'privacy_de.html',
-      it: 'privacy_it.html',
-      es: 'privacy_es.html'
-    };
-    document.getElementById('privacy-link').href = privacyMap[lang] || 'privacy_fr.html';
-  });
+    window.addEventListener('DOMContentLoaded', () => {
+      const lang = localStorage.getItem('lang') || 'fr';
+      updateLanguage(lang);
+      // Lien privacy dynamique
+      const privacyMap = {
+        fr: 'privacy_fr.html',
+        en: 'privacy_en.html',
+        de: 'privacy_de.html',
+        it: 'privacy_it.html',
+        es: 'privacy_es.html'
+      };
+      document.getElementById('privacy-link').href = privacyMap[lang] || 'privacy_fr.html';
+      document.getElementById('legal-link').href = privacyMap[lang] || 'privacy_fr.html';
+    });
 </script>
   <script>
     function setLanguage(lang) {
@@ -254,7 +340,11 @@
         footer: "© 2025 AV Wallet — Tous droits réservés",
         download: "Télécharger l'application",
         account: "Login",
-        tutorials: "Tutoriels"
+        tutorials: "Tutoriels",
+        support: "Support",
+        legal: "Mentions légales",
+        supportLabel: "Support :",
+        contactLabel: "Contact :"
       },
       en: {
         slogan: "Your expertise, in your pocket.",
@@ -262,7 +352,11 @@
         footer: "© 2025 AV Wallet — All rights reserved",
         download: "Download the app",
         account: "Login",
-        tutorials: "Tutorials"
+        tutorials: "Tutorials",
+        support: "Support",
+        legal: "Legal notices",
+        supportLabel: "Support:",
+        contactLabel: "Contact:"
       },
       de: {
         slogan: "Ihre Expertise in der Tasche.",
@@ -270,7 +364,11 @@
         footer: "© 2025 AV Wallet — Alle Rechte vorbehalten",
         download: "App herunterladen",
         account: "Login",
-        tutorials: "Tutorials"
+        tutorials: "Tutorials",
+        support: "Support",
+        legal: "Impressum",
+        supportLabel: "Support:",
+        contactLabel: "Kontakt:"
       },
       it: {
         slogan: "La tua competenza, sempre con te.",
@@ -278,7 +376,11 @@
         footer: "© 2025 AV Wallet — Tutti i diritti riservati",
         download: "Scarica l'app",
         account: "Login",
-        tutorials: "Tutoriali"
+        tutorials: "Tutoriali",
+        support: "Supporto",
+        legal: "Note legali",
+        supportLabel: "Supporto:",
+        contactLabel: "Contatto:"
       },
       es: {
         slogan: "Tu experiencia en el bolsillo.",
@@ -286,7 +388,11 @@
         footer: "© 2025 AV Wallet — Todos los derechos reservados",
         download: "Descargar la app",
         account: "Login",
-        tutorials: "Tutoriales"
+        tutorials: "Tutoriales",
+        support: "Soporte",
+        legal: "Aviso legal",
+        supportLabel: "Soporte:",
+        contactLabel: "Contacto:"
       }
     };
 
