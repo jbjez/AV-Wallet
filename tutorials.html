@@ -92,13 +92,39 @@
     }
 
     .video-thumbnail img {
-      width: 100%;
+      width: 60%;
+      height: auto;
       border-radius: 12px;
       transition: transform 0.3s;
+      display: block;
+      margin: 0 auto;
     }
 
     .video-thumbnail:hover img {
       transform: scale(1.05);
+    }
+
+    .play-button {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 36px;
+      height: 36px;
+      background: rgba(255, 255, 255, 0.9);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 14px;
+      color: #0A1128;
+      pointer-events: none;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+    }
+
+    .play-button::before {
+      content: '▶';
+      margin-left: 2px;
     }
 
     .video-modal {
@@ -121,7 +147,13 @@
     .video-modal-content {
       position: relative;
       width: 90%;
-      max-width: 1200px;
+      max-width: 393px;
+    }
+
+    @media (min-width: 768px) {
+      .video-modal-content {
+        max-width: 500px;
+      }
     }
 
     .close-button {
@@ -139,7 +171,10 @@
 
     .video-modal video {
       width: 100%;
+      max-width: 100%;
+      height: auto;
       border-radius: 8px;
+      object-fit: contain;
     }
 
     .language-menu {
@@ -218,7 +253,8 @@
         <h2 id="tutorial1-title">Home et Projets</h2>
         <div class="video-container">
           <div id="thumbnail1" class="video-thumbnail">
-            <img src="assets/logo3.png" alt="Play Video" style="width: 100%; border-radius: 8px;">
+            <img src="assets/logo3.png" alt="Play Video">
+            <div class="play-button"></div>
           </div>
         </div>
       </div>
@@ -226,7 +262,8 @@
         <h2 id="tutorial2-title">Catalogue</h2>
         <div class="video-container">
           <div id="thumbnail2" class="video-thumbnail">
-            <img src="assets/logo3.png" alt="Play Video" style="width: 100%; border-radius: 8px;">
+            <img src="assets/logo3.png" alt="Play Video">
+            <div class="play-button"></div>
           </div>
         </div>
       </div>
@@ -234,7 +271,8 @@
         <h2 id="tutorial3-title">Lumière</h2>
         <div class="video-container">
           <div id="thumbnail3" class="video-thumbnail">
-            <img src="assets/logo3.png" alt="Play Video" style="width: 100%; border-radius: 8px;">
+            <img src="assets/logo3.png" alt="Play Video">
+            <div class="play-button"></div>
           </div>
         </div>
       </div>
@@ -242,7 +280,8 @@
         <h2 id="tutorial4-title">Led Wall</h2>
         <div class="video-container">
           <div id="thumbnail4" class="video-thumbnail">
-            <img src="assets/logo3.png" alt="Play Video" style="width: 100%; border-radius: 8px;">
+            <img src="assets/logo3.png" alt="Play Video">
+            <div class="play-button"></div>
           </div>
         </div>
       </div>
@@ -255,7 +294,7 @@
   <div id="video-modal" class="video-modal">
     <div class="video-modal-content">
       <button class="close-button" onclick="closeVideo()">✕ Fermer</button>
-      <video id="modal-video" controls style="width: 100%;"></video>
+      <video id="modal-video" controls style="width: 100%; max-width: 100%; height: auto;"></video>
     </div>
   </div>
 
