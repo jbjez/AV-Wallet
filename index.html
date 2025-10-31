@@ -162,6 +162,14 @@
       width: 100%;
     }
 
+    /* Sur desktop, limiter la largeur des blocks de screenshots */
+    @media (min-width: 769px) {
+      .screenshot-block, .video-block {
+        min-width: 220px;
+        max-width: 220px;
+      }
+    }
+
     /* Sur desktop, le screenshots-wrapper n'affiche pas les screenshots côte à côte */
     .screenshots-wrapper {
       display: contents;
@@ -234,6 +242,7 @@
     }
 
     .screenshot-img, .video-img {
+      max-width: 220px;
       width: 100%;
       border-radius: 16px;
       box-shadow: 0 4px 24px rgba(0,0,0,0.15);
@@ -264,19 +273,9 @@
         min-height: auto;
       }
 
-      /* Conteneur pour screenshots côte à côte sur mobile */
-      .screenshots-wrapper {
-        display: flex !important;
-        justify-content: center;
-        align-items: center;
-        gap: 15px;
-        width: 100%;
-        order: 1;
-        margin-bottom: 20px;
-      }
-
+      /* Ordre sur mobile iPhone : logo+texte en haut, puis screenshots, puis boutons */
       .main-block {
-        order: 3;
+        order: 1 !important;
         width: 100% !important;
         max-width: 100% !important;
         min-width: 0 !important;
@@ -284,6 +283,17 @@
         display: flex !important;
         flex-direction: column;
         align-items: center;
+      }
+
+      /* Conteneur pour screenshots côte à côte sur mobile */
+      .screenshots-wrapper {
+        display: flex !important;
+        justify-content: center;
+        align-items: center;
+        gap: 15px;
+        width: 100%;
+        order: 2 !important;
+        margin-bottom: 20px;
       }
 
       .screenshot-block {
@@ -318,7 +328,7 @@
 
       /* Boutons de téléchargement sous les screenshots */
       .download-buttons-container {
-        order: 2;
+        order: 3 !important;
         gap: 15px !important;
         margin: 0 0 30px 0 !important;
         width: 100%;
