@@ -57,9 +57,16 @@
       font-size: 14px;
     }
 
+    .logo-container {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      margin-bottom: 20px;
+    }
+
     .logo {
       max-width: 140px;
-      margin: 0 auto 0;
+      display: block;
     }
 
     h1 {
@@ -147,10 +154,176 @@
       flex-wrap: wrap;
       min-height: 60vh;
     }
-    @media (max-width: 900px) {
+
+    .screenshot-container, .video-container {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      width: 100%;
+    }
+
+    .download-buttons-container {
+      display: flex;
+      justify-content: center;
+      gap: 40px;
+      margin: 70px 0 40px 0;
+      width: 100%;
+    }
+
+    .download-button {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      width: 150px;
+      height: 150px;
+      background: #fff;
+      border-radius: 20px;
+      text-decoration: none;
+      transition: background 0.3s, transform 0.3s;
+      font-weight: bold;
+      font-size: 18px;
+    }
+
+    .download-button.apple {
+      border: 2px solid #000;
+      color: #000;
+    }
+
+    .download-button.android {
+      border: 2px solid #3ddc84;
+      color: #3ddc84;
+    }
+
+    .download-button img {
+      object-fit: contain;
+      margin-bottom: 12px;
+    }
+
+    .screenshot-img, .video-img {
+      width: 100%;
+      border-radius: 16px;
+      box-shadow: 0 4px 24px rgba(0,0,0,0.15);
+    }
+
+    /* Media queries pour mobile iPhone */
+    @media (max-width: 768px) {
+      .container {
+        padding: 80px 15px 20px 15px;
+      }
+
+      nav {
+        top: 10px !important;
+        right: 10px !important;
+        flex-direction: column;
+        gap: 8px !important;
+        font-size: 12px !important;
+      }
+
+      .language-menu {
+        top: 10px;
+        left: 10px;
+      }
+
       .page-flex {
         flex-direction: column;
-        gap: 0;
+        gap: 20px;
+        min-height: auto;
+      }
+
+      .main-block {
+        order: 1;
+        width: 100% !important;
+        max-width: 100% !important;
+        min-width: 0 !important;
+        padding: 0 10px;
+      }
+
+      .screenshot-block {
+        order: 2;
+        width: 100% !important;
+        max-width: 100% !important;
+        min-width: 0 !important;
+        padding: 0 10px;
+      }
+
+      .screenshot-container, .video-container {
+        width: 100%;
+        display: flex;
+        justify-content: center;
+      }
+
+      .video-block {
+        order: 3;
+        width: 100% !important;
+        max-width: 100% !important;
+        min-width: 0 !important;
+        padding: 0 10px;
+      }
+
+      .logo {
+        max-width: 100px !important;
+      }
+
+      h1 {
+        font-size: 28px;
+        margin-bottom: 8px;
+      }
+
+      p.subtitle {
+        font-size: 16px;
+        margin-bottom: 20px;
+      }
+
+      #context-text {
+        font-size: 11px !important;
+        margin-bottom: 20px !important;
+      }
+
+      /* Réduction de 70% pour les images screenshots sur mobile */
+      .screenshot-img, .video-img {
+        max-width: 154px !important; /* 220px * 0.7 */
+        width: 70%;
+      }
+
+      /* Réduction de 70% pour les boutons de téléchargement */
+      .download-buttons-container {
+        gap: 20px !important;
+        margin: 40px 0 30px 0 !important;
+      }
+
+      .download-button {
+        width: 105px !important; /* 150px * 0.7 */
+        height: 105px !important; /* 150px * 0.7 */
+        font-size: 14px !important;
+      }
+
+      .download-button img {
+        width: 39px !important; /* 56px * 0.7 */
+        height: 39px !important; /* 56px * 0.7 */
+        margin-bottom: 8px !important;
+      }
+
+      footer {
+        padding: 30px 15px;
+        font-size: 11px;
+      }
+
+      footer .footer-contact {
+        flex-direction: column;
+        gap: 8px;
+        font-size: 12px;
+      }
+
+      footer .footer-links {
+        gap: 15px;
+      }
+    }
+
+    @media (max-width: 900px) and (min-width: 769px) {
+      .page-flex {
+        flex-direction: column;
+        gap: 30px;
       }
       .main-block, .screenshot-block, .video-block {
         width: 100% !important;
@@ -189,12 +362,16 @@
 
   <div class="container">
     <div class="page-flex">
-      <div class="screenshot-block" style="background: transparent; display: flex; justify-content: center; align-items: center; min-width: 220px;">
-        <img src="assets/Screenshot_catalogue.jpg" alt="Capture d'écran AV Wallet" style="max-width: 220px; width: 100%; border-radius: 16px; box-shadow: 0 4px 24px rgba(0,0,0,0.15);">
+      <div class="screenshot-block">
+        <div class="screenshot-container">
+          <img src="assets/Screenshot_catalogue.jpg" alt="Capture d'écran AV Wallet" class="screenshot-img">
+        </div>
       </div>
-      <div class="main-block" style="background: transparent; flex: 2; min-width: 300px; max-width: 420px; display: flex; flex-direction: column; align-items: center;">
+      <div class="main-block">
         <!-- Logo centré sans cadre -->
-        <img src="assets/logo3.png" alt="Logo AV Wallet" class="logo" style="display: block; margin: 0 auto 0 auto; max-width: 140px;">
+        <div class="logo-container">
+          <img src="assets/logo3.png" alt="Logo AV Wallet" class="logo">
+        </div>
         <h1>AV Wallet</h1>
         <p class="subtitle">Votre expertise dans la poche.</p>
         <p id="context-text" style="max-width: 1000px; margin: 0 auto 30px auto; text-align: center; font-size: 12px; color: #eee;">
@@ -202,18 +379,21 @@
           Fini les approximations. Gagnez en rigueur, en temps et en crédibilité.
         </p>
         <!-- Boutons de téléchargement -->
-        <div style="display: flex; justify-content: center; gap: 40px; margin: 70px 0 40px 0;">
-          <a href="#" style="display: flex; flex-direction: column; align-items: center; justify-content: center; width: 150px; height: 150px; background: #fff; border: 2px solid #000; border-radius: 20px; text-decoration: none; color: #000; transition: background 0.3s, transform 0.3s; font-weight: bold; font-size: 18px;">
-            <img src="assets/logo_apple.jpeg" alt="Apple" style="width: 56px;px; height:56px; margin-bottom: 12px; object-fit: contain;">
+        <div class="download-buttons-container">
+          <a href="#" class="download-button apple">
+            <img src="assets/logo_apple.jpeg" alt="Apple" width="56" height="56">
             iOS
           </a>
-          <a href="#" style="display: flex; flex-direction: column; align-items: center; justify-content: center; width: 150px; height: 150px; background: #fff; border: 2px solid #3ddc84; border-radius: 20px; text-decoration: none; color: #3ddc84; transition: background 0.3s, transform 0.3s; font-weight: bold; font-size: 18px;">
-            <img src="assets/logo_android.jpeg" alt="Android" style="width:56px; height:56px; margin-bottom: 12px; object-fit: contain;">
+          <a href="#" class="download-button android">
+            <img src="assets/logo_android.jpeg" alt="Android" width="56" height="56">
+            Android
           </a>
         </div>
       </div>
-      <div class="video-block" style="background: transparent; display: flex; justify-content: center; align-items: center; min-width: 220px;">
-        <img src="assets/Screenshot_home.jpg" alt="Capture d'écran AV Wallet" style="max-width: 220px; width: 100%; border-radius: 16px; box-shadow: 0 4px 24px rgba(0,0,0,0.15);">
+      <div class="video-block">
+        <div class="video-container">
+          <img src="assets/Screenshot_home.jpg" alt="Capture d'écran AV Wallet" class="video-img">
+        </div>
       </div>
     </div>
     <footer>
