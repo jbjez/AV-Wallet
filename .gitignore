@@ -1,0 +1,17 @@
+# macOS
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+
+# Build files
+build/
+*.last_build_id
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
