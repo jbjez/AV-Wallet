@@ -162,12 +162,45 @@
       width: 100%;
     }
 
+    /* Sur desktop, le screenshots-wrapper n'affiche pas les screenshots côte à côte */
+    .screenshots-wrapper {
+      display: contents;
+    }
+
+    /* Sur desktop, réorganiser l'ordre pour garder le layout original */
+    @media (min-width: 769px) {
+      .screenshot-block {
+        order: 1;
+      }
+      .main-block {
+        order: 2;
+      }
+      .download-buttons-container {
+        order: 3;
+      }
+      .video-block {
+        order: 4;
+      }
+    }
+
     .download-buttons-container {
       display: flex;
       justify-content: center;
       gap: 40px;
       margin: 70px 0 40px 0;
       width: 100%;
+    }
+
+    /* Sur desktop, intégrer visuellement les boutons dans le main-block */
+    @media (min-width: 769px) {
+      .main-block {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+      }
+      .download-buttons-container {
+        margin-top: 0;
+      }
     }
 
     .download-button {
@@ -231,20 +264,35 @@
         min-height: auto;
       }
 
-      .main-block {
+      /* Conteneur pour screenshots côte à côte sur mobile */
+      .screenshots-wrapper {
+        display: flex !important;
+        justify-content: center;
+        align-items: center;
+        gap: 15px;
+        width: 100%;
         order: 1;
+        margin-bottom: 20px;
+      }
+
+      .main-block {
+        order: 3;
         width: 100% !important;
         max-width: 100% !important;
         min-width: 0 !important;
         padding: 0 10px;
+        display: flex !important;
+        flex-direction: column;
+        align-items: center;
       }
 
       .screenshot-block {
-        order: 2;
-        width: 100% !important;
-        max-width: 100% !important;
+        order: 1;
+        width: auto !important;
+        max-width: none !important;
         min-width: 0 !important;
-        padding: 0 10px;
+        padding: 0 !important;
+        flex: 1;
       }
 
       .screenshot-container, .video-container {
@@ -254,11 +302,38 @@
       }
 
       .video-block {
-        order: 3;
-        width: 100% !important;
-        max-width: 100% !important;
+        order: 1;
+        width: auto !important;
+        max-width: none !important;
         min-width: 0 !important;
-        padding: 0 10px;
+        padding: 0 !important;
+        flex: 1;
+      }
+
+      /* Réduction supplémentaire des screenshots pour qu'ils tiennent côte à côte */
+      .screenshot-img, .video-img {
+        max-width: 140px !important;
+        width: 100%;
+      }
+
+      /* Boutons de téléchargement sous les screenshots */
+      .download-buttons-container {
+        order: 2;
+        gap: 15px !important;
+        margin: 0 0 30px 0 !important;
+        width: 100%;
+      }
+
+      .download-button {
+        width: 105px !important; /* 150px * 0.7 */
+        height: 105px !important; /* 150px * 0.7 */
+        font-size: 14px !important;
+      }
+
+      .download-button img {
+        width: 39px !important; /* 56px * 0.7 */
+        height: 39px !important; /* 56px * 0.7 */
+        margin-bottom: 8px !important;
       }
 
       .logo {
@@ -278,30 +353,6 @@
       #context-text {
         font-size: 11px !important;
         margin-bottom: 20px !important;
-      }
-
-      /* Réduction de 70% pour les images screenshots sur mobile */
-      .screenshot-img, .video-img {
-        max-width: 154px !important; /* 220px * 0.7 */
-        width: 70%;
-      }
-
-      /* Réduction de 70% pour les boutons de téléchargement */
-      .download-buttons-container {
-        gap: 20px !important;
-        margin: 40px 0 30px 0 !important;
-      }
-
-      .download-button {
-        width: 105px !important; /* 150px * 0.7 */
-        height: 105px !important; /* 150px * 0.7 */
-        font-size: 14px !important;
-      }
-
-      .download-button img {
-        width: 39px !important; /* 56px * 0.7 */
-        height: 39px !important; /* 56px * 0.7 */
-        margin-bottom: 8px !important;
       }
 
       footer {
@@ -362,10 +413,29 @@
 
   <div class="container">
     <div class="page-flex">
-      <div class="screenshot-block">
-        <div class="screenshot-container">
-          <img src="assets/Screenshot_catalogue.jpg" alt="Capture d'écran AV Wallet" class="screenshot-img">
+      <!-- Wrapper pour screenshots côte à côte sur mobile -->
+      <div class="screenshots-wrapper">
+        <div class="screenshot-block">
+          <div class="screenshot-container">
+            <img src="assets/Screenshot_catalogue.jpg" alt="Capture d'écran AV Wallet" class="screenshot-img">
+          </div>
         </div>
+        <div class="video-block">
+          <div class="video-container">
+            <img src="assets/Screenshot_home.jpg" alt="Capture d'écran AV Wallet" class="video-img">
+          </div>
+        </div>
+      </div>
+      <!-- Boutons de téléchargement sous les screenshots sur mobile -->
+      <div class="download-buttons-container">
+        <a href="#" class="download-button apple">
+          <img src="assets/logo_apple.jpeg" alt="Apple" width="56" height="56">
+          iOS
+        </a>
+        <a href="#" class="download-button android">
+          <img src="assets/logo_android.jpeg" alt="Android" width="56" height="56">
+          Android
+        </a>
       </div>
       <div class="main-block">
         <!-- Logo centré sans cadre -->
@@ -378,22 +448,6 @@
           Que vous soyez en plein montage, en préparation ou en repérage client, AV Wallet vous donne les bons chiffres, les bons outils, au bon moment.<br>
           Fini les approximations. Gagnez en rigueur, en temps et en crédibilité.
         </p>
-        <!-- Boutons de téléchargement -->
-        <div class="download-buttons-container">
-          <a href="#" class="download-button apple">
-            <img src="assets/logo_apple.jpeg" alt="Apple" width="56" height="56">
-            iOS
-          </a>
-          <a href="#" class="download-button android">
-            <img src="assets/logo_android.jpeg" alt="Android" width="56" height="56">
-            Android
-          </a>
-        </div>
-      </div>
-      <div class="video-block">
-        <div class="video-container">
-          <img src="assets/Screenshot_home.jpg" alt="Capture d'écran AV Wallet" class="video-img">
-        </div>
       </div>
     </div>
     <footer>
