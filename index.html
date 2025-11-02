@@ -175,20 +175,84 @@
       display: contents;
     }
 
-    /* Sur desktop, réorganiser l'ordre : screenshot gauche - texte centre - screenshot droite */
+    /* Layout desktop : Logo + texte en premier, puis screenshots + logo, puis boutons */
     @media (min-width: 769px) {
-      .screenshot-block {
-        order: 1;
+      .container {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
       }
+
+      /* SECTION 1: Logo + Texte ensemble en haut (desktop uniquement) */
+      .desktop-header {
+        display: flex !important;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        width: 100%;
+        margin-bottom: 60px;
+      }
+
+      .desktop-logo {
+        display: flex !important;
+        justify-content: center;
+        align-items: center;
+        margin-bottom: 30px;
+        width: 100%;
+      }
+
+      .mobile-logo {
+        display: none !important;
+      }
+
+      /* SECTION 2: Screenshots avec logo en dessous */
+      .page-flex {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        gap: 40px;
+        width: 100%;
+        max-width: 1200px;
+        margin-bottom: 40px;
+      }
+
+      /* Masquer le texte dans main-block sur desktop (déjà affiché en haut) */
       .main-block {
-        order: 2;
+        display: none !important;
       }
-      .download-buttons-container {
-        order: 2; /* Même order que main-block pour les intégrer visuellement */
-        margin-top: -70px; /* Réduire la marge supérieure pour coller au texte */
+
+      /* Wrapper pour screenshots côte à côte sur desktop */
+      .screenshots-wrapper {
+        display: flex !important;
+        justify-content: center;
+        align-items: center;
+        gap: 40px;
+        width: 100%;
+        margin-bottom: 30px;
       }
+
+      .screenshot-block {
+        flex-shrink: 0;
+      }
+
       .video-block {
-        order: 3;
+        flex-shrink: 0;
+      }
+
+      /* Logo en dessous des screenshots sur desktop */
+      .screenshots-logo {
+        display: flex !important;
+        justify-content: center;
+        align-items: center;
+        margin-top: 20px;
+      }
+
+      /* Boutons en dessous */
+      .download-buttons-container {
+        width: 100%;
+        margin-top: 0;
+        margin-bottom: 40px;
       }
     }
 
@@ -198,19 +262,6 @@
       gap: 40px;
       margin: 70px 0 40px 0;
       width: 100%;
-    }
-
-    /* Sur desktop, intégrer visuellement les boutons dans le main-block */
-    @media (min-width: 769px) {
-      .main-block {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-      }
-      .download-buttons-container {
-        margin-top: 0 !important;
-        margin-bottom: 40px;
-      }
     }
 
     .download-button {
@@ -273,6 +324,28 @@
         flex-direction: column;
         gap: 20px;
         min-height: auto;
+      }
+
+      /* Sur mobile, masquer le logo desktop et afficher le logo mobile */
+      /* Masquer la section desktop-header sur mobile */
+      .desktop-header {
+        display: none !important;
+      }
+
+      .desktop-logo {
+        display: none !important;
+      }
+
+      .mobile-logo {
+        display: flex !important;
+        justify-content: center;
+        align-items: center;
+        margin-bottom: 20px;
+      }
+      
+      /* Masquer le logo sous screenshots sur mobile */
+      .screenshots-logo {
+        display: none !important;
       }
 
       /* Ordre sur mobile iPhone : logo+texte en haut, puis screenshots, puis boutons */
@@ -383,6 +456,11 @@
       }
     }
 
+    /* Styles pour desktop-header */
+    .desktop-header {
+      display: none;
+    }
+    
     @media (max-width: 900px) and (min-width: 769px) {
       .page-flex {
         flex-direction: column;
@@ -394,8 +472,14 @@
         min-width: 0 !important;
       }
       .main-block { order: 1; }
-      .screenshot-block { order: 2; }
-      .video-block { order: 3; }
+      .screenshots-wrapper {
+        order: 2;
+        display: flex !important;
+        gap: 20px;
+      }
+      .screenshots-logo {
+        order: 3;
+      }
     }
   </style>
 </head>
@@ -424,8 +508,35 @@
   </div>
 
   <div class="container">
+    <!-- SECTION 1: Logo + Texte (visible sur desktop uniquement) -->
+    <div class="desktop-header">
+      <div class="logo-container desktop-logo">
+        <img src="assets/logo3.png" alt="Logo AV Wallet" class="logo">
+      </div>
+      <p class="subtitle" id="desktop-subtitle">Votre expertise dans la poche.</p>
+      <p id="desktop-context-text" style="max-width: 800px; margin: 0 auto; text-align: center; font-size: 14px; color: #eee; line-height: 1.6;">
+        Que vous soyez en plein montage, en préparation ou en repérage client, AV Wallet vous donne les bons chiffres, les bons outils, au bon moment.<br>
+        Fini les approximations. Gagnez en rigueur, en temps et en crédibilité.
+      </p>
+    </div>
+    
+    <!-- SECTION 2: Screenshots + Logo (desktop) / Logo + Texte + Screenshots (mobile) -->
     <div class="page-flex">
-      <!-- Wrapper pour screenshots côte à côte sur mobile -->
+      <!-- Logo pour mobile (masqué sur desktop) -->
+      <div class="logo-container mobile-logo">
+        <img src="assets/logo3.png" alt="Logo AV Wallet" class="logo">
+      </div>
+      
+      <!-- Texte pour mobile (masqué sur desktop) -->
+      <div class="main-block">
+        <p class="subtitle">Votre expertise dans la poche.</p>
+        <p id="context-text" style="max-width: 1000px; margin: 0 auto 30px auto; text-align: center; font-size: 12px; color: #eee;">
+          Que vous soyez en plein montage, en préparation ou en repérage client, AV Wallet vous donne les bons chiffres, les bons outils, au bon moment.<br>
+          Fini les approximations. Gagnez en rigueur, en temps et en crédibilité.
+        </p>
+      </div>
+      
+      <!-- Wrapper pour screenshots -->
       <div class="screenshots-wrapper">
         <div class="screenshot-block">
           <div class="screenshot-container">
@@ -438,28 +549,23 @@
           </div>
         </div>
       </div>
-      <!-- Boutons de téléchargement sous les screenshots sur mobile -->
-      <div class="download-buttons-container">
-        <a href="#" class="download-button apple">
-          <img src="assets/logo_apple.jpeg" alt="Apple" width="56" height="56">
-          iOS
-        </a>
-        <a href="#" class="download-button android">
-          <img src="assets/logo_android.jpeg" alt="Android" width="56" height="56">
-          Android
-        </a>
+      
+      <!-- Logo en dessous des screenshots (desktop uniquement) -->
+      <div class="logo-container screenshots-logo">
+        <img src="assets/logo3.png" alt="Logo AV Wallet" class="logo" style="max-width: 120px;">
       </div>
-      <div class="main-block">
-        <!-- Logo centré sans cadre -->
-        <div class="logo-container">
-          <img src="assets/logo3.png" alt="Logo AV Wallet" class="logo">
-        </div>
-        <p class="subtitle">Votre expertise dans la poche.</p>
-        <p id="context-text" style="max-width: 1000px; margin: 0 auto 30px auto; text-align: center; font-size: 12px; color: #eee;">
-          Que vous soyez en plein montage, en préparation ou en repérage client, AV Wallet vous donne les bons chiffres, les bons outils, au bon moment.<br>
-          Fini les approximations. Gagnez en rigueur, en temps et en crédibilité.
-        </p>
-      </div>
+    </div>
+    
+    <!-- Boutons de téléchargement -->
+    <div class="download-buttons-container">
+      <a href="#" class="download-button apple">
+        <img src="assets/logo_apple.jpeg" alt="Apple" width="56" height="56">
+        iOS
+      </a>
+      <a href="#" class="download-button android">
+        <img src="assets/logo_android.jpeg" alt="Android" width="56" height="56">
+        Android
+      </a>
     </div>
     <footer>
       <div class="footer-content">
@@ -501,6 +607,11 @@
     const t = translations[lang] || translations['fr'];
     document.querySelector('.subtitle').textContent = t.slogan;
     document.getElementById('context-text').innerHTML = t.context;
+    // Mettre à jour aussi les textes desktop
+    const desktopSubtitle = document.getElementById('desktop-subtitle');
+    const desktopContext = document.getElementById('desktop-context-text');
+    if (desktopSubtitle) desktopSubtitle.textContent = t.slogan;
+    if (desktopContext) desktopContext.innerHTML = t.context;
     document.getElementById('footer-copyright').textContent = t.footer;
     document.getElementById('current-flag').src = `assets/flag_${lang}_48.png`;
     document.getElementById('tutorials-link').textContent = t.tutorials;
