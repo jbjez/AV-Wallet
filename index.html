@@ -499,6 +499,7 @@
     <a id="support-link" href="support.html" style="color: #fff; text-decoration: none; font-weight: bold; font-size: 16px;">Support</a>
     <a id="account-link" href="#login" style="color: #fff; text-decoration: none; font-weight: bold; font-size: 16px;">Login</a>
     <a id="privacy-link" href="privacy_fr.html" style="color: #fff; text-decoration: none; font-weight: bold; font-size: 16px;">Privacy</a>
+    <a id="terms-link" href="terms_en.html" style="color: #fff; text-decoration: none; font-weight: bold; font-size: 16px;">Terms</a>
   </nav>
 
   <div class="language-menu">
@@ -642,7 +643,16 @@
         it: 'privacy_it.html',
         es: 'privacy_es.html'
       };
+      // Liens terms (pour l'instant, seulement en anglais)
+      const termsMap = {
+        fr: 'terms_en.html',
+        en: 'terms_en.html',
+        de: 'terms_en.html',
+        it: 'terms_en.html',
+        es: 'terms_en.html'
+      };
       document.getElementById('privacy-link').href = privacyMap[lang] || 'privacy_fr.html';
+      document.getElementById('terms-link').href = termsMap[lang] || 'terms_en.html';
       document.getElementById('legal-link').href = privacyMap[lang] || 'privacy_fr.html';
     });
 </script>
